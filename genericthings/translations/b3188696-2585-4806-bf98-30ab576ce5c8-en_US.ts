@@ -5,7 +5,9 @@
     <name>GenericThings</name>
     <message>
         <source>Accuracy (decimal places)</source>
-        <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {236831a8-a455-4e38-a9cd-eabbebaa3f67})
+        <extracomment>The name of the ParamType (ThingClass: lightSensor, Type: settings, ID: {f800988f-1ad5-4ffb-9aa8-70ef17614966})
+----------
+The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {236831a8-a455-4e38-a9cd-eabbebaa3f67})
 ----------
 The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {021a17d8-9e5e-4dd6-835d-1a3e1ffd6b23})
 ----------
@@ -184,7 +186,13 @@ The name of the StateType ({925225d9-2965-444a-9c42-63c2873700fb}) of ThingClass
     </message>
     <message>
         <source>Input value</source>
-        <extracomment>The name of the ParamType (ThingClass: co2Sensor, ActionType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
+        <extracomment>The name of the ParamType (ThingClass: lightSensor, ActionType: input, ID: {520e5d27-7d15-4d79-94cf-5d01f5a09ea8})
+----------
+The name of the ParamType (ThingClass: lightSensor, EventType: input, ID: {520e5d27-7d15-4d79-94cf-5d01f5a09ea8})
+----------
+The name of the StateType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
+----------
+The name of the ParamType (ThingClass: co2Sensor, ActionType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
 ----------
 The name of the ParamType (ThingClass: co2Sensor, EventType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
 ----------
@@ -217,7 +225,9 @@ The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
     </message>
     <message>
         <source>Input value changed</source>
-        <extracomment>The name of the EventType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
+        <extracomment>The name of the EventType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
+----------
+The name of the EventType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
 ----------
 The name of the EventType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
 ----------
@@ -463,7 +473,9 @@ The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClas
     </message>
     <message>
         <source>Set input value</source>
-        <extracomment>The name of the ActionType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
+        <extracomment>The name of the ActionType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
+----------
+The name of the ActionType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
 ----------
 The name of the ActionType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
 ----------
@@ -957,6 +969,33 @@ The name of the StateType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass
     <message>
         <source>Set open or closed</source>
         <extracomment>The name of the ActionType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic light sensor</source>
+        <extracomment>The name of the ThingClass ({d4d873fd-f0fc-433f-b615-91c1506a1890})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light intensity</source>
+        <extracomment>The name of the ParamType (ThingClass: lightSensor, EventType: lightIntensity, ID: {fe12ef32-9f2f-41cd-acb7-6b8e4acffa3b})
+----------
+The name of the StateType ({fe12ef32-9f2f-41cd-acb7-6b8e4acffa3b}) of ThingClass lightSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light intensity changed</source>
+        <extracomment>The name of the EventType ({fe12ef32-9f2f-41cd-acb7-6b8e4acffa3b}) of ThingClass lightSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Lux</source>
+        <extracomment>The name of the ParamType (ThingClass: lightSensor, Type: settings, ID: {7fe74404-d7f0-41af-a8d4-dd1bda27f752})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum Lux</source>
+        <extracomment>The name of the ParamType (ThingClass: lightSensor, Type: settings, ID: {6dea7384-b079-443b-8cc2-1479138fa212})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
