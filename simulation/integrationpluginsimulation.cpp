@@ -248,7 +248,7 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
         } else if(action.actionTypeId() == evChargerMaxChargingCurrentActionTypeId){
             // get the param value
             Param maxChargeParam = action.param(evChargerMaxChargingCurrentActionMaxChargingCurrentParamTypeId);
-            uint maxCharge = maxChargeParam.value().toInt();
+            double maxCharge = maxChargeParam.value().toDouble();
             qCDebug(dcSimulation()) << "Set maximum charging current to" << maxCharge << "for EV Charger device" << thing->name();
             thing->setStateValue(evChargerMaxChargingCurrentStateTypeId, maxCharge);
             return info->finish(Thing::ThingErrorNoError);
