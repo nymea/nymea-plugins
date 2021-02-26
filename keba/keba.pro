@@ -9,9 +9,11 @@ SOURCES += \
     kecontact.cpp \
     discovery.cpp \
     host.cpp \
+    kecontactdatalayer.cpp
 
 HEADERS += \
     integrationpluginkeba.h \
     kecontact.h \
     discovery.h \
     host.h \
+    kecontactdatalayer.h
