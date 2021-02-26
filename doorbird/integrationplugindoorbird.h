@@ -34,6 +34,7 @@
 #include <QImage>
 
 #include "integrations/integrationplugin.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
 #include "doorbird.h"
 
 class QNetworkAccessManager;
@@ -49,6 +50,7 @@ class IntegrationPluginDoorbird: public IntegrationPlugin
 public:
     explicit IntegrationPluginDoorbird();
 
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
@@ -60,9 +62,11 @@ public:
     void thingRemoved(Thing *thing)override;
 
 private:
+
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
+
+    QHash<ThingId, Doorbird *> m_pairingConnections;
     QHash<ThingId, Doorbird *> m_doorbirdConnections;
-    QHash<Doorbird *, ThingPairingInfo *> m_pendingPairings;
-    QHash<Doorbird *, ThingSetupInfo *> m_pendingThingSetups;
 
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
 
@@ -70,7 +74,6 @@ private slots:
     void onDoorBirdConnected(bool status);
     void onDoorBirdEvent(Doorbird::EventType eventType, bool status);
     void onDoorBirdRequestSent(QUuid requestId, bool success);
-    void onSessionIdReceived(const QString &sessionId);
 };
 
 #endif // INTEGRATIONPLUGINDOORBIRD_H
