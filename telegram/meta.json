@@ -1,0 +1,14 @@
+{
+    "title": "Telegram",
+    "tagline": "Send notifictions to Telegram.",
+    "icon": "telegram.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "online-service",
+        "notification"
+    ]
+}

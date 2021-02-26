@@ -1,0 +1,68 @@
+{
+    "displayName": "Telegram",
+    "name": "Telegram",
+    "id": "bc95b5c8-f2f1-4bcb-bf88-8d165ee06114",
+    "vendors": [
+        {
+            "displayName": "Telegram",
+            "name": "telegram",
+            "id": "45bb2595-4340-49df-8b88-8c6037c8d1c8",
+            "thingClasses": [
+                {
+                    "id": "f71bac7a-90e1-4810-9c31-531ac5f596fb",
+                    "name": "telegram",
+                    "displayName": "Telegram messages",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["notifications"],
+                    "discoveryParamTypes": [
+                        {
+                            "id": "2350bef6-d237-4bee-8e7e-6ab2c205f332",
+                            "name": "token",
+                            "displayName": "Bot access token",
+                            "type": "QString"
+                        }
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "28e4c161-f77a-4baa-b415-dc693330756f",
+                            "name": "token",
+                            "displayName": "Bot access token",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "9c1f9d6c-e15a-4b76-a441-f1b96812cc28",
+                            "name": "chatId",
+                            "displayName": "Chat ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "36b4ddf9-1a05-46c6-b0c9-2c3b8c835d42",
+                            "name": "notify",
+                            "displayName": "notify",
+                            "paramTypes": [
+                                {
+                                    "id": "891772ed-45bc-402e-828a-5349bedc29e5",
+                                    "name": "title",
+                                    "displayName": "title",
+                                    "type": "QString",
+                                    "inputType": "TextLine",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "374d059f-feab-4c49-8d91-e6066f80ed5a",
+                                    "name": "body",
+                                    "displayName": "body",
+                                    "type": "QString",
+                                    "inputType": "TextArea",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
