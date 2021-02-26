@@ -558,6 +558,24 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Hue smart plug
+    if (thing->thingClassId() == smartPlugThingClassId) {
+        qCDebug(dcPhilipsHue) << "Setting up Hue Smart plug" << thing->params();
+        HueLight *smartPlug = new HueLight(bridge, this);
+        smartPlug->setUuid(thing->paramValue(smartPlugThingUuidParamTypeId).toString());
+        smartPlug->setId(thing->paramValue(smartPlugThingLightIdParamTypeId).toInt());
+        smartPlug->setModelId(thing->paramValue(smartPlugThingModelIdParamTypeId).toString());
+        smartPlug->setType(thing->paramValue(smartPlugThingTypeParamTypeId).toString());
+
+        connect(smartPlug, &HueLight::reachableChanged, thing, [thing](bool reachable){
+            thing->setStateValue(smartPlugConnectedStateTypeId, reachable);
+        });
+        connect(smartPlug, &HueLight::stateChanged, this, &IntegrationPluginPhilipsHue::lightStateChanged);
+        m_lights.insert(smartPlug, thing);
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    }
+
     qCWarning(dcPhilipsHue()) << "Unhandled setupDevice call" << thing->thingClassId();
 }
 
@@ -581,7 +599,8 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
 
     if (thing->thingClassId() == colorLightThingClassId
             || thing->thingClassId() == colorTemperatureLightThingClassId
-            || thing->thingClassId() == dimmableLightThingClassId) {
+            || thing->thingClassId() == dimmableLightThingClassId
+            || thing->thingClassId() == smartPlugThingClassId) {
         HueLight *light = m_lights.key(thing);
         m_lights.remove(light);
         light->deleteLater();
@@ -807,7 +826,8 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
     // lights
     if (thing->thingClassId() == colorLightThingClassId ||
             thing->thingClassId() == colorTemperatureLightThingClassId ||
-            thing->thingClassId() == dimmableLightThingClassId) {
+            thing->thingClassId() == dimmableLightThingClassId ||
+            thing->thingClassId() == smartPlugThingClassId) {
 
         HueLight *light = m_lights.key(thing);
 
@@ -858,6 +878,12 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         } else if (action.actionTypeId() == dimmableLightAlertActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
+            reply = hardwareManager()->networkManager()->put(request.first, request.second);
+        }
+
+        // Hue smart plug
+        else if (action.actionTypeId() == smartPlugPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(smartPlugPowerActionPowerParamTypeId).value().toBool());
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         }
     }
@@ -1062,6 +1088,9 @@ void IntegrationPluginPhilipsHue::lightStateChanged()
         thing->setStateValue(dimmableLightConnectedStateTypeId, light->reachable());
         thing->setStateValue(dimmableLightPowerStateTypeId, light->power());
         thing->setStateValue(dimmableLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+    } else if (thing->thingClassId() == smartPlugThingClassId) {
+        thing->setStateValue(smartPlugConnectedStateTypeId, light->reachable());
+        thing->setStateValue(smartPlugPowerStateTypeId, light->power());
     }
 }
 
@@ -1341,6 +1370,8 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
         return;
     }
 
+    qCDebug(dcPhilipsHue()) << "Lights on bridge:" << qUtf8Printable(jsonDoc.toJson());
+
     // Create Lights if not already added
     ThingDescriptors descriptors;
 
@@ -1351,6 +1382,7 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
 
         QString uuid = lightMap.value("uniqueid").toString();
         QString model = lightMap.value("modelid").toString();
+        QString type = lightMap.value("type").toString();
 
         foreach (HueLight *light, lightsToRemove) {
             if (light->uuid() == uuid) {
@@ -1362,7 +1394,7 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
         if (lightAlreadyAdded(uuid))
             continue;
 
-        if (lightMap.value("type").toString() == "Dimmable light") {
+        if (type == "Dimmable light") {
             ThingDescriptor descriptor(dimmableLightThingClassId, lightMap.value("name").toString(), "Philips Hue White Light", thing->id());
             ParamList params;
             params.append(Param(dimmableLightThingModelIdParamTypeId, model));
@@ -1373,7 +1405,7 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
             descriptors.append(descriptor);
 
             qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
-        } else if (lightMap.value("type").toString() == "Color temperature light") {
+        } else if (type == "Color temperature light") {
             ThingDescriptor descriptor(colorTemperatureLightThingClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", thing->id());
             ParamList params;
             params.append(Param(colorTemperatureLightThingModelIdParamTypeId, model));
@@ -1384,7 +1416,7 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
             descriptors.append(descriptor);
 
             qCDebug(dcPhilipsHue) << "Found new color temperature light" << lightMap.value("name").toString() << model;
-        } else {
+        } else if (type == "Extended color light") {
             ThingDescriptor descriptor(colorLightThingClassId, lightMap.value("name").toString(), "Philips Hue Color Light", thing->id());
             ParamList params;
             params.append(Param(colorLightThingModelIdParamTypeId, model));
@@ -1394,6 +1426,16 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
             descriptor.setParams(params);
             descriptors.append(descriptor);
             qCDebug(dcPhilipsHue) << "Found new color light" << lightMap.value("name").toString() << model;
+        } else if (type == "On/Off plug-in unit") {
+            ThingDescriptor descriptor(smartPlugThingClassId, lightMap.value("name").toString(), "Philips Hue Smart plug", thing->id());
+            ParamList params;
+            params.append(Param(smartPlugThingModelIdParamTypeId, model));
+            params.append(Param(smartPlugThingTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(smartPlugThingUuidParamTypeId, uuid));
+            params.append(Param(smartPlugThingLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            qCDebug(dcPhilipsHue) << "Found smart plug" << lightMap.value("name").toString() << model;
         }
     }
 
@@ -1821,7 +1863,7 @@ void IntegrationPluginPhilipsHue::processSetNameResponse(Thing *thing, const QBy
 
 }
 
-void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, const bool &reachable)
+void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reachable)
 {
     if (reachable) {
         thing->setStateValue(bridgeConnectedStateTypeId, true);
@@ -1839,6 +1881,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, const boo
                         m_lights.value(light)->setStateValue(colorTemperatureLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->thingClassId() == dimmableLightThingClassId) {
                         m_lights.value(light)->setStateValue(dimmableLightConnectedStateTypeId, false);
+                    } else if (m_lights.value(light)->thingClassId() == smartPlugThingClassId) {
+                        m_lights.value(light)->setStateValue(smartPlugConnectedStateTypeId, false);
                     }
                 }
             }
@@ -1892,6 +1936,11 @@ bool IntegrationPluginPhilipsHue::lightAlreadyAdded(const QString &uuid)
         }
         if (thing->thingClassId() == colorTemperatureLightThingClassId) {
             if (thing->paramValue(colorTemperatureLightThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+        if (thing->thingClassId() == smartPlugThingClassId) {
+            if (thing->paramValue(smartPlugThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
