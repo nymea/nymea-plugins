@@ -67,9 +67,15 @@ QString SunnyWebBox::getProcessDataChannels(const QString &deviceId)
 
 QString SunnyWebBox::getProcessData(const QStringList &deviceKeys)
 {
-    QJsonObject params;
-    params["device"] = deviceKeys.first();
-    return sendMessage(m_hostAddresss, "GetProcessData", params);
+    QJsonObject paramsObj;
+    QJsonArray devicesArray;
+    Q_FOREACH(QString key, deviceKeys) {
+        QJsonObject deviceObj;
+        deviceObj["key"] = key;
+        devicesArray.append(deviceObj);
+    }
+    paramsObj["devices"] = devicesArray;
+    return sendMessage(m_hostAddresss, "GetProcessData", paramsObj);
 }
 
 QString SunnyWebBox::getParameterChannels(const QString &deviceKey)
@@ -87,9 +93,11 @@ QString SunnyWebBox::getParameters(const QStringList &deviceKeys)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
-    QJsonObject deviceObj;
-    deviceObj["key"] = deviceKeys.first(); //TODO
-    devicesArray.append(deviceObj);
+    Q_FOREACH(QString key, deviceKeys) {
+        QJsonObject deviceObj;
+        deviceObj["key"] = key;
+        devicesArray.append(deviceObj);
+    }
     paramsObj["devices"] = devicesArray;
     return sendMessage(m_hostAddresss, "GetParameter", paramsObj);
 }
@@ -304,6 +312,7 @@ QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &pro
             QString requestId = map["id"].toString();
             QVariantMap result = map.value("result").toMap();
             parseMessage(requestId, requestType, result);
+        } else if (map.contains("proc") && map.contains("error")) {
         } else {
             qCWarning(dcSma()) << "SunnyWebBox: Missing proc or result value";
         }
