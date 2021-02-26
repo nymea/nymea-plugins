@@ -43,28 +43,6 @@ The name of the plugin anelElektronik ({7a3e5b64-20e4-42bd-b86b-989b84afc22a})</
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>IP address</source>
-        <extracomment>The name of the ParamType (ThingClass: netPwrCtlHut, Type: thing, ID: {fb34919c-3ca0-47b3-a14a-7986b5ce24e2})
-----------
-The name of the ParamType (ThingClass: netPwrCtlAdv, Type: thing, ID: {5d98ead0-e445-492c-821c-ae169af648e4})
-----------
-The name of the ParamType (ThingClass: netPwrCtlPro, Type: thing, ID: {b1cf9a4f-9c2a-4ab4-a920-46f0b8a8b988})
-----------
-The name of the ParamType (ThingClass: netPwrCtlHome, Type: thing, ID: {1e273e10-3ea0-4337-a221-3b8e26c6e7dc})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Web control Port</source>
-        <extracomment>The name of the ParamType (ThingClass: netPwrCtlHut, Type: thing, ID: {35010dff-dde9-4acf-a60b-cf92b7edc2a5})
-----------
-The name of the ParamType (ThingClass: netPwrCtlAdv, Type: thing, ID: {1913912f-2579-4e8a-9e23-af1de4a2ef72})
-----------
-The name of the ParamType (ThingClass: netPwrCtlPro, Type: thing, ID: {31540acc-949f-454f-9987-982e97ce7d21})
-----------
-The name of the ParamType (ThingClass: netPwrCtlHome, Type: thing, ID: {81704e09-d283-49d1-9e3f-9c06f8b98d84})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Username</source>
         <extracomment>The name of the ParamType (ThingClass: netPwrCtlHut, Type: thing, ID: {3bf3db56-4fe4-4c87-a5cd-7c1f1acb6408})
 ----------
@@ -208,6 +186,17 @@ The name of the StateType ({47329958-c33f-478f-b2a0-910abd150da8}) of ThingClass
     <message>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({47329958-c33f-478f-b2a0-910abd150da8}) of ThingClass socket</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAC address</source>
+        <extracomment>The name of the ParamType (ThingClass: netPwrCtlHut, Type: thing, ID: {fb34919c-3ca0-47b3-a14a-7986b5ce24e2})
+----------
+The name of the ParamType (ThingClass: netPwrCtlAdv, Type: thing, ID: {5d98ead0-e445-492c-821c-ae169af648e4})
+----------
+The name of the ParamType (ThingClass: netPwrCtlPro, Type: thing, ID: {b1cf9a4f-9c2a-4ab4-a920-46f0b8a8b988})
+----------
+The name of the ParamType (ThingClass: netPwrCtlHome, Type: thing, ID: {1e273e10-3ea0-4337-a221-3b8e26c6e7dc})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

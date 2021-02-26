@@ -38,6 +38,7 @@
 #include <QNetworkAccessManager>
 
 class PluginTimer;
+class Discovery;
 
 class IntegrationPluginAnel: public IntegrationPlugin
 {
@@ -55,11 +56,14 @@ public:
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
 private slots:
     void refreshStates();
+
+
 
 private:
     void setConnectedState(Thing *thing, bool connected);
@@ -72,11 +76,11 @@ private:
     void refreshAdvTemp(Thing *thing);
 
 private:
+    Discovery *m_discovery = nullptr;
     PluginTimer *m_pollTimer = nullptr;
+    PluginTimer *m_discoverTimer = nullptr;
 
-    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIdMap;
-    QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeIdMap;
-    QHash<ThingClassId, ParamTypeId> m_portParamTypeIdMap;
+    QHash<QString, QHostAddress> m_ipCache;
 };
 
 #endif // INTEGRATIONPLUGINANEL_H

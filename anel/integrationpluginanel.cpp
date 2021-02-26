@@ -134,29 +134,31 @@ Example reply for HOME and PRO:
 #include "integrationpluginanel.h"
 #include "plugininfo.h"
 #include "plugintimer.h"
+#include "discovery.h"
 
 #include <network/networkaccessmanager.h>
 #include <QNetworkReply>
 #include <QAuthenticator>
 #include <QUrlQuery>
 
+QHash<ThingClassId, StateTypeId> connectedStateTypeIdMap = {
+    {netPwrCtlHomeThingClassId, netPwrCtlHomeConnectedStateTypeId},
+    {netPwrCtlProThingClassId, netPwrCtlProConnectedStateTypeId},
+    {netPwrCtlAdvThingClassId, netPwrCtlAdvConnectedStateTypeId},
+    {netPwrCtlHutThingClassId, netPwrCtlHutConnectedStateTypeId},
+    {socketThingClassId, socketConnectedStateTypeId}
+};
+
+QHash<ThingClassId, ParamTypeId> macAddressParamTypeIdMap = {
+    {netPwrCtlHomeThingClassId, netPwrCtlHomeThingMacAddressParamTypeId},
+    {netPwrCtlProThingClassId, netPwrCtlProThingMacAddressParamTypeId},
+    {netPwrCtlAdvThingClassId, netPwrCtlAdvThingMacAddressParamTypeId},
+    {netPwrCtlHutThingClassId, netPwrCtlHutThingMacAddressParamTypeId}
+};
+
 IntegrationPluginAnel::IntegrationPluginAnel()
 {
-    m_connectedStateTypeIdMap.insert(netPwrCtlHomeThingClassId, netPwrCtlHomeConnectedStateTypeId);
-    m_connectedStateTypeIdMap.insert(netPwrCtlProThingClassId, netPwrCtlProConnectedStateTypeId);
-    m_connectedStateTypeIdMap.insert(netPwrCtlAdvThingClassId, netPwrCtlAdvConnectedStateTypeId);
-    m_connectedStateTypeIdMap.insert(netPwrCtlHutThingClassId, netPwrCtlHutConnectedStateTypeId);
-    m_connectedStateTypeIdMap.insert(socketThingClassId, socketConnectedStateTypeId);
 
-    m_ipAddressParamTypeIdMap.insert(netPwrCtlHomeThingClassId, netPwrCtlHomeThingIpAddressParamTypeId);
-    m_ipAddressParamTypeIdMap.insert(netPwrCtlProThingClassId, netPwrCtlProThingIpAddressParamTypeId);
-    m_ipAddressParamTypeIdMap.insert(netPwrCtlAdvThingClassId, netPwrCtlAdvThingIpAddressParamTypeId);
-    m_ipAddressParamTypeIdMap.insert(netPwrCtlHutThingClassId, netPwrCtlHutThingIpAddressParamTypeId);
-
-    m_portParamTypeIdMap.insert(netPwrCtlHomeThingClassId, netPwrCtlHomeThingPortParamTypeId);
-    m_portParamTypeIdMap.insert(netPwrCtlProThingClassId, netPwrCtlProThingPortParamTypeId);
-    m_portParamTypeIdMap.insert(netPwrCtlAdvThingClassId, netPwrCtlAdvThingPortParamTypeId);
-    m_portParamTypeIdMap.insert(netPwrCtlHutThingClassId, netPwrCtlHutThingPortParamTypeId);
 }
 
 IntegrationPluginAnel::~IntegrationPluginAnel()
@@ -165,66 +167,70 @@ IntegrationPluginAnel::~IntegrationPluginAnel()
 
 void IntegrationPluginAnel::init()
 {
+    m_discovery = new Discovery(this);
+    // Every time the discovery finish, we'll check if we need to update cached ip/port
+    connect(m_discovery, &Discovery::finished, this, [=](bool error){
+        if (error) {
+            return;
+        }
+        foreach (Thing *thing, myThings()) {
+            if (!macAddressParamTypeIdMap.contains(thing->thingClassId())) {
+                continue;
+            }
+            QString macAddress = thing->paramValue(macAddressParamTypeIdMap.value(thing->thingClassId())).toString();
+
+            // Upgrading configured things from old version where the MAC param was still holding an IP address instead
+            if (!QHostAddress(macAddress).isNull()) {
+                qCDebug(dcAnelElektronik()) << "Upgrading configuration for:" << thing->name();
+                foreach (const Discovery::Result &result, m_discovery->results()) {
+                    if (result.ipAddress == macAddress) {
+                        macAddress = result.macAddress;
+                        thing->setParamValue(macAddressParamTypeIdMap.value(thing->thingClassId()), macAddress);
+                    }
+                }
+            }
+
+
+            if (m_discovery->results().contains(macAddress)) {
+                Discovery::Result result = m_discovery->results().value(macAddress);
+                qCDebug(dcAnelElektronik()) << "Updating IP address for" << thing->name() << "to" << result.ipAddress << ":" << result.port;
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("cachedAddress", result.ipAddress);
+                pluginStorage()->setValue("cachedPort", result.port);
+                pluginStorage()->endGroup();
+            }
+        }
+    });
 }
 
 void IntegrationPluginAnel::discoverThings(ThingDiscoveryInfo *info)
 {
-    QUdpSocket *searchSocket = new QUdpSocket(this);
+    connect(m_discovery, &Discovery::finished, info, [=](bool error){
+        if (error) {
+            qCWarning(dcAnelElektronik()) << "Error sending discovery";
+            //: Error discovering devices
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error sending data to the network."));
+            return;
+        }
+        foreach (const Discovery::Result &result, m_discovery->results()) {
+            ThingDescriptor d(info->thingClassId(), result.name, result.ipAddress);
+            ParamTypeId macAddressParamTypeId = macAddressParamTypeIdMap.value(info->thingClassId());
+            ParamList params;
+            params << Param(macAddressParamTypeId, result.macAddress);
 
-    // Note: This will fail, and it's not a problem, but it is required to force the socket to stick to IPv4...
-    searchSocket->bind(QHostAddress::AnyIPv4, 30303);
-
-    QString discoveryString = "Durchsuchen: Wer ist da?";
-    qint64 len = searchSocket->writeDatagram(discoveryString.toUtf8(), QHostAddress("255.255.255.255"), 30303);
-    if (len != discoveryString.length()) {
-        searchSocket->deleteLater();
-        qCWarning(dcAnelElektronik()) << "Error sending discovery";
-        //: Error discovering devices
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error sending data to the network."));
-        return;
-    }
-
-    QTimer::singleShot(2000, info, [this, searchSocket, info](){
-        while(searchSocket->hasPendingDatagrams()) {
-            char buffer[1024];
-            QHostAddress senderAddress;
-            int len = searchSocket->readDatagram(buffer, 1024, &senderAddress);
-            QByteArray data = QByteArray::fromRawData(buffer, len);
-            qCDebug(dcAnelElektronik()) << "Have datagram:" << data;
-            if (!data.startsWith("NET-CONTROL")) {
-                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << senderAddress << data;
-                continue;
-            }
-            QStringList parts = QString(data).split("\r\n");
-            if (parts.count() != 4) {
-                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << senderAddress << data;
-                continue;
-            }
-            qCDebug(dcAnelElektronik()) << "Found NET-CONTROL:" << senderAddress << parts.at(2) << parts.at(3) << senderAddress.protocol();
-
-            ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeIdMap.value(info->thingClassId());
-            ParamTypeId portParamTypeId = m_portParamTypeIdMap.value(info->thingClassId());
-
-            bool existing = false;
-            foreach (Thing *existingDev, myThings()) {
-                if (existingDev->thingClassId() == info->thingClassId() && existingDev->paramValue(ipAddressParamTypeId).toString() == senderAddress.toString()) {
-                    existing = true;
+            d.setParams(params);
+            foreach (Thing *existingThing, myThings().filterByThingClassId(info->thingClassId())) {
+                if (existingThing->paramValue(macAddressParamTypeId).toString() == result.macAddress) {
+                    qCDebug(dcAnelElektronik()) << "Already have" << result.macAddress << result.ipAddress << "in configured things.";
+                    d.setThingId(existingThing->id());
+                    break;
                 }
             }
-            if (existing) {
-                qCDebug(dcAnelElektronik()) << "Already have" << senderAddress << "in configured things. Skipping...";
-                continue;
-            }
-            ThingDescriptor d(info->thingClassId(), parts.at(2), senderAddress.toString());
-            ParamList params;
-            params << Param(ipAddressParamTypeId, senderAddress.toString());
-            params << Param(portParamTypeId, parts.at(3).toInt());
-            d.setParams(params);
             info->addThingDescriptor(d);
         }
         info->finish(Thing::ThingErrorNoError);
-        searchSocket->deleteLater();
     });
+    m_discovery->discover();
 }
 
 void IntegrationPluginAnel::startPairing(ThingPairingInfo *info)
@@ -234,8 +240,10 @@ void IntegrationPluginAnel::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginAnel::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    QString ipAddress = info->params().paramValue(m_ipAddressParamTypeIdMap.value(info->thingClassId())).toString();
-    int port = info->params().paramValue(m_portParamTypeIdMap.value(info->thingClassId())).toInt();
+    QString macAddress = info->params().paramValue(macAddressParamTypeIdMap.value(info->thingClassId())).toString();
+
+    QString ipAddress = m_discovery->results().value(macAddress).ipAddress;
+    int port = m_discovery->results().value(macAddress).port;
 
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
@@ -243,9 +251,11 @@ void IntegrationPluginAnel::confirmPairing(ThingPairingInfo *info, const QString
     qCDebug(dcAnelElektronik()) << "ConfirmPairing fetching:" << request.url() << request.rawHeader("Authorization");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, info, reply, username, password](){
+    connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() == QNetworkReply::NoError) {
             pluginStorage()->beginGroup(info->thingId().toString());
+            pluginStorage()->setValue("cachedAddress", ipAddress);
+            pluginStorage()->setValue("cachedPort", port);
             pluginStorage()->setValue("username", username);
             pluginStorage()->setValue("password", password);
             pluginStorage()->endGroup();
@@ -285,12 +295,23 @@ void IntegrationPluginAnel::setupThing(ThingSetupInfo *info)
     info->finish(Thing::ThingErrorThingClassNotFound);
 }
 
+void IntegrationPluginAnel::postSetupThing(Thing *thing)
+{
+    Q_UNUSED(thing)
+    if (!m_discoverTimer) {
+        m_discoverTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_discoverTimer, &PluginTimer::timeout, m_discovery, &Discovery::discover);
+    }
+}
+
 void IntegrationPluginAnel::thingRemoved(Thing *thing)
 {
     qCDebug(dcAnelElektronik) << "Device removed" << thing->name();
     if (myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pollTimer);
         m_pollTimer = nullptr;
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_discoverTimer);
+        m_discoverTimer = nullptr;
     }
 }
 
@@ -304,10 +325,9 @@ void IntegrationPluginAnel::executeAction(ThingActionInfo *info)
 
             Thing *parentDevice = myThings().findById(thing->parentId());
 
-            QString ipAddress = parentDevice->paramValue(m_ipAddressParamTypeIdMap.value(parentDevice->thingClassId())).toString();
-            int port = parentDevice->paramValue(m_portParamTypeIdMap.value(parentDevice->thingClassId())).toInt();
-
             pluginStorage()->beginGroup(parentDevice->id().toString());
+            QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+            int port = pluginStorage()->value("cachedPort").toInt();
             QString username = pluginStorage()->value("username").toString();
             QString password = pluginStorage()->value("password").toString();
             pluginStorage()->endGroup();
@@ -351,10 +371,10 @@ void IntegrationPluginAnel::refreshStates()
 
 void IntegrationPluginAnel::setConnectedState(Thing *thing, bool connected)
 {
-    thing->setStateValue(m_connectedStateTypeIdMap.value(thing->thingClassId()), connected);
+    thing->setStateValue(connectedStateTypeIdMap.value(thing->thingClassId()), connected);
     foreach (Thing *child, myThings()) {
         if (child->parentId() == thing->id()) {
-            child->setStateValue(m_connectedStateTypeIdMap.value(child->thingClassId()), connected);
+            child->setStateValue(connectedStateTypeIdMap.value(child->thingClassId()), connected);
         }
     }
 }
@@ -363,71 +383,77 @@ void IntegrationPluginAnel::setupHomeProDevice(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QString ipAddress = thing->paramValue(m_ipAddressParamTypeIdMap.value(thing->thingClassId())).toString();
-    int port = thing->paramValue(m_portParamTypeIdMap.value(thing->thingClassId())).toInt();
+    QString macAddress = thing->paramValue(macAddressParamTypeIdMap.value(thing->thingClassId())).toString();
 
-    pluginStorage()->beginGroup(thing->id().toString());
-    QString username = pluginStorage()->value("username").toString();
-    QString password = pluginStorage()->value("password").toString();
-    pluginStorage()->endGroup();
+    // Run a discovery and wait for it to finish before setting it up.
+    m_discovery->discover();
+    connect(m_discovery, &Discovery::finished, info, [=](){
+        pluginStorage()->beginGroup(thing->id().toString());
+        QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+        int port = pluginStorage()->value("cachedPort").toInt();
+        QString username = pluginStorage()->value("username").toString();
+        QString password = pluginStorage()->value("password").toString();
+        pluginStorage()->endGroup();
 
-    QNetworkRequest request;
-    request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
-    request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
-    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
-        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(info->thing()->thingClassId());
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->thing()->name() << reply->error() << reply->errorString();
-            info->thing()->setStateValue(connectedStateTypeId, false);
-            //: Error setting up thing
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The thing rejected our connection. Please check the configured network ports."));
-            return;
-        }
-        info->thing()->setStateValue(connectedStateTypeId, true);
-
-        QByteArray data = reply->readAll();
-
-        QStringList parts = QString(data).split(';');
-
-        int startIndex = parts.indexOf("end") - 58;
-        if (startIndex < 0 || !parts.at(startIndex).startsWith("NET-PWRCTRL") || parts.length() < 60) {
-            qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            //: Error setting up thing
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
-            return;
-        }
-
-        // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway thing
-        info->finish(Thing::ThingErrorNoError);
-
-        // If we haven't set up childs for this gateway yet, let's do it now
-        foreach (Thing *child, myThings()) {
-            if (child->parentId() == info->thing()->id()) {
-                // Already have childs for this panel. We're done here
+        QNetworkRequest request;
+        request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
+        request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
+        qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
+            StateTypeId connectedStateTypeId = connectedStateTypeIdMap.value(info->thing()->thingClassId());
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->thing()->name() << reply->error() << reply->errorString();
+                info->thing()->setStateValue(connectedStateTypeId, false);
+                //: Error setting up thing
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The thing rejected our connection. Please check the configured network ports."));
                 return;
             }
-        }
+            info->thing()->setStateValue(connectedStateTypeId, true);
 
-        // Lets add the child devices now
-        int childs = -1;
-        QString type = parts.at(startIndex + 8);
-        if (type == "H") {
-            childs = 3;
-        } else {
-            childs = 8;
-        }
+            QByteArray data = reply->readAll();
 
-        QList<ThingDescriptor> descriptorList;
-        for (int i = 0; i < childs; i++) {
-            QString deviceName = parts.at(startIndex + 10 + i);
-            ThingDescriptor d(socketThingClassId, deviceName, info->thing()->name(), info->thing()->id());
-            d.setParams(ParamList() << Param(socketThingNumberParamTypeId, i));
-            descriptorList << d;
-        }
-        emit autoThingsAppeared(descriptorList);
+            QStringList parts = QString(data).split(';');
+
+            int startIndex = parts.indexOf("end") - 58;
+            if (startIndex < 0 || !parts.at(startIndex).startsWith("NET-PWRCTRL") || parts.length() < 60) {
+                qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
+                //: Error setting up thing
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
+                return;
+            }
+
+            // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway thing
+            info->finish(Thing::ThingErrorNoError);
+
+            // If we haven't set up childs for this gateway yet, let's do it now
+            foreach (Thing *child, myThings()) {
+                if (child->parentId() == info->thing()->id()) {
+                    // Already have childs for this panel. We're done here
+                    return;
+                }
+            }
+
+            // Lets add the child devices now
+            int childs = -1;
+            QString type = parts.at(startIndex + 8);
+            if (type == "H") {
+                childs = 3;
+            } else {
+                childs = 8;
+            }
+
+            QList<ThingDescriptor> descriptorList;
+            for (int i = 0; i < childs; i++) {
+                QString deviceName = parts.at(startIndex + 10 + i);
+                ThingDescriptor d(socketThingClassId, deviceName, info->thing()->name(), info->thing()->id());
+                d.setParams(ParamList() << Param(socketThingNumberParamTypeId, i));
+                descriptorList << d;
+            }
+            emit autoThingsAppeared(descriptorList);
+        });
+
     });
 }
 
@@ -435,71 +461,75 @@ void IntegrationPluginAnel::setupAdvDevice(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QString ipAddress = thing->paramValue(m_ipAddressParamTypeIdMap.value(thing->thingClassId())).toString();
-    int port = thing->paramValue(m_portParamTypeIdMap.value(thing->thingClassId())).toInt();
+    QString macAddress = thing->paramValue(macAddressParamTypeIdMap.value(thing->thingClassId())).toString();
 
-    pluginStorage()->beginGroup(thing->id().toString());
-    QString username = pluginStorage()->value("username").toString();
-    QString password = pluginStorage()->value("password").toString();
-    pluginStorage()->endGroup();
+    // Run a discovery and wait for it to finish before trying to connect
+    m_discovery->discover();
+    connect(m_discovery, &Discovery::finished, info, [=](){
+        pluginStorage()->beginGroup(thing->id().toString());
+        QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+        int port = pluginStorage()->value("cachedPort").toInt();
+        QString username = pluginStorage()->value("username").toString();
+        QString password = pluginStorage()->value("password").toString();
+        pluginStorage()->endGroup();
 
-    QNetworkRequest request;
-    request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
-    request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
-    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization");
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
-        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(info->thing()->thingClassId());
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->thing()->name() << reply->error() << reply->errorString();
-            info->thing()->setStateValue(connectedStateTypeId, false);
-            //: Error setting up thing
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The thing rejected our connection. Please check the configured network ports."));
-            return;
-        }
-        info->thing()->setStateValue(connectedStateTypeId, true);
-
-        QByteArray data = reply->readAll();
-
-        QStringList parts = QString(data).split(';');
-
-        int startIndex = parts.indexOf("end") - 40;
-        if (startIndex < 0 || parts.length() < 58) {
-            qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            //: Error setting up thing
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
-            return;
-        }
-
-        // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway thing
-        info->finish(Thing::ThingErrorNoError);
-
-        // If we haven't set up childs for this gateway yet, let's do it now
-        foreach (Thing *child, myThings()) {
-            if (child->parentId() == info->thing()->id()) {
-                // Already have childs for this panel. We're done here
+        QNetworkRequest request;
+        request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
+        request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
+        qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization");
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, reply]() {
+            StateTypeId connectedStateTypeId = connectedStateTypeIdMap.value(info->thing()->thingClassId());
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->thing()->name() << reply->error() << reply->errorString();
+                info->thing()->setStateValue(connectedStateTypeId, false);
+                //: Error setting up thing
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The thing rejected our connection. Please check the configured network ports."));
                 return;
             }
-        }
+            info->thing()->setStateValue(connectedStateTypeId, true);
 
-        QList<ThingDescriptor> descriptorList;
-        for (int i = 0; i < 8; i++) {
-            QString deviceName = parts.at(startIndex + (i * 5));
-            ThingDescriptor d(socketThingClassId, deviceName, info->thing()->name(), info->thing()->id());
-            d.setParams(ParamList() << Param(socketThingNumberParamTypeId, i));
-            descriptorList << d;
-        }
-        emit autoThingsAppeared(descriptorList);
+            QByteArray data = reply->readAll();
+
+            QStringList parts = QString(data).split(';');
+
+            int startIndex = parts.indexOf("end") - 40;
+            if (startIndex < 0 || parts.length() < 58) {
+                qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
+                //: Error setting up thing
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
+                return;
+            }
+
+            // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway thing
+            info->finish(Thing::ThingErrorNoError);
+
+            // If we haven't set up childs for this gateway yet, let's do it now
+            foreach (Thing *child, myThings()) {
+                if (child->parentId() == info->thing()->id()) {
+                    // Already have childs for this panel. We're done here
+                    return;
+                }
+            }
+
+            QList<ThingDescriptor> descriptorList;
+            for (int i = 0; i < 8; i++) {
+                QString deviceName = parts.at(startIndex + (i * 5));
+                ThingDescriptor d(socketThingClassId, deviceName, info->thing()->name(), info->thing()->id());
+                d.setParams(ParamList() << Param(socketThingNumberParamTypeId, i));
+                descriptorList << d;
+            }
+            emit autoThingsAppeared(descriptorList);
+        });
     });
 }
 
 void IntegrationPluginAnel::refreshHomePro(Thing *thing)
 {
-    QString ipAddress = thing->paramValue(m_ipAddressParamTypeIdMap.value(thing->thingClassId())).toString();
-    int port = thing->paramValue(m_portParamTypeIdMap.value(thing->thingClassId())).toInt();
-
     pluginStorage()->beginGroup(thing->id().toString());
+    QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+    int port = pluginStorage()->value("cachedPort").toInt();
     QString username = pluginStorage()->value("username").toString();
     QString password = pluginStorage()->value("password").toString();
     pluginStorage()->endGroup();
@@ -553,10 +583,9 @@ void IntegrationPluginAnel::refreshHomePro(Thing *thing)
 
 void IntegrationPluginAnel::refreshAdv(Thing *thing)
 {
-    QString ipAddress = thing->paramValue(m_ipAddressParamTypeIdMap.value(thing->thingClassId())).toString();
-    int port = thing->paramValue(m_portParamTypeIdMap.value(thing->thingClassId())).toInt();
-
     pluginStorage()->beginGroup(thing->id().toString());
+    QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+    int port = pluginStorage()->value("cachedPort").toInt();
     QString username = pluginStorage()->value("username").toString();
     QString password = pluginStorage()->value("password").toString();
     pluginStorage()->endGroup();
@@ -605,10 +634,9 @@ void IntegrationPluginAnel::refreshAdv(Thing *thing)
 
 void IntegrationPluginAnel::refreshAdvTemp(Thing *thing)
 {
-    QString ipAddress = thing->paramValue(m_ipAddressParamTypeIdMap.value(thing->thingClassId())).toString();
-    int port = thing->paramValue(m_portParamTypeIdMap.value(thing->thingClassId())).toInt();
-
     pluginStorage()->beginGroup(thing->id().toString());
+    QString ipAddress = pluginStorage()->value("cachedAddress").toString();
+    int port = pluginStorage()->value("cachedPort").toInt();
     QString username = pluginStorage()->value("username").toString();
     QString password = pluginStorage()->value("password").toString();
     pluginStorage()->endGroup();
@@ -670,6 +698,5 @@ void IntegrationPluginAnel::refreshAdvTemp(Thing *thing)
                 qCWarning(dcAnelElektronik()) << "Error fetching light intensity value:" << data;
             }
         }
-
     });
 }
