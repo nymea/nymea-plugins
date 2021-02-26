@@ -73,6 +73,8 @@ private:
     QHash<ThingClassId, ParamTypeId> m_devIdParamTypeIdsMap;
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIdsMap;
     QHash<ThingClassId, StateTypeId> m_powerStateTypeIdsMap;
+
+    QHash<Thing*, QList<Thing*>> m_pollQueue;
 };
 
 #endif // INTEGRATIONPLUGINTUYA_H
