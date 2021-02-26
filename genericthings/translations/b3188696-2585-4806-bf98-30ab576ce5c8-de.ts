@@ -935,6 +935,30 @@ The name of the StateType ({caf22937-fdf7-41e1-a87b-d11e66c4f4c6}) of ThingClass
         <extracomment>The name of the ActionType ({caf22937-fdf7-41e1-a87b-d11e66c4f4c6}) of ThingClass sgReady</extracomment>
         <translation>Setze Relais 2</translation>
     </message>
+    <message>
+        <source>Closed</source>
+        <extracomment>The name of the ParamType (ThingClass: doorSensor, ActionType: closed, ID: {7f5fdc2b-7916-4e90-9c24-558162304f71})
+----------
+The name of the ParamType (ThingClass: doorSensor, EventType: closed, ID: {7f5fdc2b-7916-4e90-9c24-558162304f71})
+----------
+The name of the StateType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gerneric door or window sensor</source>
+        <extracomment>The name of the ThingClass ({2d936f56-48ee-4be1-9b3e-28a335ad8085})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opned or closed</source>
+        <extracomment>The name of the EventType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set open or closed</source>
+        <extracomment>The name of the ActionType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>
