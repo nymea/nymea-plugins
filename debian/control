@@ -1,10 +1,10 @@
 Source: nymea-plugins
 Section: utils
 Priority: options
-Maintainer: Michael Zanetti <michael.zanetti@guh.io>
+Maintainer: Nymea GmbH <developer@nymea.io>
 Build-depends: libboblight-dev,
                debhelper (>= 0.0.0),
-               libnymea1-dev (>= 0.17),
+               libnymea-dev (>= 0.26~),
                libnymea-mqtt-dev,
                libnymea-zigbee-dev,
                libqt5serialport5-dev,
@@ -28,7 +28,6 @@ Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-anel
 Description: nymea.io plugin for ANEL Elektronik NET-PwrCtrl power sockets
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -62,7 +61,6 @@ Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-avahimonitor
 Description: nymea.io plugin for avahimonitor
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -78,7 +76,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-awattar
 Description: nymea.io plugin for awattar
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -156,7 +153,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-commandlauncher
 Description: nymea.io plugin for commandlauncher
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -172,7 +168,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-datetime
 Description: nymea.io plugin for datetime
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -205,7 +200,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-denon
 Description: nymea.io plugin for denon
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -266,7 +260,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-elgato
 Description: nymea.io plugin for elgato
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -298,7 +291,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-flowercare
 Description: nymea.io plugin for Xiaomi Flower care devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -331,7 +323,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-eq-3
 Description: nymea.io plugin for eq-3
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -347,7 +338,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-genericelements
 Description: nymea.io plugin for genericelements
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -377,7 +367,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-gpio
 Description: nymea.io plugin for gpio
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -421,7 +410,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-kodi
 Description: nymea.io plugin for kodi
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -437,7 +425,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-lgsmarttv
 Description: nymea.io plugin for lgsmarttv
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -468,7 +455,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-mailnotification
 Description: nymea.io plugin for mailnotification
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -499,7 +485,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-netatmo
 Description: nymea.io plugin for netatmo
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -533,7 +518,6 @@ Depends: ${shlibs:Depends},
          fping,
          arping,
          nymea-plugins-translations,
-Replaces: guh-plugin-networkdetector
 Description: nymea.io plugin for networkdetector
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -595,7 +579,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-openweathermap
 Description: nymea.io plugin for openweathermap
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -611,7 +594,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-osdmotics
 Description: nymea.io plugin for osdomotics
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -627,7 +609,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-philipshue
 Description: nymea.io plugin for philipshue
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -643,7 +624,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-pushbullet
 Description: nymea.io plugin for Pushbullet
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -703,8 +683,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-multisensor,
-          nymea-plugins-multisensor,
 Description: nymea.io plugin for Texas Instruments devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -750,7 +728,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-udpcommander
 Description: nymea.io plugin for UDP commander
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -799,7 +776,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-wakeonlan
 Description: nymea.io plugin for wakeonlan
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -815,7 +791,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-wemo
 Description: nymea.io plugin for wemo
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -846,7 +821,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-tcpcommander
 Description: nymea.io plugin for TCP commander
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -876,7 +850,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-senic
 Description: nymea.io plugin for senic
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -892,7 +865,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-simulation
 Description: nymea.io plugin for Shelly devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -908,7 +880,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-simulation
 Description: nymea.io plugin for simulated devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -939,7 +910,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-sonos
 Description: nymea.io plugin for Sonos smart speakers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -973,7 +943,6 @@ Depends: ${shlibs:Depends},
          nymea-plugins-translations,
          nmap,
          arping,
-Replaces: guh-plugin-keba
 Description: nymea.io plugin for keba
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -1128,7 +1097,6 @@ Package: nymea-plugins-translations
 Section: misc
 Architecture: all
 Depends: ${misc:Depends}
-Replaces: guh-plugins-translations
 Description: Translation files for nymea plugins - translations
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -1184,7 +1152,6 @@ Depends: nymea-plugin-anel,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
          nymea-plugins-zigbee,
-Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -1230,7 +1197,6 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-systemmonitor,
          nymea-plugin-onewire,
          nymea-plugin-dynatrace,
-Replaces: guh-plugins-maker
 Description: Meta package for nymea makers, tinkerers and hackers plugins.
  This package is a meta package that pulls in useful nymea plugins for makers.
  Such plugins allow tinkering with GPIOs, I2C, One-Wire, raw MQTT and more.
@@ -1242,7 +1208,6 @@ Package: nymea-plugins-merkurboard
 Section: libs
 Architecture: all
 Depends: nymea-plugin-osdomotics,
-Replaces: guh-plugins-merkurboard
 Description: Plugins for nymea IoT server - Meta package for 6LoWPAN Merkur boards
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -1260,7 +1225,6 @@ Depends: nymea-plugins,
          nymea-plugin-simulation,
          nymea-plugins-maker,
          nymea-plugins-merkurboard,
-Replaces: guh-plugins-all
 Description: Plugins for nymea IoT server - Meta package for all plugins
  The nymea daemon is a plugin based IoT (Internet of Things) server. The		
  server works like a translator for devices, things and services and		
