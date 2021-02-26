@@ -642,16 +642,41 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
 
     } else if (thing->thingClassId() == thermostatThingClassId) {
-        if (action.actionTypeId() == thermostatTemperatureSensorInputActionTypeId) {
-            thing->setStateValue(thermostatTemperatureSensorInputStateTypeId, action.param(thermostatTemperatureSensorInputActionTemperatureSensorInputParamTypeId).value());
+        if (action.actionTypeId() == thermostatTemperatureActionTypeId) {
+            thing->setStateValue(thermostatTemperatureStateTypeId, action.param(thermostatTemperatureActionTemperatureParamTypeId).value());
         } else if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
-            thing->setStateValue(thermostatTargetTemperatureStateTypeId, action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value());
-        } else if (action.actionTypeId() == thermostatPowerActionTypeId) {
-            thing->setStateValue(thermostatPowerStateTypeId, action.param(thermostatPowerActionPowerParamTypeId).value());
+            double minSetting = thing->setting(thermostatSettingsMinTargetTemperatureParamTypeId).toDouble();
+            double maxSetting = thing->setting(thermostatSettingsMaxTargetTemperatureParamTypeId).toDouble();
+            double newTemp = action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
+            newTemp = qMax(newTemp, minSetting);
+            newTemp = qMin(newTemp, maxSetting);
+            thing->setStateValue(thermostatTargetTemperatureStateTypeId, newTemp);
+        } else if (action.actionTypeId() == thermostatHeatingOnActionTypeId) {
+            thing->setStateValue(thermostatHeatingOnStateTypeId, action.param(thermostatHeatingOnActionHeatingOnParamTypeId).value());
+        } else if (action.actionTypeId() == thermostatCoolingOnActionTypeId) {
+            thing->setStateValue(thermostatCoolingOnStateTypeId, action.param(thermostatCoolingOnActionCoolingOnParamTypeId).value());
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
         thermostatCheckPowerOutputState(thing);
+        info->finish(Thing::ThingErrorNoError);
+        return;
+
+    } else if (thing->thingClassId() == heatingThingClassId) {
+        if (action.actionTypeId() == heatingPowerActionTypeId) {
+            thing->setStateValue(heatingPowerStateTypeId, action.paramValue(heatingPowerActionPowerParamTypeId).toBool());
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+        info->finish(Thing::ThingErrorNoError);
+        return;
+
+    } else if (thing->thingClassId() == coolingThingClassId) {
+        if (action.actionTypeId() == coolingPowerActionTypeId) {
+            thing->setStateValue(coolingPowerStateTypeId, action.paramValue(coolingPowerActionPowerParamTypeId).toBool());
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
         info->finish(Thing::ThingErrorNoError);
         return;
 
@@ -851,15 +876,17 @@ void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thin
 void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thing)
 {
     double targetTemperature = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
-    double actualTemperature = thing->stateValue(thermostatTemperatureSensorInputStateTypeId).toDouble();
+    double actualTemperature = thing->stateValue(thermostatTemperatureStateTypeId).toDouble();
     double temperatureDifference = thing->setting(thermostatSettingsTemperatureDifferenceParamTypeId).toDouble();
     if (actualTemperature <= (targetTemperature-temperatureDifference)) {
-        thing->setStateValue(thermostatPowerStateTypeId, true);
+        thing->setStateValue(thermostatHeatingOnStateTypeId, true);
     } else if (actualTemperature >= targetTemperature) {
-        thing->setStateValue(thermostatPowerStateTypeId, false);
-    } else {
-        //Keep actual state
-        //Possible improvement add boost action where powerState = true is forced inside the hysteresis
+        thing->setStateValue(thermostatHeatingOnStateTypeId, false);
+    }
+    if (actualTemperature >= (targetTemperature+temperatureDifference)) {
+        thing->setStateValue(thermostatCoolingOnStateTypeId, true);
+    } else if (actualTemperature <= targetTemperature) {
+        thing->setStateValue(thermostatCoolingOnStateTypeId, false);
     }
 }
 

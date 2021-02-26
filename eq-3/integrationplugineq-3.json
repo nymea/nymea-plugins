@@ -533,7 +533,7 @@
                     "id": "3c51327b-a823-4479-bd4b-f4ba64267ed8",
                     "name": "eqivaBluetooth",
                     "displayName": "Eqiva Bluetooth Smart Radiator Thermostat",
-                    "interfaces": ["heating", "thermostat", "wirelessconnectable", "battery"],
+                    "interfaces": ["thermostat", "wirelessconnectable", "battery"],
                     "createMethods": ["discovery"],
                     "setupMethod": "JustAdd",
                     "paramTypes": [
@@ -555,13 +555,11 @@
                         },
                         {
                             "id": "cc5700f3-28b0-4653-b46d-770a99e6cea7",
-                            "name": "power",
-                            "displayName": "On",
-                            "displayNameEvent": "On changed",
-                            "displayNameAction": "Turn on/off",
+                            "name": "heatingOn",
+                            "displayName": "Heating",
+                            "displayNameEvent": "Heating changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
+                            "defaultValue": false
                         },
                         {
                             "id": "5e9035ed-317d-42ee-b7f4-2996c75ba939",

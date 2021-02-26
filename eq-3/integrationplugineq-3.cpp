@@ -175,9 +175,9 @@ void IntegrationPluginEQ3::setupThing(ThingSetupInfo *info)
             thing->setStateValue(eqivaBluetoothConnectedStateTypeId, eqivaDevice->available());
         });
         // Power state
-        thing->setStateValue(eqivaBluetoothPowerStateTypeId, eqivaDevice->enabled());
-        connect(eqivaDevice, &EqivaBluetooth::enabledChanged, thing, [thing, eqivaDevice](){
-            thing->setStateValue(eqivaBluetoothPowerStateTypeId, eqivaDevice->enabled());
+        thing->setStateValue(eqivaBluetoothHeatingOnStateTypeId, eqivaDevice->valveOpen() > 0);
+        connect(eqivaDevice, &EqivaBluetooth::valveOpenChanged, thing, [thing, eqivaDevice](){
+            thing->setStateValue(eqivaBluetoothHeatingOnStateTypeId, eqivaDevice->valveOpen() > 0);
         });
         // Boost state
         thing->setStateValue(eqivaBluetoothBoostStateTypeId, eqivaDevice->boostEnabled());
@@ -343,9 +343,7 @@ void IntegrationPluginEQ3::executeAction(ThingActionInfo *info)
         int commandId;
         EqivaBluetooth *eqivaDevice = m_eqivaDevices.value(thing);
 
-        if (action.actionTypeId() == eqivaBluetoothPowerActionTypeId) {
-            commandId = eqivaDevice->setEnabled(action.param(eqivaBluetoothPowerActionPowerParamTypeId).value().toBool());
-        } else if (action.actionTypeId() == eqivaBluetoothTargetTemperatureActionTypeId) {
+        if (action.actionTypeId() == eqivaBluetoothTargetTemperatureActionTypeId) {
             commandId = eqivaDevice->setTargetTemperature(action.param(eqivaBluetoothTargetTemperatureActionTargetTemperatureParamTypeId).value().toReal());
         } else if (action.actionTypeId() == eqivaBluetoothLockActionTypeId) {
             commandId = eqivaDevice->setLocked(action.param(eqivaBluetoothLockActionLockParamTypeId).value().toBool());

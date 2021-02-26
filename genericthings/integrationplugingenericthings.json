@@ -1035,7 +1035,7 @@
                     "name": "thermostat",
                     "displayName": "Generic thermostat",
                     "createMethods": ["user"],
-                    "interfaces": ["thermostat", "heating"],
+                    "interfaces": ["thermostat"],
                     "settingsTypes": [
                         {
                             "id": "64bf308f-a543-4e02-b787-1a1714c1f978",
@@ -1045,12 +1045,32 @@
                             "unit": "DegreeCelsius",
                             "minValue": 0.00,
                             "defaultValue": 2.00
+                        },
+                        {
+                            "id": "67451c97-50e1-4ea6-ac43-4386fbd26698",
+                            "name": "minTargetTemperature",
+                            "displayName": "Minimum temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "minValue": -20,
+                            "maxValue": 49,
+                            "defaultValue": -20
+                        },
+                        {
+                            "id": "85608dd5-7e67-4c98-9e62-b97411681048",
+                            "name": "maxTargetTemperature",
+                            "displayName": "Maximum temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "minValue": -19,
+                            "maxValue": 50,
+                            "defaultValue": 50
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "0f808803-0e63-47df-b024-9685998ba663",
-                            "name": "temperatureSensorInput",
+                            "name": "temperature",
                             "displayName": "Temperature sensor input",
                             "displayNameEvent": "Temperature sensor input changed",
                             "displayNameAction": "Set temperature sensor input",
@@ -1078,10 +1098,61 @@
                         },
                         {
                             "id": "1f6a0c39-4417-4e31-86db-9926cf81c345",
+                            "name": "heatingOn",
+                            "displayName": "Heating On/off",
+                            "displayNameEvent": "Heating turned on/off",
+                            "displayNameAction": "Turn heating on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "cab7d4bd-f612-4d12-b3a4-0649e189810f",
+                            "name": "coolingOn",
+                            "displayName": "Cooling On/off",
+                            "displayNameEvent": "Cooling turned on/off",
+                            "displayNameAction": "Turn cooling on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "e808fc5b-12fb-46d4-bb5d-25a4586bc0ba",
+                    "name": "heating",
+                    "displayName": "Generic heater",
+                    "createMethods": ["user"],
+                    "interfaces": ["heating"],
+                    "stateTypes": [
+                        {
+                            "id": "bb6b5e3a-d4d9-4440-a098-0720c14ad679",
                             "name": "power",
-                            "displayName": "On/off",
-                            "displayNameEvent": "Turned on/off",
-                            "displayNameAction": "Turn on/off",
+                            "displayName": "Heater on/off",
+                            "displayNameEvent": "Heater turned on/off",
+                            "displayNameAction": "Turn heater on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "09edbc07-d382-48a4-9b16-99992014aff9",
+                    "name": "cooling",
+                    "displayName": "Generic cooler",
+                    "createMethods": ["user"],
+                    "interfaces": ["cooling"],
+                    "stateTypes": [
+                        {
+                            "id": "918cfd2c-6692-4faa-acc6-18ebf93611ec",
+                            "name": "power",
+                            "displayName": "Cooler on/off",
+                            "displayNameEvent": "Cooler turned on/off",
+                            "displayNameAction": "Turn cooler on/off",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true,
