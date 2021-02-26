@@ -24,7 +24,8 @@
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
-                            "maxValue": 100
+                            "maxValue": 100,
+                            "suggestLogging": true
                         },
                         {
                             "id": "efe2d520-3b35-4668-b6f5-db3df0c8bf0d",
@@ -35,7 +36,8 @@
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
-                            "maxValue": 100
+                            "maxValue": 100,
+                            "suggestLogging": true
                         },
                         {
                             "id": "d9671ee3-51be-4cf8-8601-125c0684aec9",
@@ -44,7 +46,8 @@
                             "displayNameEvent": "RSS memory usage changed",
                             "type": "int",
                             "unit": "KiloByte",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "6d71b001-c7fe-4f08-941d-47009b710d94",
@@ -53,7 +56,8 @@
                             "displayNameEvent": "virtual memory usage changed",
                             "type": "int",
                             "unit": "KiloByte",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         }
                     ]
                 }

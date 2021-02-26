@@ -120,7 +120,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         }
                     ]
                 },
