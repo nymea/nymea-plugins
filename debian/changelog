@@ -1,7 +1,66 @@
-nymea-plugins (0.26.0) UNRELEASED; urgency=medium
+nymea-plugins (0.26.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * New Plugin: PushNotifications
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Mon, 04 Jan 2021 19:37:00 +0100
+  [ Bernhard Trinnes ]
+  * Doorbird: Improve setup and reconfiguration
+
+  [ Michael Zanetti ]
+  * Thermostats: Adjust to new thermostat interface
+  * PhilipsHue: Add better support for the Hue Smart plug
+
+  [ Simon Stürz ]
+  * ZigbeeGeneric: Extend generic power socket
+
+  [ Michael Zanetti ]
+  * FlowerCare: Add missing unit to batteryLevel state
+  * Adjust to new logging and filter options
+  * 0.26
+  * Simulation: Add a simulated water sensor
+  * Simulation: Add simulated venetian blinds
+  * ZigbeePhilipsHue: Add support for the Hue Smart button
+
+  [ Bernhard Trinnes ]
+  * Keba: Rework plugin
+
+  [ Michael Zanetti ]
+  * GenericThings: Add a generic door/window sensor
+  * GPIO: Remove button interface from GPIO input
+
+  [ Bernhard Trinnes ]
+  * Fronius: Storage battery critical only when not charging
+
+  [ Michael Zanetti ]
+  * Snapd: Remove the snap plugin
+  * Tasmota: Add support for the gneric I/O mechanism
+
+  [ Herbert Paar ]
+  * Shelly: Add support for shelly i3
+
+  [ Bernhard Trinnes ]
+  * Simulation:  EV Charger update interface
+
+  [ Michael Zanetti ]
+  * Tuya: Poll the cloud even less frequently to avoid rate limits
+  * TP-Link: Add support for TP-Link Kasa Power Strip HS300
+  * GenericThings: Add unit Percentage to input value
+  * Shelly: Don't complete setup for childs when the parent setup fails
+  * Anel: Automatically update configuration when the IP changes
+  * Tuya: Add light device support
+  * Zigbee: Complete support for ZigBee Thermostats (generic)
+  * Update to renamed libnymea-dev
+
+  [ Bernhard Trinnes ]
+  * Denon: Added rediscovery on IP change
+
+  [ Michael Zanetti ]
+  * New Plugin: Telegram
+  * GenericThings: Add a generic light sensor
+  * ZigbeeLumi: Fix pressure for Lumi sensors
+  * New Plugin: Where the ISS at?
+
+ -- Jenkins <jenkins@nymea.io>  Fri, 26 Feb 2021 10:28:21 +0100
 
 nymea-plugins (0.25.0) xenial; urgency=medium
 
