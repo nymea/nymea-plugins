@@ -1,0 +1,57 @@
+{
+    "name": "whereTheIssAt",
+    "displayName": "Where the ISS at?",
+    "id": "aca9d478-25c9-435f-b8d2-caf9c39a9b19",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea GmbH",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "name": "satellite",
+                    "displayName": "Satellite monitor",
+                    "id": "4bdedd0b-e268-4671-9b3e-948c853b7b9b",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["Discovery", "User"],
+                    "interfaces": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "1d10b8e2-aea4-495c-8b1f-f44ef088f667",
+                            "name": "satelliteId",
+                            "displayName": "Satellite ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "d702143f-9454-412b-88df-83b5655a5000",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "displayNameEvent": "Latitude changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "42d9b2a1-0e51-4a92-9804-8f6f68ed6fd1",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "displayNameEvent": "Longitude changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes":[
+
+                    ],
+                    "eventTypes":[
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

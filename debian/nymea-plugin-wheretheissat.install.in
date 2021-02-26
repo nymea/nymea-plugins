@@ -1,0 +1,4 @@
+wheretheissat/integrationpluginwheretheissat.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/wheretheissat/
+wheretheissat/integrationpluginwheretheissat.js usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/wheretheissat/
+wheretheissat/wheretheissat.mjs usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/wheretheissat/
+
