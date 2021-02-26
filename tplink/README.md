@@ -7,6 +7,7 @@ This plugin adds support for the following tp-link Kasa devices to nymea.
 * HS105 Kasa Smart Wi-Fi Plug Mini
 * HS110 Kasa Smart Wi-Fi Plug With Energy Monitoring
 * HS200 Kasa Smart Wi-Fi Light Switch
+* HS300 Kasa Smart Wi-Fi Power Strip
 * KP100 Kasa Smart Wi-Fi Plug Slim Edition
 
 In order to use such a device, it must be connected to the same network as nymea. The Kasa app is required

@@ -1,0 +1,31 @@
+{
+    "system": {
+        "get_sysinfo": {
+            "active_mode": "none",
+            "alias": "Kasa Light Switch HS200",
+            "dev_name": "Smart Wi-Fi Light Switch",
+            "deviceId": "424535436543654365435435425234591D5AF3F3",
+            "err_code": 0,
+            "feature": "TIM",
+            "hwId": "F305453657676574756546534653B7F0",
+            "hw_ver": "3.0",
+            "icon_hash": "",
+            "latitude_i": 123456,
+            "led_off": 0,
+            "longitude_i": -1234567,
+            "mac": "23:45:67:89:AB:CD",
+            "mic_type": "IOT.SMARTPLUGSWITCH",
+            "model": "HS200(US)",
+            "next_action": {
+                "type": -1
+            },
+            "oemId": "5545465654756654365653455340AFA1",
+            "on_time": 0,
+            "relay_state": 0,
+            "rssi": -43,
+            "status": "new",
+            "sw_ver": "1.1.4 Build 200814 Rel.105352",
+            "updating": 0
+        }
+    }
+}

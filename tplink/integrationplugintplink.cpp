@@ -39,33 +39,62 @@
 #include <QTimer>
 #include <QDataStream>
 
-// https://github.com/softScheck/tplink-smartplug/blob/master/tplink-smarthome-commands.txt
+// Related projects:
+
+// Local api:
+// https://github.com/plasticrake/tplink-smarthome-api/
+// https://github.com/softScheck/tplink-smartplug
+
+// Cloud api:
+// https://github.com/piekstra/tplink-cloud-api/
+
+QHash<ThingClassId, ParamTypeId> idParamTypesMap = {
+    {kasaPlug100ThingClassId, kasaPlug100ThingIdParamTypeId},
+    {kasaPlug110ThingClassId, kasaPlug110ThingIdParamTypeId},
+    {kasaSwitch200ThingClassId, kasaSwitch200ThingIdParamTypeId},
+    {kasaPowerStrip300ThingClassId, kasaPowerStrip300ThingIdParamTypeId},
+};
+
+QHash<ThingClassId, StateTypeId> connectedStateTypesMap = {
+    {kasaPlug100ThingClassId, kasaPlug100ConnectedStateTypeId},
+    {kasaPlug110ThingClassId, kasaPlug110ConnectedStateTypeId},
+    {kasaSwitch200ThingClassId, kasaSwitch200ConnectedStateTypeId},
+    {kasaPowerStrip300ThingClassId, kasaPowerStrip300ConnectedStateTypeId},
+};
+
+
+QHash<ThingClassId, StateTypeId> signalStrengthStateTypesMap = {
+    {kasaPlug100ThingClassId, kasaPlug100SignalStrengthStateTypeId},
+    {kasaPlug110ThingClassId, kasaPlug110SignalStrengthStateTypeId},
+    {kasaSwitch200ThingClassId, kasaSwitch200SignalStrengthStateTypeId},
+    {kasaPowerStrip300ThingClassId, kasaPowerStrip300SignalStrengthStateTypeId},
+};
+
+QHash<ThingClassId, StateTypeId> powerStateTypesMap = {
+    {kasaPlug100ThingClassId, kasaPlug100PowerStateTypeId},
+    {kasaPlug110ThingClassId, kasaPlug110PowerStateTypeId},
+    {kasaSwitch200ThingClassId, kasaSwitch200PowerStateTypeId},
+};
+
+QHash<ThingClassId, StateTypeId> currentPowerStatetTypesMap = {
+    {kasaPlug110ThingClassId, kasaPlug110CurrentPowerStateTypeId},
+    {kasaPowerStrip300ThingClassId, kasaPowerStrip300CurrentPowerStateTypeId},
+};
+
+QHash<ThingClassId, StateTypeId> totalEnergyConsumedStatetTypesMap = {
+    {kasaPlug110ThingClassId, kasaPlug110TotalEnergyConsumedStateTypeId},
+    {kasaPowerStrip300ThingClassId, kasaPowerStrip300TotalEnergyConsumedStateTypeId},
+};
+
+QHash<ThingClassId, StateTypeId> powerActionParamTypesMap = {
+    {kasaPlug100ThingClassId, kasaPlug100PowerActionPowerParamTypeId},
+    {kasaPlug110ThingClassId, kasaPlug110PowerActionPowerParamTypeId},
+    {kasaSwitch200ThingClassId, kasaSwitch200PowerActionPowerParamTypeId},
+};
+
 
 IntegrationPluginTPLink::IntegrationPluginTPLink()
 {
-    m_idParamTypesMap[kasaPlug100ThingClassId] = kasaPlug100ThingIdParamTypeId;
-    m_idParamTypesMap[kasaPlug110ThingClassId] = kasaPlug110ThingIdParamTypeId;
-    m_idParamTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200ThingIdParamTypeId;
-
-    m_connectedStateTypesMap[kasaPlug100ThingClassId] = kasaPlug100ConnectedStateTypeId;
-    m_connectedStateTypesMap[kasaPlug110ThingClassId] = kasaPlug110ConnectedStateTypeId;
-    m_connectedStateTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200ConnectedStateTypeId;
-
-    m_signalStrengthStateTypesMap[kasaPlug100ThingClassId] = kasaPlug100SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[kasaPlug110ThingClassId] = kasaPlug110SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200SignalStrengthStateTypeId;
-
-    m_powerStatetTypesMap[kasaPlug100ThingClassId] = kasaPlug100PowerStateTypeId;
-    m_powerStatetTypesMap[kasaPlug110ThingClassId] = kasaPlug110PowerStateTypeId;
-    m_powerStatetTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200PowerStateTypeId;
-
-    m_currentPowerStatetTypesMap[kasaPlug110ThingClassId] = kasaPlug110CurrentPowerStateTypeId;
-
-    m_totalEnergyConsumedStatetTypesMap[kasaPlug110ThingClassId] = kasaPlug110TotalEnergyConsumedStateTypeId;
-
-    m_powerActionParamTypesMap[kasaPlug100ThingClassId] = kasaPlug100PowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[kasaPlug110ThingClassId] = kasaPlug110PowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200PowerActionPowerParamTypeId;
 }
 
 IntegrationPluginTPLink::~IntegrationPluginTPLink()
@@ -95,9 +124,9 @@ void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
 
     QTimer::singleShot(2000, info, [this, info](){
         while(m_broadcastSocket->hasPendingDatagrams()) {
-            char buffer[1024];
+            char buffer[4096];
             QHostAddress senderAddress;
-            qint64 len = m_broadcastSocket->readDatagram(buffer, 1024, &senderAddress);
+            qint64 len = m_broadcastSocket->readDatagram(buffer, 4096, &senderAddress);
             QByteArray data = decryptPayload(QByteArray::fromRawData(buffer, len));
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -117,18 +146,31 @@ void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
                 modelFilter = QRegExp("HS110.*");
             } else if (info->thingClassId() == kasaSwitch200ThingClassId) {
                 modelFilter = QRegExp("HS200.*");
+            } else if (info->thingClassId() == kasaPowerStrip300ThingClassId) {
+                modelFilter = QRegExp("HS300.*");
             }
             QString model = sysInfo.value("model").toString();
 
             if (modelFilter.exactMatch(model)) {
                 ThingDescriptor descriptor(info->thingClassId(), sysInfo.value("alias").toString(), sysInfo.value("dev_name").toString());
-                Param idParam = Param(m_idParamTypesMap.value(info->thingClassId()), sysInfo.value("deviceId").toString());
+                Param idParam = Param(idParamTypesMap.value(info->thingClassId()), sysInfo.value("deviceId").toString());
                 descriptor.setParams(ParamList() << idParam);
                 Thing *existingThing = myThings().findByParams(ParamList() << idParam);
                 if (existingThing) {
                     descriptor.setThingId(existingThing->id());
                 }
-                info->addThingDescriptor(descriptor);
+
+                // Sometimes kasa devices reply multiple times on the discovery call. Prevent duplicates in the search results.
+                bool found = false;
+                foreach (const ThingDescriptor &existingDescriptor, info->thingDescriptors()) {
+                    if (existingDescriptor.params().paramValue(idParamTypesMap.value(info->thingClassId())) == idParam.value()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    info->addThingDescriptor(descriptor);
+                }
             } else {
                 qCWarning(dcTplink()) << "Ignoring not matching device type:\n" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
             }
@@ -140,6 +182,12 @@ void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginTPLink::setupThing(ThingSetupInfo *info)
 {
+    if (info->thing()->thingClassId() == kasaSocketThingClassId) {
+        qCDebug(dcTplink()) << "Setup thing for child socket:" << info->thing()->paramValue(kasaSocketThingIdParamTypeId).toString();
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    }
+
     QVariantMap map;
     QVariantMap getSysInfo;
     getSysInfo.insert("get_sysinfo", QVariant());
@@ -159,9 +207,9 @@ void IntegrationPluginTPLink::setupThing(ThingSetupInfo *info)
     QTimer::singleShot(2000, info, [this, info](){
 
         while(m_broadcastSocket->hasPendingDatagrams()) {
-            char buffer[1024];
+            char buffer[4096];
             QHostAddress senderAddress;
-            qint64 len = m_broadcastSocket->readDatagram(buffer, 1024, &senderAddress);
+            qint64 len = m_broadcastSocket->readDatagram(buffer, 4096, &senderAddress);
             QByteArray data = decryptPayload(QByteArray::fromRawData(buffer, len));
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -171,13 +219,33 @@ void IntegrationPluginTPLink::setupThing(ThingSetupInfo *info)
             }
             QVariantMap properties = jsonDoc.toVariant().toMap();
             QVariantMap sysInfo = properties.value("system").toMap().value("get_sysinfo").toMap();
-            if (info->thing()->paramValue(m_idParamTypesMap.value(info->thing()->thingClassId())).toString() == sysInfo.value("deviceId").toString()) {
+            if (info->thing()->paramValue(idParamTypesMap.value(info->thing()->thingClassId())).toString() == sysInfo.value("deviceId").toString()) {
                 qCDebug(dcTplink()) << "Found thing at" << senderAddress;
+
+                // We need to finish the setup before we can generate childs for this thing
+                info->finish(Thing::ThingErrorNoError);
+                m_setupRetries.remove(info);
+
+                // Set up child sockets if needed (currently only the HS300)
+                QVariantList children = sysInfo.value("children").toList();
+                if (children.count() > 0 && myThings().filterByParentId(info->thing()->id()).isEmpty()) {
+                    ThingDescriptors descriptors;
+                    foreach (const QVariant &childVariant, children) {
+                        QVariantMap childMap = childVariant.toMap();
+                        ThingDescriptor descriptor(kasaSocketThingClassId, childMap.value("alias").toString(), QString(), info->thing()->id());
+
+                        QString devId = QString("%1%2")
+                                .arg(info->thing()->paramValue(idParamTypesMap.value(info->thing()->thingClassId())).toString())
+                                .arg(childMap.value("id").toString());
+                        descriptor.setParams(ParamList() << Param(kasaSocketThingIdParamTypeId, devId));
+                        qCDebug(dcTplink()) << "Creating child socket for" << info->thing()->name() << "with ID" << devId;
+                        descriptors.append(descriptor);
+                    }
+                    emit autoThingsAppeared(descriptors);
+                }
 
                 connectToDevice(info->thing(), senderAddress);
 
-                info->finish(Thing::ThingErrorNoError);
-                m_setupRetries.remove(info);
                 return;
             }
         }
@@ -195,6 +263,7 @@ void IntegrationPluginTPLink::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginTPLink::postSetupThing(Thing *thing)
 {
+    qCDebug(dcTplink()) << "Post setup thing" << thing->name();
     connect(thing, &Thing::nameChanged, this, [this, thing](){
         QVariantMap map;
         QVariantMap systemMap;
@@ -221,11 +290,17 @@ void IntegrationPluginTPLink::postSetupThing(Thing *thing)
         m_timer = hardwareManager()->pluginTimerManager()->registerTimer(1);
         connect(m_timer, &PluginTimer::timeout, this, [this](){
             foreach (Thing *d, myThings()) {
-                if (!m_pendingJobs.contains(d) && m_jobQueue[d].isEmpty()) {
+                if (d->parentId().isNull() && !m_pendingJobs.contains(d) && m_jobQueue[d].isEmpty()) {
                     fetchState(d);
                 }
             }
         });
+    }
+
+    // Update connected state in case the parent connected before we've completed the child setups
+    if (thing->thingClassId() == kasaSocketThingClassId) {
+        Thing *parent = myThings().findById(thing->parentId());
+        thing->setStateValue(kasaSocketConnectedStateTypeId, parent->stateValue(connectedStateTypesMap.value(parent->thingClassId())));
     }
 }
 
@@ -244,13 +319,22 @@ void IntegrationPluginTPLink::thingRemoved(Thing *thing)
 
 void IntegrationPluginTPLink::executeAction(ThingActionInfo *info)
 {
-    QVariantMap map;
-    QVariantMap systemMap;
+    // The actual thing to send the command to (either directly a physical thing or in case of a virtual socket the parent thing)
+    Thing *targetThing = info->thing()->parentId().isNull() ? info->thing() : myThings().findById(info->thing()->parentId());
+
     QVariantMap powerMap;
-    ParamTypeId powerActionParamTypeId = m_powerActionParamTypesMap.value(info->thing()->thingClassId());
-    powerMap.insert("state", info->action().param(powerActionParamTypeId).value().toBool() ? 1 : 0);
+    powerMap.insert("state", info->action().param(info->action().actionTypeId()).value().toBool() ? 1 : 0);
+    QVariantMap systemMap;
     systemMap.insert("set_relay_state", powerMap);
+    QVariantMap map;
     map.insert("system", systemMap);
+
+    // If we're switching a virtual child, we need to add a context map for the child_ids
+    if (info->thing()->thingClassId() == kasaSocketThingClassId) {
+        QVariantMap contextMap;
+        contextMap.insert("child_ids", QVariantList() << info->thing()->paramValue(kasaSocketThingIdParamTypeId).toString());
+        map.insert("context", contextMap);
+    }
 
     qCDebug(dcTplink()) << "Executing action" << qUtf8Printable(QJsonDocument::fromVariant(map).toJson(QJsonDocument::Compact));
 
@@ -264,15 +348,15 @@ void IntegrationPluginTPLink::executeAction(ThingActionInfo *info)
     job.id = m_jobIdx++;
     job.data = data;
     job.actionInfo = info;
-    m_jobQueue[info->thing()].append(job);
+    m_jobQueue[targetThing].append(job);
     connect(info, &ThingActionInfo::aborted, this, [=](){
-        m_jobQueue[info->thing()].removeAll(job);
+        m_jobQueue[targetThing].removeAll(job);
     });
 
     // Directly queue up fetchState
-    fetchState(info->thing(), info);
+    fetchState(targetThing);
 
-    processQueue(info->thing());
+    processQueue(targetThing);
 }
 
 QByteArray IntegrationPluginTPLink::encryptPayload(const QByteArray &payload)
@@ -311,9 +395,16 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
     m_sockets.insert(thing, socket);
 
     connect(socket, &QTcpSocket::connected, thing, [this, thing, address] () {
-        qCDebug(dcTplink()) << "Connected to device" << address;
-        StateTypeId connectedStateTypeId = m_connectedStateTypesMap.value(thing->thingClassId());
+        qCDebug(dcTplink()) << "Connected to device" << thing->name() << "at address:" << address;
+        StateTypeId connectedStateTypeId = connectedStateTypesMap.value(thing->thingClassId());
         thing->setStateValue(connectedStateTypeId, true);
+
+        qCDebug(dcTplink()) << "Has childs:" << myThings().count();
+        foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+            qCDebug(dcTplink()) << "Setting child online:" << child->paramValue(kasaSocketThingIdParamTypeId);
+            child->setStateValue(kasaSocketConnectedStateTypeId, true);
+        }
+
         fetchState(thing);
     });
 
@@ -343,6 +434,7 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
                 processQueue(thing);
                 return;
             }
+
             Job job = m_pendingJobs.take(thing);
 
             QJsonParseError error;
@@ -368,21 +460,48 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
                     }
                 }
                 if (systemMap.contains("get_sysinfo")) {
-                    int relayState = systemMap.value("get_sysinfo").toMap().value("relay_state").toInt();
-                    StateTypeId powerStateTypeId = m_powerStatetTypesMap.value(thing->thingClassId());
-                    thing->setStateValue(powerStateTypeId, relayState == 1 ? true : false);
-                    StateTypeId signalStrengthStateTypeId = m_signalStrengthStateTypesMap.value(thing->thingClassId());
+                    StateTypeId signalStrengthStateTypeId = signalStrengthStateTypesMap.value(thing->thingClassId());
                     int rssi = systemMap.value("get_sysinfo").toMap().value("rssi").toInt();
-                    int signalStrength = qMax(0, qMin(1000, 2 * (rssi + 100)));
+                    int signalStrength = qMax(0, qMin(100, 2 * (rssi + 100)));
                     thing->setStateValue(signalStrengthStateTypeId, signalStrength);
+
+                    if (thing->thingClassId() == kasaSocketThingClassId) {
+                        foreach (Thing *child, myThings().filterByParentId(kasaSocketThingClassId)) {
+                            child->setStateValue(kasaSocketSignalStrengthStateTypeId, signalStrength);
+                        }
+                    }
 
                     QString alias = systemMap.value("get_sysinfo").toMap().value("alias").toString();
                     if (thing->name() != alias) {
                         thing->setName(alias);
                     }
 
+                    if (systemMap.value("get_sysinfo").toMap().contains("relay_state")) {
+                        int relayState = systemMap.value("get_sysinfo").toMap().value("relay_state").toInt();
+                        StateTypeId powerStateTypeId = powerStateTypesMap.value(thing->thingClassId());
+                        thing->setStateValue(powerStateTypeId, relayState == 1 ? true : false);
+
+                    } else if (systemMap.value("get_sysinfo").toMap().contains("children")) {
+                        // For now, only the HS300 has children, which we map to child things of type kasaSocket
+                        QVariantList children = systemMap.value("get_sysinfo").toMap().value("children").toList();
+                        foreach (const QVariant &childVariant, children) {
+                            QVariantMap childMap = childVariant.toMap();
+                            QString idParam = childMap.value("id").toString();
+                            bool relayState = childMap.value("state").toInt() == 1;
+                            Things things = myThings().filterByParentId(thing->id()).filterByParam(kasaSocketThingIdParamTypeId, idParam);
+                            if (things.count() == 1) {
+                                things.first()->setStateValue(kasaSocketPowerStateTypeId, relayState);
+                            } else {
+                                qCWarning(dcTplink()) << "Error matching child devices" << qUtf8Printable(jsonDoc.toJson());
+                                foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                                    qCDebug(dcTplink()) << "Existing child device:" << child->name() << child->params();
+                                }
+                            }
+                        }
+                    }
 
                     if (job.actionInfo) {
+                        qCDebug(dcTplink()) << "Finishing action execution";
                         job.actionInfo->finish(Thing::ThingErrorNoError);
                     }
                 }
@@ -391,13 +510,13 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
                 QVariantMap emeterMap = map.value("emeter").toMap();
                 if (emeterMap.contains("get_realtime")) {
                     // This has quite a bit of jitter... Let's smoothen it while within +/- 0.1W to produce less events in the system
-                    StateTypeId currentPowerStateTypeId = m_currentPowerStatetTypesMap.value(thing->thingClassId());
+                    StateTypeId currentPowerStateTypeId = currentPowerStatetTypesMap.value(thing->thingClassId());
                     double oldValue = thing->stateValue(currentPowerStateTypeId).toDouble();
                     double newValue = emeterMap.value("get_realtime").toMap().value("power_mw").toDouble() / 1000;
                     if (qAbs(oldValue - newValue) > 0.1) {
                         thing->setStateValue(currentPowerStateTypeId, newValue);
                     }
-                    StateTypeId totalEnergyConsumedStateTypeId = m_totalEnergyConsumedStatetTypesMap.value(thing->thingClassId());
+                    StateTypeId totalEnergyConsumedStateTypeId = totalEnergyConsumedStatetTypesMap.value(thing->thingClassId());
                     thing->setStateValue(totalEnergyConsumedStateTypeId, emeterMap.value("get_realtime").toMap().value("total_wh").toDouble() / 1000);
                 }
             }
@@ -406,16 +525,23 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
         }
     });
 
-    connect(socket, &QTcpSocket::disconnected, thing, [this, thing, address](){
-        qCDebug(dcTplink()) << "Device disconnected";
-        m_sockets.take(thing)->deleteLater();
-        if (m_pendingJobs.contains(thing)) {
-            // Putting active job back to queue
-            m_jobQueue[thing].prepend(m_pendingJobs.take(thing));
+    connect(socket, &QTcpSocket::stateChanged, thing, [this, thing, address](QAbstractSocket::SocketState newState){
+        if (newState == QAbstractSocket::UnconnectedState) {
+            qCDebug(dcTplink()) << "Device disconnected";
+            m_sockets.take(thing)->deleteLater();
+            if (m_pendingJobs.contains(thing)) {
+                // Putting active job back to queue
+                m_jobQueue[thing].prepend(m_pendingJobs.take(thing));
+            }
+            StateTypeId connectedStateTypeId = connectedStateTypesMap.value(thing->thingClassId());
+            thing->setStateValue(connectedStateTypeId, false);
+
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                child->setStateValue(kasaSocketConnectedStateTypeId, false);
+            }
+
+            QTimer::singleShot(500, thing, [this, thing, address]() {connectToDevice(thing, address);});
         }
-        StateTypeId connectedStateTypeId = m_connectedStateTypesMap.value(thing->thingClassId());
-        thing->setStateValue(connectedStateTypeId, false);
-        QTimer::singleShot(500, thing, [this, thing, address]() {connectToDevice(thing, address);});
     });
 
     socket->connectToHost(address.toString(), 9999, QIODevice::ReadWrite);
@@ -423,11 +549,6 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
 
 void IntegrationPluginTPLink::fetchState(Thing *thing, ThingActionInfo *info)
 {
-    QTcpSocket *socket = m_sockets.value(thing);
-    if (!socket || !socket->isOpen()) {
-        qCWarning(dcTplink()) << "Cannot fetch state";
-    }
-
     QVariantMap map;
     QVariantMap getSysInfo;
     getSysInfo.insert("get_sysinfo", QVariant());
@@ -456,6 +577,7 @@ void IntegrationPluginTPLink::fetchState(Thing *thing, ThingActionInfo *info)
 void IntegrationPluginTPLink::processQueue(Thing *thing)
 {
     if (m_pendingJobs.contains(thing)) {
+        qCDebug(dcTplink()) << "Already processing a message to" << thing->name();
         // Busy
         return;
     }
