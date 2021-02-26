@@ -13,7 +13,7 @@
                     "name": "thermostat",
                     "displayName": "Zigbee Thermostat",
                     "createMethods": ["auto"],
-                    "interfaces": ["thermostat", "temperaturesensor", "wirelessconnectable"],
+                    "interfaces": ["thermostat", "temperaturesensor", "batterylevel",  "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
@@ -57,11 +57,13 @@
                             "name": "targetTemperature",
                             "displayName": "Target temperature",
                             "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "minValue": 0,
                             "maxValue": 50,
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "writable": true
                         },
                         {
                             "id": "497af03a-a893-438c-aba2-1bf3ecfc66c5",
@@ -71,6 +73,22 @@
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "88d5dda1-b8f6-49f1-a55a-20415f9157b3",
+                            "name": "heatingOn",
+                            "displayName": "Heating on",
+                            "displayNameEvent": "Heating turned on",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "c77a3d3f-46c7-4026-b9ab-02ab88077cc4",
+                            "name": "coolingOn",
+                            "displayName": "Cooling on",
+                            "displayNameEvent": "Cooling turned on",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "e9fb2b10-96da-4b70-afda-46e948399af8",
@@ -100,6 +118,25 @@
                             "type": "QString",
                             "cached": true,
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "3a733e99-850b-4c56-b058-d39850ef2fee",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "5cec4399-ba7c-4c78-8c30-c91040ad99cf",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ]
                 },

@@ -37,6 +37,16 @@
 
 #include <QDebug>
 
+QHash<ThingClassId, StateTypeId> batteryLevelStateTypeIds = {
+    {thermostatThingClassId, thermostatBatteryLevelStateTypeId},
+    {doorLockThingClassId, doorLockBatteryLevelStateTypeId}
+};
+
+QHash<ThingClassId, StateTypeId> batteryCriticalStateTypeIds = {
+    {thermostatThingClassId, thermostatBatteryCriticalStateTypeId},
+    {doorLockThingClassId, doorLockBatteryCriticalStateTypeId}
+};
+
 IntegrationPluginZigbeeGeneric::IntegrationPluginZigbeeGeneric()
 {
     m_ieeeAddressParamTypeIds[thermostatThingClassId] = thermostatThingIeeeAddressParamTypeId;
@@ -86,8 +96,9 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
         // Check thermostat
         if (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
                 endpoint->deviceId() == Zigbee::HomeAutomationDeviceThermostat) {
-            qCDebug(dcZigbeeGeneric()) << "Handeling thermostat endpoint for" << node << endpoint;
+            qCDebug(dcZigbeeGeneric()) << "Handling thermostat endpoint for" << node << endpoint;
             createThing(thermostatThingClassId, networkUuid, node, endpoint);
+            initThermostat(node, endpoint);
             handled = true;
         }
 
@@ -100,7 +111,7 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
             // Simple on/off device
             if (endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)) {
                 // FIXME: create powersocket with metering for SmartPlug device ID
-                qCDebug(dcZigbeeGeneric()) << "Handeling power socket endpoint for" << node << endpoint;
+                qCDebug(dcZigbeeGeneric()) << "Handling power socket endpoint for" << node << endpoint;
                 createThing(powerSocketThingClassId, networkUuid, node, endpoint);
                 initSimplePowerSocket(node, endpoint);
                 handled = true;
@@ -113,7 +124,7 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
                     !endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdDoorLock)) {
                 qCWarning(dcZigbeeGeneric()) << "Endpoint claims to be a door lock, but the appropriate input clusters could not be found" << node << endpoint;
             } else {
-                qCDebug(dcZigbeeGeneric()) << "Handeling door lock endpoint for" << node << endpoint;
+                qCDebug(dcZigbeeGeneric()) << "Handling door lock endpoint for" << node << endpoint;
                 createThing(doorLockThingClassId, networkUuid, node, endpoint);
                 // Initialize bindings and cluster attributes
                 initializeDoorLock(node, endpoint);
@@ -185,49 +196,62 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
     // Set the version
     thing->setStateValue(m_versionStateTypeIds.value(thing->thingClassId()), endpoint->softwareBuildId());
 
+    if (batteryLevelStateTypeIds.contains(thing->thingClassId())) {
+        connectToPowerConfigurationCluster(thing, endpoint);
+    }
+
     // Type specific setup
     if (thing->thingClassId() == thermostatThingClassId) {
         ZigbeeClusterThermostat *thermostatCluster = endpoint->inputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
         if (!thermostatCluster) {
             qCWarning(dcZigbeeGeneric()) << "Failed to read thermostat cluster";
+            info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
-        //        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterIdThermostat);
 
-        // We need to read them from the lamp
-        ZigbeeClusterReply *reply = thermostatCluster->readAttributes({ZigbeeClusterThermostat::AttributeLocalTemperature, ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint});
+        // Read initial attribute values
+        ZigbeeClusterReply *reply = thermostatCluster->readAttributes({ZigbeeClusterThermostat::AttributeLocalTemperature,
+                                                                       ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint,
+                                                                       ZigbeeClusterThermostat::AttributePIHeatingDemand,
+                                                                       ZigbeeClusterThermostat::AttributePICoolingDemand});
         connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
             if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
-                qCWarning(dcZigbeeGeneric()) << "Reading loacal temperature attribute finished with error" << reply->error();
+                qCWarning(dcZigbeeGeneric()) << "Reading thermostat attributes finished with error" << reply->error();
                 return;
             }
 
             QList<ZigbeeClusterLibrary::ReadAttributeStatusRecord> attributeStatusRecords = ZigbeeClusterLibrary::parseAttributeStatusRecords(reply->responseFrame().payload);
-
             foreach (const ZigbeeClusterLibrary::ReadAttributeStatusRecord &record, attributeStatusRecords) {
                 if (record.attributeId == ZigbeeClusterThermostat::AttributeLocalTemperature) {
-                    bool valueOk = false;
-                    quint16 localTemperature = record.dataType.toUInt16(&valueOk);
-                    if (!valueOk) {
-                        qCWarning(dcZigbeeGeneric()) << "Failed to read local temperature" << attributeStatusRecords;
-                        return;
-                    }
-                    thing->setStateValue(thermostatTemperatureStateTypeId, localTemperature * 0.01);
+                    thing->setStateValue(thermostatTemperatureStateTypeId, record.dataType.toInt16() * 0.01);
                 }
-
                 if (record.attributeId == ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint) {
-                    bool valueOk = false;
-                    quint16 targetTemperature = record.dataType.toUInt16(&valueOk);
-                    if (!valueOk) {
-                        qCWarning(dcZigbeeGeneric()) << "Failed to read local temperature" << attributeStatusRecords;
-                        return;
-                    }
-                    thing->setStateValue(thermostatTargetTemperatureStateTypeId, targetTemperature * 0.01);
+                    thing->setStateValue(thermostatTargetTemperatureStateTypeId, record.dataType.toInt16() * 0.01);
+                }
+                if (record.attributeId == ZigbeeClusterThermostat::AttributePIHeatingDemand) {
+                    thing->setStateValue(thermostatHeatingOnStateTypeId, record.dataType.toUInt8() > 0);
+                }
+                if (record.attributeId == ZigbeeClusterThermostat::AttributePICoolingDemand) {
+                    thing->setStateValue(thermostatCoolingOnStateTypeId, record.dataType.toUInt8() > 0);
                 }
             }
+        });
 
-
-
+        // Connect to attribute changes
+        connect(thermostatCluster, &ZigbeeClusterThermostat::attributeChanged, thing, [thing](const ZigbeeClusterAttribute &attribute){
+            qCDebug(dcZigbeeGeneric()) << "Thermostat attribute changed" << thing->name() << attribute.id() << attribute.dataType();
+            if (attribute.id() == ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint) {
+                thing->setStateValue(thermostatTargetTemperatureStateTypeId, attribute.dataType().toUInt16() * 0.01);
+            }
+            if (attribute.id() == ZigbeeClusterThermostat::AttributeLocalTemperature) {
+                thing->setStateValue(thermostatTemperatureStateTypeId, attribute.dataType().toUInt16() * 0.01);
+            }
+            if (attribute.id() == ZigbeeClusterThermostat::AttributePIHeatingDemand) {
+                thing->setStateValue(thermostatHeatingOnStateTypeId, attribute.dataType().toUInt8() > 0);
+            }
+            if (attribute.id() == ZigbeeClusterThermostat::AttributePICoolingDemand) {
+                thing->setStateValue(thermostatCoolingOnStateTypeId, attribute.dataType().toUInt8() > 0);
+            }
         });
     }
 
@@ -237,7 +261,6 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
             if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
                 thing->setStateValue(powerSocketPowerStateTypeId, onOffCluster->power());
             }
-
             connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
                 qCDebug(dcZigbeeGeneric()) << thing << "power changed" << power;
                 thing->setStateValue(powerSocketPowerStateTypeId, power);
@@ -260,24 +283,6 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
     }
 
     if (thing->thingClassId() == doorLockThingClassId) {
-
-        // Get battery level changes
-        ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
-        if (!powerCluster) {
-            qCWarning(dcZigbeeGeneric()) << "Could not find power configuration cluster on" << thing << endpoint;
-        } else {
-            // Only set the initial state if the attribute already exists
-            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(doorLockBatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(doorLockBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
-            }
-
-            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
-                qCDebug(dcZigbeeGeneric()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(doorLockBatteryLevelStateTypeId, percentage);
-                thing->setStateValue(doorLockBatteryCriticalStateTypeId, (percentage < 10.0));
-            });
-        }
 
         // Get door state changes
         ZigbeeClusterDoorLock *doorLockCluster = endpoint->inputCluster<ZigbeeClusterDoorLock>(ZigbeeClusterLibrary::ClusterIdDoorLock);
@@ -320,6 +325,39 @@ void IntegrationPluginZigbeeGeneric::executeAction(ThingActionInfo *info)
     if (!endpoint) {
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
+    }
+
+    if (thing->thingClassId() == thermostatThingClassId) {
+        if (info->action().actionTypeId() == thermostatTargetTemperatureActionTypeId) {
+            ZigbeeClusterThermostat *thermostatCluster = endpoint->inputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
+            if (!thermostatCluster) {
+                qCWarning(dcZigbeeGeneric()) << "Thermostat cluster not found on thing" << thing->name();
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+            qint16 targetTemp = qRound(info->action().paramValue(thermostatTargetTemperatureStateTypeId).toDouble() * 10) * 10;
+            // TODO: The following should probably move into libnymea-zibee prividing a
+            // thermostatCluster->writeOccupiedHeatingSetpoint(targetTemp);
+            ZigbeeDataType dataType(targetTemp);
+            QList<ZigbeeClusterLibrary::WriteAttributeRecord> attributes;
+            ZigbeeClusterLibrary::WriteAttributeRecord occupiedHeatingSetpointAttribute;
+            occupiedHeatingSetpointAttribute.attributeId = ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint;
+            occupiedHeatingSetpointAttribute.dataType = dataType.dataType();
+            occupiedHeatingSetpointAttribute.data = dataType.data();
+            attributes.append(occupiedHeatingSetpointAttribute);
+            qCDebug(dcZigbeeGeneric()) << "Writing target temp" << targetTemp << occupiedHeatingSetpointAttribute.data;
+            ZigbeeClusterReply *reply = thermostatCluster->writeAttributes(attributes);
+            connect(reply, &ZigbeeClusterReply::finished, info, [info, reply](){
+                qCDebug(dcZigbeeGeneric()) << "Writing attributes finished:" << reply->error();
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+                info->thing()->setStateValue(thermostatTargetTemperatureStateTypeId, info->action().paramValue(thermostatTargetTemperatureActionTargetTemperatureParamTypeId));
+                info->finish(Thing::ThingErrorNoError);
+            });
+            return;
+        }
     }
 
     if (thing->thingClassId() == powerSocketThingClassId) {
@@ -474,82 +512,132 @@ void IntegrationPluginZigbeeGeneric::initSimplePowerSocket(ZigbeeNode *node, Zig
 
 void IntegrationPluginZigbeeGeneric::initializeDoorLock(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
 {
-    qCDebug(dcZigbeeGeneric()) << "Read power configuration cluster attributes" << node;
-    ZigbeeClusterReply *readAttributeReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
-    connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-        if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-            qCWarning(dcZigbeeGeneric()) << "Failed to read power configuration cluster attributes" << readAttributeReply->error();
+    bindPowerConfigurationCluster(node, endpoint);
+
+    qCDebug(dcZigbeeGeneric()) << "Binding door lock cluster ";
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdDoorLock, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeGeneric()) << "Failed to door lock cluster to coordinator" << zdoReply->error();
         } else {
-            qCDebug(dcZigbeeGeneric()) << "Read power configuration cluster attributes finished successfully";
+            qCDebug(dcZigbeeGeneric()) << "Bind door lock cluster to coordinator finished successfully";
         }
 
-        // Bind the cluster to the coordinator
-        qCDebug(dcZigbeeGeneric()) << "Bind power configuration cluster to coordinator IEEE address";
-        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                qCWarning(dcZigbeeGeneric()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
+        // Configure attribute reporting for lock state
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterDoorLock::AttributeLockState;
+        reportingConfig.dataType = Zigbee::Enum8;
+        reportingConfig.minReportingInterval = 60;
+        reportingConfig.maxReportingInterval = 120;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeGeneric()) << "Configure attribute reporting for door lock cluster to coordinator";
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdDoorLock)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGeneric()) << "Failed to door lock cluster attribute reporting" << reportingReply->error();
             } else {
-                qCDebug(dcZigbeeGeneric()) << "Bind power configuration cluster to coordinator finished successfully";
+                qCDebug(dcZigbeeGeneric()) << "Attribute reporting configuration finished for door lock cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
             }
-
-            // Configure attribute rporting for battery remaining (0.5 % changes = 1)
-            ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-            reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
-            reportingConfig.dataType = Zigbee::Uint8;
-            reportingConfig.minReportingInterval = 60; // for production use 300;
-            reportingConfig.maxReportingInterval = 120; // for production use 2700;
-            reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
-
-            qCDebug(dcZigbeeGeneric()) << "Configure attribute reporting for power configuration cluster to coordinator";
-            ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
-            connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                    qCWarning(dcZigbeeGeneric()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
-                } else {
-                    qCDebug(dcZigbeeGeneric()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
-                }
-
-                // Configure door lock attribute reporting and read initial values
-                qCDebug(dcZigbeeGeneric()) << "Read door lock cluster attributes" << node;
-                ZigbeeClusterReply *readAttributeReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdDoorLock)->readAttributes({ZigbeeClusterDoorLock::AttributeDoorState, ZigbeeClusterDoorLock::AttributeLockType});
-                connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-                    if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                        qCWarning(dcZigbeeGeneric()) << "Failed to read door lock attributes" << readAttributeReply->error();
-                    } else {
-                        qCDebug(dcZigbeeGeneric()) << "Read door lock cluster attributes finished successfully";
-                    }
-
-                    // Bind the cluster to the coordinator
-                    qCDebug(dcZigbeeGeneric()) << "Bind door lock cluster to coordinator IEEE address";
-                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdDoorLock, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-                    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                            qCWarning(dcZigbeeGeneric()) << "Failed to door lock cluster to coordinator" << zdoReply->error();
-                        } else {
-                            qCDebug(dcZigbeeGeneric()) << "Bind door lock cluster to coordinator finished successfully";
-                        }
-
-                        // Configure attribute reporting for lock state
-                        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-                        reportingConfig.attributeId = ZigbeeClusterDoorLock::AttributeLockState;
-                        reportingConfig.dataType = Zigbee::Enum8;
-                        reportingConfig.minReportingInterval = 60;
-                        reportingConfig.maxReportingInterval = 120;
-                        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
-
-                        qCDebug(dcZigbeeGeneric()) << "Configure attribute reporting for door lock cluster to coordinator";
-                        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdDoorLock)->configureReporting({reportingConfig});
-                        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                qCWarning(dcZigbeeGeneric()) << "Failed to door lock cluster attribute reporting" << reportingReply->error();
-                            } else {
-                                qCDebug(dcZigbeeGeneric()) << "Attribute reporting configuration finished for door lock cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
-                            }
-                        });
-                    });
-                });
-            });
         });
     });
+}
+
+void IntegrationPluginZigbeeGeneric::initThermostat(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    bindPowerConfigurationCluster(node, endpoint);
+
+    qCDebug(dcZigbeeGeneric()) << "Binding thermostat custer";
+    ZigbeeDeviceObjectReply *bindThermostatReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdThermostat,
+                                                                                     hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(bindThermostatReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (bindThermostatReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeGeneric()) << "Failed to bind thermostat cluster" << bindThermostatReply->error();
+        } else {
+            qCDebug(dcZigbeeGeneric()) << "Binding thermostat cluster finished successfully";
+        }
+
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingOccupiedHeatingSetpointConfig;
+        reportingOccupiedHeatingSetpointConfig.attributeId = ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint;
+        reportingOccupiedHeatingSetpointConfig.dataType = Zigbee::Int16;
+        reportingOccupiedHeatingSetpointConfig.minReportingInterval = 300;
+        reportingOccupiedHeatingSetpointConfig.maxReportingInterval = 2700;
+        reportingOccupiedHeatingSetpointConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingBatteryPercentageConfig;
+        reportingBatteryPercentageConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
+        reportingBatteryPercentageConfig.dataType = Zigbee::Uint8;
+        reportingBatteryPercentageConfig.minReportingInterval = 300;
+        reportingBatteryPercentageConfig.maxReportingInterval = 2700;
+        reportingBatteryPercentageConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeGeneric()) << "Configuring attribute reporting for thermostat cluster";
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingOccupiedHeatingSetpointConfig, reportingBatteryPercentageConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGeneric()) << "Failed to configure thermostat cluster attribute reporting" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeGeneric()) << "Attribute reporting configuration finished for thermostat cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeGeneric::bindPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    ZigbeeDeviceObjectReply *bindPowerReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
+                                                                                           hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(bindPowerReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (bindPowerReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeGeneric()) << "Failed to bind power configuration cluster" << bindPowerReply->error();
+        } else {
+            qCDebug(dcZigbeeGeneric()) << "Binding power configuration cluster finished successfully";
+        }
+
+        ZigbeeClusterLibrary::AttributeReportingConfiguration batteryPercentageConfig;
+        batteryPercentageConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
+        batteryPercentageConfig.dataType = Zigbee::Uint8;
+        batteryPercentageConfig.minReportingInterval = 60; // for production use 300;
+        batteryPercentageConfig.maxReportingInterval = 120; // for production use 2700;
+        batteryPercentageConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeGeneric()) << "Configuring attribute reporting for power configuration cluster";
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({batteryPercentageConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGeneric()) << "Failed to configure power configuration cluster attribute reporting" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeGeneric()) << "Attribute reporting configuration finished for power configuration cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeGeneric::connectToPowerConfigurationCluster(Thing *thing, ZigbeeNodeEndpoint *endpoint)
+{
+    // Get battery level changes
+    ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+    if (powerCluster) {
+        // If the power cluster attributes are already available, read values now
+        if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+            thing->setStateValue(batteryLevelStateTypeIds.value(thing->thingClassId()), powerCluster->batteryPercentage());
+            thing->setStateValue(batteryCriticalStateTypeIds.value(thing->thingClassId()), (powerCluster->batteryPercentage() < 10.0));
+        }
+        // Refresh power cluster attributes in any case
+        ZigbeeClusterReply *reply = powerCluster->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
+        connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
+            if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGeneric()) << "Reading power configuration cluster attributes finished with error" << reply->error();
+                return;
+            }
+            thing->setStateValue(batteryLevelStateTypeIds.value(thing->thingClassId()), powerCluster->batteryPercentage());
+            thing->setStateValue(batteryCriticalStateTypeIds.value(thing->thingClassId()), (powerCluster->batteryPercentage() < 10.0));
+        });
+
+        // Connect to battery level changes
+        connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+            thing->setStateValue(batteryLevelStateTypeIds.value(thing->thingClassId()), percentage);
+            thing->setStateValue(batteryCriticalStateTypeIds.value(thing->thingClassId()), (percentage < 10.0));
+        });
+    }
 }
