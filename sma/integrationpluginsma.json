@@ -13,7 +13,7 @@
                     "name": "sunnyWebBox",
                     "displayName": "Sunny WebBox",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["gateway"],
+                    "interfaces": ["extendedsmartmeterproducer", "gateway"],
                     "paramTypes": [
                         {
                             "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
@@ -52,18 +52,18 @@
                         },
                         {
                             "id": "16f34c5c-8dbb-4dcc-9faa-4b782d57226c",
-                            "name": "dayEnergy",
-                            "displayName": "Day energy",
-                            "displayNameEvent": "Day energy changed",
+                            "name": "dayEnergyProduced",
+                            "displayName": "Day energy produced",
+                            "displayNameEvent": "Day energy produced changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
                             "id": "0bb4e227-7e38-49ca-9b32-ce4621c9305b",
-                            "name": "totalEnergy",
-                            "displayName": "Total energy",
-                            "displayNameEvent": "Total energy changed",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "displayNameEvent": "Total energy produced changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0

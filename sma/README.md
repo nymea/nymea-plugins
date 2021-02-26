@@ -11,5 +11,4 @@ nymea plug-in for SMA solar equipment.
 * The package "nymea-plugin-sma" must be installed.
 
 ## More
-
 https://www.sma.de/en/

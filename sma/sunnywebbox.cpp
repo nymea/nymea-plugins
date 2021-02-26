@@ -188,6 +188,7 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
     } else if (messageType == "GetProcessData") {
         QList<Device> devices;
         QVariantList devicesList = result.value("devices").toList();
+        qCDebug(dcSma()) << "SunnyWebBox: GetProcessData response received";
         Q_FOREACH(QVariant value, devicesList) {
 
             QString key = value.toMap().value("key").toString();

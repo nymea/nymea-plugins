@@ -121,7 +121,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorNoError);
         } else {
             //wait for the parent to finish the setup process
-            connect(parentThing, &Thing::setupStatusChanged, info, [this, info, parentThing] {
+            connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing] {
 
                 if (parentThing->setupComplete())
                     info->finish(Thing::ThingErrorNoError);
@@ -148,6 +148,7 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
             return;
         QString key = thing->paramValue(inverterThingIdParamTypeId).toString();
         sunnyWebBox->getParameters(QStringList() << key);
+        sunnyWebBox->getProcessData(QStringList() << key);
     }
 }
 
@@ -190,8 +191,14 @@ void IntegrationPluginSma::thingRemoved(Thing *thing)
 
 void IntegrationPluginSma::onRefreshTimer()
 {
-    Q_FOREACH(SunnyWebBox *sunnyWebBox, m_sunnyWebBoxes) {
+    Q_FOREACH(Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
+        SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         sunnyWebBox->getPlantOverview();
+
+        Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+            QString key = child->paramValue(inverterThingIdParamTypeId).toString();
+            sunnyWebBox->getProcessData(QStringList() << key);
+        }
     }
 }
 
@@ -201,6 +208,11 @@ void IntegrationPluginSma::onConnectedChanged(bool connected)
     if (!thing)
         return;
     thing->setStateValue(sunnyWebBoxConnectedStateTypeId, connected);
+    if (!connected) {
+        Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+            child->setStateValue(inverterConnectedStateTypeId, false);
+        }
+    }
 }
 
 void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview)
@@ -216,8 +228,8 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, Sun
         return;
 
     thing->setStateValue(sunnyWebBoxCurrentPowerStateTypeId, overview.power);
-    thing->setStateValue(sunnyWebBoxDayEnergyStateTypeId, overview.dailyYield);
-    thing->setStateValue(sunnyWebBoxTotalEnergyStateTypeId, overview.totalYield);
+    thing->setStateValue(sunnyWebBoxDayEnergyProducedStateTypeId, overview.dailyYield);
+    thing->setStateValue(sunnyWebBoxTotalEnergyProducedStateTypeId, overview.totalYield);
     thing->setStateValue(sunnyWebBoxModeStateTypeId, overview.status);
     if (!overview.error.isEmpty()){
         qCDebug(dcSma()) << "Received error" << overview.error;
@@ -274,8 +286,9 @@ void IntegrationPluginSma::onProcessDataReceived(const QString &messageId, const
 
     Q_FOREACH(Thing *childThing, myThings().filterByParentId(thing->id())) {
         if (childThing->paramValue(inverterThingIdParamTypeId).toString() == deviceKey) {
-            if (channels.contains("E-Total")) {
-                //TODO set total energy
+            Q_FOREACH(QString channel, channels.keys()) {
+                qCDebug(dcSma()) << "   - Channel received" << channel << channels.value(channel);
+                //TODO parse data
             }
             break;
         }
@@ -291,9 +304,4 @@ void IntegrationPluginSma::onParameterChannelsReceived(const QString &messageId,
         return;
 
     qCDebug(dcSma()) << "Parameter channels received" << deviceKey << parameterChannels;
-}
-
-void IntegrationPluginSma::getData(Thing *thing)
-{
-    Q_UNUSED(thing)
 }
