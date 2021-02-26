@@ -164,7 +164,8 @@ signals:
     void userChanged(bool signedIn, const QString &userName);
 
 private slots:
-    void onStateChanged(QAbstractSocket::SocketState state);
+    void onConnected();
+    void onDisconnected();
     void onError(QAbstractSocket::SocketError socketError);
     void readData();
 

@@ -102,7 +102,10 @@ private:
     QHash<int, GroupObject> m_groupBuffer;
     QHash<int, HeosPlayer *> m_playerBuffer;
 
+    QHash<QString, QHostAddress> m_heosIpAddresses;
+
     Heos *createHeosConnection(const QHostAddress &address);
+    QHostAddress findAvrById(const QString &id);
 
 private slots:
     void onPluginTimer();
@@ -126,6 +129,7 @@ private slots:
     void onHeosGroupsReceived(QList<GroupObject> groups);
     void onHeosGroupsChanged();
     void onHeosUserChanged(bool signedIn, const QString &userName);
+    void onHeosDiscoveryFinished();
 
     void onAvrConnectionChanged(bool status);
     void onAvrSocketError();

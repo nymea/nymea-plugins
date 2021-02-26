@@ -44,28 +44,31 @@ Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
     QObject(parent),
     m_hostAddress(hostAddress)
 {
+    qCDebug(dcDenon()) << "Heos: Creating heos connection" << m_hostAddress;
     m_socket = new QTcpSocket(this);
 
-    connect(m_socket, &QTcpSocket::stateChanged, this, &Heos::onStateChanged);
+    connect(m_socket, &QTcpSocket::connected, this, &Heos::onConnected);
+    connect(m_socket, &QTcpSocket::disconnected, this, &Heos::onDisconnected);
     connect(m_socket, &QTcpSocket::readyRead, this, &Heos::readData);
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setInterval(5000);
     connect(m_reconnectTimer, &QTimer::timeout, this, [this]{
+        qCDebug(dcDenon()) << "Heos: Reconnect timer timeout, trying to connect to" << m_hostAddress.toString();
         connectDevice();
     });
 }
 
 Heos::~Heos()
 {
-    m_socket->close();
+    qCDebug(dcDenon()) << "Heos: Deleting heos connection" << m_hostAddress;
 }
 
 void Heos::connectDevice()
 {
     if (m_socket->state() == QAbstractSocket::ConnectingState) {
-       return;
+        return;
     }
     m_socket->connectToHost(m_hostAddress, 1255);
 }
@@ -73,6 +76,21 @@ void Heos::connectDevice()
 bool Heos::connected()
 {
     return m_socket->isOpen();
+}
+
+void Heos::setAddress(QHostAddress address)
+{
+    qCDebug(dcDenon()) << "Heos: Set address" << address.toString();
+    if (address != m_hostAddress) {
+        m_hostAddress = address;
+        m_socket->disconnectFromHost();
+        // Reconnect after the disconnect event has been emitted
+    }
+}
+
+QHostAddress Heos::getAddress()
+{
+    return m_hostAddress;
 }
 
 
@@ -532,24 +550,18 @@ quint32 Heos::playUrl(int playerId, const QUrl &mediaUrl)
     return sequence;
 }
 
-void Heos::onStateChanged(QAbstractSocket::SocketState state)
+void Heos::onConnected()
 {
-    switch (state) {
-    case QAbstractSocket::ConnectedState:
-        qCDebug(dcDenon()) << "connected successfully to" << m_hostAddress.toString();
-        m_reconnectTimer->stop();
-        emit connectionStatusChanged(true);
-        break;
-    case QAbstractSocket::ConnectingState:
-        break;
-    case QAbstractSocket::UnconnectedState:
-        m_reconnectTimer->start();
-        qCDebug(dcDenon()) << "Disconnected from" << m_hostAddress.toString() << "try reconnecting in 5 seconds";
-        emit connectionStatusChanged(false);
-        break;
-    default:
-        emit connectionStatusChanged(false);
-    }
+    qCDebug(dcDenon()) << "Heos: Connected successfully to" << m_hostAddress.toString();
+    m_reconnectTimer->stop();
+    emit connectionStatusChanged(true);
+}
+
+void Heos::onDisconnected()
+{
+    m_reconnectTimer->start();
+    qCDebug(dcDenon()) << "Heos: Disconnected from" << m_hostAddress.toString() << "try reconnecting in 5 seconds";
+    emit connectionStatusChanged(false);
 }
 
 quint32 Heos::addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria)
@@ -571,7 +583,7 @@ quint32 Heos::addContainerToQueue(int playerId, const QString &sourceId, const Q
 
 void Heos::onError(QAbstractSocket::SocketError socketError)
 {
-    qCWarning(dcDenon) << "socket error:" << socketError << m_socket->errorString();
+    qCWarning(dcDenon) << "Heos: Socket error:" << socketError << m_socket->errorString();
 }
 
 void Heos::readData()

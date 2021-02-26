@@ -84,7 +84,7 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
         QStringList discoveredIds;
 
         foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
-             qCDebug(dcDenon()) << "mDNS service entry:" << service;
+            qCDebug(dcDenon()) << "mDNS service entry:" << service;
             if (service.txt().contains("am=AVRX1000")) {
 
                 QString id = service.name().split("@").first();
@@ -96,7 +96,6 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
                 discoveredIds.append(id);
                 ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
                 ParamList params;
-                params.append(Param(AVRX1000ThingIpParamTypeId, address));
                 params.append(Param(AVRX1000ThingIdParamTypeId, id));
                 thingDescriptor.setParams(params);
                 foreach (Thing *existingThing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
@@ -118,37 +117,39 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
         * The HEOS product IP address can also be set statically and manually programmed into the control system.
         * Search target name (ST) in M-SEARCH discovery request is 'urn:schemas-denon-com:thing:ACT-Denon:1'.
         */
+        if (!hardwareManager()->upnpDiscovery()->available()) {
+            qCDebug(dcDenon()) << "UPnP discovery not available";
+            info->finish(Thing::ThingErrorHardwareNotAvailable, "UPnP discovery not possible");
+            return;
+        }
         UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
+        connect(reply, &UpnpDiscoveryReply::finished, reply, &UpnpDiscoveryReply::deleteLater);
         connect(reply, &UpnpDiscoveryReply::finished, info, [this, reply, info](){
-            reply->deleteLater();
 
             if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
                 qCWarning(dcDenon()) << "Upnp discovery error" << reply->error();
                 info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("UPnP discovery failed."));
                 return;
             }
-
+            m_heosIpAddresses.clear();
             foreach (const UpnpDeviceDescriptor &upnpThing, reply->deviceDescriptors()) {
-                qCDebug(dcDenon) << "UPnP thing found:" << upnpThing.modelDescription() << upnpThing.friendlyName() << upnpThing.hostAddress().toString() << upnpThing.modelName() << upnpThing.manufacturer() << upnpThing.serialNumber();
+                if (upnpThing.modelName().contains("HEOS", Qt::CaseSensitivity::CaseInsensitive) && upnpThing.serialNumber() != "0000001") {
+                    // child things have serial number 0000001
+                    qCDebug(dcDenon) << "uPnP thing found:" << upnpThing.modelDescription() << upnpThing.friendlyName() << upnpThing.hostAddress().toString() << upnpThing.modelName() << upnpThing.manufacturer() << upnpThing.serialNumber();
 
-                if (upnpThing.modelName().contains("HEOS", Qt::CaseSensitivity::CaseInsensitive)) {
-                    QString serialNumber = upnpThing.serialNumber();
-                    if (serialNumber != "0000001") {
-                        // child things have serial number 0000001
-                        ThingDescriptor descriptor(heosThingClassId, upnpThing.modelName(), serialNumber);
-                        ParamList params;
-                        foreach (Thing *existingThing, myThings()) {
-                            if (existingThing->paramValue(heosThingSerialNumberParamTypeId).toString().contains(serialNumber, Qt::CaseSensitivity::CaseInsensitive)) {
-                                descriptor.setThingId(existingThing->id());
-                                break;
-                            }
+                    m_heosIpAddresses.insert(upnpThing.serialNumber(), upnpThing.hostAddress());
+                    ThingDescriptor descriptor(heosThingClassId, upnpThing.modelName(), upnpThing.serialNumber());
+                    ParamList params;
+                    foreach (Thing *existingThing, myThings()) {
+                        if (existingThing->paramValue(heosThingSerialNumberParamTypeId).toString().contains(upnpThing.serialNumber(), Qt::CaseSensitivity::CaseInsensitive)) {
+                            descriptor.setThingId(existingThing->id());
+                            break;
                         }
-                        params.append(Param(heosThingModelNameParamTypeId, upnpThing.modelName()));
-                        params.append(Param(heosThingIpParamTypeId, upnpThing.hostAddress().toString()));
-                        params.append(Param(heosThingSerialNumberParamTypeId, serialNumber));
-                        descriptor.setParams(params);
-                        info->addThingDescriptor(descriptor);
                     }
+                    params.append(Param(heosThingModelNameParamTypeId, upnpThing.modelName()));
+                    params.append(Param(heosThingSerialNumberParamTypeId, upnpThing.serialNumber()));
+                    descriptor.setParams(params);
+                    info->addThingDescriptor(descriptor);
                 }
             }
             info->finish(Thing::ThingErrorNoError);
@@ -173,21 +174,30 @@ void IntegrationPluginDenon::confirmPairing(ThingPairingInfo *info, const QStrin
             return info->finish(Thing::ThingErrorNoError);
         }
 
-        QHostAddress address(info->params().paramValue(heosThingIpParamTypeId).toString());
-        Heos *heos = createHeosConnection(address);
-        m_unfinishedHeosConnections.insert(info->thingId(), heos);
-        m_unfinishedHeosPairings.insert(heos, info);
-        connect(info, &ThingPairingInfo::aborted, this, [heos, this] {
-            m_unfinishedHeosPairings.remove(heos);
-            heos->deleteLater();
-        });
-        heos->connectDevice();
-        heos->setUserAccount(username, password);
+        Q_FOREACH(const QString &serialNumber, m_heosIpAddresses.keys()) {
+            if (serialNumber == info->params().paramValue(heosThingSerialNumberParamTypeId).toString()) {
+                ThingId thingId = info->thingId();
+                Heos *heos = createHeosConnection(m_heosIpAddresses.value(serialNumber));
+                m_unfinishedHeosConnections.insert(thingId, heos);
+                m_unfinishedHeosPairings.insert(heos, info);
+                connect(heos, &Heos::destroyed, this, [this, thingId, heos] {
+                    qCDebug(dcDenon()) << "Heos connection deleted, cleaning up";
+                    m_unfinishedHeosPairings.remove(heos);
+                    m_unfinishedHeosConnections.remove(thingId);
+                });
+                connect(info, &ThingPairingInfo::aborted, this, [heos] {
+                    qCDebug(dcDenon()) << "ThingPairingInfo aborted, deleting heos connection";
+                    heos->deleteLater();
+                });
+                heos->connectDevice();
+                heos->setUserAccount(username, password);
 
-        pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("username", username);
-        pluginStorage()->setValue("password", password);
-        pluginStorage()->endGroup();
+                pluginStorage()->beginGroup(info->thingId().toString());
+                pluginStorage()->setValue("username", username);
+                pluginStorage()->setValue("password", password);
+                pluginStorage()->endGroup();
+            }
+        }
     }
 }
 
@@ -196,12 +206,17 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-        qCDebug(dcDenon) << "Setup Denon thing" << thing->paramValue(AVRX1000ThingIpParamTypeId).toString();
+         qCDebug(dcDenon) << "Setup AVR X1000 thing" << thing->name();
 
-        QHostAddress address(thing->paramValue(AVRX1000ThingIpParamTypeId).toString());
+        if (m_avrConnections.contains(thing->id())) {
+            qCDebug(dcDenon()) << "Setup after reconfiguration, cleaning up ...";
+            m_avrConnections.take(thing->id())->deleteLater();
+
+        }
+        QString id = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+        QHostAddress address = findAvrById(id);
         if (address.isNull()) {
-            qCWarning(dcDenon) << "Could not parse ip address" << thing->paramValue(AVRX1000ThingIpParamTypeId).toString();
-            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
@@ -235,32 +250,83 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         denonConnection->connectDevice();
         return;
     } else if (thing->thingClassId() == heosThingClassId) {
-        qCDebug(dcDenon) << "Setup Denon thing" << thing->paramValue(heosThingIpParamTypeId).toString();
 
-        QHostAddress address(thing->paramValue(heosThingIpParamTypeId).toString());
-        if (address.isNull()) {
-            qCWarning(dcDenon) << "Could not parse ip address" << thing->paramValue(heosThingIpParamTypeId).toString();
-            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
+        qCDebug(dcDenon) << "Setup Heos connection thing" << thing->name();
+        QString serialnumber = thing->paramValue(heosThingSerialNumberParamTypeId).toString();
+        if (serialnumber.isEmpty()) {
+            qCWarning(dcDenon) << "Serial number is empty";
+            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Serial number is not set"));
             return;
         }
 
-        Heos *heos;
+        if (m_heosConnections.contains(thing->id())) {
+            qCDebug(dcDenon()) << "Setup after reconfiguration, cleaning up ...";
+            m_heosConnections.take(thing->id())->deleteLater();
+        }
+
         if (m_unfinishedHeosConnections.contains(thing->id())) {
-            heos = m_unfinishedHeosConnections.take(thing->id());
+            qCDebug(dcDenon()) << "Setup after discovery";
+            Heos *heos = m_unfinishedHeosConnections.take(thing->id());
             m_heosConnections.insert(thing->id(), heos);
             info->finish(Thing::ThingErrorNoError);
         } else {
-            heos = createHeosConnection(address);
-            m_heosConnections.insert(thing->id(), heos);
-            m_asyncHeosSetups.insert(heos, info);
-            // In case the setup is cancelled before we finish it...
-            connect(info, &QObject::destroyed, this, [=]() {m_asyncHeosSetups.remove(heos);});
-            heos->connectDevice();
+            qCDebug(dcDenon()) << "Starting Heos discovery";
+            if (!hardwareManager()->upnpDiscovery()->available()) {
+                qCDebug(dcDenon()) << "UPnP discovery not available";
+                info->finish(Thing::ThingErrorHardwareNotAvailable, "Discovery not possible");
+                return;
+            }
+            UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
+            connect(reply, &UpnpDiscoveryReply::finished, reply, &UpnpDiscoveryReply::deleteLater);
+            connect(reply, &UpnpDiscoveryReply::finished, info, [this, reply, info] {
+                if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
+                    qCWarning(dcDenon()) << "Upnp discovery error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Device discovery failed."));
+                    return;
+                }
+                qCDebug(dcDenon()) << "UPnP discovery finished, found" << reply->deviceDescriptors().count() << "uPnP devices";
+                Q_FOREACH (const UpnpDeviceDescriptor &upnpThing, reply->deviceDescriptors()) {
+                    if (upnpThing.modelName().contains("HEOS", Qt::CaseSensitivity::CaseInsensitive)) {
+                        QString serialNumber =  info->thing()->paramValue(heosThingSerialNumberParamTypeId).toString();
+                        if (serialNumber == upnpThing.serialNumber()) {
+                            ThingId thingId = info->thing()->id();
+                            qCDebug(dcDenon()) << "Found Heos device, creating Heos connection";
+                            Heos *heos = createHeosConnection(upnpThing.hostAddress());
+                            m_heosConnections.insert(thingId, heos);
+                            m_asyncHeosSetups.insert(heos, info);
+                            // In case the setup is cancelled before we finish it...
+                            connect(info, &ThingSetupInfo::aborted, heos, &Heos::deleteLater);
+                            connect(heos, &Heos::destroyed, this, [thingId, heos, this] {
+                                m_asyncHeosSetups.remove(heos);
+                                m_heosConnections.remove(thingId);
+                            });
+                            heos->connectDevice();
+                            return;
+                        }
+                    }
+                }
+                qCDebug(dcDenon()) << "Device not found";
+                info->finish(Thing::ThingErrorHardwareNotAvailable);
+                return;
+            });
         }
-        return;
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
-        info->finish(Thing::ThingErrorNoError);
-        return;
+
+        qCDebug(dcDenon) << "Setup Heos player" << thing->name();
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (!parentThing) {
+            qCWarning(dcDenon()) << "Parent thing not found for Heos player" << thing->name();
+            return;
+        }
+        if (parentThing->setupStatus() == Thing::ThingSetupStatusComplete) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing] {
+                if (parentThing->setupStatus() == Thing::ThingSetupStatusComplete) {
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
+        }
     } else {
         info->finish(Thing::ThingErrorThingClassNotFound);
     }
@@ -490,6 +556,8 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginDenon::postSetupThing(Thing *thing)
 {
+    qCDebug(dcDenon()) << "Post setup thing" << thing->name();
+
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         AvrConnection *avrConnection = m_avrConnections.value(thing->id());
         thing->setStateValue(AVRX1000ConnectedStateTypeId, avrConnection->connected());
@@ -506,15 +574,6 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
     } else if (thing->thingClassId() == heosThingClassId) {
         Heos *heos = m_heosConnections.value(thing->id());
         thing->setStateValue(heosConnectedStateTypeId, heos->connected());
-        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
-            pluginStorage()->beginGroup(thing->id().toString());
-            QString username = pluginStorage()->value("username").toString();
-            QString password = pluginStorage()->value("password").toString();
-            pluginStorage()->endGroup();
-            heos->setUserAccount(username, password);
-        } else {
-            qCWarning(dcDenon()) << "Plugin storage doesn't contain this deviceId";
-        }
         heos->getPlayers();
         heos->getGroups();
 
@@ -531,6 +590,7 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
     }
 
     if (!m_pluginTimer) {
+        qCDebug(dcDenon()) << "Creating plugin timer";
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginDenon::onPluginTimer);
     }
@@ -557,13 +617,11 @@ void IntegrationPluginDenon::onPluginTimer()
         }
     }
 
-    foreach(Thing *thing, myThings()) {
+    foreach(Thing *thing, myThings().filterByThingClassId(heosThingClassId)) {
 
-        if (thing->thingClassId() == heosThingClassId) {
-            Heos *heos = m_heosConnections.value(thing->id());
-            heos->getPlayers();
-            heos->registerForChangeEvents(true);
-        }
+        Heos *heos = m_heosConnections.value(thing->id());
+        heos->getPlayers();
+        heos->registerForChangeEvents(true);
     }
 }
 
@@ -590,6 +648,14 @@ void IntegrationPluginDenon::onAvrConnectionChanged(bool status)
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         thing->setStateValue(AVRX1000ConnectedStateTypeId, denonConnection->connected());
+
+        if (!status) {
+            QString id = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+            QHostAddress address = findAvrById(id);
+            if (!address.isNull()){
+                denonConnection->setHostAddress(address);
+            }
+        }
     }
 }
 
@@ -816,6 +882,7 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
     if (!thing)
         return;
 
+    qCDebug(dcDenon()) << "Heos connection changed" << thing->name();
     if (thing->thingClassId() == heosThingClassId) {
 
         if (pluginStorage()->childGroups().contains(thing->id().toString())) {
@@ -825,12 +892,17 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
             pluginStorage()->endGroup();
             heos->setUserAccount(username, password);
         } else {
-            qCWarning(dcDenon()) << "Plugin storage doesn't contain this deviceId";
+            qCWarning(dcDenon()) << "Plugin storage doesn't contain this thingId";
         }
 
         if (!status) {
             thing->setStateValue(heosLoggedInStateTypeId, false);
             thing->setStateValue(heosUserDisplayNameStateTypeId, "");
+
+            qCDebug(dcDenon()) << "Starting Heos discovery";
+            UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
+            connect(reply, &UpnpDiscoveryReply::finished, reply, &UpnpDiscoveryReply::deleteLater);
+            connect(reply, &UpnpDiscoveryReply::finished, this, &IntegrationPluginDenon::onHeosDiscoveryFinished);
         }
         thing->setStateValue(heosConnectedStateTypeId, status);
         // update connection status for all child things
@@ -857,6 +929,10 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
     }
 
     QList<ThingDescriptor> heosPlayerDescriptors;
+    if (heosPlayers.isEmpty()) {
+        qCWarning(dcDenon()) << "Received empty player list, this is likely because of a bug in the Heos API, ignoring";
+        return;
+    }
     foreach (HeosPlayer *player, heosPlayers) {
         ThingDescriptor descriptor(heosPlayerThingClassId, player->name(), player->playerModel(), thing->id());
         ParamList params;
@@ -884,6 +960,7 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
             }
         }
         if (!playerAvailable) {
+            qCDebug(dcDenon()) << "Heos player vanished, removing" << thing->name();
             autoThingDisappeared(existingThing->id());
             m_playerBuffer.remove(playerId);
         }
@@ -1181,7 +1258,6 @@ void IntegrationPluginDenon::onHeosGroupsChanged()
 
 void IntegrationPluginDenon::onHeosUserChanged(bool signedIn, const QString &userName)
 {
-    Q_UNUSED(userName)
     Heos *heos = static_cast<Heos *>(sender());
 
     //This is to check if the credentials are correct
@@ -1200,6 +1276,30 @@ void IntegrationPluginDenon::onHeosUserChanged(bool signedIn, const QString &use
         thing->setStateValue(heosUserDisplayNameStateTypeId, userName);
     } else {
         qCDebug(dcDenon()) << "Unhandled user changed event" << signedIn << userName;
+    }
+}
+
+void IntegrationPluginDenon::onHeosDiscoveryFinished()
+{
+    UpnpDiscoveryReply *reply = static_cast<UpnpDiscoveryReply *>(sender());
+
+    if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
+        qCWarning(dcDenon()) << "Upnp discovery error" << reply->error();
+        return;
+    }
+
+    Q_FOREACH(const UpnpDeviceDescriptor &upnpThing, reply->deviceDescriptors()) {
+        Q_FOREACH(Thing *thing, myThings().filterByThingClassId(heosThingClassId)) {
+            QString serialNumber = thing->paramValue(heosThingSerialNumberParamTypeId).toString();
+            if (serialNumber == upnpThing.serialNumber()) {
+                Heos *heos = m_heosConnections.value(thing->id());
+                if (!heos) {
+                    qCWarning(dcDenon()) << "On heos discovery, heos connection not found for" << thing->name();
+                    return;
+                }
+                heos->setAddress(upnpThing.hostAddress());
+            }
+        }
     }
 }
 
@@ -1415,4 +1515,16 @@ Heos *IntegrationPluginDenon::createHeosConnection(const QHostAddress &address)
     connect(heos, &Heos::groupsChanged, this, &IntegrationPluginDenon::onHeosGroupsChanged);
     connect(heos, &Heos::userChanged, this, &IntegrationPluginDenon::onHeosUserChanged);
     return heos;
+}
+
+QHostAddress IntegrationPluginDenon::findAvrById(const QString &id)
+{
+    foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+        if (service.txt().contains("am=AVRX1000")) {
+            if (service.name().split("@").first() == id) {
+                return service.hostAddress();
+            }
+        }
+    }
+    return QHostAddress();
 }
