@@ -73,6 +73,7 @@ private:
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
     void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
+    void initSimplePowerSocket(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void initializeDoorLock(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
 };
