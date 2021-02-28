@@ -77,7 +77,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
     if (!m_refreshTimer) {
         qCDebug(dcSma()) << "Starting refresh timer";
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
         connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
     }
 
@@ -118,7 +118,7 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
         SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         if (!sunnyWebBox)
             return;
-        sunnyWebBox->getDevices();
+        sunnyWebBox->getPlantOverview();
         thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
     }
 }
