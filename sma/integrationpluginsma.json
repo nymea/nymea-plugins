@@ -13,7 +13,7 @@
                     "name": "sunnyWebBox",
                     "displayName": "Sunny WebBox",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["extendedsmartmeterproducer", "gateway"],
+                    "interfaces": ["extendedsmartmeterproducer"],
                     "paramTypes": [
                         {
                             "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
@@ -83,76 +83,6 @@
                             "displayNameEvent": "Error changed",
                             "type": "QString",
                             "defaultValue": "None"
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "15fc3dac-1868-4490-ba41-7c2f545926ad",
-                            "name": "searchDevices",
-                            "displayName": "Search new devices"
-                        }
-                    ]
-                },
-                {
-                    "id": "9cb72321-042e-4912-b23e-18516b6bbe96",
-                    "name": "inverter",
-                    "displayName": "Solar Inverter",
-                    "createMethods": ["auto"],
-                    "interfaces" : ["extendedsmartmeterproducer", "connectable"],
-                    "paramTypes": [
-                        {
-                            "id": "f43e8159-7337-4bd0-ba74-b6630e554e43",
-                            "name": "id",
-                            "displayName": "Device ID",
-                            "type": "QString",
-                            "readOnly": true
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "eda29c50-73ac-40e0-9c92-26fee352e688",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "a804eabf-d5b8-4c83-84e4-8ec994875950",
-                            "name": "currentPower",
-                            "displayName": "Current power",
-                            "displayNameEvent": "Current Power changed",
-                            "type": "double",
-                            "unit": "Watt",
-                            "defaultValue": "0"
-                        },
-                        {
-                            "id": "cd3a0abc-37cc-4f9c-8ff2-c7ccc2513880",
-                            "name": "eday",
-                            "displayName": "Energy of current day",
-                            "displayNameEvent": "Energy of day changed",
-                            "type": "double",
-                            "unit": "KiloWattHour",
-                            "defaultValue": "0"
-                        },
-                        {
-                            "id": "341596ec-690b-4bf6-b6ed-0f92fa1c7d6c",
-                            "name": "eyear",
-                            "displayName": "Energy of current year",
-                            "displayNameEvent": "Energy of year changed",
-                            "type": "int",
-                            "unit": "KiloWattHour",
-                            "defaultValue": "0"
-                        },
-                        {
-                            "id": "6b6c1ddb-692f-400f-8b8d-38e0e0ae34ba",
-                            "name": "totalEnergyProduced",
-                            "displayName": "Energy total",
-                            "displayNameEvent": "Energy total changed",
-                            "type": "double",
-                            "unit": "KiloWattHour",
-                            "defaultValue": "0"
                         }
                     ]
                 }

@@ -104,30 +104,8 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorNoError);
             connect(sunnyWebBox, &SunnyWebBox::connectedChanged, this, &IntegrationPluginSma::onConnectedChanged);
             connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
-            connect(sunnyWebBox, &SunnyWebBox::devicesReceived, this, &IntegrationPluginSma::onDevicesReceived);
-            connect(sunnyWebBox, &SunnyWebBox::processDataReceived, this, &IntegrationPluginSma::onProcessDataReceived);
-            connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
-            connect(sunnyWebBox, &SunnyWebBox::parametersReceived, this, &IntegrationPluginSma::onParametersReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
         });
-
-    } else if (thing->thingClassId() == inverterThingClassId) {
-        Thing *parentThing = myThings().findById(thing->parentId());
-        if (!parentThing) {
-            qCWarning(dcSma()) << "Could not find parentThing for thing " << thing->name();
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
-        }
-        if (parentThing->setupComplete()) {
-            info->finish(Thing::ThingErrorNoError);
-        } else {
-            //wait for the parent to finish the setup process
-            connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing] {
-
-                if (parentThing->setupComplete())
-                    info->finish(Thing::ThingErrorNoError);
-            });
-            return;
-        }
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -142,37 +120,6 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
             return;
         sunnyWebBox->getDevices();
         thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
-    } else if (thing->thingClassId() == inverterThingClassId) {
-        SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(myThings().findById(thing->parentId()));
-        if (!sunnyWebBox)
-            return;
-        QString key = thing->paramValue(inverterThingIdParamTypeId).toString();
-        sunnyWebBox->getParameters(QStringList() << key);
-        sunnyWebBox->getProcessData(QStringList() << key);
-    }
-}
-
-void IntegrationPluginSma::executeAction(ThingActionInfo *info)
-{
-    Thing *thing = info->thing();
-    Action action = info->action();
-
-    if (thing->thingClassId() == sunnyWebBoxThingClassId) {
-        SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
-        if (!sunnyWebBox)
-            return;
-        if (action.actionTypeId() == sunnyWebBoxSearchDevicesActionTypeId) {
-            QString requestId = sunnyWebBox->getDevices();
-            if (requestId.isEmpty()) {
-                return info->finish(Thing::ThingErrorHardwareNotAvailable);
-            }
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, info, [requestId, this] {m_asyncActions.remove(requestId);});
-        } else {
-            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
-        }
-    } else {
-        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -194,11 +141,6 @@ void IntegrationPluginSma::onRefreshTimer()
     Q_FOREACH(Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
         SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         sunnyWebBox->getPlantOverview();
-
-        Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
-            QString key = child->paramValue(inverterThingIdParamTypeId).toString();
-            sunnyWebBox->getProcessData(QStringList() << key);
-        }
     }
 }
 
@@ -208,21 +150,13 @@ void IntegrationPluginSma::onConnectedChanged(bool connected)
     if (!thing)
         return;
     thing->setStateValue(sunnyWebBoxConnectedStateTypeId, connected);
-    if (!connected) {
-        Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
-            child->setStateValue(inverterConnectedStateTypeId, false);
-        }
-    }
 }
 
 void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview)
 {
-    qCDebug(dcSma()) << "Plant overview received" << overview.status;
-    if (m_asyncSetup.contains(messageId)) {
-        ThingSetupInfo *info = m_asyncSetup.value(messageId);
-        info->finish(Thing::ThingErrorNoError);
-    }
+    Q_UNUSED(messageId)
 
+    qCDebug(dcSma()) << "Plant overview received" << overview.status;
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)
         return;
@@ -235,73 +169,4 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, Sun
         qCDebug(dcSma()) << "Received error" << overview.error;
         thing->setStateValue(sunnyWebBoxErrorStateTypeId, overview.error);
     }
-}
-
-void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices)
-{
-    qCDebug(dcSma()) << "Devices received, count:" << devices.count();
-    if (m_asyncActions.contains(messageId)) {
-        ThingActionInfo *info = m_asyncActions.value(messageId);
-        info->finish(Thing::ThingErrorNoError);
-    }
-
-    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
-    if (!thing)
-        return;
-
-    ThingDescriptors descriptors;
-    Q_FOREACH(SunnyWebBox::Device device, devices){
-        qCDebug(dcSma()) << "   - Device received" << device.name << device.key;
-        if (myThings().findByParams(ParamList() << Param(inverterThingIdParamTypeId, device.key)))
-            continue;
-        ThingDescriptor descriptor(inverterThingClassId, device.name, device.key ,thing->id());
-        ParamList params;
-        params << Param(inverterThingIdParamTypeId, device.key);
-        descriptor.setParams(params);
-        descriptors.append(descriptor);
-    }
-    emit autoThingsAppeared(descriptors);
-}
-
-void IntegrationPluginSma::onParametersReceived(const QString &messageId, const QString &deviceKey, const QList<SunnyWebBox::Parameter> &parameters)
-{
-    Q_UNUSED(messageId);
-    Thing *thing = myThings().findByParams(ParamList() << Param(inverterThingIdParamTypeId, deviceKey));
-    if (!thing)
-        return;
-    qCDebug(dcSma()) << "Parameters received";
-    Q_FOREACH(SunnyWebBox::Parameter parameter, parameters) {
-        qCDebug(dcSma()) << "   - " << parameter.name << parameter.value << parameter.unit;
-    }
-}
-
-void IntegrationPluginSma::onProcessDataReceived(const QString &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels)
-{
-    Q_UNUSED(messageId)
-    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
-    if (!thing)
-        return;
-
-    qCDebug(dcSma()) << "Process data received" << deviceKey;
-
-    Q_FOREACH(Thing *childThing, myThings().filterByParentId(thing->id())) {
-        if (childThing->paramValue(inverterThingIdParamTypeId).toString() == deviceKey) {
-            Q_FOREACH(QString channel, channels.keys()) {
-                qCDebug(dcSma()) << "   - Channel received" << channel << channels.value(channel);
-                //TODO parse data
-            }
-            break;
-        }
-    }
-}
-
-void IntegrationPluginSma::onParameterChannelsReceived(const QString &messageId, const QString &deviceKey, QStringList parameterChannels)
-{
-    Q_UNUSED(messageId)
-
-    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
-    if (!thing)
-        return;
-
-    qCDebug(dcSma()) << "Parameter channels received" << deviceKey << parameterChannels;
 }

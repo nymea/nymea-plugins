@@ -34,13 +34,9 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "sunnywebbox.h"
-#include "sunnywebboxcommunication.h"
 #include "discovery.h"
 
 #include <QDebug>
-#include <QHostAddress>
-#include <QUdpSocket>
-
 
 class IntegrationPluginSma: public IntegrationPlugin {
     Q_OBJECT
@@ -53,7 +49,6 @@ public:
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
 private slots:
@@ -61,17 +56,10 @@ private slots:
 
     void onConnectedChanged(bool connected);
     void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
-    void onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices);
-    void onParametersReceived(const QString &messageId, const QString &deviceKey, const QList<SunnyWebBox::Parameter> &parameters);
-    void onProcessDataReceived(const QString &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
-    void onParameterChannelsReceived(const QString &messageId, const QString &deviceKey, QStringList parameterChannels);
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<QString, ThingSetupInfo *> m_asyncSetup;
-    QHash<QString, ThingActionInfo *> m_asyncActions;
-    SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 };
 
 #endif // INTEGRATIONPLUGINSMA_H

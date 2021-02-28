@@ -32,7 +32,7 @@
 #define SUNNYWEBBOX_H
 
 #include "integrations/thing.h"
-#include "sunnywebboxcommunication.h"
+#include "network/networkaccessmanager.h"
 
 #include <QObject>
 #include <QHostAddress>
@@ -77,11 +77,11 @@ public:
     ~SunnyWebBox();
 
     QString getPlantOverview(); // Returns an object with the following plant data: PAC, E-TODAY, E-TOTAL, MODE, ERROR
-    QString getDevices(); //Returns a hierarchical list of all detected plant devices.
+    QString getDevices();       // Returns a hierarchical list of all detected plant devices.
     QString getProcessDataChannels(const QString &deviceKey); //Returns a list with the meta names of the available process data channels for a particular device type.
-    QString getProcessData(const QStringList &deviceKeys); //Returns process data for up to 5 devices per request.
-    QString getParameterChannels(const QString &deviceKey); //Returns a list with the meta names of the available parameter channels for a particular device type
-    QString getParameters(const QStringList &deviceKeys); //Returns the parameter values of up to 5 devices
+    QString getProcessData(const QStringList &deviceKeys);    //Returns process data for up to 5 devices per request.
+    QString getParameterChannels(const QString &deviceKey);   //Returns a list with the meta names of the available parameter channels for a particular device type
+    QString getParameters(const QStringList &deviceKeys);     //Returns the parameter values of up to 5 devices
     QString setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
 
     void setHostAddress(const QHostAddress &address);
@@ -95,8 +95,8 @@ private:
     QString sendMessage(const QHostAddress &address, const QString &procedure);
     QString sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
     void parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result);
-
     void setConnectionStatus(bool connected);
+
 signals:
     void connectedChanged(bool connected);
 
