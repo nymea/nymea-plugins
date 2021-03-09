@@ -54,7 +54,7 @@
                     "name": "temperatureSensor",
                     "displayName": "Temperature sensor",
                     "createMethods": ["user"],
-                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel", "connectable"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "battery", "connectable"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -886,10 +886,9 @@
                             "id": "c977e60a-e820-4647-addb-cf0b39732ffb",
                             "name": "charging",
                             "displayName": "Charging",
-                            "displayNameEvent": "Charging amount changed",
-                            "type": "double",
-                            "unit": "KiloWatt",
-                            "defaultValue": 0.70
+                            "displayNameEvent": "Charging changed",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "bdf328a6-eebc-4b67-8165-551bc21e9be6",

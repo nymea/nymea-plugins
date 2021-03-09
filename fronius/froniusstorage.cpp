@@ -84,7 +84,7 @@ void FroniusStorage::updateThingInfo(const QByteArray &data)
     // copy retrieved information to thing states
     if (storageInfoMap.contains("StateOfCharge_Relative")) {
         pluginThing()->setStateValue(storageBatteryLevelStateTypeId, storageInfoMap.value("StateOfCharge_Relative").toInt());
-        if ((pluginThing()->stateValue(storageChargingStateTypeId) != "charging") && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
+        if (!pluginThing()->stateValue(storageChargingStateTypeId).toBool() && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
             pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, true);
         } else {
             pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, false);
@@ -122,11 +122,6 @@ void FroniusStorage::updateActivityInfo(const QByteArray &data)
     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
 
     float charge_akku = dataMap.value("Site").toMap().value("P_Akku").toFloat();
-    if (charge_akku == 0) {
-        pluginThing()->setStateValue(storageChargingStateTypeId, "inactive");
-    } else if (charge_akku < 0) {
-        pluginThing()->setStateValue(storageChargingStateTypeId, "charging");
-    } else {
-        pluginThing()->setStateValue(storageChargingStateTypeId, "discharging");
-    }
+    pluginThing()->setStateValue(storageChargingStateTypeId, charge_akku < 0);
+    pluginThing()->setStateValue(storageDischargingStateTypeId, charge_akku > 0);
 }

@@ -939,7 +939,7 @@
                     "name": "shellyButton1",
                     "displayName": "Shelly button 1",
                     "createMethods": ["discovery"],
-                    "interfaces": ["longpressmultibutton", "wirelessconnectable", "batterylevel", "update"],
+                    "interfaces": ["longpressmultibutton", "wirelessconnectable", "battery", "update"],
                     "paramTypes": [
                         {
                             "id": "ef42a9f5-b6f4-4bb9-ad17-a9419be4a44e",
@@ -1266,7 +1266,7 @@
                     "name": "shellyHT",
                     "displayName": "Shelly H&T",
                     "createMethods": ["discovery"],
-                    "interfaces": ["temperaturesensor", "humiditysensor", "wirelessconnectable", "batterylevel", "update"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "wirelessconnectable", "battery", "update"],
                     "paramTypes": [
                         {
                             "id": "b6882bd5-7b1f-447b-9aa7-34aeeb538697",

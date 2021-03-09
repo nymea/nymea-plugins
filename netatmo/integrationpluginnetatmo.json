@@ -183,7 +183,7 @@
                     "id": "6cc01d62-7317-4ec4-8ac4-a4cab762c179",
                     "name": "outdoor",
                     "displayName": "Outdoor Station",
-                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel", "wirelessconnectable"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "battery", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {

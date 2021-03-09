@@ -29,7 +29,7 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable", "batterylevel"],
+                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable", "battery"],
                     "paramTypes": [
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
