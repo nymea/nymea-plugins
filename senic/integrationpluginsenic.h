@@ -65,7 +65,6 @@ private slots:
     void onReconnectTimeout();
 
     void onConnectedChanged(bool connected);
-    void onBatteryValueChanged(const uint &percentage);
     void onButtonPressed();
     void onButtonLongPressed();
     void onSwipeDetected(const Nuimo::SwipeDirection &direction);
