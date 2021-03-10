@@ -1,0 +1,13 @@
+{
+    "title": "Miele",
+    "tagline": "Connect to Miele appliances.",
+    "icon": "miele.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "online-service"
+    ]
+}
