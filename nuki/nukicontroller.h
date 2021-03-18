@@ -49,6 +49,11 @@ public:
         // Read state
         NukiControllerStateReadingLockStates,
 
+        // Read configuration
+        NukiControllerStateReadingConfigurationRequestChallange,
+        NukiControllerStateReadingConfigurationExecute,
+        NukiControllerStateReadingConfiguration,
+
         // Lock action
         NukiControllerStateLockActionRequestChallange,
         NukiControllerStateLockActionExecute,
@@ -80,6 +85,7 @@ public:
 
     // Actions
     bool readLockState();
+    bool readConfiguration();
     bool lock();
     bool unlock();
     bool unlatch();
@@ -119,11 +125,13 @@ private:
 
     // Data processors
     void processNukiStatesData(const QByteArray &data);
+    void processNukiConfigData(const QByteArray &data);
     void processNukiErrorReport(const QByteArray &data);
     void processUserDataNotification(const QByteArray nonce, quint32 authorizationIdentifier, const QByteArray &privateData);
 
     // State action methods
     void sendReadLockStateRequest();
+    void sendReadConfigurationRequest();
     void sendRequestChallengeRequest();
     void sendLockActionRequest(NukiUtils::LockAction lockAction, quint8 flag = 0);
 

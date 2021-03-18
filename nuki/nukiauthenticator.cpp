@@ -58,6 +58,7 @@ NukiAuthenticator::NukiAuthenticator(const QBluetoothHostInfo &hostInfo, Bluetoo
     // Check if we have authentication data for this thing and set initial state
     loadData();
     if (isValid()) {
+        qCDebug(dcNuki()) << "Found valid authroization data for" << hostInfo.address().toString();
         setState(AuthenticationStateAuthenticated);
     } else {
         setState(AuthenticationStateUnauthenticated);
@@ -81,7 +82,7 @@ bool NukiAuthenticator::isValid() const
     return !m_privateKey.isEmpty() &&
             !m_publicKey.isEmpty() &&
             !m_publicKeyNuki.isEmpty() &&
-            !m_authorizationId == 0 &&
+            m_authorizationId != 0 &&
             !m_authorizationIdRawData.isEmpty() &&
             !m_uuid.isEmpty();
 }
@@ -208,7 +209,6 @@ void NukiAuthenticator::setState(NukiAuthenticator::AuthenticationState state)
 
     switch (m_state) {
     case AuthenticationStateUnauthenticated:
-        resetExpectedData();
         break;
     case AuthenticationStateAuthenticated:
         qCDebug(dcNuki()) << "Device" << m_hostInfo.address().toString() << "authenticated.";
@@ -218,47 +218,37 @@ void NukiAuthenticator::setState(NukiAuthenticator::AuthenticationState state)
         if (m_debug) qCDebug(dcNuki()) << "    Authorization ID:" << NukiUtils::convertByteArrayToHexStringCompact(m_authorizationIdRawData) << m_authorizationId;
         break;
     case AuthenticationStateRequestPublicKey:
-        resetExpectedData(NukiUtils::CommandPublicKey, 2);
         requestPublicKey();
         break;
     case AuthenticationStateGenerateKeyPair:
-        resetExpectedData();
         generateKeyPair();
         setState(AuthenticationStateSendPublicKey);
         break;
     case AuthenticationStateSendPublicKey:
-        resetExpectedData(NukiUtils::CommandChallenge, 2);
         sendPublicKey();
         setState(AuthenticationStateReadChallenge);
         break;
     case AuthenticationStateReadChallenge:
-        resetExpectedData(NukiUtils::CommandChallenge, 2);
         break;
     case AuthenticationStateAutorization:
         sendAuthorizationAuthenticator();
         setState(AuthenticationStateReadSecondChallenge);
         break;
     case AuthenticationStateReadSecondChallenge:
-        resetExpectedData(NukiUtils::CommandChallenge, 2);
         break;
     case AuthenticationStateAuthenticateData:
-        resetExpectedData();
         sendAuthenticateData();
         setState(AuthenticationStateAuthorizationId);
         break;
     case AuthenticationStateAuthorizationId:
-        resetExpectedData(NukiUtils::CommandAuthorizationId, 5);
         break;
     case AuthenticationStateAuthorizationIdConfirm:
-        resetExpectedData();
         sendAuthoizationIdConfirm();
         setState(AuthenticationStateStatus);
         break;
     case AuthenticationStateStatus:
-        resetExpectedData(NukiUtils::CommandStatus);
         break;
     case AuthenticationStateError:
-        resetExpectedData();
         emit errorOccured(m_error);
         emit authenticationProcessFinished(false);
         break;
@@ -266,14 +256,6 @@ void NukiAuthenticator::setState(NukiAuthenticator::AuthenticationState state)
         qCWarning(dcNuki()) << "Authenticator: Unknown state.";
         break;
     }
-}
-
-void NukiAuthenticator::resetExpectedData(NukiUtils::Command command, int expectedCount)
-{
-    m_currentReceivingCommand = command;
-    m_currentReceivingCurrentCount = 0;
-    m_currentReceivingExpectedCount = expectedCount;
-    m_currentReceivingData.clear();
 }
 
 bool NukiAuthenticator::createAuthenticator(const QByteArray content)
@@ -469,7 +451,6 @@ void NukiAuthenticator::loadData()
 
 void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &value)
 {
-    if (m_debug) qCDebug(dcNuki()) << "Authenticator data received: <--" << NukiUtils::convertByteArrayToHexStringCompact(value);
 
     // Process pairing characteristic data
     QByteArray data = QByteArray(value);
@@ -478,12 +459,9 @@ void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &val
     quint16 command;
     stream >> command;
 
-    // Check if we are collecting data for multi part notification
-    if (m_currentReceivingCurrentCount > 0) {
-        command = m_currentReceivingCommand;
-    }
+    m_currentReceivingData = value;
 
-    if (m_debug) qCDebug(dcNuki()) << static_cast<NukiUtils::Command>(command);
+    if (m_debug) qCDebug(dcNuki()) << "Authenticator data received: <--" << static_cast<NukiUtils::Command>(command) << "|" << NukiUtils::convertByteArrayToHexStringCompact(value);
 
     switch (command) {
     case NukiUtils::CommandErrorReport:
@@ -500,81 +478,70 @@ void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &val
         setState(AuthenticationStateError);
         break;
     case NukiUtils::CommandPublicKey:
-        m_currentReceivingCurrentCount++;
-        m_currentReceivingData.append(value);
-        if (m_currentReceivingCurrentCount == m_currentReceivingExpectedCount) {
-            if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
-                qCWarning(dcNuki()) << "Invalid CRC CCITT value for public key message.";
-                // FIXME: check what to do if crc is invalid
-            }
-
-            qCDebug(dcNuki()) << "Authenticator: Nuki public key message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
-            m_publicKeyNuki = m_currentReceivingData.mid(2, 32);
-            if (m_debug) qCDebug(dcNuki()) << "Authenticator: --> Nuki public key:" <<   NukiUtils::convertByteArrayToHexStringCompact(m_publicKeyNuki);
-
-            setState(AuthenticationStateGenerateKeyPair);
+        if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
+            qCWarning(dcNuki()) << "Invalid CRC CCITT value for public key message.";
+            // FIXME: check what to do if crc is invalid
         }
+
+        qCDebug(dcNuki()) << "Authenticator: Nuki public key message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
+        m_publicKeyNuki = m_currentReceivingData.mid(2, 32);
+        if (m_debug) qCDebug(dcNuki()) << "Authenticator: --> Nuki public key:" <<   NukiUtils::convertByteArrayToHexStringCompact(m_publicKeyNuki);
+
+        setState(AuthenticationStateGenerateKeyPair);
         break;
     case NukiUtils::CommandChallenge:
-        m_currentReceivingCurrentCount++;
-        m_currentReceivingData.append(value);
-        if (m_currentReceivingCurrentCount == m_currentReceivingExpectedCount) {
-            qCDebug(dcNuki()) << "Authenticator: Nuki challenge message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
-            if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
-                qCWarning(dcNuki()) << "Invalid CRC CCITT value for challenge message.";
-                // FIXME: check what to do if crc is invalid
-            }
+        qCDebug(dcNuki()) << "Authenticator: Nuki challenge message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
+        if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
+            qCWarning(dcNuki()) << "Invalid CRC CCITT value for challenge message.";
+            // FIXME: check what to do if crc is invalid
+        }
 
-            m_nonceNuki = m_currentReceivingData.mid(2, 32);
-            if (m_debug) qCDebug(dcNuki()) << "Authenticator: --> Nuki nonce:" << NukiUtils::convertByteArrayToHexStringCompact(m_nonceNuki);
-            // Check if this was from the first challenge read or the second
-            if (m_state == AuthenticationStateReadChallenge) {
-                setState(AuthenticationStateAutorization);
-            } else if (m_state == AuthenticationStateReadSecondChallenge) {
-                setState(AuthenticationStateAuthenticateData);
-            } else {
-                qCWarning(dcNuki()) << "Received a challenge without expecting one.";
-                setState(AuthenticationStateError);
-            }
+        m_nonceNuki = m_currentReceivingData.mid(2, 32);
+        if (m_debug) qCDebug(dcNuki()) << "Authenticator: --> Nuki nonce:" << NukiUtils::convertByteArrayToHexStringCompact(m_nonceNuki);
+        // Check if this was from the first challenge read or the second
+        if (m_state == AuthenticationStateReadChallenge) {
+            setState(AuthenticationStateAutorization);
+        } else if (m_state == AuthenticationStateReadSecondChallenge) {
+            setState(AuthenticationStateAuthenticateData);
+        } else {
+            qCWarning(dcNuki()) << "Received a challenge without expecting one.";
+            setState(AuthenticationStateError);
         }
         break;
-    case NukiUtils::CommandAuthorizationId:
-        m_currentReceivingCurrentCount++;
-        m_currentReceivingData.append(value);
-        if (m_currentReceivingCurrentCount == m_currentReceivingExpectedCount) {
-            qCDebug(dcNuki()) << "Authenticator: Nuki authorization ID message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
+    case NukiUtils::CommandAuthorizationId: {
+        qCDebug(dcNuki()) << "Authenticator: Nuki authorization ID message received" << (m_debug ? NukiUtils::convertByteArrayToHexStringCompact(m_currentReceivingData) : "");
 
-            if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
-                qCWarning(dcNuki()) << "Invalid CRC CCITT value for challenge message.";
-                // FIXME: check what to do if crc is invalid
-            }
-
-            // Parse data
-            QByteArray message = m_currentReceivingData.mid(2, m_currentReceivingData.count() - 4);
-            QByteArray authenticator = message.left(32);
-            Q_ASSERT_X(authenticator.count() == 32, "data length", "Nuki nonce has not the correct length.");
-
-            // Read authorization ID
-            m_authorizationIdRawData = message.mid(32, 4);
-            QDataStream stream(&m_authorizationIdRawData, QIODevice::ReadOnly);
-            stream.setByteOrder(QDataStream::LittleEndian);
-            stream >> m_authorizationId;
-
-            m_uuid = message.mid(36, 16);
-            Q_ASSERT_X(m_uuid.count() == 16, "data length", "UUIS has not the correct length.");
-
-            m_nonceNuki = message.mid(52, 32);
-            Q_ASSERT_X(m_nonceNuki.count() == 32, "data length", "Nuki nonce has not the correct length.");
-
-            if (m_debug) qCDebug(dcNuki()) << "    Full message    :" <<   NukiUtils::convertByteArrayToHexStringCompact(message);
-            if (m_debug) qCDebug(dcNuki()) << "    Authenticator   :" <<   NukiUtils::convertByteArrayToHexStringCompact(authenticator);
-            if (m_debug) qCDebug(dcNuki()) << "    Authorization ID:" <<   NukiUtils::convertByteArrayToHexStringCompact(m_authorizationIdRawData) << m_authorizationId;
-            if (m_debug) qCDebug(dcNuki()) << "    UUID data       :" <<   NukiUtils::convertByteArrayToHexStringCompact(m_uuid);
-            if (m_debug) qCDebug(dcNuki()) << "    Nuki nonce      :" <<   NukiUtils::convertByteArrayToHexStringCompact(m_nonceNuki);
-
-            setState(AuthenticationStateAuthorizationIdConfirm);
+        if (!NukiUtils::validateMessageCrc(m_currentReceivingData)) {
+            qCWarning(dcNuki()) << "Invalid CRC CCITT value for challenge message.";
+            // FIXME: check what to do if crc is invalid
         }
+
+        // Parse data
+        QByteArray message = m_currentReceivingData.mid(2, m_currentReceivingData.count() - 4);
+        QByteArray authenticator = message.left(32);
+        Q_ASSERT_X(authenticator.count() == 32, "data length", "Nuki nonce has not the correct length.");
+
+        // Read authorization ID
+        m_authorizationIdRawData = message.mid(32, 4);
+        QDataStream stream(&m_authorizationIdRawData, QIODevice::ReadOnly);
+        stream.setByteOrder(QDataStream::LittleEndian);
+        stream >> m_authorizationId;
+
+        m_uuid = message.mid(36, 16);
+        Q_ASSERT_X(m_uuid.count() == 16, "data length", "UUID has not the correct length.");
+
+        m_nonceNuki = message.mid(52, 32);
+        Q_ASSERT_X(m_nonceNuki.count() == 32, "data length", "Nuki nonce has not the correct length.");
+
+        if (m_debug) qCDebug(dcNuki()) << "    Full message    :" <<   NukiUtils::convertByteArrayToHexStringCompact(message);
+        if (m_debug) qCDebug(dcNuki()) << "    Authenticator   :" <<   NukiUtils::convertByteArrayToHexStringCompact(authenticator);
+        if (m_debug) qCDebug(dcNuki()) << "    Authorization ID:" <<   NukiUtils::convertByteArrayToHexStringCompact(m_authorizationIdRawData) << m_authorizationId;
+        if (m_debug) qCDebug(dcNuki()) << "    UUID data       :" <<   NukiUtils::convertByteArrayToHexStringCompact(m_uuid);
+        if (m_debug) qCDebug(dcNuki()) << "    Nuki nonce      :" <<   NukiUtils::convertByteArrayToHexStringCompact(m_nonceNuki);
+
+        setState(AuthenticationStateAuthorizationIdConfirm);
         break;
+    }
     case NukiUtils::CommandStatus: {
         quint8 status;
         stream >> status;
@@ -604,7 +571,6 @@ void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &val
     }
     default:
         qCWarning(dcNuki()) << "Authenticator: Unhandled command identifier for parining charateristic" << NukiUtils::convertUint16ToHexString(command);
-        resetExpectedData();
         break;
     }
 }

@@ -110,7 +110,6 @@ private:
 
     // State machine
     void setState(AuthenticationState state);
-    void resetExpectedData(NukiUtils::Command command = NukiUtils::CommandRequestData, int expectedCount = 1);
 
     // Helper methods
     bool createAuthenticator(const QByteArray content);

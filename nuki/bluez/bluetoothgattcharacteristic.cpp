@@ -336,7 +336,7 @@ QDebug operator<<(QDebug debug, BluetoothGattCharacteristic *characteristic)
         debug.noquote().nospace() << " B";
 
     if (characteristic->properties().testFlag(BluetoothGattCharacteristic::Read))
-        debug.noquote().nospace() << " R ";
+        debug.noquote().nospace() << " R";
 
     if (characteristic->properties().testFlag(BluetoothGattCharacteristic::WriteNoResponse))
         debug.noquote().nospace() << " WNR";
