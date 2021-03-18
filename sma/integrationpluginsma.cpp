@@ -75,12 +75,6 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
     qCDebug(dcSma()) << "Setup thing" << thing->name();
 
-    if (!m_refreshTimer) {
-        qCDebug(dcSma()) << "Starting refresh timer";
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
-        connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
-    }
-
     if (thing->thingClassId() == sunnyWebBoxThingClassId) {
         //check if a Sunny WebBox is already added with this IPv4Address
         foreach(SunnyWebBox *sunnyWebBox, m_sunnyWebBoxes.values()) {
@@ -106,6 +100,13 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
         });
+
+        if (!m_refreshTimer) {
+            qCDebug(dcSma()) << "Starting refresh timer";
+            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
+            connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
+        }
+
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
