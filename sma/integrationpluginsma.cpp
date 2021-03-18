@@ -93,20 +93,21 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
         connect(info, &ThingSetupInfo::aborted, sunnyWebBox, &SunnyWebBox::deleteLater);
         connect(sunnyWebBox, &SunnyWebBox::destroyed, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
         QString requestId = sunnyWebBox->getPlantOverview();
-        connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, info, [sunnyWebBox, info, this] {
-            qCDebug(dcSma()) << "Received plant overview, finishing setup";
+        connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, info, [=] (const QString &messageId, SunnyWebBox::Overview overview) {
+            qCDebug(dcSma()) << "Received plant overview" << messageId << "Finish setup";
+            Q_UNUSED(overview)
+
             info->finish(Thing::ThingErrorNoError);
             connect(sunnyWebBox, &SunnyWebBox::connectedChanged, this, &IntegrationPluginSma::onConnectedChanged);
             connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
+
+            if (!m_refreshTimer) {
+                qCDebug(dcSma()) << "Starting refresh timer";
+                m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
+                connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
+            }
         });
-
-        if (!m_refreshTimer) {
-            qCDebug(dcSma()) << "Starting refresh timer";
-            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
-            connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
-        }
-
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
