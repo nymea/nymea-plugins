@@ -200,7 +200,14 @@ void IntegrationPluginNuki::confirmPairing(ThingPairingInfo *info, const QString
 
     m_pairingInfo = info;
     m_asyncSetupNuki->startAuthenticationProcess(info->transactionId());
-    connect(info, &ThingPairingInfo::destroyed, this, [this] { m_pairingInfo = nullptr; });
+    connect(info, &ThingPairingInfo::destroyed, this, [this] {
+        m_pairingInfo = nullptr;
+        if (m_asyncSetupNuki) {
+            qCDebug(dcNuki()) << "Deleting the temporary pairing device";
+            m_asyncSetupNuki->deleteLater();
+            m_asyncSetupNuki = nullptr;
+        }
+    });
 }
 
 void IntegrationPluginNuki::postSetupThing(Thing *thing)
