@@ -153,6 +153,7 @@ void Nuki::printServices()
 
 void Nuki::readDeviceInformationCharacteristics()
 {
+    qCDebug(dcNuki()) << "Start reading device information";
     m_initUuidsToRead.append(QBluetoothUuid::SerialNumberString);
     m_initUuidsToRead.append(QBluetoothUuid::HardwareRevisionString);
     m_initUuidsToRead.append(QBluetoothUuid::FirmwareRevisionString);

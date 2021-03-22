@@ -312,7 +312,8 @@ void NukiController::processUserDataNotification(const QByteArray nonce, quint32
         if (command == NukiUtils::CommandNukiStates) {
             processNukiStatesData(payload);
             emit readNukiStatesFinished(true);
-            setState(NukiControllerStateReadingConfigurationRequestChallange);
+            // TODO: read configuration
+            setState(NukiControllerStateIdle);
             return;
         }
         break;
