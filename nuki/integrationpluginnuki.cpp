@@ -308,8 +308,9 @@ void IntegrationPluginNuki::onBluetoothDiscoveryFinished(ThingDiscoveryInfo *inf
     m_bluetoothAdapter->stopDiscovering();
 
     foreach (BluetoothDevice *thing, m_bluetoothAdapter->devices()) {
-        if (!bluetoothDeviceAlreadyAdded(thing->address()) && thing->name().contains("Nuki")) {
-            ThingDescriptor descriptor(nukiThingClassId, "Nuki", thing->address().toString());
+        qCDebug(dcNuki()) << "Found bluetooth device" << thing->name() << thing->address().toString();
+        if (!bluetoothDeviceAlreadyAdded(thing->address()) && thing->name().toLower().contains("nuki")) {
+            qCDebug(dcNuki()) << "Found nuki smart lock which has not been added yet";
 
             // Get serial number from name
             QString serialNumber;
@@ -320,6 +321,7 @@ void IntegrationPluginNuki::onBluetoothDiscoveryFinished(ThingDiscoveryInfo *inf
                 qCWarning(dcNuki()) << "Could not read serial number from bluetooth thing name" << thing->name();
             }
 
+            ThingDescriptor descriptor(nukiThingClassId, "Nuki", thing->address().toString());
             ParamList params;
             params.append(Param(nukiThingNameParamTypeId, thing->name()));
             params.append(Param(nukiThingMacParamTypeId, thing->address().toString()));

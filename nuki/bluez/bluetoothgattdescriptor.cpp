@@ -76,13 +76,11 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(const QDBusObjectPath &path, co
 
     processProperties(properties);
 
-    readValue();
-
-//    QDBusPendingCall readingCall = m_descriptorInterface->asyncCall("GetAll", QVariantMap());
-//    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(readingCall, this);
-//    connect(watcher, &QDBusPendingCallWatcher::finished, this, [=](){
-//        qCDebug(dcBluez()) << "Get descriptor properties finished";
-//    });
+    QDBusPendingCall readingCall = m_descriptorInterface->asyncCall("GetAll", QVariantMap());
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(readingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [=](){
+        qCDebug(dcBluez()) << "Get descriptor properties finished";
+    });
 }
 
 void BluetoothGattDescriptor::processProperties(const QVariantMap &properties)
