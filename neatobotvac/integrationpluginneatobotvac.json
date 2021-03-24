@@ -1,0 +1,175 @@
+{
+    "name": "neato",
+    "displayName": "Neato",
+    "id": "4f6ecb6f-a7fe-4fdb-b8d8-45b1f235110c",
+    "apiKeys": ["neato"],
+    "vendors": [
+        {
+            "name": "neato",
+            "displayName": "Neato Robotics",
+            "id": "d2a234a5-0aeb-4c04-98d5-6428cd266433",
+            "thingClasses": [
+                {
+                    "id": "fe594fb0-b712-4f23-8267-649eb459747b",
+                    "name": "account",
+                    "displayName": "Neato account",
+                    "createMethods": ["User"],
+                    "interfaces": ["account"],
+                    "setupMethod": "oauth",
+                    "stateTypes":[
+                        {
+                            "id": "e8f47781-e3fd-416f-a9ac-51ef942d0573",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected/disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "b0db7079-49f0-444a-9c55-4bb4c764f3cb",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in or out",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a4b5f07f-e71a-4c3a-8d6b-50162a455159",
+                            "name": "getMaps",
+                            "displayName": "Get available maps"
+                        }
+                    ]
+                },
+                {
+                    "id": "b924c87a-f783-4f45-a3af-929684c24aea",
+                    "name": "robot",
+                    "displayName": "Neato robot",
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "def9a4bb-7a7e-4e3a-a63c-c55a105abb5e",
+                            "name": "serial",
+                            "displayName": "Robot Serial",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "3793e48b-043e-43cb-b672-7c1e2e90bc8e",
+                            "name": "secret",
+                            "displayName": "Secret",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "141f0d98-1806-432c-aaac-c0d3a89a8e58",
+                            "name": "mapId",
+                            "displayName": "Map ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "interfaces":[
+
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "dabaafd3-908f-4f06-8039-5a7a729346da",
+                            "name": "eco",
+                            "displayName": "Eco",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "86694abb-5633-4e62-bd6c-325eb246c683",
+                            "name": "care",
+                            "displayName": "Extra Care",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "f72bcfbd-a262-44b3-ad75-9bb094aa2bb1",
+                            "name": "noGoLines",
+                            "displayName": "No-go Lines Enabled",
+                            "type": "bool",
+                            "defaultValue": true
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "dce4f7f3-a0a6-46bb-9216-c9089d9e9b0d",
+                            "name": "cleaning",
+                            "displayName": "Cleaning",
+                            "displayNameEvent": "Cleaning yes/no",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "0f925abf-396c-437e-b259-2fed7eafe7f4",
+                            "name": "paused",
+                            "displayName": "Paused",
+                            "displayNameEvent": "Cleaning paused yes/no",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "1b8abd35-8276-44ba-8c75-a647877b2e11",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Robot charging yes/no",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "805175ec-c2e4-4fbe-9505-282750ef1467",
+                            "name": "docked",
+                            "displayName": "Docked",
+                            "displayNameEvent": "Robot docked yes/no",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "20ed8767-806f-4ec2-8626-842cd398f9df",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level percentage",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "1f774998-5fa7-4e3b-8ab0-a8402dd561bb",
+                            "name": "startCleaning",
+                            "displayName": "Start/pause cleaning"
+                        },
+                        {
+                            "id": "5178a803-5696-4ee1-80a4-2c7c20a5043a",
+                            "name": "goToBase",
+                            "displayName": "Go to base"
+                        },
+                        {
+                            "id": "30775042-55a7-4f1b-9042-a9bdeadc4b0d",
+                            "name": "stopCleaning",
+                            "displayName": "Stop cleaning"
+                        },
+                        {
+                            "id": "95ba515b-0023-4a98-a867-ca8286512a4e",
+                            "name": "getBoundaries",
+                            "displayName": "Get No-go Lines"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
