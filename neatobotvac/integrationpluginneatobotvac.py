@@ -88,11 +88,14 @@ def setupThing(info):
             logger.log("MapId type: ", type(mapId), " MapId contents: ", mapId)
             mapName = mapInfo2['name']
             logger.log("MapName type: ", type(mapName), " MapName contents: ", mapName)
-            mapIDshort = mapId
+            rbtMapBound = robot.get_map_boundaries(mapId)
+            logger.log("rbtMapBound Type: ", type(rbtMapBound), "rbtMapBound Contents: ", rbtMapBound)
+            rbtBoundData = rbtMapBound.text
+            logger.log("rbtBoundData Type: ", type(rbtBoundData), "rbtBoundData Contents: ", rbtBoundData)
             thingDescriptor.params = [
                 nymea.Param(robotThingSerialParamTypeId, robot.serial),
                 nymea.Param(robotThingSecretParamTypeId, robot.secret),
-                nymea.Param(robotThingMapIdParamTypeId, mapIDshort)
+                nymea.Param(robotThingMapIdParamTypeId, mapId)
             ]
             thingDescriptors.append(thingDescriptor)
 
@@ -203,9 +206,11 @@ def executeAction(info):
 
     # To do: get available boundaries to use with start_cleaning action
     if info.actionTypeId == robotGetBoundariesActionTypeId:
-        # rbtMapBound = thingsAndRobots[info.thing].get_map_boundaries()
-        # rbtMapBoundJson = rbtMapBound.json()
-        # logger.log("Robot Map Boundaries", rbtMapBoundJson)
+        mapIDparam = info.thing.paramValue(robotThingMapIdParamTypeId)
+        rbtMapBound = thingsAndRobots[info.thing].get_map_boundaries(mapIDparam)
+        logger.log("rbtMapBound Type: ", type(rbtMapBound), "rbtMapBound Contents: ", rbtMapBound)
+        rbtBoundData = rbtMapBound.text
+        logger.log("rbtBoundData Type: ", type(rbtBoundData), "rbtBoundData Contents: ", rbtBoundData)
         threading.Timer(5, pollService).start()
         info.finish(nymea.ThingErrorNoError)
 
