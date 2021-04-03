@@ -349,7 +349,7 @@
                     "name": "doorSensor",
                     "displayName": "Door sensor",
                     "createMethods": ["auto"],
-                    "interfaces": ["closablesensor", "batterylevel", "wirelessconnectable"],
+                    "interfaces": ["closablesensor", "battery", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "98d4265d-99b7-4849-97ec-a7eae3b275ff",
