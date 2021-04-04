@@ -47,7 +47,7 @@ IntegrationPluginTelegram::~IntegrationPluginTelegram()
 
 void IntegrationPluginTelegram::discoverThings(ThingDiscoveryInfo *info)
 {
-    QString token = info->params().paramValue(telegramDiscoveryTokenParamTypeId).toString();
+    QString token = info->params().paramValue(telegramDiscoveryTokenParamTypeId).toString().trimmed();
     QUrl url(QString("https://api.telegram.org/bot%1/getUpdates").arg(token));
     QNetworkRequest request(url);
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
@@ -70,20 +70,32 @@ void IntegrationPluginTelegram::discoverThings(ThingDiscoveryInfo *info)
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened on the Telegram servers."));
             return;
         }
+        qCDebug(dcTelegram()) << "Discovery data:" << qUtf8Printable(jsonDoc.toJson());
+
         QVariantList entries = jsonDoc.toVariant().toMap().value("result").toList();
         QList<int> addedChats;
         foreach (const QVariant &entry, entries) {
-            QVariantMap messageMap = entry.toMap().value("message").toMap();
-            int chatId = messageMap.value("chat").toMap().value("id").toInt();
+            QVariantMap entryMap = entry.toMap();
+            QVariantMap chatMap;
+            if (entryMap.contains("message")) {
+                chatMap = entry.toMap().value("message").toMap().value("chat").toMap();
+            } else if (entryMap.contains("my_chat_member")) {
+                chatMap = entry.toMap().value("my_chat_member").toMap().value("chat").toMap();
+            } else {
+                qCWarning(dcTelegram()) << "Neither message nor my_chat_member found in entry. Skipping:" << qUtf8Printable(QJsonDocument::fromVariant(entryMap).toJson());
+                continue;
+            }
+            int chatId = chatMap.value("id").toInt();
             if (addedChats.contains(chatId)) {
+                qCDebug(dcTelegram()) << "Skipping chat" << chatId << "(Already added to discovery results)";
                 continue;
             }
             QString chatName = QString("%1 %2")
-                    .arg(messageMap.value("chat").toMap().value("first_name").toString())
-                    .arg(messageMap.value("chat").toMap().value("last_name").toString());
-            QString type = messageMap.value("chat").toMap().value("type").toString();
+                    .arg(chatMap.value("first_name").toString())
+                    .arg(chatMap.value("last_name").toString());
+            QString type = chatMap.value("type").toString();
             if (type == "group") {
-                chatName = messageMap.value("chat").toMap().value("title").toString();
+                chatName = chatMap.value("title").toString();
             }
             ThingDescriptor descriptor(telegramThingClassId, chatName, type == "group" ? "Group" : "Private");
             ParamList params;
@@ -93,9 +105,11 @@ void IntegrationPluginTelegram::discoverThings(ThingDiscoveryInfo *info)
 
             Thing *existingThing = myThings().findByParams(params);
             if (existingThing) {
+                qCDebug(dcTelegram()) << "Chat id" << chatId << "is already added as a thing.";
                 descriptor.setThingId(existingThing->id());
             }
             addedChats.append(chatId);
+            qCDebug(dcTelegram()) << "Adding chat" << chatId << descriptor.title() << descriptor.description();
             info->addThingDescriptor(descriptor);
         }
         info->finish(Thing::ThingErrorNoError);
