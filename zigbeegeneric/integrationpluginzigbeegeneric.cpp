@@ -190,12 +190,6 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
 
             });
 
-
-
-
-
-//            createThing(doorSensorThingClassId, networkUuid, node, endpoint);
-//            initDoorSensor(node, endpoint);
             handled = true;
         }
     }
