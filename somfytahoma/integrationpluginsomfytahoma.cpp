@@ -46,11 +46,11 @@ void IntegrationPluginSomfyTahoma::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    SomfyTahomaLoginRequest *request = new SomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
-    connect(request, &SomfyTahomaLoginRequest::error, info, [info](){
+    SomfyTahomaRequest *request = createSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
+    connect(request, &SomfyTahomaRequest::error, info, [info](){
         info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to login to Somfy Tahoma."));
     });
-    connect(request, &SomfyTahomaLoginRequest::finished, info, [this, info, username, password](const QVariant &/*result*/){
+    connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password](const QVariant &/*result*/){
         pluginStorage()->beginGroup(info->thingId().toString());
         pluginStorage()->setValue("username", username);
         pluginStorage()->setValue("password", password);
@@ -62,14 +62,14 @@ void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const 
 void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == tahomaThingClassId) {
-        SomfyTahomaLoginRequest *request = createLoginRequestWithStoredCredentials(info->thing());
-        connect(request, &SomfyTahomaLoginRequest::error, info, [info](){
+        SomfyTahomaRequest *request = createLoginRequestWithStoredCredentials(info->thing());
+        connect(request, &SomfyTahomaRequest::error, info, [info](){
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to login to Somfy Tahoma."));
         });
-        connect(request, &SomfyTahomaLoginRequest::finished, info, [this, info](const QVariant &/*result*/){
+        connect(request, &SomfyTahomaRequest::finished, info, [this, info](const QVariant &/*result*/){
             QUuid accountId = info->thing()->id();
-            SomfyTahomaGetRequest *request = new SomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
-            connect(request, &SomfyTahomaGetRequest::finished, this, [this, accountId](const QVariant &result){
+            SomfyTahomaRequest *request = createSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
+            connect(request, &SomfyTahomaRequest::finished, this, [this, accountId](const QVariant &result){
                 QList<ThingDescriptor> unknownDevices;
                 foreach (const QVariant &gatewayVariant, result.toMap()["gateways"].toList()) {
                     QVariantMap gatewayMap = gatewayVariant.toMap();
@@ -177,11 +177,11 @@ void IntegrationPluginSomfyTahoma::refreshAccount(Thing *thing)
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_eventPollTimer[thing]);
     }
 
-    SomfyTahomaGetRequest *setupRequest = new SomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
-    connect(setupRequest, &SomfyTahomaGetRequest::error, this, [this, thing](){
+    SomfyTahomaRequest *setupRequest = createSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
+    connect(setupRequest, &SomfyTahomaRequest::error, this, [this, thing](){
         markDisconnected(thing);
     });
-    connect(setupRequest, &SomfyTahomaGetRequest::finished, this, [this, thing](const QVariant &result){
+    connect(setupRequest, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &result){
         thing->setStateValue(tahomaLoggedInStateTypeId, true);
         thing->setStateValue(tahomaConnectedStateTypeId, true);
         foreach (const QVariant &gatewayVariant, result.toMap()["gateways"].toList()) {
@@ -201,29 +201,29 @@ void IntegrationPluginSomfyTahoma::refreshAccount(Thing *thing)
         }
     });
 
-    SomfyTahomaPostRequest *eventRegistrationRequest = new SomfyTahomaPostRequest(hardwareManager()->networkManager(), "/events/register", "application/json", QByteArray(), this);
-    connect(eventRegistrationRequest, &SomfyTahomaPostRequest::error, this, [this, thing](){
+    SomfyTahomaRequest *eventRegistrationRequest = createSomfyTahomaPostRequest(hardwareManager()->networkManager(), "/events/register", "application/json", QByteArray(), this);
+    connect(eventRegistrationRequest, &SomfyTahomaRequest::error, this, [this, thing](){
         qCWarning(dcSomfyTahoma()) << "Failed to register for events.";
         markDisconnected(thing);
     });
-    connect(eventRegistrationRequest, &SomfyTahomaPostRequest::finished, this, [this, thing](const QVariant &result){
+    connect(eventRegistrationRequest, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &result){
         thing->setStateValue(tahomaConnectedStateTypeId, true);
         QString eventListenerId = result.toMap()["id"].toString();
         m_eventPollTimer[thing] = hardwareManager()->pluginTimerManager()->registerTimer(2 /*sec*/);
         connect(m_eventPollTimer[thing], &PluginTimer::timeout, thing, [this, thing, eventListenerId](){
-            SomfyTahomaEventFetchRequest *eventFetchRequest = new SomfyTahomaEventFetchRequest(hardwareManager()->networkManager(), eventListenerId, this);
-            connect(eventFetchRequest, &SomfyTahomaEventFetchRequest::error, thing, [this, thing](QNetworkReply::NetworkError error){
+            SomfyTahomaRequest *eventFetchRequest = createSomfyTahomaEventFetchRequest(hardwareManager()->networkManager(), eventListenerId, this);
+            connect(eventFetchRequest, &SomfyTahomaRequest::error, thing, [this, thing](QNetworkReply::NetworkError error){
                 markDisconnected(thing);
                 if (error == QNetworkReply::AuthenticationRequiredError) {
                     qCInfo(dcSomfyTahoma()) << "Failed to fetch events: Authentication expired, reauthenticating";
-                    SomfyTahomaLoginRequest *request = createLoginRequestWithStoredCredentials(thing);
-                    connect(request, &SomfyTahomaLoginRequest::error, this, [this, thing](){
+                    SomfyTahomaRequest *request = createLoginRequestWithStoredCredentials(thing);
+                    connect(request, &SomfyTahomaRequest::error, this, [this, thing](){
                         // This is a fatal error. The user needs to reconfigure the account to provide new credentials.
                         qCWarning(dcSomfyTahoma()) << "Failed to reauthenticate";
                         hardwareManager()->pluginTimerManager()->unregisterTimer(m_eventPollTimer[thing]);
                         m_eventPollTimer.remove(thing);
                     });
-                    connect(request, &SomfyTahomaLoginRequest::finished, this, [this, thing](const QVariant &/*result*/){
+                    connect(request, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &/*result*/){
                         qCInfo(dcSomfyTahoma()) << "Reauthentication successful";
                         refreshAccount(thing);
                     });
@@ -231,7 +231,7 @@ void IntegrationPluginSomfyTahoma::refreshAccount(Thing *thing)
                     qCWarning(dcSomfyTahoma()) << "Failed to fetch events:" << error;
                 }
             });
-            connect(eventFetchRequest, &SomfyTahomaEventFetchRequest::finished, thing, [this, thing](const QVariant &result){
+            connect(eventFetchRequest, &SomfyTahomaRequest::finished, thing, [this, thing](const QVariant &result){
                 thing->setStateValue(tahomaConnectedStateTypeId, true);
                 restoreChildConnectedState(thing);
                 if (!result.toList().empty()) {
@@ -458,11 +458,11 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
                                                {"commands", QJsonArray{QJsonObject{{"name", actionName},
                                                                                    {"parameters", actionParameters}}}}}}}
         }};
-        SomfyTahomaPostRequest *request = new SomfyTahomaPostRequest(hardwareManager()->networkManager(), "/exec/apply", "application/json", jsonRequest.toJson(QJsonDocument::Compact), this);
-        connect(request, &SomfyTahomaPostRequest::error, info, [info](){
+        SomfyTahomaRequest *request = createSomfyTahomaPostRequest(hardwareManager()->networkManager(), "/exec/apply", "application/json", jsonRequest.toJson(QJsonDocument::Compact), this);
+        connect(request, &SomfyTahomaRequest::error, info, [info](){
             info->finish(Thing::ThingErrorHardwareFailure);
         });
-        connect(request, &SomfyTahomaPostRequest::finished, info, [this, info](const QVariant &result){
+        connect(request, &SomfyTahomaRequest::finished, info, [this, info](const QVariant &result){
             qCInfo(dcSomfyTahoma()) << "Action started" << info->thing() << info->action().actionTypeId();
             m_pendingActions.insert(result.toMap()["execId"].toString(), info);
         });
@@ -471,13 +471,13 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
     }
 }
 
-SomfyTahomaLoginRequest *IntegrationPluginSomfyTahoma::createLoginRequestWithStoredCredentials(Thing *thing)
+SomfyTahomaRequest *IntegrationPluginSomfyTahoma::createLoginRequestWithStoredCredentials(Thing *thing)
 {
     pluginStorage()->beginGroup(thing->id().toString());
     QString username = pluginStorage()->value("username").toString();
     QString password = pluginStorage()->value("password").toString();
     pluginStorage()->endGroup();
-    return new SomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
+    return createSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
 }
 
 void IntegrationPluginSomfyTahoma::markDisconnected(Thing *thing)

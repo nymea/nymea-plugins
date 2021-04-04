@@ -35,44 +35,21 @@
 
 class NetworkAccessManager;
 
-class SomfyTahomaPostRequest : public QObject
+class SomfyTahomaRequest : public QObject
 {
     Q_OBJECT
 
 public:
-    SomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent);
+    SomfyTahomaRequest(QNetworkReply *reply, QObject *parent);
 
 signals:
     void error(QNetworkReply::NetworkError error);
     void finished(const QVariant &results);
 };
 
-class SomfyTahomaGetRequest : public QObject
-{
-    Q_OBJECT
-
-public:
-    SomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent);
-
-signals:
-    void error(QNetworkReply::NetworkError error);
-    void finished(const QVariant &results);
-};
-
-class SomfyTahomaLoginRequest : public SomfyTahomaPostRequest
-{
-    Q_OBJECT
-
-public:
-    SomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent);
-};
-
-class SomfyTahomaEventFetchRequest : public SomfyTahomaPostRequest
-{
-    Q_OBJECT
-
-public:
-    SomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent);
-};
+SomfyTahomaRequest *createSomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent);
+SomfyTahomaRequest *createSomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent);
+SomfyTahomaRequest *createSomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent);
+SomfyTahomaRequest *createSomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent);
 
 #endif // SOMFYTAHOMAREQUESTS_H
