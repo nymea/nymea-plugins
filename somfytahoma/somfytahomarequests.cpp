@@ -83,7 +83,10 @@ SomfyTahomaRequest *createSomfyTahomaGetRequest(NetworkAccessManager *networkMan
 
 SomfyTahomaRequest *createSomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent)
 {
-    return createSomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", QString("userId=" + username + "&userPassword=" + password).toUtf8(), parent);
+    QUrlQuery postData;
+    postData.addQueryItem("userId", username);
+    postData.addQueryItem("userPassword", password);
+    return createSomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", postData.toString(QUrl::FullyEncoded).toUtf8(), parent);
 }
 
 SomfyTahomaRequest *createSomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent)
