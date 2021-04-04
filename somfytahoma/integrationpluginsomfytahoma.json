@@ -376,6 +376,65 @@
                             "displayName": "Close"
                         }
                     ]
+                },
+                {
+                    "id": "e569a3cc-6e79-4e24-af35-c5fa327a7314",
+                    "name": "light",
+                    "displayName": "Light",
+                    "createMethods": ["auto"],
+                    "interfaces": ["dimmablelight", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "9cd2e0f2-a02f-478a-9358-6ff0f5aba9f5",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1b51ce68-1f7e-4f06-b68d-bfca2d61b353",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Brightness changed",
+                            "writable": true,
+                            "displayNameAction": "Set brightness",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "654ddcdf-b0b7-4c38-a70d-878f0f3857a5",
+                            "name": "power",
+                            "type": "bool",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "writable": true,
+                            "displayNameAction": "Set power",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "cfaa5533-d26e-4545-9f44-6567c9d7888a",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fb8dcd84-70ad-4f3e-97c4-93296608e33d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ]
                 }
             ]
         }

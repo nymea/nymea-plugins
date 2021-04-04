@@ -129,6 +129,16 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
                             descriptor.setParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, deviceUrl));
                             unknownDevices.append(descriptor);
                         }
+                    } else if (type == QStringLiteral("Light") && (deviceUrl.startsWith("io"))) {
+                        Thing *thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
+                        if (thing) {
+                            qCDebug(dcSomfyTahoma()) << "Found existing light:" << label << deviceUrl;
+                        } else {
+                            qCInfo(dcSomfyTahoma()) << "Found new light:" << label << deviceUrl;
+                            ThingDescriptor descriptor(lightThingClassId, label, QString(), accountId);
+                            descriptor.setParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
+                            unknownDevices.append(descriptor);
+                        }
                     } else {
                         qCInfo(dcSomfyTahoma()) << "Found unsupperted Somfy device:" << label << type << deviceUrl;
                     }
@@ -145,7 +155,8 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
              info->thing()->thingClassId() == rollershutterThingClassId ||
              info->thing()->thingClassId() == venetianblindThingClassId ||
              info->thing()->thingClassId() == garagedoorThingClassId ||
-             info->thing()->thingClassId() == awningThingClassId) {
+             info->thing()->thingClassId() == awningThingClassId ||
+             info->thing()->thingClassId() == lightThingClassId) {
         info->finish(Thing::ThingErrorNoError);
     }
 }
@@ -171,6 +182,8 @@ void IntegrationPluginSomfyTahoma::postSetupThing(Thing *thing)
         deviceUrl = QUrl(thing->paramValue(garagedoorThingDeviceUrlParamTypeId).toString());
     } else if (thing->thingClassId() == awningThingClassId) {
         deviceUrl = QUrl(thing->paramValue(awningThingDeviceUrlParamTypeId).toString());
+    } else if (thing->thingClassId() == lightThingClassId) {
+        deviceUrl = QUrl(thing->paramValue(lightThingDeviceUrlParamTypeId).toString());
     }
     if (!deviceUrl.isEmpty()) {
         Thing *gateway = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, deviceUrl.host()));
@@ -432,6 +445,25 @@ void IntegrationPluginSomfyTahoma::updateThingStates(const QString &deviceUrl, c
         }
         return;
     }
+    thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
+    if (thing) {
+        foreach (const QVariant &stateVariant, stateList) {
+            QVariantMap stateMap = stateVariant.toMap();
+            if (stateMap["name"] == "core:OnOffState") {
+                thing->setStateValue(lightPowerStateTypeId, stateMap["value"] == "on");
+            } else if (stateMap["name"] == "core:LightIntensityState") {
+                thing->setStateValue(lightBrightnessStateTypeId, stateMap["value"]);
+            } else if (stateMap["name"] == "core:StatusState") {
+                thing->setStateValue(lightConnectedStateTypeId, stateMap["value"] == "available");
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("connected", stateMap["value"] == "available");
+                pluginStorage()->endGroup();
+            } else if (stateMap["name"] == "core:RSSILevelState") {
+                thing->setStateValue(lightSignalStrengthStateTypeId, stateMap["value"]);
+            }
+        }
+        return;
+    }
 }
 
 void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
@@ -497,6 +529,14 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
         } else if (info->action().actionTypeId() == awningStopActionTypeId) {
             actionName = "stop";
         }
+    } else if (info->thing()->thingClassId() == lightThingClassId) {
+        deviceUrl = info->thing()->paramValue(lightThingDeviceUrlParamTypeId).toString();
+        if (info->action().actionTypeId() == lightPowerActionTypeId) {
+            actionName = info->action().param(lightPowerActionPowerParamTypeId).value().toBool() ? "on" : "off";
+        } else if (info->action().actionTypeId() == lightBrightnessActionTypeId) {
+            actionName = "setIntensity";
+            actionParameters = { info->action().param(lightBrightnessActionBrightnessParamTypeId).value().toInt() };
+        }
     }
 
     if (!actionName.isEmpty()) {
@@ -543,6 +583,8 @@ void IntegrationPluginSomfyTahoma::markDisconnected(Thing *thing)
         thing->setStateValue(garagedoorConnectedStateTypeId, false);
     } else if (thing->thingClassId() == awningThingClassId) {
         thing->setStateValue(awningConnectedStateTypeId, false);
+    } else if (thing->thingClassId() == lightThingClassId) {
+        thing->setStateValue(lightConnectedStateTypeId, false);
     }
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
         markDisconnected(child);
@@ -563,6 +605,8 @@ void IntegrationPluginSomfyTahoma::restoreChildConnectedState(Thing *thing)
             thing->setStateValue(garagedoorConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         } else if (thing->thingClassId() == awningThingClassId) {
             thing->setStateValue(awningConnectedStateTypeId, pluginStorage()->value("connected").toBool());
+        } else if (thing->thingClassId() == lightThingClassId) {
+            thing->setStateValue(lightConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         }
     }
     pluginStorage()->endGroup();
