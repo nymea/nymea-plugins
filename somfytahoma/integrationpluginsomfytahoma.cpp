@@ -139,6 +139,10 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
                             descriptor.setParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
                             unknownDevices.append(descriptor);
                         }
+                    } else if (type == QStringLiteral("ProtocolGateway") ||
+                               type == QStringLiteral("Alarm") ||
+                               (type == QStringLiteral("Light") && deviceUrl.startsWith("hue"))) {
+                        continue;
                     } else {
                         qCInfo(dcSomfyTahoma()) << "Found unsupperted Somfy device:" << label << type << deviceUrl;
                     }
