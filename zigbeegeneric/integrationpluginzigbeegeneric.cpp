@@ -182,6 +182,7 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
                 case ZigbeeClusterIasZone::ZoneTypeContactSwitch:
                     qCInfo(dcZigbeeGeneric()) << "Creating contact switch thing";
                     createThing(doorSensorThingClassId, networkUuid, node, endpoint);
+                    initDoorSensor(node, endpoint);
                     break;
                 default:
                     qCWarning(dcZigbeeGeneric()) << "Unhandled IAS Zone device type:" << "0x" + QString::number(iasZoneTypeRecord.dataType.toUInt16(), 16);
