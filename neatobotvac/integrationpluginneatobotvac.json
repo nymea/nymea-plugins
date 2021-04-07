@@ -48,6 +48,8 @@
                     "name": "robot",
                     "displayName": "Neato robot",
                     "createMethods": ["auto"],
+                    "interfaces":["cleaningrobot", "battery", "connectable"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "def9a4bb-7a7e-4e3a-a63c-c55a105abb5e",
@@ -60,16 +62,7 @@
                             "name": "secret",
                             "displayName": "Secret",
                             "type": "QString"
-                        },
-                        {
-                            "id": "141f0d98-1806-432c-aaac-c0d3a89a8e58",
-                            "name": "mapId",
-                            "displayName": "Map ID",
-                            "type": "QString"
                         }
-                    ],
-                    "interfaces":[
-
                     ],
                     "settingsTypes": [
                         {
@@ -96,13 +89,21 @@
                     ],
                     "stateTypes":[
                         {
+                            "id": "4c319e4b-9206-48ed-9d24-56a536c58d61",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
                             "id": "dce4f7f3-a0a6-46bb-9216-c9089d9e9b0d",
                             "name": "cleaning",
                             "displayName": "Cleaning",
                             "displayNameEvent": "Cleaning yes/no",
                             "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
+                            "defaultValue": false
                         },
                         {
                             "id": "0f925abf-396c-437e-b259-2fed7eafe7f4",
@@ -110,8 +111,7 @@
                             "displayName": "Paused",
                             "displayNameEvent": "Cleaning paused yes/no",
                             "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
+                            "defaultValue": false
                         },
                         {
                             "id": "1b8abd35-8276-44ba-8c75-a647877b2e11",
@@ -119,8 +119,7 @@
                             "displayName": "Charging",
                             "displayNameEvent": "Robot charging yes/no",
                             "type": "bool",
-                            "defaultValue": true,
-                            "cached": false
+                            "defaultValue": true
                         },
                         {
                             "id": "805175ec-c2e4-4fbe-9505-282750ef1467",
@@ -128,8 +127,15 @@
                             "displayName": "Docked",
                             "displayNameEvent": "Robot docked yes/no",
                             "type": "bool",
-                            "defaultValue": true,
-                            "cached": false
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "1985ce98-f387-47e0-a5f3-9b807f532ca1",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery entered or left critical state",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "20ed8767-806f-4ec2-8626-842cd398f9df",
@@ -137,10 +143,10 @@
                             "displayName": "Battery level",
                             "displayNameEvent": "Battery level percentage",
                             "type": "int",
+                            "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
-                            "maxValue": 100,
-                            "cached": false
+                            "maxValue": 100
                         }
                     ],
                     "actionTypes": [
@@ -151,8 +157,8 @@
                         },
                         {
                             "id": "5178a803-5696-4ee1-80a4-2c7c20a5043a",
-                            "name": "goToBase",
-                            "displayName": "Go to base"
+                            "name": "returnToBase",
+                            "displayName": "Return to base"
                         },
                         {
                             "id": "30775042-55a7-4f1b-9042-a9bdeadc4b0d",
