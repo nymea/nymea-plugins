@@ -132,7 +132,6 @@ def refreshRobot(thing):
     # Set robot docked/charging state
     rbtStateDetails = rbtStateJson['details']
     thing.setStateValue(robotChargingStateTypeId, rbtStateDetails['isCharging'])
-    thing.setStateValue(robotDockedStateTypeId, rbtStateDetails['isDocked'])
     thing.setStateValue(robotBatteryLevelStateTypeId, rbtStateDetails['charge'])
 
     # Set robot cleaning/paused state
@@ -140,15 +139,16 @@ def refreshRobot(thing):
     rbtStartAv = rbtStateCommands['start']
     rbtPauseAv = rbtStateCommands['pause']
     rbtResumeAv = rbtStateCommands['resume']
-    if rbtStartAv == True:
-        thing.setStateValue(robotCleaningStateTypeId, False)
-        thing.setStateValue(robotPausedStateTypeId, False)
+    if rbtStateDetails['isDocked'] == True:
+        thing.setStateValue(robotStateStateTypeId, "docked")
     elif rbtPauseAv == True:
-        thing.setStateValue(robotCleaningStateTypeId, True)
-        thing.setStateValue(robotPausedStateTypeId, False)
+        thing.setStateValue(robotStateStateTypeId, "cleaning")
     elif rbtResumeAv == True:
-        thing.setStateValue(robotCleaningStateTypeId, True)
-        thing.setStateValue(robotPausedStateTypeId, True)
+        thing.setStateValue(robotStateStateTypeId, "paused")
+    elif rbtStartAv == True:
+        thing.setStateValue(robotStateStateTypeId, "stopped")
+    else:
+        thing.setStateValue(robotStateStateTypeId, "error")
 
 
 def pollService():
@@ -167,21 +167,17 @@ def pollService():
 
 
 def executeAction(info):
+    return; # Temporary, to not accidentally start it
+
     if info.actionTypeId == robotStartCleaningActionTypeId:
-        rbtState = thingsAndRobots[info.thing].get_robot_state()
-        rbtStateJson = rbtState.json()
-        rbtStateCommands = rbtStateJson['availableCommands']
-        rbtStartAv = rbtStateCommands['start']
-        rbtPauseAv = rbtStateCommands['pause']
-        rbtResumeAv = rbtStateCommands['resume']
-        if rbtStartAv == True:
-            logger.log("Start cleaning")
-            thingsAndRobots[info.thing].start_cleaning()
-        elif rbtPauseAv == True:
-            logger.log("Pause cleaning")
-            thingsAndRobots[info.thing].pause_cleaning()
-        elif rbtResumeAv == True:
-            thingsAndRobots[info.thing].resume_cleaning()
+        # To do: add a parameter to the start action which takes a zone id
+        thingsAndRobots[info.thing].start_cleaning()
+        refreshRobot(info.thing)
+        info.finish(nymea.ThingErrorNoError)
+        return
+
+    if info.actionTypeId == robotPauseCleaningActionTypeId:
+        thingsAndRobots[info.thing].pause_cleaning()
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
         return
@@ -190,21 +186,13 @@ def executeAction(info):
         thingsAndRobots[info.thing].send_to_base()
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
+        return
 
     if info.actionTypeId == robotStopCleaningActionTypeId:
         thingsAndRobots[info.thing].stop_cleaning()
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
-
-    # To do: get available boundaries to use with start_cleaning action
-    if info.actionTypeId == robotGetBoundariesActionTypeId:
-        mapIDparam = info.thing.paramValue(robotThingMapIdParamTypeId)
-        rbtMapBound = thingsAndRobots[info.thing].get_map_boundaries(mapIDparam)
-        logger.log("rbtMapBound Type: ", type(rbtMapBound), "rbtMapBound Contents: ", rbtMapBound)
-        rbtBoundData = rbtMapBound.text
-        logger.log("rbtBoundData Type: ", type(rbtBoundData), "rbtBoundData Contents: ", rbtBoundData)
-        refreshRobot(info.thing)
-        info.finish(nymea.ThingErrorNoError)
+        return
 
 
 def browseThing(browseResult):
@@ -223,10 +211,10 @@ def browseThing(browseResult):
 
 
     # Top level entries -> return maps
-    if browseResult.itemId == "":
+    if browseResult.itemId == "" or browseResult.itemId == "maps":
         maps = account.persistent_maps
 
-        logger.log("maps", tpye(maps), maps)
+        logger.log("maps", type(maps), maps)
         for map in maps[robot.serial]:
             logger.log("Type mapInfo: ", type(map))
             logger.log("map:", map)
@@ -242,7 +230,9 @@ def browseThing(browseResult):
 
         logger.log("boundaries", type(boundaries), boundaries.json())
         for boundary in boundaries.json()["data"]["boundaries"]:
-            browseResult.addItem(nymea.BrowserItem(boundary["id"], boundary["name"], boundary["type"], executable=True, disabled=not boundary["enabled"], icon=nymea.BrowserIconFavorites))
+#            if boundary["type"] == "polygon":
+            logger.log("vertices:", json.dumps(boundary["vertices"]))
+            browseResult.addItem(nymea.BrowserItem(boundary["id"], boundary["name"], json.dumps(boundary), executable=True, disabled=not boundary["enabled"], icon=nymea.BrowserIconFavorites))
 
         browseResult.finish(nymea.ThingErrorNoError)
         return
