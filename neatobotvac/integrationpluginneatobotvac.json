@@ -149,10 +149,10 @@
                             "paramTypes": [
                                 {
                                     "id": "08a86cca-cdc9-4520-af1d-8413a0c274b5",
-                                    "name": "zones",
+                                    "name": "zone",
                                     "displayName": "Zones to clean",
-                                    "type": "QStringList",
-                                    "defaultValue": []
+                                    "type": "QString",
+                                    "defaultValue": ""
                                 }
                             ]
                         },

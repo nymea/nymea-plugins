@@ -91,7 +91,7 @@ def setupThing(info):
         # If no poll timer is set up yet, start it now
         logger.log("Creating polltimer")
         global pollTimer
-        if pollTimer is not None:
+        if pollTimer is None:
             pollTimer = threading.Timer(5, pollService)
             pollTimer.start()
 
@@ -112,7 +112,6 @@ def setupThing(info):
             info.finish(nymea.ThingErrorHardwareFailure, "Unable to connect to neato API.")
             return;
 
-        logger.log(robot.get_robot_state())
         info.thing.setStateValue(robotConnectedStateTypeId, True)
         # set up polling for robot status
         info.finish(nymea.ThingErrorNoError)
@@ -176,16 +175,24 @@ def pollService():
     pollTimer.start()
 
 
-def executeAction(info):
-    # return; # Temporary, to not accidentally start it
-    
+def executeAction(info):    
     if info.actionTypeId == robotStartCleaningActionTypeId:
-        refreshRobot(info.thing)
-        if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
-            thingsAndRobots[info.thing].resume_cleaning()
+        zone = info.paramValue(robotStartCleaningActionZoneParamTypeId)
+        logger.log("zone", zone)
+
+        if zone != "":
+            ids = zone[9:];
+            mapId = ids.split(";")[0]
+            boundaryId = ids.split(";")[1]
+            cleanWithRobot(info.thing, mapId, boundaryId)
+
         else:
-            # To do: add a parameter to the start action which takes a zone id
-            cleanWithRobot(info.thing, None, None)
+            refreshRobot(info.thing)
+            if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
+                thingsAndRobots[info.thing].resume_cleaning()
+            else:
+                cleanWithRobot(info.thing, None, None)
+
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
         return
@@ -212,10 +219,11 @@ def executeAction(info):
         info.finish(nymea.ThingErrorNoError)
         return
 
+
 def cleanWithRobot(robotThing, mapID, boundaryID):
     # To do: add a parameter to the start action which takes a zone id --> this should now be represented by mapID & boundaryID
     robot = thingsAndRobots[robotThing]
-    logger.log("Cleaning with robot:", robot, robotThing)
+    logger.log("Cleaning with robot:", robot, robotThing, mapID, boundaryID)
     boolEco = robotThing.setting(robotSettingsEcoParamTypeId)
     boolCare = robotThing.setting(robotSettingsCareParamTypeId)
     boolNogo = robotThing.setting(robotSettingsNoGoLinesParamTypeId)
@@ -233,7 +241,7 @@ def cleanWithRobot(robotThing, mapID, boundaryID):
         intNogo = 4
     logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
     thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
-    refreshRobot(robotThing)
+
 
 def browseThing(browseResult):
     robotThing = browseResult.thing
@@ -270,20 +278,30 @@ def browseThing(browseResult):
 
         logger.log("boundaries", type(boundaries), boundaries.json())
         for boundary in boundaries.json()["data"]["boundaries"]:
-#            if boundary["type"] == "polygon":
-            logger.log("vertices:", json.dumps(boundary["vertices"]))
-            browseResult.addItem(nymea.BrowserItem(boundary["id"], boundary["name"], json.dumps(boundary), executable=True, disabled=not boundary["enabled"], icon=nymea.BrowserIconFavorites))
+            if boundary["type"] == "polygon":
+                logger.log("vertices:", boundary)
+                browseResult.addItem(nymea.BrowserItem("boundary-" + mapId + ";" + boundary["id"], boundary["name"], json.dumps(boundary), executable=True, disabled=not boundary["enabled"], icon=nymea.BrowserIconFavorites))
 
         browseResult.finish(nymea.ThingErrorNoError)
         return
 
 
 def executeBrowserItem(info):
-    # TODO: An item in the browser has been clicked.
     logger.log("Browser item clicked:", info.itemId)
-    logger.log("Parent item:", )
-    # cleanWithRobot(info.thing, mapID, boundaryID)
-    info.finish(nymea.ThingErrorNoError)
+    if info.itemId.startswith("boundary-"):
+        ids = info.itemId[9:];
+        logger.log("IDS:", ids)
+        mapId = ids.split(";")[0]
+        boundaryId = ids.split(";")[1]
+        logger.log("Cleaning boundary:", mapId, boundaryId)
+        cleanWithRobot(info.thing, mapId, boundaryId)
+        refreshRobot(info.thing)
+        info.finish(nymea.ThingErrorNoError)
+        return
+
+    logger.warn("Can't execute browser item:", info.itemId)
+    info.finish(nymea.ThingErrorItemNotExecutable)
+
 
 
 def deinit():
