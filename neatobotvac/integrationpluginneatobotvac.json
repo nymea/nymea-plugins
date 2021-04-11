@@ -145,16 +145,7 @@
                         {
                             "id": "1f774998-5fa7-4e3b-8ab0-a8402dd561bb",
                             "name": "startCleaning",
-                            "displayName": "Start cleaning",
-                            "paramTypes": [
-                                {
-                                    "id": "08a86cca-cdc9-4520-af1d-8413a0c274b5",
-                                    "name": "zone",
-                                    "displayName": "Zones to clean",
-                                    "type": "QString",
-                                    "defaultValue": ""
-                                }
-                            ]
+                            "displayName": "Start cleaning"
                         },
                         {
                             "id": "e731faa6-88c9-406d-b505-f89b5f0868b0",

@@ -181,18 +181,11 @@ def executeAction(info):
         zone = info.paramValue(robotStartCleaningActionZoneParamTypeId)
         logger.log("zone", zone)
 
-        if zone != "":
-            ids = zone[9:];
-            mapId = ids.split(";")[0]
-            boundaryId = ids.split(";")[1]
-            cleanWithRobot(info.thing, mapId, boundaryId)
-
+        refreshRobot(info.thing)
+        if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
+            thingsAndRobots[info.thing].resume_cleaning()
         else:
-            refreshRobot(info.thing)
-            if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
-                thingsAndRobots[info.thing].resume_cleaning()
-            else:
-                cleanWithRobot(info.thing, None, None)
+            cleanWithRobot(info.thing, None, None)
 
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
@@ -241,7 +234,7 @@ def cleanWithRobot(robotThing, mapID, boundaryID):
     else:
         intNogo = 4
     logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
-    thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
+    # thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
 
 
 def browseThing(browseResult):
