@@ -77,6 +77,8 @@ private:
     // Helpers for both devices
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeMap;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeMap;
+
+    QHash<ThingClassId, StateTypeId> m_brightnessStateTypeMap;
 };
 
 #endif // INTEGRATIONPLUGINTASMOTA_H

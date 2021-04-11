@@ -44,6 +44,9 @@
 static QHash<QString, StateTypeId> sonoff_basicPowerStateTypeIds = {
     {"POWER1", sonoff_basicPowerStateTypeId},
 };
+static QHash<QString, StateTypeId> sonoff_dimmerPowerStateTypeIds = {
+    {"POWER1", sonoff_dimmerPowerStateTypeId},
+};
 static QHash<QString, StateTypeId> sonoff_dualPowerStateTypeIds = {
     {"POWER1", sonoff_dualPowerCH1StateTypeId},
     {"POWER2", sonoff_dualPowerCH2StateTypeId},
@@ -64,6 +67,7 @@ static QHash<ThingClassId, QHash<QString, StateTypeId>> stateMaps = {
     {sonoff_dualThingClassId, sonoff_dualPowerStateTypeIds},
     {sonoff_triThingClassId, sonoff_triPowerStateTypeIds},
     {sonoff_quadThingClassId, sonoff_quadPowerStateTypeIds},
+    {sonoff_dimmerThingClassId, sonoff_dimmerPowerStateTypeIds}
 };
 
 IntegrationPluginTasmota::IntegrationPluginTasmota()
@@ -73,6 +77,7 @@ IntegrationPluginTasmota::IntegrationPluginTasmota()
     m_ipAddressParamTypeMap[sonoff_dualThingClassId] = sonoff_dualThingIpAddressParamTypeId;
     m_ipAddressParamTypeMap[sonoff_triThingClassId] = sonoff_triThingIpAddressParamTypeId;
     m_ipAddressParamTypeMap[sonoff_quadThingClassId] = sonoff_quadThingIpAddressParamTypeId;
+    m_ipAddressParamTypeMap[sonoff_dimmerThingClassId] = sonoff_dimmerThingIpAddressParamTypeId;
 
     m_attachedDeviceParamTypeIdMap[sonoff_basicThingClassId] << sonoff_basicThingAttachedDeviceCH1ParamTypeId;
     m_attachedDeviceParamTypeIdMap[sonoff_dualThingClassId] << sonoff_dualThingAttachedDeviceCH1ParamTypeId << sonoff_dualThingAttachedDeviceCH2ParamTypeId;
@@ -103,6 +108,7 @@ IntegrationPluginTasmota::IntegrationPluginTasmota()
     m_connectedStateTypeMap[sonoff_dualThingClassId] = sonoff_dualConnectedStateTypeId;
     m_connectedStateTypeMap[sonoff_triThingClassId] = sonoff_triConnectedStateTypeId;
     m_connectedStateTypeMap[sonoff_quadThingClassId] = sonoff_quadConnectedStateTypeId;
+    m_connectedStateTypeMap[sonoff_dimmerThingClassId] = sonoff_dimmerConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaSwitchThingClassId] = tasmotaSwitchConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaLightThingClassId] = tasmotaLightConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaShutterThingClassId] = tasmotaShutterConnectedStateTypeId;
@@ -112,10 +118,13 @@ IntegrationPluginTasmota::IntegrationPluginTasmota()
     m_signalStrengthStateTypeMap[sonoff_dualThingClassId] = sonoff_dualSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[sonoff_triThingClassId] = sonoff_triSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[sonoff_quadThingClassId] = sonoff_quadSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[sonoff_dimmerThingClassId] = sonoff_dimmerSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[tasmotaSwitchThingClassId] = tasmotaSwitchSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[tasmotaLightThingClassId] = tasmotaLightSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[tasmotaShutterThingClassId] = tasmotaShutterSignalStrengthStateTypeId;
     m_signalStrengthStateTypeMap[tasmotaBlindsThingClassId] = tasmotaBlindsSignalStrengthStateTypeId;
+
+    m_brightnessStateTypeMap[sonoff_dimmerThingClassId] = sonoff_dimmerBrightnessStateTypeId;
 }
 
 IntegrationPluginTasmota::~IntegrationPluginTasmota()
@@ -285,7 +294,8 @@ void IntegrationPluginTasmota::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == sonoff_basicThingClassId
             || thing->thingClassId() == sonoff_dualThingClassId
             || thing->thingClassId() == sonoff_triThingClassId
-            || thing->thingClassId() == sonoff_quadThingClassId) {
+            || thing->thingClassId() == sonoff_quadThingClassId
+            || action.actionTypeId() == sonoff_dimmerPowerActionTypeId) {
         MqttChannel *channel = m_mqttChannels.value(thing);
         if (!channel) {
             qCWarning(dcTasmota()) << "No MQTT channel for this thing.";
@@ -293,8 +303,24 @@ void IntegrationPluginTasmota::executeAction(ThingActionInfo *info)
             return;
         }
         QString channelName = stateMaps.value(thing->thingClassId()).key(action.actionTypeId());
-        qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName << (action.paramValue(action.actionTypeId()).toBool() ? "ON" : "OFF");
-        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName, action.paramValue(action.actionTypeId()).toBool() ? "ON" : "OFF");
+        QByteArray payload = action.paramValue(action.actionTypeId()).toBool() ? "ON" : "OFF";
+        qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName << payload;
+        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName, payload);
+        thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    }
+    if (action.actionTypeId() == sonoff_dimmerBrightnessActionTypeId) {
+        MqttChannel *channel = m_mqttChannels.value(thing);
+        if (!channel) {
+            qCWarning(dcTasmota()) << "No MQTT channel for this thing:" << thing->name();
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        QString channelName = stateMaps.value(thing->thingClassId()).key(action.actionTypeId());
+        QByteArray payload = QByteArray::number(action.paramValue(action.actionTypeId()).toInt());
+        qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/DIMMER1" + channelName << payload;
+        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/DIMMER1" + channelName, payload);
         thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
         info->finish(Thing::ThingErrorNoError);
         return;
@@ -403,6 +429,10 @@ void IntegrationPluginTasmota::onPublishReceived(MqttChannel *channel, const QSt
         }
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         thing->setStateValue(m_signalStrengthStateTypeMap.value(thing->thingClassId()), dataMap.value("Wifi").toMap().value("RSSI").toInt());
+
+        if (m_brightnessStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(m_brightnessStateTypeMap.value(thing->thingClassId()), dataMap.value("Dimmer").toInt());
+        }
 
         // Legacy (deprecated) connected things by params
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
