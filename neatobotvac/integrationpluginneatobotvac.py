@@ -176,7 +176,7 @@ def pollService():
     pollTimer.start()
 
 
-def executeAction(info):    
+def executeAction(info):
     if info.actionTypeId == robotStartCleaningActionTypeId:
         refreshRobot(info.thing)
         if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
@@ -210,6 +210,28 @@ def executeAction(info):
         info.finish(nymea.ThingErrorNoError)
         return
 
+def cleanWithRobot(robotThing, mapID, boundaryID):
+    # To do: add a parameter to the start action which takes a zone id --> this should now be represented by mapID & boundaryID
+    robot = thingsAndRobots[robotThing]
+    logger.log("Cleaning with robot:", robot, robotThing)
+    boolEco = robotThing.setting(robotSettingsEcoParamTypeId)
+    boolCare = robotThing.setting(robotSettingsCareParamTypeId)
+    boolNogo = robotThing.setting(robotSettingsNoGoLinesParamTypeId)
+    if boolEco == False:
+        intEco = 2
+    else:
+        intEco = 1
+    if boolCare == False:
+        intCare = 1
+    else:
+        intCare = 2
+    if boolNogo == False:
+        intNogo = 2
+    else:
+        intNogo = 4
+    logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
+    thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
+    refreshRobot(robotThing)
 
 def cleanWithRobot(robotThing, mapID, boundaryID):
     # To do: add a parameter to the start action which takes a zone id --> this should now be represented by mapID & boundaryID
@@ -297,7 +319,6 @@ def executeBrowserItem(info):
 
     logger.warn("Can't execute browser item:", info.itemId)
     info.finish(nymea.ThingErrorItemNotExecutable)
-
 
 
 def deinit():
