@@ -33,6 +33,8 @@
 
 #include "integrations/integrationplugin.h"
 
+#include "extern-plugininfo.h"
+
 class ZeroConfServiceBrowser;
 class PluginTimer;
 
@@ -74,60 +76,6 @@ private:
     PluginTimer *m_timer = nullptr;
 
     QHash<Thing*, MqttChannel*> m_mqttChannels;
-
-    QHash<ThingClassId, ParamTypeId> m_idParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_usernameParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_passwordParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_connectedDeviceParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_connectedDevice2ParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_channelParamTypeMap;
-
-    QHash<ThingClassId, StateTypeId> m_connectedStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_powerStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_currentPowerStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_totalEnergyConsumedStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_colorStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_colorTemperatureStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_brightnessStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_updateStatusStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_currentVersionStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_availableVersionStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_batteryLevelStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_batteryCriticalStateTypeMap;
-
-    QHash<ActionTypeId, ThingClassId> m_rebootActionTypeMap;
-    // Relay based power actions
-    QHash<ActionTypeId, ThingClassId> m_powerActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_powerActionParamTypesMap;
-
-    // Color JSON based power actions
-    QHash<ActionTypeId, ThingClassId> m_colorPowerActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_colorPowerActionParamTypesMap;
-    // Color actions
-    QHash<ActionTypeId, ThingClassId> m_colorActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_colorActionParamTypesMap;
-    // Color JSON brightness actions
-    QHash<ActionTypeId, ThingClassId> m_colorBrightnessActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_colorBrightnessActionParamTypesMap;
-    // Color temp
-    QHash<ActionTypeId, ThingClassId> m_colorTemperatureActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_colorTemperatureActionParamTypesMap;
-
-    // Dimmable based power actions
-    QHash<ActionTypeId, ThingClassId> m_dimmablePowerActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_dimmablePowerActionParamTypesMap;
-    // Dimmable based brightness actions
-    QHash<ActionTypeId, ThingClassId> m_dimmableBrightnessActionTypesMap;
-    QHash<ActionTypeId, ParamTypeId> m_dimmableBrightnessActionParamTypesMap;
-
-    // Roller shutter actions
-    QHash<ActionTypeId, ThingClassId> m_rollerOpenActionTypeMap;
-    QHash<ActionTypeId, ThingClassId> m_rollerCloseActionTypeMap;
-    QHash<ActionTypeId, ThingClassId> m_rollerStopActionTypeMap;
-
-    // Firmware update actions
-    QHash<ActionTypeId, ThingClassId> m_updateActionTypesMap;
 };
 
 #endif // INTEGRATIONPLUGINSHELLY_H

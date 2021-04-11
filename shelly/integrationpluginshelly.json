@@ -1742,6 +1742,131 @@
                     ]
                 },
                 {
+                    "id": "a82737bb-f2d6-442e-a468-5acc0a2e4cd7",
+                    "name": "shellyMotion",
+                    "displayName": "Shelly Motion",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["presencesensor", "lightsensor", "wirelessconnectable", "update", "battery"],
+                    "paramTypes": [
+                        {
+                            "id": "b92fe8ba-8bfb-4d9a-9fb9-8d55ace8cfb4",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "ea210ec8-37ed-4479-9454-48cc06a1df88",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "b6a48fc4-5016-47d9-8454-c64686120ee1",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "45c0cc07-0e13-449c-86a7-ab65d5cdf637",
+                            "name": "isPresent",
+                            "displayName": "Person is present",
+                            "displayNameEvent": "Presence detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "a1e12487-ebab-4993-a075-78275aac7b0d",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "76438c2d-9742-4680-9139-d4b4e988cfd2",
+                            "name": "vibration",
+                            "displayName": "Vibration",
+                            "displayNameEvent": "Vibration detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9ed997fa-1ec8-44d2-ac44-c99d4e259dae",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ecc61ce2-cb66-47ce-a65c-3b9e43ce6fdc",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },                        {
+                            "id": "a604a66c-3143-45ce-a6e3-17a339f428ab",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "e2d98172-5833-454b-9b4b-04693c6b9232",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "displayNameEvent": "Current firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0c9e8da4-1b1c-4047-8e9d-c5c580bcf43f",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "1d03941e-9c41-446b-b698-f8dff335bf11",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery entered critical state",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "f6d89aa6-7dba-4bb0-89cf-36d85208933f",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "unit": "Percentage"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "17327674-f160-44e1-8a3d-fc2b6e1ee319",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        }
+                    ]
+                },
+                {
                     "id": "512c3c7d-d6a6-4d2a-bccd-83147e5f9a25",
                     "name": "shellyGeneric",
                     "displayName": "Shelly connected device",
