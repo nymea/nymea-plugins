@@ -46,9 +46,10 @@ def setupThing(info):
             oAuthSession = OAuthSession(token=token)
             # Login went well, finish the setup
             info.finish(nymea.ThingErrorNoError)
-        except:
+        except Exception as e:
             # Login error
-            info.finish(nymea.ThingErrorAuthenticationFailure, "Login error")
+            logger.warn("Error setting up neato account:", str(e))
+            info.finish(nymea.ThingErrorAuthenticationFailure, str(e))
             return
 
         # Mark the account as logged-in and connected
@@ -103,14 +104,14 @@ def setupThing(info):
 
         serial = info.thing.paramValue(robotThingSerialParamTypeId)
         secret = info.thing.paramValue(robotThingSecretParamTypeId)
-        robot = Robot(serial, secret, info.thing.name)
-        thingsAndRobots[info.thing] = robot;
         try:
+            robot = Robot(serial, secret, info.thing.name)
+            thingsAndRobots[info.thing] = robot;
             refreshRobot(info.thing)
-        except:
-            logger.warn("Error getting robot state");
-            info.finish(nymea.ThingErrorHardwareFailure, "Unable to connect to neato API.")
-            return;
+        except Exception as e:
+            logger.warn("Error setting up robot:", e)
+            info.finish(nymea.ThingErrorHardwareFailure, str(e))
+            return
 
         info.thing.setStateValue(robotConnectedStateTypeId, True)
         # set up polling for robot status
@@ -274,7 +275,12 @@ def browseThing(browseResult):
     # browsing boundaries for a map
     if browseResult.itemId.startswith("map-"):
         mapId = browseResult.itemId[4:]
-        boundaries = robot.get_map_boundaries(mapId)
+
+        try:
+            boundaries = robot.get_map_boundaries(mapId)
+        except Exception as e:
+            logger.warn("Error fetching boundaries from robot:", e)
+            info.finish(nymea.ThingErrorHardwareFailure, "Unable to fetch boundaries from robot.")
 
         logger.log("boundaries", type(boundaries), boundaries.json())
         for boundary in boundaries.json()["data"]["boundaries"]:
