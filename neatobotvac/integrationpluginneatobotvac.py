@@ -139,16 +139,27 @@ def refreshRobot(thing):
     rbtStartAv = rbtStateCommands['start']
     rbtPauseAv = rbtStateCommands['pause']
     rbtResumeAv = rbtStateCommands['resume']
-    if rbtStateDetails['isDocked'] == True:
-        thing.setStateValue(robotStateStateTypeId, "docked")
-    elif rbtPauseAv == True:
-        thing.setStateValue(robotStateStateTypeId, "cleaning")
-    elif rbtResumeAv == True:
-        thing.setStateValue(robotStateStateTypeId, "paused")
-    elif rbtStartAv == True:
-        thing.setStateValue(robotStateStateTypeId, "stopped")
+    if rbtStateJson['error'] == None:
+        rbtError = "no error"
     else:
-        thing.setStateValue(robotStateStateTypeId, "error")
+        rbtError = rbtStateJson['error']
+    # alert state hasn't been implemented yet (not sure what would trigger an alert, haven't seen one yet)
+    if rbtStateJson['alert'] == None:
+        rbtAlert = "no alert"
+    else:
+        rbtAlert = rbtStateJson['alert']
+    logger.log("error: %s: -- alert: %s" % (rbtError, rbtAlert))
+    if rbtStateDetails['isDocked'] == True:
+        thing.setStateValue(robotRobotStateStateTypeId, "docked")
+    elif rbtPauseAv == True:
+        thing.setStateValue(robotRobotStateStateTypeId, "cleaning")
+    elif rbtResumeAv == True:
+        thing.setStateValue(robotRobotStateStateTypeId, "paused")
+    elif rbtStartAv == True:
+        thing.setStateValue(robotRobotStateStateTypeId, "stopped")
+    else:
+        thing.setStateValue(robotRobotStateStateTypeId, "error")
+    thing.setStateValue(robotErrorMessageStateTypeId, rbtError)
 
 
 def pollService():
@@ -159,7 +170,6 @@ def pollService():
                 refreshRobot(thing)
             except:
                 logger.warn("Error refreshing robot state")
-
     # restart the timer for next poll
     global pollTimer
     pollTimer = threading.Timer(60, pollService)
@@ -167,17 +177,25 @@ def pollService():
 
 
 def executeAction(info):
-    return; # Temporary, to not accidentally start it
-
+    # return; # Temporary, to not accidentally start it
+    
     if info.actionTypeId == robotStartCleaningActionTypeId:
-        # To do: add a parameter to the start action which takes a zone id
-        thingsAndRobots[info.thing].start_cleaning()
+        refreshRobot(info.thing)
+        if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
+            thingsAndRobots[info.thing].resume_cleaning()
+        else:
+            # To do: add a parameter to the start action which takes a zone id
+            cleanWithRobot(info.thing, None, None)
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
         return
 
     if info.actionTypeId == robotPauseCleaningActionTypeId:
-        thingsAndRobots[info.thing].pause_cleaning()
+        refreshRobot(info.thing)
+        if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
+            thingsAndRobots[info.thing].resume_cleaning()
+        else:
+            thingsAndRobots[info.thing].pause_cleaning()
         refreshRobot(info.thing)
         info.finish(nymea.ThingErrorNoError)
         return
@@ -194,6 +212,28 @@ def executeAction(info):
         info.finish(nymea.ThingErrorNoError)
         return
 
+def cleanWithRobot(robotThing, mapID, boundaryID):
+    # To do: add a parameter to the start action which takes a zone id --> this should now be represented by mapID & boundaryID
+    robot = thingsAndRobots[robotThing]
+    logger.log("Cleaning with robot:", robot, robotThing)
+    boolEco = robotThing.setting(robotSettingsEcoParamTypeId)
+    boolCare = robotThing.setting(robotSettingsCareParamTypeId)
+    boolNogo = robotThing.setting(robotSettingsNoGoLinesParamTypeId)
+    if boolEco == False:
+        intEco = 2
+    else:
+        intEco = 1
+    if boolCare == False:
+        intCare = 1
+    else:
+        intCare = 2
+    if boolNogo == False:
+        intNogo = 2
+    else:
+        intNogo = 4
+    logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
+    thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
+    refreshRobot(robotThing)
 
 def browseThing(browseResult):
     robotThing = browseResult.thing
@@ -241,6 +281,8 @@ def browseThing(browseResult):
 def executeBrowserItem(info):
     # TODO: An item in the browser has been clicked.
     logger.log("Browser item clicked:", info.itemId)
+    logger.log("Parent item:", )
+    # cleanWithRobot(info.thing, mapID, boundaryID)
     info.finish(nymea.ThingErrorNoError)
 
 
