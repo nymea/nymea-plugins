@@ -73,7 +73,8 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
             thing->thingClassId() == fingerPrintSensorThingClassId ||
             thing->thingClassId() == barcodeScannerThingClassId ||
             thing->thingClassId() == contactSensorThingClassId ||
-            thing->thingClassId() == waterSensorThingClassId) {
+            thing->thingClassId() == waterSensorThingClassId ||
+            thing->thingClassId() == cleaningRobotThingClassId) {
         m_simulationTimers.insert(thing, new QTimer(thing));
         connect(m_simulationTimers[thing], &QTimer::timeout, this, &IntegrationPluginSimulation::simulationTimerTimeout);
     }
@@ -576,6 +577,48 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
         }
     }
 
+    if (thing->thingClassId() == cleaningRobotThingClassId) {
+        if (action.actionTypeId() == cleaningRobotStartCleaningActionTypeId) {
+            qCDebug(dcSimulation()) << "Starting to clean...";
+            thing->setStateValue(cleaningRobotRobotStateStateTypeId, "cleaning");
+            m_simulationTimers.value(thing)->stop();
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == cleaningRobotPauseCleaningActionTypeId) {
+            qCDebug(dcSimulation()) << "Pausing...";
+            if (thing->stateValue(cleaningRobotRobotStateStateTypeId).toString() == "paused") {
+                thing->setStateValue(cleaningRobotRobotStateStateTypeId, "cleaning");
+            } else if (thing->stateValue(cleaningRobotRobotStateStateTypeId).toString() == "cleaning"){
+                thing->setStateValue(cleaningRobotRobotStateStateTypeId, "paused");
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == cleaningRobotStopCleaningActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping.";
+            thing->setStateValue(cleaningRobotRobotStateStateTypeId, "stopped");
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == cleaningRobotReturnToBaseActionTypeId) {
+            qCDebug(dcSimulation()) << "Returning to base...";
+            QString robotState = thing->stateValue(cleaningRobotRobotStateStateTypeId).toString();
+            if (robotState == "cleaning" || robotState == "paused" || robotState == "error") {
+                thing->setStateValue(cleaningRobotRobotStateStateTypeId, "traveling");
+                m_simulationTimers.value(thing)->start(5000);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == cleaningRobotSimulateErrorActionTypeId) {
+            thing->setStateValue(cleaningRobotRobotStateStateTypeId, "error");
+            thing->setStateValue(cleaningRobotErrorMessageStateTypeId, QT_TR_NOOP("Help me, I'm stuck!"));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
     qCWarning(dcSimulation()) << "Unhandled thing class" << thing->thingClassId() << "for" << thing->name();
 }
 
@@ -719,8 +762,28 @@ void IntegrationPluginSimulation::onPluginTimer20Seconds()
             thing->setProperty("lastUpdate", lastUpdate);
             qreal consumptionKWH = 1.0 * currentPower * (1.0 * m_pluginTimer20Seconds->interval() / 1000 / 60 / 60) / 1000;
             thing->setStateValue(solarPanelTotalEnergyProducedStateTypeId, thing->stateValue(solarPanelTotalEnergyProducedStateTypeId).toDouble() + consumptionKWH);
+        } else if (thing->thingClassId() == cleaningRobotThingClassId) {
+            QString robotState = thing->stateValue(cleaningRobotRobotStateStateTypeId).toString();
+            int batteryLevel = thing->stateValue(cleaningRobotBatteryLevelStateTypeId).toInt();
+            bool charging = false;
+            bool pluggedIn = false;
+            if (robotState == "cleaning") {
+                batteryLevel -= 1;
+                if (batteryLevel < 5) {
+                    robotState = "traveling";
+                    m_simulationTimers.value(thing)->start(5000);
+                }
+            } else if (robotState == "docked") {
+                batteryLevel = qMin(100, batteryLevel + 2);
+                charging = batteryLevel < 100;
+                pluggedIn = true;
+            }
+            thing->setStateValue(cleaningRobotRobotStateStateTypeId, robotState);
+            thing->setStateValue(cleaningRobotBatteryLevelStateTypeId, batteryLevel);
+            thing->setStateValue(cleaningRobotBatteryCriticalStateTypeId, batteryLevel < 10);
+            thing->setStateValue(cleaningRobotChargingStateTypeId, charging);
+            thing->setStateValue(cleaningRobotPluggedInStateTypeId, pluggedIn);
         }
-
     }
 }
 
@@ -853,5 +916,8 @@ void IntegrationPluginSimulation::simulationTimerTimeout()
     } else if (thing->thingClassId() == waterSensorThingClassId) {
         bool wet = qrand() > (RAND_MAX / 2);
         thing->setStateValue(waterSensorWaterDetectedStateTypeId, wet);
+    } else if (thing->thingClassId() == cleaningRobotThingClassId) {
+        thing->setStateValue(cleaningRobotRobotStateStateTypeId, "docked");
     }
+
 }
