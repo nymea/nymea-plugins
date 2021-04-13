@@ -178,9 +178,6 @@ def pollService():
 
 def executeAction(info):    
     if info.actionTypeId == robotStartCleaningActionTypeId:
-        zone = info.paramValue(robotStartCleaningActionZoneParamTypeId)
-        logger.log("zone", zone)
-
         refreshRobot(info.thing)
         if info.thing.stateValue(robotRobotStateStateTypeId) == "paused":
             thingsAndRobots[info.thing].resume_cleaning()
@@ -234,7 +231,7 @@ def cleanWithRobot(robotThing, mapID, boundaryID):
     else:
         intNogo = 4
     logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
-    # thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
+    thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
 
 
 def browseThing(browseResult):
