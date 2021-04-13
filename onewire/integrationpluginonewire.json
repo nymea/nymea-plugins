@@ -31,16 +31,6 @@
                             "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
-                        },
-                        {
-                            "id": "64baf50e-8ed4-4526-8b92-7e4662d6fa39",
-                            "name": "autoAdd",
-                            "displayName": "Auto add one wire devices",
-                            "displayNameAction": "Set auto add mode",
-                            "displayNameEvent": "Auto add one wire devices changed",
-                            "defaultValue": false,
-                            "type": "bool",
-                            "writable": true
                         }
                     ]
                 },
@@ -85,6 +75,64 @@
                             "type": "double",
                             "minValue": -55,
                             "maxValue": 125,
+                            "defaultValue": 0,
+                            "ioType": "analogInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "39fd5605-2d8d-43ca-bee3-12636d2ce392",
+                    "name": "temperatureHumiditySensor",
+                    "displayName": "Temperature and Humidity Sensor",
+                    "interfaces": ["temperaturesensor", "humiditysensor"],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "be838775-8d2a-4af3-9b65-e6059ed921fe",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3fd26103-fc3c-44ea-a343-1c46ebe601a2",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "813e3aba-4791-40e6-ac99-1f1cf97d397c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "de6cbffa-93a2-4d31-99aa-44a335678d4b",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "minValue": -55,
+                            "maxValue": 125,
+                            "defaultValue": 0,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "a74c7e14-f0ce-428b-9866-17f482ca6b77",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "unit": "Percentage",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
                             "defaultValue": 0,
                             "ioType": "analogInput"
                         }

@@ -22,6 +22,9 @@ This integration plugin allows to integrate one-wire devices like temperature se
         * DS18B20X
     * Family Code 3B
         * DS1825
+* Temperature and Humidity Sensors
+    * Familiy Code 26
+        *DS2834
 * Switches
     * Family Code 05 
         * Single channel switch
@@ -45,10 +48,6 @@ First step is to setup the "One wire interface". During the device setup it is r
 You can simulate one-wire device with following init argument: "--fake=10,22,28,05"
 
 More about init arguments here: https://www.owfs.org
-
-The "One wire interface" thing has the toggle button to "Auto add one wire devices". Is this activated one-wire devices that get connected to the bus will appear in nymea automatically. 
-
-NOTE: As long as the "Auto add one wire devices" feature is activated you won't be able to manually discover devices.
 
 ### W1 Kernel Driver
 Install the kernel driver w1. Raspberry Pi users can use rasp-config to enable 'one wire' which enables W1. There are not further steps necessary, temperature sensors will be discovered if the driver has been loaded successfully.

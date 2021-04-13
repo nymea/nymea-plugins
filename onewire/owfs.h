@@ -76,6 +76,7 @@ public:
     bool isConnected(const QByteArray &address);
 
     double getTemperature(const QByteArray &address);
+    double getHumidity(const QByteArray &address);
     QByteArray getType(const QByteArray &address);
     bool getSwitchOutput(const QByteArray &address, SwitchChannel channel);
     void setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state);

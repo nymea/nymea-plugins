@@ -89,14 +89,8 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
                 }
             }
             return info->finish(Thing::ThingErrorNoError);
-        }
-
-
-        foreach(Thing *parentDevice, myThings().filterByThingClassId(oneWireInterfaceThingClassId)) {
-            if (parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool()) {
-                //devices cannot be discovered since auto mode is enabled
-                continue;
-            }
+        } else {
+            Thing *parentDevice = myThings().filterByThingClassId(oneWireInterfaceThingClassId).first();
             m_runningDiscoveries.insert(parentDevice, info);
             connect(info, &ThingDiscoveryInfo::destroyed, this, [this, parentDevice](){
                 m_runningDiscoveries.remove(parentDevice);
@@ -104,10 +98,6 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
 
             if (m_owfsInterface)
                 m_owfsInterface->discoverDevices();
-        }
-
-        if (m_runningDiscoveries.isEmpty()) {
-            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("All configured one wire interfaces are set up to automatically add new devices."));
         }
         return;
     } else {
@@ -172,6 +162,23 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
                 return info->finish(Thing::ThingErrorHardwareNotAvailable);
             }
         }
+    } else if (thing->thingClassId() == temperatureHumiditySensorThingClassId) {
+
+        qCDebug(dcOneWire) << "Setup one wire temperature and humidity sensor" << thing->params();
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (!parentThing) {
+            qCWarning(dcOneWire()) << "Could not find parent thing for" << thing->name();
+        }
+        if (parentThing->setupComplete()) {
+            setupOwfsTemperatureHumiditySensor(info);
+        } else {
+            connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing, this] {
+                if (parentThing->setupComplete()) {
+                    setupOwfsTemperatureHumiditySensor(info);
+                }
+            });
+        }
+        return info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == singleChannelSwitchThingClassId) {
         qCDebug(dcOneWire) << "Setup one wire switch" << thing->params();
@@ -233,10 +240,6 @@ void IntegrationPluginOneWire::executeAction(ThingActionInfo *info)
     }
 
     if (thing->thingClassId() == oneWireInterfaceThingClassId) {
-        if (action.actionTypeId() == oneWireInterfaceAutoAddActionTypeId){
-            thing->setStateValue(oneWireInterfaceAutoAddStateTypeId, action.param(oneWireInterfaceAutoAddActionAutoAddParamTypeId).value());
-            return info->finish(Thing::ThingErrorNoError);
-        }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
 
     } else if (thing->thingClassId() == singleChannelSwitchThingClassId) {
@@ -327,6 +330,20 @@ void IntegrationPluginOneWire::setupOwfsTemperatureSensor(ThingSetupInfo *info)
     }
 }
 
+void IntegrationPluginOneWire::setupOwfsTemperatureHumiditySensor(ThingSetupInfo *info)
+{
+    Thing *thing = info->thing();
+    QByteArray address = thing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toByteArray();
+    if (m_owfsInterface) {
+        thing->setStateValue(temperatureHumiditySensorConnectedStateTypeId,  m_owfsInterface->isConnected(address));
+        thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
+        thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, m_owfsInterface->getHumidity(address));
+        return info->finish(Thing::ThingErrorNoError);
+    } else {
+        qCWarning(dcOneWire()) << "OWFS interface is not available";
+        return info->finish(Thing::ThingErrorHardwareNotAvailable);
+    }
+}
 
 void IntegrationPluginOneWire::onPluginTimer()
 {
@@ -334,9 +351,6 @@ void IntegrationPluginOneWire::onPluginTimer()
         if (thing->thingClassId() == oneWireInterfaceThingClassId) {
             thing->setStateValue(oneWireInterfaceConnectedStateTypeId, m_owfsInterface->interfaceIsAvailable());
 
-            if (thing->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool()) {
-                m_owfsInterface->discoverDevices();
-            }
         } else if (thing->thingClassId() == temperatureSensorThingClassId) {
             QByteArray address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
             double temperature = 0;
@@ -351,12 +365,19 @@ void IntegrationPluginOneWire::onPluginTimer()
                 }
 
             } else {
-               temperature = m_w1Interface->getTemperature(address);
-               connected = m_w1Interface->deviceAvailable(address);
+                temperature = m_w1Interface->getTemperature(address);
+                connected = m_w1Interface->deviceAvailable(address);
             }
 
             thing->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
             thing->setStateValue(temperatureSensorConnectedStateTypeId, connected);
+        } else if (thing->thingClassId() == temperatureHumiditySensorThingClassId)  {
+            if (!m_owfsInterface)
+                continue;
+            QByteArray address = thing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toByteArray();
+            thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
+            thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, m_owfsInterface->getHumidity(address));
+            thing->setStateValue(temperatureHumiditySensorConnectedStateTypeId, m_owfsInterface->isConnected(address));
         } else if (thing->thingClassId() == singleChannelSwitchThingClassId) {
             if (!m_owfsInterface)
                 continue;
@@ -391,7 +412,6 @@ void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice
 {
     foreach(Thing *parentDevice, myThings().filterByThingClassId(oneWireInterfaceThingClassId)) {
 
-        bool autoDiscoverEnabled = parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool();
         ThingDescriptors descriptors;
         foreach (Owfs::OwfsDevice oneWireDevice, oneWireDevices){
             switch (oneWireDevice.family) {
@@ -406,6 +426,21 @@ void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice
                 params.append(Param(temperatureSensorThingTypeParamTypeId, oneWireDevice.type));
                 foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureSensorThingClassId)){
                     if (existingThing->paramValue(temperatureSensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                        descriptor.setThingId(existingThing->id());
+                        break;
+                    }
+                }
+                descriptor.setParams(params);
+                descriptors.append(descriptor);
+                break;
+            }
+            case 0x26: {//DS2834
+                ThingDescriptor descriptor(temperatureHumiditySensorThingClassId, oneWireDevice.type, "One wire temperature and humidity sensor", parentDevice->id());
+                ParamList params;
+                params.append(Param(temperatureHumiditySensorThingAddressParamTypeId, oneWireDevice.address));
+                params.append(Param(temperatureHumiditySensorThingTypeParamTypeId, oneWireDevice.type));
+                foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureHumiditySensorThingClassId)){
+                    if (existingThing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
                         descriptor.setThingId(existingThing->id());
                         break;
                     }
@@ -466,14 +501,10 @@ void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice
 
             }
         }
-        if (autoDiscoverEnabled) {
-            emit autoThingsAppeared(descriptors);
-        } else {
-            ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
-            if (info && m_runningDiscoveries.isEmpty()) {
-                info->addThingDescriptors(descriptors);
-                info->finish(Thing::ThingErrorNoError);
-            }
+        ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
+        if (info && m_runningDiscoveries.isEmpty()) {
+            info->addThingDescriptors(descriptors);
+            info->finish(Thing::ThingErrorNoError);
         }
         break;
     }

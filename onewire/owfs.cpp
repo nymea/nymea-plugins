@@ -182,6 +182,13 @@ double Owfs::getTemperature(const QByteArray &address)
     return temperature.toDouble();
 }
 
+double Owfs::getHumidity(const QByteArray &address)
+{
+    QByteArray humidity = getValue(address, "humidity");
+    qDebug(dcOneWire()) << "Humidity" << humidity << humidity.replace(',','.').toDouble();
+    return humidity.toDouble();
+}
+
 QByteArray Owfs::getType(const QByteArray &address)
 {
     QByteArray type = getValue(address, "type");
