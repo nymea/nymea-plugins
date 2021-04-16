@@ -33,7 +33,9 @@
     </message>
     <message>
         <source>IP address</source>
-        <extracomment>The name of the ParamType (ThingClass: sonoff_quad, Type: thing, ID: {dbc3f3b3-2d17-40e9-8f6e-dde0b26952bc})
+        <extracomment>The name of the ParamType (ThingClass: sonoff_dimmer, Type: thing, ID: {935a5a79-900a-4943-a9e2-5de228d66758})
+----------
+The name of the ParamType (ThingClass: sonoff_quad, Type: thing, ID: {dbc3f3b3-2d17-40e9-8f6e-dde0b26952bc})
 ----------
 The name of the ParamType (ThingClass: sonoff_tri, Type: thing, ID: {b7532005-4157-4687-952f-ac3cd6b7f606})
 ----------
@@ -56,6 +58,8 @@ The name of the EventType ({7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef}) of ThingClass
 The name of the EventType ({72050de9-c318-4e53-93e5-36f7c2fc7cab}) of ThingClass tasmotaLight
 ----------
 The name of the EventType ({b4607e5d-70c4-4e76-9d9a-c6de7c50377e}) of ThingClass tasmotaSwitch
+----------
+The name of the EventType ({1078dd25-b5bd-4005-8c1f-005ddca7ea21}) of ThingClass sonoff_dimmer
 ----------
 The name of the EventType ({5b422d28-9f60-4ea9-ab23-42a0ec605b9e}) of ThingClass sonoff_quad
 ----------
@@ -83,6 +87,10 @@ The name of the StateType ({72050de9-c318-4e53-93e5-36f7c2fc7cab}) of ThingClass
 The name of the ParamType (ThingClass: tasmotaSwitch, EventType: connected, ID: {b4607e5d-70c4-4e76-9d9a-c6de7c50377e})
 ----------
 The name of the StateType ({b4607e5d-70c4-4e76-9d9a-c6de7c50377e}) of ThingClass tasmotaSwitch
+----------
+The name of the ParamType (ThingClass: sonoff_dimmer, EventType: connected, ID: {1078dd25-b5bd-4005-8c1f-005ddca7ea21})
+----------
+The name of the StateType ({1078dd25-b5bd-4005-8c1f-005ddca7ea21}) of ThingClass sonoff_dimmer
 ----------
 The name of the ParamType (ThingClass: sonoff_quad, EventType: connected, ID: {5b422d28-9f60-4ea9-ab23-42a0ec605b9e})
 ----------
@@ -159,6 +167,8 @@ The name of the ParamType (ThingClass: tasmotaSwitch, Type: thing, ID: {564cf6c6
 ----------
 The name of the EventType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
 ----------
+The name of the EventType ({c8ec62d4-024b-4770-b893-6288b64f0dfe}) of ThingClass sonoff_dimmer
+----------
 The name of the EventType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -176,6 +186,12 @@ The name of the ParamType (ThingClass: tasmotaSwitch, EventType: power, ID: {413
 ----------
 The name of the StateType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
 ----------
+The name of the ParamType (ThingClass: sonoff_dimmer, ActionType: power, ID: {c8ec62d4-024b-4770-b893-6288b64f0dfe})
+----------
+The name of the ParamType (ThingClass: sonoff_dimmer, EventType: power, ID: {c8ec62d4-024b-4770-b893-6288b64f0dfe})
+----------
+The name of the StateType ({c8ec62d4-024b-4770-b893-6288b64f0dfe}) of ThingClass sonoff_dimmer
+----------
 The name of the ParamType (ThingClass: sonoff_basic, ActionType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
 ----------
 The name of the ParamType (ThingClass: sonoff_basic, EventType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
@@ -188,6 +204,8 @@ The name of the StateType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass
         <extracomment>The name of the ActionType ({88dbdf8e-45ff-466f-8352-8654a6b5fe68}) of ThingClass tasmotaLight
 ----------
 The name of the ActionType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
+----------
+The name of the ActionType ({c8ec62d4-024b-4770-b893-6288b64f0dfe}) of ThingClass sonoff_dimmer
 ----------
 The name of the ActionType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
@@ -275,6 +293,10 @@ The name of the ParamType (ThingClass: tasmotaSwitch, EventType: signalStrength,
 ----------
 The name of the StateType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
 ----------
+The name of the ParamType (ThingClass: sonoff_dimmer, EventType: signalStrength, ID: {662d99de-bfce-4cf0-8029-108e9911866c})
+----------
+The name of the StateType ({662d99de-bfce-4cf0-8029-108e9911866c}) of ThingClass sonoff_dimmer
+----------
 The name of the ParamType (ThingClass: sonoff_quad, EventType: signalStrength, ID: {d80d8f37-f3c0-4364-998b-312339fd1fa8})
 ----------
 The name of the StateType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
@@ -301,6 +323,8 @@ The name of the EventType ({1de7fac2-87f1-4c2b-9286-1b0895c5ac49}) of ThingClass
 The name of the EventType ({dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402}) of ThingClass tasmotaLight
 ----------
 The name of the EventType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
+----------
+The name of the EventType ({662d99de-bfce-4cf0-8029-108e9911866c}) of ThingClass sonoff_dimmer
 ----------
 The name of the EventType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
 ----------
@@ -435,6 +459,30 @@ The name of the ActionType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClas
     <message>
         <source>Set power channel 4</source>
         <extracomment>The name of the ActionType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_dimmer, ActionType: brightness, ID: {5cd8d0df-1188-4da1-9a87-bff991d3b2af})
+----------
+The name of the ParamType (ThingClass: sonoff_dimmer, EventType: brightness, ID: {5cd8d0df-1188-4da1-9a87-bff991d3b2af})
+----------
+The name of the StateType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brightness changed</source>
+        <extracomment>The name of the EventType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dimmer (Sonoff D1...)</source>
+        <extracomment>The name of the ThingClass ({4fb65caa-7f84-4496-91f6-1cd35574cc2e})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set brightness</source>
+        <extracomment>The name of the ActionType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
