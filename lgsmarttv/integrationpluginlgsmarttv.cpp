@@ -97,10 +97,9 @@ void IntegrationPluginLgSmartTv::discoverThings(ThingDiscoveryInfo *info)
 
     } else if (info->thingClassId() == webosTvThingClassId) {
         qCDebug(dcLgSmartTv()) << "Start discovering Webos tv";
-        UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("");
+        UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
         connect(reply, &UpnpDiscoveryReply::finished, reply, &UpnpDiscoveryReply::deleteLater);
         connect(reply, &UpnpDiscoveryReply::finished, info, [this, info, reply](){
-            Q_UNUSED(this)
 
             if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
                 qCWarning(dcLgSmartTv()) << "Upnp discovery error" << reply->error();
@@ -108,11 +107,21 @@ void IntegrationPluginLgSmartTv::discoverThings(ThingDiscoveryInfo *info)
             }
 
             foreach (UpnpDeviceDescriptor upnpDeviceDescriptor, reply->deviceDescriptors()) {
-                qCDebug(dcLgSmartTv) << upnpDeviceDescriptor;
+                if (upnpDeviceDescriptor.port() == 9080) {
+                    ThingDescriptor descriptor(webosTvThingClassId, "WebOS Smart TV", upnpDeviceDescriptor.hostAddress().toString());
+                    ParamList params;
+                    params << Param(webosTvThingHostAddressParamTypeId, upnpDeviceDescriptor.hostAddress().toString());
+                    descriptor.setParams(params);
 
-                // FIXME: check what are the propper upnp settings for discovering UPnP
+                    foreach (Thing *existingThing, myThings()) {
+                        if (existingThing->paramValue(webosTvThingHostAddressParamTypeId).toString() == upnpDeviceDescriptor.uuid()) {
+                            descriptor.setThingId(existingThing->id());
+                            break;
+                        }
+                    }
+                    info->addThingDescriptor(descriptor);
+                }
             }
-
             info->finish(Thing::ThingErrorNoError);
         });
     }
@@ -199,27 +208,33 @@ void IntegrationPluginLgSmartTv::setupThing(ThingSetupInfo *info)
         connect(tvDevice, &TvDevice::stateChanged, this, &IntegrationPluginLgSmartTv::stateChanged);
         m_tvList.insert(tvDevice, thing);
 
-
-        if (!m_pluginTimer) {
-            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
-            connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginLgSmartTv::onPluginTimer);
-        }
-
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
     if (thing->thingClassId() == webosTvThingClassId) {
         QHostAddress hostAddress = QHostAddress(thing->paramValue(webosTvThingHostAddressParamTypeId).toString());
+
+        if (m_webosTvs.contains(thing)) {
+            qCDebug(dcLgSmartTv()) << "Setup after reconfigure, cleaning up ...";
+            m_webosTvs.take(thing)->deleteLater();
+        }
+
         WebosConnection *webosConnection = new WebosConnection(this);
         webosConnection->setHostAddress(hostAddress);
 
-        connect(webosConnection, &WebosConnection::connectedChanged, this, [thing](bool connected){
+        connect(webosConnection, &WebosConnection::connectedChanged, this, [thing] (bool connected) {
             thing->setStateValue(webosTvConnectedStateTypeId, connected);
         });
-
-        m_webosTvs.insert(webosConnection, thing);
+        connect(info, &ThingSetupInfo::destroyed, webosConnection, &WebosConnection::deleteLater);
+        connect(webosConnection, &WebosConnection::connectedChanged, info, [info, thing, webosConnection, this] (bool connected) {
+            if (connected) {
+                m_webosTvs.insert(thing, webosConnection);
+                info->finish(Thing::ThingErrorNoError);
+            }
+        });
         webosConnection->connectTv();
+        return;
     }
 }
 
@@ -243,16 +258,25 @@ void IntegrationPluginLgSmartTv::thingRemoved(Thing *thing)
     }
 
     if (thing->thingClassId() == webosTvThingClassId) {
-        WebosConnection *connection = m_webosTvs.key(thing);
-        m_webosTvs.remove(connection);
-        delete connection;
+        WebosConnection *connection = m_webosTvs.take(thing);
+        if (connection)
+            connection->deleteLater();
     }
 }
 
 void IntegrationPluginLgSmartTv::postSetupThing(Thing *thing)
 {
+    qCDebug(dcLgSmartTv()) << "Post setup thing" << thing->name();
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginLgSmartTv::onPluginTimer);
+    }
+
     if (thing->thingClassId() == lgSmartTvThingClassId) {
         pairTvDevice(thing);
+    } else if (thing->thingClassId() == webosTvThingClassId) {
+        WebosConnection *connection = m_webosTvs.value(thing);
+        connection->
     }
 }
 

@@ -48,6 +48,9 @@ public:
 
     bool connected() const;
 
+    void getSystemInfo();
+    void getVolume();
+
 private:
     QHostAddress m_hostAddress;
     QWebSocket *m_websocket = nullptr;
@@ -56,10 +59,12 @@ private:
     int m_id = 0;
 
     void sendRequest(const QVariantMap &request);
-    void getVolume();
+
 
 signals:
     void connectedChanged(bool connected);
+    void volumeReceived();
+    void systemInfoReceived();
 
 private slots:
     void onConnected();
@@ -70,8 +75,6 @@ private slots:
 public slots:
     void registerClient();
     void connectTv();
-
-
 };
 
 #endif // WEBOSCONNECTION_H

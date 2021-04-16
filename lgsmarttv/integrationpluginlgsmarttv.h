@@ -66,7 +66,7 @@ private:
     QHash<TvDevice *, Thing *> m_tvList;
     QHash<QString, QString> m_tvKeys;
 
-    QHash<WebosConnection *, Thing *> m_webosTvs;
+    QHash<Thing *, WebosConnection *> m_webosTvs;
 
     // update requests
     QHash<QNetworkReply *, Thing *> m_volumeInfoRequests;

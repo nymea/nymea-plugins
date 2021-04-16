@@ -236,9 +236,8 @@
                     "id": "5203755d-1560-4d43-bc19-5375d37be8be",
                     "name": "webosTv",
                     "displayName": "LG WebOS Smart Tv",
-                    "createMethods": [ "Discovery" ],
-                    "setupMethod": "PushButton",
-                    "interfaces": [ "extendedvolumecontroller", "mediacontroller", "connectable" ],
+                    "createMethods": [ "user", "discovery" ],
+                    "interfaces": [ "volumecontroller", "mediacontroller", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "adebba0c-ac7b-4b6a-8668-307f44dbe5bf",
@@ -246,13 +245,6 @@
                             "displayName": "host address",
                             "type": "QString",
                             "inputType": "IPv4Address"
-                        },
-                        {
-                            "id": "e367fa30-13c9-4380-b25c-489ac8bc98bb",
-                            "name": "apiKey",
-                            "displayName": "API key",
-                            "type": "QString",
-                            "inputType": "Password"
                         }
                     ],
                     "stateTypes": [
@@ -312,6 +304,16 @@
                             "id": "3a922eee-832f-4e8c-b13b-00fb788ac8be",
                             "displayName": "SkipNext",
                             "name": "skipNext"
+                        },
+                        {
+                            "id": "45aa263e-50c4-4109-9aef-c56585924e94",
+                            "displayName": "Increase volume",
+                            "name": "increaseVolume"
+                        },
+                        {
+                            "id": "270e9842-e7d2-414d-9205-ff5b1752e445",
+                            "displayName": "Decrease volume",
+                            "name": "decreaseVolume"
                         }
                     ]
                 }
