@@ -1,7 +1,7 @@
 {
     "title": "Neato Botvac",
     "tagline": "Connect to and control your Neato Botvac connected cleaning robots.",
-    "icon": "cleaningrobot.png",
+    "icon": "neato.png",
     "stability": "consumer",
     "offline": true,
     "technologies": [
