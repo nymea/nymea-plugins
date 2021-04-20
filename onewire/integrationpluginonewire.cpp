@@ -43,16 +43,17 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
 {
     ThingClassId deviceClassId = info->thingClassId();
 
-    if (!m_w1Interface) {
-        m_w1Interface = new W1(this);
-    }
-
     if (deviceClassId == temperatureSensorThingClassId       ||
+            deviceClassId == temperatureHumiditySensorThingClassId ||
             deviceClassId == singleChannelSwitchThingClassId ||
             deviceClassId == dualChannelSwitchThingClassId   ||
             deviceClassId == eightChannelSwitchThingClassId) {
 
         if (myThings().filterByThingClassId(oneWireInterfaceThingClassId).isEmpty()) {
+            if (!m_w1Interface) {
+                m_w1Interface = new W1(this);
+            }
+
             if (!m_w1Interface->interfaceIsAvailable()) {
                 return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("No one wire interface initialized. Please set up a one wire interface first."));
             }
@@ -101,7 +102,7 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
         }
         return;
     } else {
-        qCWarning(dcOneWire()) << "Discovery called for a deviceclass which does not support discovery? Device class ID:" << info->thingClassId().toString();
+        qCWarning(dcOneWire()) << "Discovery called for a device class which does not support discovery? Device class ID:" << info->thingClassId().toString();
         info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
@@ -410,102 +411,100 @@ void IntegrationPluginOneWire::onPluginTimer()
 
 void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice> oneWireDevices)
 {
-    foreach(Thing *parentDevice, myThings().filterByThingClassId(oneWireInterfaceThingClassId)) {
+    Thing *parentDevice =  myThings().filterByThingClassId(oneWireInterfaceThingClassId).first();
 
-        ThingDescriptors descriptors;
-        foreach (Owfs::OwfsDevice oneWireDevice, oneWireDevices){
-            switch (oneWireDevice.family) {
-            //https://github.com/owfs/owfs-doc/wiki/1Wire-Device-List
-            case 0x10:  //DS18S20
-            case 0x22:  //DS1822
-            case 0x28:  //DS18B20
-            case 0x3b:  {//DS1825, MAX31826, MAX31850
-                ThingDescriptor descriptor(temperatureSensorThingClassId, oneWireDevice.type, "One wire temperature sensor", parentDevice->id());
-                ParamList params;
-                params.append(Param(temperatureSensorThingAddressParamTypeId, oneWireDevice.address));
-                params.append(Param(temperatureSensorThingTypeParamTypeId, oneWireDevice.type));
-                foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureSensorThingClassId)){
-                    if (existingThing->paramValue(temperatureSensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+    ThingDescriptors descriptors;
+    foreach (Owfs::OwfsDevice oneWireDevice, oneWireDevices){
+        switch (oneWireDevice.family) {
+        //https://github.com/owfs/owfs-doc/wiki/1Wire-Device-List
+        case 0x10:  //DS18S20
+        case 0x22:  //DS1822
+        case 0x28:  //DS18B20
+        case 0x3b:  {//DS1825, MAX31826, MAX31850
+            ThingDescriptor descriptor(temperatureSensorThingClassId, oneWireDevice.type, "One wire temperature sensor", parentDevice->id());
+            ParamList params;
+            params.append(Param(temperatureSensorThingAddressParamTypeId, oneWireDevice.address));
+            params.append(Param(temperatureSensorThingTypeParamTypeId, oneWireDevice.type));
+            foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureSensorThingClassId)){
+                if (existingThing->paramValue(temperatureSensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
-                descriptor.setParams(params);
-                descriptors.append(descriptor);
-                break;
             }
-            case 0x26: {//DS2834
-                ThingDescriptor descriptor(temperatureHumiditySensorThingClassId, oneWireDevice.type, "One wire temperature and humidity sensor", parentDevice->id());
-                ParamList params;
-                params.append(Param(temperatureHumiditySensorThingAddressParamTypeId, oneWireDevice.address));
-                params.append(Param(temperatureHumiditySensorThingTypeParamTypeId, oneWireDevice.type));
-                foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureHumiditySensorThingClassId)){
-                    if (existingThing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            break;
+        }
+        case 0x26: {//DS2834
+            ThingDescriptor descriptor(temperatureHumiditySensorThingClassId, oneWireDevice.type, "One wire temperature and humidity sensor", parentDevice->id());
+            ParamList params;
+            params.append(Param(temperatureHumiditySensorThingAddressParamTypeId, oneWireDevice.address));
+            params.append(Param(temperatureHumiditySensorThingTypeParamTypeId, oneWireDevice.type));
+            foreach (Thing *existingThing, myThings().filterByThingClassId(temperatureHumiditySensorThingClassId)){
+                if (existingThing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
-                descriptor.setParams(params);
-                descriptors.append(descriptor);
-                break;
             }
-            case 0x05: { //single channel switch
-                ThingDescriptor descriptor(singleChannelSwitchThingClassId, oneWireDevice.type, "One wire single channel switch", parentDevice->id());
-                ParamList params;
-                params.append(Param(singleChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
-                params.append(Param(singleChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
-                foreach (Thing *existingThing, myThings().filterByThingClassId(singleChannelSwitchThingClassId)){
-                    if (existingThing->paramValue(singleChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            break;
+        }
+        case 0x05: { //single channel switch
+            ThingDescriptor descriptor(singleChannelSwitchThingClassId, oneWireDevice.type, "One wire single channel switch", parentDevice->id());
+            ParamList params;
+            params.append(Param(singleChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
+            params.append(Param(singleChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
+            foreach (Thing *existingThing, myThings().filterByThingClassId(singleChannelSwitchThingClassId)){
+                if (existingThing->paramValue(singleChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
-                descriptor.setParams(params);
-                descriptors.append(descriptor);
-                break;
             }
-            case 0x12:
-            case 0x3a: {//dual channel switch
-                ThingDescriptor descriptor(dualChannelSwitchThingClassId, oneWireDevice.type, "One wire dual channel switch", parentDevice->id());
-                ParamList params;
-                params.append(Param(dualChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
-                params.append(Param(dualChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
-                foreach (Thing *existingThing, myThings().filterByThingClassId(dualChannelSwitchThingClassId)){
-                    if (existingThing->paramValue(dualChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            break;
+        }
+        case 0x12:
+        case 0x3a: {//dual channel switch
+            ThingDescriptor descriptor(dualChannelSwitchThingClassId, oneWireDevice.type, "One wire dual channel switch", parentDevice->id());
+            ParamList params;
+            params.append(Param(dualChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
+            params.append(Param(dualChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
+            foreach (Thing *existingThing, myThings().filterByThingClassId(dualChannelSwitchThingClassId)){
+                if (existingThing->paramValue(dualChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
-                descriptor.setParams(params);
-                descriptors.append(descriptor);
-                break;
             }
-            case 0x29: { //eight channel switch
-                ThingDescriptor descriptor(eightChannelSwitchThingClassId, oneWireDevice.type, "One wire eight channel switch", parentDevice->id());
-                ParamList params;
-                params.append(Param(eightChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
-                params.append(Param(eightChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
-                foreach (Thing *existingThing, myThings().filterByThingClassId(eightChannelSwitchThingClassId)){
-                    if (existingThing->paramValue(eightChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            break;
+        }
+        case 0x29: { //eight channel switch
+            ThingDescriptor descriptor(eightChannelSwitchThingClassId, oneWireDevice.type, "One wire eight channel switch", parentDevice->id());
+            ParamList params;
+            params.append(Param(eightChannelSwitchThingAddressParamTypeId, oneWireDevice.address));
+            params.append(Param(eightChannelSwitchThingTypeParamTypeId, oneWireDevice.type));
+            foreach (Thing *existingThing, myThings().filterByThingClassId(eightChannelSwitchThingClassId)){
+                if (existingThing->paramValue(eightChannelSwitchThingAddressParamTypeId).toString() == oneWireDevice.address) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
-                descriptor.setParams(params);
-                descriptors.append(descriptor);
-                break;
             }
-            default:
-                qDebug(dcOneWire()) << "Unknown Device discovered" << oneWireDevice.type << oneWireDevice.address;
-                break;
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+            break;
+        }
+        default:
+            qDebug(dcOneWire()) << "Unknown Device discovered" << oneWireDevice.type << oneWireDevice.address;
+            break;
 
-            }
         }
-        ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
-        if (info && m_runningDiscoveries.isEmpty()) {
-            info->addThingDescriptors(descriptors);
-            info->finish(Thing::ThingErrorNoError);
-        }
-        break;
+    }
+    ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
+    if (info && m_runningDiscoveries.isEmpty()) {
+        info->addThingDescriptors(descriptors);
+        info->finish(Thing::ThingErrorNoError);
     }
 }
