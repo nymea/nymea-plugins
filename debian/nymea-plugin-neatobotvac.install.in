@@ -1,0 +1,3 @@
+neatobotvac/integrationpluginneatobotvac.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/neatobotvac/
+neatobotvac/integrationpluginneatobotvac.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/neatobotvac/
+neatobotvac/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/neatobotvac/
