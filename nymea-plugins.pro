@@ -98,19 +98,21 @@ QMAKE_EXTRA_TARGETS += lrelease
 # For Qt-Creator's code model: Add CPATH to INCLUDEPATH explicitly
 INCLUDEPATH += $$(CPATH)
 
-# Verify if building only a selection of plugins
-contains(CONFIG, selection) {
-    # Check each plugin if the subdir exists
-    for(plugin, PLUGINS) {
-        contains(PLUGIN_DIRS, $${plugin}) {
-            SUBDIRS*= $${plugin}
-        } else {
-            error("Invalid plugin passed. There is no subdirectory with the name $${plugin}.")
-        }
-    }
-    message("Building plugin selection: $${SUBDIRS}")
-} else {
-    SUBDIRS *= $${PLUGIN_DIRS}
-    message("Building all plugins")
-}
+message("Usage: qmake [srcdir] [WITH_PLUGINS=\"...\"] [WITHOUT_PLUGINS=\"...\"]")
 
+isEmpty(WITH_PLUGINS) {
+    PLUGINS = $${PLUGIN_DIRS}
+} else {
+    PLUGINS = $${WITH_PLUGINS}
+}
+PLUGINS-=$${WITHOUT_PLUGINS}
+
+message("Building plugins:")
+for(plugin, PLUGINS) {
+    exists($${plugin}) {
+        SUBDIRS*= $${plugin}
+        message("- $${plugin}")
+    } else {
+        error("Invalid plugin \"$${plugin}\".")
+    }
+}
