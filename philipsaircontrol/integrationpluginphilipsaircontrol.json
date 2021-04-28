@@ -1,0 +1,29 @@
+{
+    "name": "philipsAirControl",
+    "displayName": "Philips air control",
+    "id": "c9e1b63a-d140-4a6e-9897-b3f21ce4620b",
+    "vendors": [
+        {
+            "id": "0ae1e001-2aa6-47ed-b8c0-334c3728a68f",
+            "name": "philips",
+            "displayName": "Philips",
+            "thingClasses": [
+                {
+                    "id": "65b70505-6500-43ed-b4b8-2d011c5f3594",
+                    "name": "purifier",
+                    "displayName": "Air purifier",
+                    "createMethods": ["Discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "870c2920-b829-46db-8196-fbd4d8e93885",
+                            "name": "ip",
+                            "displayName": "IP Address",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -42,6 +42,7 @@ PLUGIN_DIRS = \
     openuv              \ 
     openweathermap      \
     osdomotics          \
+    philipsaircontrol   \
     philipshue          \
     pushbullet          \
     pushnotifications   \
