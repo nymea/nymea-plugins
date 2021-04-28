@@ -17,6 +17,6 @@ entering your personal username + password for the Somfy TaHoma API.
 
 ## Supported devices
 
-Currently this plugin supports all roller shutters, blinds and garage
-door drives that are connectable to the TaHoma gateway. These are Somfy iO
-devices as well as RTS devices.
+Currently this plugin supports all roller shutters, blinds, garage
+door, awning drives and lights that are connectable to the TaHoma gateway.
+These are Somfy iO devices as well as RTS devices.

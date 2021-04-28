@@ -304,6 +304,137 @@
                             "displayName": "Close"
                         }
                     ]
+                },
+                {
+                    "id": "d3a3bb40-4b2d-4bdc-989f-5254f03b4c90",
+                    "name": "awning",
+                    "displayName": "Awning",
+                    "createMethods": ["auto"],
+                    "interfaces": ["extendedawning", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "ca60f12e-b9da-427a-a149-195922399fd5",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c409cb9b-82ef-4f59-ae89-eb783d4ebe97",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "writable": true,
+                            "displayNameAction": "Set percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2507ac5a-9658-42cb-80f6-73f673c32771",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "b2ad6f4a-c507-45c3-a951-b344603cc3fc",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "8f972969-10dd-4954-9c8b-de56070a6668",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "9612954c-02cb-4159-9a29-f36eaf1c7f6a",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "33bec73b-4d15-493a-b553-bcee32c40ee1",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "20cae53b-f36d-425b-b937-3e46519893a3",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "e569a3cc-6e79-4e24-af35-c5fa327a7314",
+                    "name": "light",
+                    "displayName": "Light",
+                    "createMethods": ["auto"],
+                    "interfaces": ["dimmablelight", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "9cd2e0f2-a02f-478a-9358-6ff0f5aba9f5",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1b51ce68-1f7e-4f06-b68d-bfca2d61b353",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Brightness changed",
+                            "writable": true,
+                            "displayNameAction": "Set brightness",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "654ddcdf-b0b7-4c38-a70d-878f0f3857a5",
+                            "name": "power",
+                            "type": "bool",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "writable": true,
+                            "displayNameAction": "Set power",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "cfaa5533-d26e-4545-9f44-6567c9d7888a",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fb8dcd84-70ad-4f3e-97c4-93296608e33d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ]
                 }
             ]
         }
