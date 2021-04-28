@@ -347,6 +347,65 @@
                     ]
                 },
                 {
+                    "id": "4fb65caa-7f84-4496-91f6-1cd35574cc2e",
+                    "name": "sonoff_dimmer",
+                    "displayName": "Dimmer (Sonoff D1...)",
+                    "createMethods": ["user"],
+                    "interfaces": [ "dimmablelight", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "935a5a79-900a-4943-a9e2-5de228d66758",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1078dd25-b5bd-4005-8c1f-005ddca7ea21",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "662d99de-bfce-4cf0-8029-108e9911866c",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "c8ec62d4-024b-4770-b893-6288b64f0dfe",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5cd8d0df-1188-4da1-9a87-bff991d3b2af",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 50,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
                     "id": "8a5e69c0-14ad-4ae8-9ff9-10055de6ffdf",
                     "name": "tasmotaSwitch",
                     "displayName": "Tasmota power switch",
