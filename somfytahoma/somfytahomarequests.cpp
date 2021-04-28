@@ -31,75 +31,65 @@
 #include "somfytahomarequests.h"
 
 #include <QJsonDocument>
+#include <QUrlQuery>
 
 #include "network/networkaccessmanager.h"
 
 #include "extern-plugininfo.h"
 
-SomfyTahomaPostRequest::SomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent):
-    QObject(parent)
+
+static const QString somfyTahomaUrl = QStringLiteral("https://tahomalink.com/enduser-mobile-web/enduserAPI");
+
+SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : QObject(parent)
 {
-    QUrl url("https://tahomalink.com/enduser-mobile-web/enduserAPI" + path);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        deleteLater();
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcSomfyTahoma()) << "Request for" << reply->url().path() << "failed:" << reply->errorString();
+            emit error(reply->error());
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            qCWarning(dcSomfyTahoma()) << "Json parse error in reply for" << reply->url().path() << ":" << parseError.errorString();
+            emit error(QNetworkReply::UnknownContentError);
+            return;
+        }
+
+        emit finished(jsonDoc.toVariant());
+    });
+}
+
+SomfyTahomaRequest *createSomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent)
+{
+    QUrl url(somfyTahomaUrl + path);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, contentType);
     QNetworkReply *reply = networkManager->post(request, body);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, path] {
-        deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Request for" << path << "failed:" << reply->errorString();
-            emit error(reply->error());
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
-        if (parseError.error != QJsonParseError::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Json parse error in reply for" << path << ":" << parseError.errorString();
-            emit error(QNetworkReply::UnknownContentError);
-            return;
-        }
-
-        emit finished(jsonDoc.toVariant());
-    });
+    return new SomfyTahomaRequest(reply, parent);
 }
 
-SomfyTahomaGetRequest::SomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent):
-    QObject(parent)
+SomfyTahomaRequest *createSomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent)
 {
-    QUrl url("https://tahomalink.com/enduser-mobile-web/enduserAPI" + path);
+    QUrl url(somfyTahomaUrl + path);
     QNetworkRequest request(url);
     QNetworkReply *reply = networkManager->get(request);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, path] {
-        deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Request for" << path << "failed:" << reply->errorString();
-            emit error(reply->error());
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
-        if (parseError.error != QJsonParseError::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Json parse error in reply for" << path << ":" << parseError.errorString();
-            emit error(QNetworkReply::UnknownContentError);
-            return;
-        }
-
-        emit finished(jsonDoc.toVariant());
-    });
+    return new SomfyTahomaRequest(reply, parent);
 }
 
-SomfyTahomaLoginRequest::SomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent):
-    SomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", QString("userId=" + username + "&userPassword=" + password).toUtf8(), parent)
+SomfyTahomaRequest *createSomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent)
 {
+    QUrlQuery postData;
+    postData.addQueryItem("userId", username);
+    postData.addQueryItem("userPassword", password);
+    return createSomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", postData.toString(QUrl::FullyEncoded).toUtf8(), parent);
 }
 
-
-SomfyTahomaEventFetchRequest::SomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent):
-    SomfyTahomaPostRequest(networkManager, "/events/" + eventListenerId + "/fetch", "application/json", QByteArray(), parent)
+SomfyTahomaRequest *createSomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent)
 {
+    return createSomfyTahomaPostRequest(networkManager, "/events/" + eventListenerId + "/fetch", "application/json", QByteArray(), parent);
 }

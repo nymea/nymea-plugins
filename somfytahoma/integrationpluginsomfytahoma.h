@@ -34,7 +34,7 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 
-class SomfyTahomaLoginRequest;
+class SomfyTahomaRequest;
 
 class IntegrationPluginSomfyTahoma : public IntegrationPlugin
 {
@@ -54,7 +54,7 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    SomfyTahomaLoginRequest *createLoginRequestWithStoredCredentials(Thing *thing);
+    SomfyTahomaRequest *createLoginRequestWithStoredCredentials(Thing *thing);
     void refreshAccount(Thing *thing);
     void handleEvents(const QVariantList &eventList);
     void updateThingStates(const QString &deviceUrl, const QVariantList &stateList);
