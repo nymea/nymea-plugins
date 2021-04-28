@@ -61,6 +61,7 @@ private:
     QHash<Thing*, ThingDiscoveryInfo*> m_runningDiscoveries;
 
     void setupOwfsTemperatureSensor(ThingSetupInfo *info);
+    void setupOwfsTemperatureHumiditySensor(ThingSetupInfo *info);
 
 private slots:
     void onPluginTimer();
