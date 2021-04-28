@@ -622,7 +622,7 @@
                     "name": "powerSwitch",
                     "displayName": "Generic power switch",
                     "createMethods": ["user"],
-                    "interfaces": ["power"],
+                    "interfaces": ["powerswitch"],
                     "stateTypes": [
                         {
                             "id": "08087af6-6a3b-4e4a-ac6d-56f23ce63edf",
