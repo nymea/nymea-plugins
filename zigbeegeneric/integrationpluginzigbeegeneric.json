@@ -342,9 +342,99 @@
                             "name": "close",
                             "displayName": "Lock door"
                         }
+                    ]
+                },
+                {
+                    "id": "fd43b442-1764-4005-acaf-9075e6d11e3a",
+                    "name": "doorSensor",
+                    "displayName": "Door sensor",
+                    "createMethods": ["auto"],
+                    "interfaces": ["closablesensor", "battery", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "98d4265d-99b7-4849-97ec-a7eae3b275ff",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "260cb70b-7cb9-46b9-b6f3-0d4810a016b7",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e265b17c-e4f4-4bea-b299-a6a3d94a6e7a",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "193922e4-2c74-4748-a319-9e5b2f2607b4",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "74ddad9e-6849-4b7a-a356-971e77e5195b",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
                     ],
-                    "eventTypes": [
-
+                    "stateTypes": [
+                        {
+                            "id": "2fb8e0a0-52f2-4c1d-b1c9-c7a295a83b44",
+                            "name": "closed",
+                            "displayName": "Closed",
+                            "displayNameEvent": "Opened or closed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3c120c1c-0093-4c5e-8d7e-8892e4ce21b3",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9628450e-5580-4f30-8af7-f1c3093dcfb7",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4fae59a7-fe89-4bc7-bc04-fc18e94b5c3e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a1bf9c90-6e12-4513-a82a-a1d15351f140",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        }
                     ]
                 }
             ]
