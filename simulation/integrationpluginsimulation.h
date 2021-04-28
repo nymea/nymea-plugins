@@ -36,6 +36,8 @@
 
 #include <QDateTime>
 
+#include "extern-plugininfo.h"
+
 class IntegrationPluginSimulation : public IntegrationPlugin
 {
     Q_OBJECT

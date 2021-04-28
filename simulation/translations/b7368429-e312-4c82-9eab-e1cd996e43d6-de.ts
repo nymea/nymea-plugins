@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de" sourcelanguage="en_US">
 <context>
     <name>IntegrationPluginSimulation</name>
     <message>
@@ -19,27 +19,27 @@
         <extracomment>The name of the vendor ({fd2ae067-2c3d-4332-9c4b-ee0af653bcaf})
 ----------
 The name of the plugin Simulation ({b7368429-e312-4c82-9eab-e1cd996e43d6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Simulation</translation>
     </message>
     <message>
         <source>Simple Button</source>
         <extracomment>The name of the ThingClass ({73bb670b-e7a3-40da-bd6f-3260f017ec80})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Einfacher Schalter</translation>
     </message>
     <message>
         <source>Press the button</source>
         <extracomment>The name of the ActionType ({64c4ced5-9a1a-4858-81dd-1b5c94dba495}) of ThingClass simpleButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Taste drücken</translation>
     </message>
     <message>
         <source>Button pressed</source>
         <extracomment>The name of the EventType ({f9652210-9aed-4f38-8c19-2fd54f703fbe}) of ThingClass simpleButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Taste gedrückt</translation>
     </message>
     <message>
         <source>Power Button</source>
         <extracomment>The name of the ThingClass ({910b2f58-70dc-4da3-89ae-9e7393290ccb})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Einschaltknopf</translation>
     </message>
     <message>
         <source>Power changed</source>
@@ -56,7 +56,7 @@ The name of the EventType ({b786029d-f3a6-4b47-978a-ac1a581aac0f}) of ThingClass
 The name of the EventType ({e1910c53-a6bc-434b-9caa-0d08e214c122}) of ThingClass heating
 ----------
 The name of the EventType ({fa63c0b9-10e5-4280-9cc2-243bf27c05ad}) of ThingClass alternativeButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein- oder ausgeschaltet</translation>
     </message>
     <message>
         <source>Set power</source>
@@ -71,12 +71,12 @@ The name of the ActionType ({b786029d-f3a6-4b47-978a-ac1a581aac0f}) of ThingClas
 The name of the ActionType ({e1910c53-a6bc-434b-9caa-0d08e214c122}) of ThingClass heating
 ----------
 The name of the ActionType ({fa63c0b9-10e5-4280-9cc2-243bf27c05ad}) of ThingClass alternativeButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein- oder ausschalten</translation>
     </message>
     <message>
         <source>Temperature sensor</source>
         <extracomment>The name of the ThingClass ({77c6ccff-84e8-4983-b69e-5e1a3f4723f2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatursensor</translation>
     </message>
     <message>
         <source>Temperature changed</source>
@@ -85,14 +85,14 @@ The name of the ActionType ({fa63c0b9-10e5-4280-9cc2-243bf27c05ad}) of ThingClas
 The name of the EventType ({b5244e65-0811-4dc2-afd2-6bf3092d44c7}) of ThingClass netatmoIndoor
 ----------
 The name of the EventType ({169d7a2a-d1c9-4578-bb30-fc7d25690e59}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur geändert</translation>
     </message>
     <message>
         <source>Humidity changed</source>
         <extracomment>The name of the EventType ({b2225720-dfdc-40f8-a24a-20247e69e575}) of ThingClass netatmoIndoor
 ----------
 The name of the EventType ({10c735fd-7b81-484a-a148-76ea0da840f0}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Luftfeuchtigkeit geändert</translation>
     </message>
     <message>
         <source>Battery level changed</source>
@@ -107,7 +107,7 @@ The name of the EventType ({30fd9fd9-1a6b-4698-93ac-6b2a1ba18500}) of ThingClass
 The name of the EventType ({4d66c81e-6293-4997-9685-8b44d7e5c1bd}) of ThingClass motionDetector
 ----------
 The name of the EventType ({45c0de32-b519-47d7-9f82-e5f09d1542d4}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterieladung geändert</translation>
     </message>
     <message>
         <source>Battery critical changed</source>
@@ -120,7 +120,7 @@ The name of the EventType ({4857f2b4-0840-4c7e-82ff-bd881ae32cf9}) of ThingClass
 The name of the EventType ({1c621a6f-86fe-4351-bf9e-03c3deaef6ad}) of ThingClass motionDetector
 ----------
 The name of the EventType ({295b9a17-a4b1-4cc9-8ebb-2309b72c75f6}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batteriezustand kritsch</translation>
     </message>
     <message>
         <source>Connected changed</source>
@@ -131,32 +131,32 @@ The name of the EventType ({2e51cb1b-9f6a-4a45-b23e-ab44e8ab28e9}) of ThingClass
 The name of the EventType ({b481b6e7-77c1-40b0-859a-286876b05959}) of ThingClass motionDetector
 ----------
 The name of the EventType ({e66aba37-2647-4b6b-8740-d59eb98d846c}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden oder getrennt</translation>
     </message>
     <message>
         <source>Motion Detector</source>
         <extracomment>The name of the ThingClass ({990fc2ba-260a-4648-9a93-e803e219da4f})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bewegungsmelder</translation>
     </message>
     <message>
         <source>Motion detected</source>
         <extracomment>The name of the EventType ({5ab00bfc-7345-44a2-90d4-852c810e59ec}) of ThingClass motionDetector</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bewegung erkannt</translation>
     </message>
     <message>
         <source>Heating</source>
         <extracomment>The name of the ThingClass ({62e302f4-b92a-4b55-bd18-a1e0cc56362a})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Heizung</translation>
     </message>
     <message>
         <source>Active status changed</source>
         <extracomment>The name of the EventType ({47a16375-1027-42cc-82d3-56cbfdb1193c}) of ThingClass heatingRod</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>EV Charging Station</source>
         <extracomment>The name of the ThingClass ({1fa40afa-6a07-4a97-918b-76e3944ea0fb})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Open</source>
