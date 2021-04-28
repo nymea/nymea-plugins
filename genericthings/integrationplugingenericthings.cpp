@@ -741,6 +741,17 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         }
+    } else if (thing->thingClassId() == presenceSensorThingClassId) {
+        if (action.actionTypeId() == presenceSensorIsPresentActionTypeId) {
+            bool isPresent = action.paramValue(presenceSensorIsPresentActionIsPresentParamTypeId).toBool();
+            qCDebug(dcGenericThings()) << "Presence sensor is now" << (isPresent ? "present" : "not present");
+            thing->setStateValue(presenceSensorIsPresentStateTypeId, isPresent);
+            if (isPresent) {
+                thing->setStateValue(presenceSensorLastSeenTimeStateTypeId, QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }

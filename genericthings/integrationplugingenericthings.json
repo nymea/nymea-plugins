@@ -1181,26 +1181,6 @@
                     ]
                 },
                 {
-                    "id": "e808fc5b-12fb-46d4-bb5d-25a4586bc0ba",
-                    "name": "heating",
-                    "displayName": "Generic heater",
-                    "createMethods": ["user"],
-                    "interfaces": ["heating"],
-                    "stateTypes": [
-                        {
-                            "id": "bb6b5e3a-d4d9-4440-a098-0720c14ad679",
-                            "name": "power",
-                            "displayName": "Heater on/off",
-                            "displayNameEvent": "Heater turned on/off",
-                            "displayNameAction": "Turn heater on/off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true,
-                            "ioType": "digitalInput"
-                        }
-                    ]
-                },
-                {
                     "id": "09edbc07-d382-48a4-9b16-99992014aff9",
                     "name": "cooling",
                     "displayName": "Generic cooler",
@@ -1284,12 +1264,41 @@
                             "id": "7f5fdc2b-7916-4e90-9c24-558162304f71",
                             "name": "closed",
                             "displayName": "Closed",
-                            "displayNameEvent": "Opned or closed",
+                            "displayNameEvent": "Opened or closed",
                             "displayNameAction": "Set open or closed",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true,
                             "ioType": "digitalOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "339a0c54-4086-404f-8d36-bcf20621b785",
+                    "name": "presenceSensor",
+                    "displayName": "Generic presence sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["presencesensor"],
+                    "stateTypes": [
+                        {
+                            "id": "22c1eac6-9bb5-4cc1-ac0d-e3e1499edd3c",
+                            "name": "isPresent",
+                            "displayName": "Presence detected",
+                            "displayNameEvent": "Presense changed",
+                            "displayNameAction": "Set presence",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalOutput",
+                            "writable": true
+                        },
+                        {
+                            "id": "be4842cb-140c-425f-9630-8bb19fdb943e",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
                         }
                     ]
                 }
