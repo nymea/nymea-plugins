@@ -278,7 +278,7 @@
                     "name": "storage",
                     "displayName": "Fronius solar storage",
                     "createMethods": ["auto"],
-                    "interfaces": [ "batterylevel", "connectable" ],
+                    "interfaces": [ "battery", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "9665c38b-c13a-428f-b741-1470239c63dc",
@@ -318,10 +318,18 @@
                         {
                             "id": "2de34a1f-de2e-43ad-8998-8a5460dff9ae",
                             "name": "charging",
-                            "displayName": "State of charge",
-                            "displayNameEvent": "Charge state changed",
-                            "type": "QString",
-                            "defaultValue": "-"
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "be90d35c-081c-485b-b4cc-8271e7da5796",
+                            "name": "discharging",
+                            "displayName": "Discharging",
+                            "displayNameEvent": "Discharging changed",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "5c6da672-9662-41bc-8c8c-aa0f32481251",

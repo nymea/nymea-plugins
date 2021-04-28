@@ -13,7 +13,7 @@
                     "name": "thermostat",
                     "displayName": "Zigbee Thermostat",
                     "createMethods": ["auto"],
-                    "interfaces": ["thermostat", "temperaturesensor", "batterylevel",  "wirelessconnectable"],
+                    "interfaces": ["thermostat", "temperaturesensor", "battery",  "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
@@ -243,7 +243,7 @@
                     "id": "34cb3d09-dd9f-4b95-95d0-30a1cd94adac",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "simpleclosable", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "simpleclosable", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "484bf80f-5d20-4029-b05e-6b4c9fbefd69",

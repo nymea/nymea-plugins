@@ -14,7 +14,7 @@
                     "id": "b2711164-a848-4715-8ddf-33ca86f9f4cf",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "multibutton", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "multibutton", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "b221cad1-ef2e-4192-8168-11d0205a43da",
@@ -106,7 +106,7 @@
                     "name": "smartButton",
                     "displayName": "Hue Smart button",
                     "createMethods": ["Auto"],
-                    "interfaces": ["longpressbutton", "batterylevel", "wirelessconnectable"],
+                    "interfaces": ["longpressbutton", "battery", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "2c2bd259-b1cd-47f4-825f-03c3806a346f",
@@ -192,7 +192,7 @@
                     "id": "031c45d1-e782-4f91-9f05-259d6b81c7ef",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "presencesensor", "lightsensor", "temperaturesensor", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "presencesensor", "lightsensor", "temperaturesensor", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "a866df99-7e2a-40e1-b82e-529c03846d5e",

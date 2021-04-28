@@ -14,7 +14,7 @@
                     "id": "2007e8ae-4849-47f6-98d6-ea6769c8ebd9",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "longpressmultibutton", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "longpressmultibutton", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "8b33f5cb-d1a3-4ae6-837a-d88e77252185",
@@ -128,7 +128,7 @@
                     "id": "19ee3f56-f958-4b04-8ea3-747b72d7c7d6",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "multibutton", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "multibutton", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "2ee18d3e-5fb8-4809-a52a-8e420b677f6e",
@@ -228,7 +228,7 @@
                     "id": "a18e398d-c14b-4bcd-8e6d-b64737436814",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "longpressmultibutton", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "longpressmultibutton", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "fa6544fd-9023-4c01-8600-7cc2f93aa4ca",
@@ -342,7 +342,7 @@
                     "id": "30a1090e-8058-4a5b-aee3-4ba112ba3ba7",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "presencesensor", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "presencesensor", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "a03fabac-df59-4f4c-a691-237b1c37270f",

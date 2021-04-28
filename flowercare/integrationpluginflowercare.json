@@ -13,7 +13,7 @@
                     "name": "flowerCare",
                     "displayName": "Flower Care",
                     "createMethods": ["discovery"],
-                    "interfaces": ["temperaturesensor", "lightsensor", "moisturesensor", "conductivitysensor", "wirelessconnectable", "batterylevel"],
+                    "interfaces": ["temperaturesensor", "lightsensor", "moisturesensor", "conductivitysensor", "wirelessconnectable", "battery"],
                     "paramTypes": [
                         {
                             "id": "fe2dba0f-2a47-463e-a645-bcd55cf09750",

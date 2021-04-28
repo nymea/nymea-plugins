@@ -322,7 +322,7 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
             int maxCharging = action.param(batteryMaxChargingActionMaxChargingParamTypeId).value().toInt();
             thing->setStateValue(batteryMaxChargingStateTypeId, maxCharging);
             qCDebug(dcSimulation()) << "Set max charging power" << maxCharging << "for battery" << thing->name();
-            thing->setStateValue(batteryChargingStateTypeId, maxCharging);
+            thing->setStateValue(batteryChargingStateTypeId, true);
             return info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
