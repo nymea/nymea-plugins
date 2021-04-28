@@ -32,6 +32,7 @@
 #define INTEGRATIONPLUGINPUSHBULLET_H
 
 #include "integrations/integrationplugin.h"
+#include "extern-plugininfo.h"
 
 class IntegrationPluginTelegram: public IntegrationPlugin
 {
