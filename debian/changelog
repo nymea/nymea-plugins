@@ -1,7 +1,41 @@
-nymea-plugins (0.27.0) UNRELEASED; urgency=medium
+nymea-plugins (0.27.0) xenial; urgency=medium
 
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Thu, 04 Mar 2021 00:14:37 +0100
+  [ Simon Stürz ]
+  * Nuki: Add support for Nuki 2.0
+
+  [ Bernhard Trinnes ]
+  * New Plugin: Tempo
+
+  [ Michael Zanetti ]
+  * 0.27
+  * Update to new battery interface
+  * Replace CONFIG+=selection PLUGINS+=... with WITH_PLUGINS=...
+  * New plugin: Neato botvac
+  * GenericThings: Add a generic presense sensor
+
+  [ Christian Fetzer ]
+  * somfytahoma: Fix credential encoding
+
+  [ Michael Zanetti ]
+  * ZigbeeGeneric: Add support for ZigBee door/window sensors
+  * Telegram: Fix small cosmetic issue during setup and improve readme
+
+  [ Christian Fetzer ]
+  * somfytahoma: Add support for awnings and lights
+
+  [ Michael Zanetti ]
+  * Simulation: Add a cleaning robot simulation
+  * Tasmota: Add support for the Sonoff Dimmer
+
+  [ Bernhard Trinnes ]
+  * OneWire Plugin: Add temperature and humidity sensor
+
+  [ Michael Zanetti ]
+  * Openweathermap: Update labels to be in line with other plugins
+  * Use pkgconfig to find nymea-mqtt
+
+ -- Jenkins <jenkins@nymea.io>  Wed, 28 Apr 2021 13:54:55 +0200
 
 nymea-plugins (0.26.0) xenial; urgency=medium
 
