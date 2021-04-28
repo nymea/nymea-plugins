@@ -1,0 +1,13 @@
+{
+    "title": "Tempo",
+    "tagline": "Get logged hours from Tempo.",
+    "icon": "tempo.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "online-service"
+    ]
+}
