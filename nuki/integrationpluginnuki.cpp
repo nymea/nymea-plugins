@@ -129,7 +129,6 @@ void IntegrationPluginNuki::discoverThings(ThingDiscoveryInfo *info)
         m_bluetoothAdapter->startDiscovering();
 
     QTimer::singleShot(5000, info, [this, info]() { onBluetoothDiscoveryFinished(info); });
-
 }
 
 void IntegrationPluginNuki::startPairing(ThingPairingInfo *info)
@@ -159,15 +158,56 @@ void IntegrationPluginNuki::confirmPairing(ThingPairingInfo *info, const QString
         return info->finish(Thing::ThingErrorThingNotFound);
     }
 
+    // Create a temporary nuki for authentication
     BluetoothDevice *bluetoothDevice = m_bluetoothAdapter->getDevice(address);
-
     m_asyncSetupNuki = new Nuki(nullptr, bluetoothDevice, this);
-    connect(m_asyncSetupNuki, &Nuki::authenticationProcessFinished, this, &IntegrationPluginNuki::onNukiAuthenticationProcessFinished);
-    connect(m_asyncSetupNuki, &Nuki::availableChanged, this, &IntegrationPluginNuki::onAsyncSetupNukiAvailableChanged);
+    connect(m_asyncSetupNuki, &Nuki::authenticationProcessFinished, this, [=](const PairingTransactionId &pairingId, bool success){
+        if (m_asyncSetupNuki) {
+            qCDebug(dcNuki()) << "Deleting the temporary pairing device";
+            m_asyncSetupNuki->deleteLater();
+            m_asyncSetupNuki = nullptr;
+        }
 
-    m_asyncSetupNuki->startAuthenticationProcess(info->transactionId());
+        if (!m_pairingInfo) {
+            qCWarning(dcNuki()) << "Authentication process finished, but have not valid pairing translaction id";
+            return;
+        }
+
+        if (m_pairingInfo->transactionId() != pairingId) {
+            qCWarning(dcNuki()) << "Authentication process finished, but have not valid pairing translaction id";
+            return;
+        }
+
+        m_pairingInfo->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+        m_pairingInfo = nullptr;
+    });
+
+    connect(m_asyncSetupNuki, &Nuki::availableChanged, this, [=](bool available){
+        // Remove possibly running Nuki setup devices on disconnected
+        if (m_asyncSetupNuki && !available) {
+            qCDebug(dcNuki()) << "Deleting the temporary pairing device";
+            m_asyncSetupNuki->deleteLater();
+            m_asyncSetupNuki = nullptr;
+
+            // Lost connection during authentication
+            if (m_pairingInfo) {
+                qCWarning(dcNuki()) << "Device disconnected during pairing.";
+                m_pairingInfo->finish(Thing::ThingErrorHardwareFailure);
+                m_pairingInfo = nullptr;
+            }
+        }
+    });
+
     m_pairingInfo = info;
-    connect(info, &ThingPairingInfo::destroyed, this, [this] { m_pairingInfo = nullptr; });
+    m_asyncSetupNuki->startAuthenticationProcess(info->transactionId());
+    connect(info, &ThingPairingInfo::destroyed, this, [this] {
+        m_pairingInfo = nullptr;
+        if (m_asyncSetupNuki) {
+            qCDebug(dcNuki()) << "Deleting the temporary pairing device";
+            m_asyncSetupNuki->deleteLater();
+            m_asyncSetupNuki = nullptr;
+        }
+    });
 }
 
 void IntegrationPluginNuki::postSetupThing(Thing *thing)
@@ -225,7 +265,7 @@ void IntegrationPluginNuki::thingRemoved(Thing *thing)
     Nuki *nuki = m_nukiDevices.key(thing);
     nuki->clearSettings();
 
-    // FIXME: deauthenticate nymea from nuki thing
+    // TODO: deauthenticate nymea from nuki
 
     qCDebug(dcNuki()) << "Delete pairing information from bluez" << nuki->bluetoothDevice();
     m_bluetoothAdapter->removeDevice(nuki->bluetoothDevice()->address());
@@ -275,8 +315,9 @@ void IntegrationPluginNuki::onBluetoothDiscoveryFinished(ThingDiscoveryInfo *inf
     m_bluetoothAdapter->stopDiscovering();
 
     foreach (BluetoothDevice *thing, m_bluetoothAdapter->devices()) {
-        if (!bluetoothDeviceAlreadyAdded(thing->address()) && thing->name().contains("Nuki")) {
-            ThingDescriptor descriptor(nukiThingClassId, "Nuki", thing->address().toString());
+        qCDebug(dcNuki()) << "Found bluetooth device" << thing->name() << thing->address().toString();
+        if (!bluetoothDeviceAlreadyAdded(thing->address()) && thing->name().toLower().contains("nuki")) {
+            qCDebug(dcNuki()) << "Found nuki smart lock which has not been added yet";
 
             // Get serial number from name
             QString serialNumber;
@@ -287,6 +328,7 @@ void IntegrationPluginNuki::onBluetoothDiscoveryFinished(ThingDiscoveryInfo *inf
                 qCWarning(dcNuki()) << "Could not read serial number from bluetooth thing name" << thing->name();
             }
 
+            ThingDescriptor descriptor(nukiThingClassId, "Nuki", thing->address().toString());
             ParamList params;
             params.append(Param(nukiThingNameParamTypeId, thing->name()));
             params.append(Param(nukiThingMacParamTypeId, thing->address().toString()));
@@ -297,36 +339,4 @@ void IntegrationPluginNuki::onBluetoothDiscoveryFinished(ThingDiscoveryInfo *inf
     }
 
     info->finish(Thing::ThingErrorNoError);
-}
-
-void IntegrationPluginNuki::onAsyncSetupNukiAvailableChanged(bool available)
-{
-    // Remove possibly running Nuki setup devices on disconnected
-    if (!available && m_asyncSetupNuki) {
-        qCDebug(dcNuki()) << "Deleting the temporary pairing device";
-        m_asyncSetupNuki->deleteLater();
-        m_asyncSetupNuki = nullptr;
-    }
-}
-
-void IntegrationPluginNuki::onNukiAuthenticationProcessFinished(const PairingTransactionId &pairingTransactionId, bool success)
-{
-    if (m_asyncSetupNuki) {
-        qCDebug(dcNuki()) << "Deleting the temporary pairing device";
-        m_asyncSetupNuki->deleteLater();
-        m_asyncSetupNuki = nullptr;
-    }
-
-    if (!m_pairingInfo) {
-        qCWarning(dcNuki()) << "Authentication process finished, but have not valid pairing translaction id";
-        return;
-    }
-
-    if (m_pairingInfo->transactionId() != pairingTransactionId) {
-        qCWarning(dcNuki()) << "Authentication process finished, but have not valid pairing translaction id";
-        return;
-    }
-
-    m_pairingInfo->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
-    m_pairingInfo = nullptr;
 }

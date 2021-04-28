@@ -143,9 +143,9 @@ public:
         CommandOpeningsClosingsSummary      = 0x0010,
         CommandBatteryReport                = 0x0011,
         CommandErrorReport                  = 0x0012,
-        CommandSetConG                      = 0x0013,
-        CommandRequestConG                  = 0x0014,
-        CommandConG                         = 0x0015,
+        CommandSetConfig                    = 0x0013,
+        CommandRequestConfig                = 0x0014,
+        CommandConfig                       = 0x0015,
         CommandSetSecurityPIN               = 0x0019,
         CommandRequestCalibration           = 0x001A,
         CommandRequestReboot                = 0x001D,
@@ -190,7 +190,7 @@ public:
 
     // Message helper
     static QByteArray createRequestMessageForUnencrypted(NukiUtils::Command command, const QByteArray &payload);
-    static QByteArray createRequestMessageForUnencryptedForEncryption(quint32 authenticationId, NukiUtils::Command command, const QByteArray &payload);
+    static QByteArray createRequestMessageForUnencryptedForEncryption(quint32 authenticationId, NukiUtils::Command command, const QByteArray &payload = QByteArray());
 
 };
 

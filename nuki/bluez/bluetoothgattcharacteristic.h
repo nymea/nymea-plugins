@@ -82,7 +82,7 @@ public:
     Properties properties() const;
     QByteArray value() const;
     QList<BluetoothGattDescriptor *> descriptors() const;
-
+    BluetoothGattDescriptor *getDescriptor(const QBluetoothUuid &desciptorUuid) const;
 
 private:
     explicit BluetoothGattCharacteristic(const QDBusObjectPath &path, const QVariantMap &properties, QObject *parent = 0);

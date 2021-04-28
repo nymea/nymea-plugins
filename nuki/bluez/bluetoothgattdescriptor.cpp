@@ -75,10 +75,17 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(const QDBusObjectPath &path, co
     QDBusConnection::systemBus().connect(orgBluez, m_path.path(), "org.freedesktop.DBus.Properties", "PropertiesChanged", this, SLOT(onPropertiesChanged(QString,QVariantMap,QStringList)));
 
     processProperties(properties);
+
+    QDBusPendingCall readingCall = m_descriptorInterface->asyncCall("GetAll", QVariantMap());
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(readingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [=](){
+        qCDebug(dcBluez()) << "Get descriptor properties finished";
+    });
 }
 
 void BluetoothGattDescriptor::processProperties(const QVariantMap &properties)
 {
+    qCDebug(dcBluez()) << "Descriptor properties" << properties;
     foreach (const QString &propertyName, properties.keys()) {
         if (propertyName == "UUID") {
             m_uuid = QBluetoothUuid(properties.value(propertyName).toString());
@@ -151,11 +158,11 @@ void BluetoothGattDescriptor::onReadingFinished(QDBusPendingCallWatcher *call)
 
 void BluetoothGattDescriptor::onWritingFinished(QDBusPendingCallWatcher *call)
 {
+    QByteArray value = m_asyncWrites.take(call);
     QDBusPendingReply<void> reply = *call;
     if (reply.isError()) {
         qCWarning(dcBluez()) << "Could not write descriptor" << m_uuid.toString() << reply.error().name() << reply.error().message();
     } else {
-        QByteArray value = m_asyncWrites.take(call);
         qCDebug(dcBluez()) << "Async descriptor writing finished for" << m_uuid.toString() << value;
         emit writingFinished(value);
     }

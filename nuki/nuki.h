@@ -50,7 +50,6 @@
 
 class Nuki : public QObject
 {
-
     Q_OBJECT
 
 public:
@@ -78,6 +77,12 @@ public:
 
     void clearSettings();
 
+    static QBluetoothUuid initializationServiceUuid() { return QBluetoothUuid(QUuid("a92ee000-5501-11e4-916c-0800200c9a66")); }
+    static QBluetoothUuid pairingServiceUuid() { return QBluetoothUuid(QUuid("a92ee100-5501-11e4-916c-0800200c9a66")); }
+    static QBluetoothUuid pairingDataCharacteristicUuid() { return QBluetoothUuid(QUuid("a92ee101-5501-11e4-916c-0800200c9a66")); }
+    static QBluetoothUuid keyturnerServiceUuid() { return QBluetoothUuid(QUuid("a92ee200-5501-11e4-916c-0800200c9a66")); }
+    static QBluetoothUuid keyturnerDataCharacteristicUuid() { return QBluetoothUuid(QUuid("a92ee201-5501-11e4-916c-0800200c9a66")); }
+    static QBluetoothUuid keyturnerUserDataCharacteristicUuid() { return QBluetoothUuid(QUuid("a92ee202-5501-11e4-916c-0800200c9a66")); }
 
 private:
     Thing *m_thing = nullptr;
@@ -115,6 +120,7 @@ private:
     void readDeviceInformationCharacteristics();
 
     void executeCurrentAction();
+    bool enableNotificationsIndications(BluetoothGattCharacteristic *characteristic);
 
 signals:
     void availableChanged(bool available);

@@ -181,6 +181,7 @@ void BluetoothManager::processInterfaceList(const QDBusObjectPath &objectPath, c
                 QDBusObjectPath serviceObjectPath = qvariant_cast<QDBusObjectPath>(properties.value("Service"));
                 BluetoothGattService *service = findService(serviceObjectPath);
                 if (service)
+                    qCDebug(dcBluez()) << "Add characteristic" << serviceObjectPath.path() << properties << service;
                     service->addCharacteristicInternally(objectPath, properties);
 
             }
@@ -196,6 +197,7 @@ void BluetoothManager::processInterfaceList(const QDBusObjectPath &objectPath, c
                 QDBusObjectPath characterisitcObjectPath = qvariant_cast<QDBusObjectPath>(properties.value("Characteristic"));
                 BluetoothGattCharacteristic *characteristic = findCharacteristic(characterisitcObjectPath);
                 if (characteristic)
+                    qCDebug(dcBluez()) << "Add descriptor" << characterisitcObjectPath.path() << properties << characteristic;
                     characteristic->addDescriptorInternally(objectPath, properties);
 
             }

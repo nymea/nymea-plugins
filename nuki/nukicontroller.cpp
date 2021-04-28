@@ -88,6 +88,23 @@ bool NukiController::readLockState()
     return true;
 }
 
+bool NukiController::readConfiguration()
+{
+    if (m_state != NukiControllerStateIdle) {
+        // TODO: maybe queue commands
+        qCWarning(dcNuki()) << "Controller: Could not read lock state, Nuki is currenty busy";
+        return false;
+    }
+
+    if (!m_nukiAuthenticator->isValid()) {
+        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the thing first.";
+        return false;
+    }
+
+    setState(NukiControllerStateReadingConfiguration);
+    return true;
+}
+
 bool NukiController::lock()
 {
     if (m_state != NukiControllerStateIdle) {
@@ -153,6 +170,15 @@ void NukiController::setState(NukiController::NukiControllerState state)
         break;
     case NukiControllerStateReadingLockStates:
         sendReadLockStateRequest();
+        break;
+    case NukiControllerStateReadingConfigurationRequestChallange:
+        sendRequestChallengeRequest();
+        break;
+    case NukiControllerStateReadingConfigurationExecute:
+        sendReadConfigurationRequest();
+        setState(NukiControllerStateReadingConfiguration);
+        break;
+    case NukiControllerStateReadingConfiguration:
         break;
     case NukiControllerStateLockActionRequestChallange:
         sendRequestChallengeRequest();
@@ -235,6 +261,12 @@ void NukiController::processNukiStatesData(const QByteArray &data)
     emit nukiStatesChanged();
 }
 
+void NukiController::processNukiConfigData(const QByteArray &data)
+{
+    qCDebug(dcNuki()) << "Processing config data from nuki" << data;
+
+}
+
 void NukiController::processNukiErrorReport(const QByteArray &data)
 {
     qint8 errorCode;
@@ -280,6 +312,21 @@ void NukiController::processUserDataNotification(const QByteArray nonce, quint32
         if (command == NukiUtils::CommandNukiStates) {
             processNukiStatesData(payload);
             emit readNukiStatesFinished(true);
+            // TODO: read configuration
+            setState(NukiControllerStateIdle);
+            return;
+        }
+        break;
+    case NukiControllerStateReadingConfigurationRequestChallange:
+        if (command == NukiUtils::CommandChallenge) {
+            m_nukiNonce = payload;
+            setState(NukiControllerStateReadingConfigurationExecute);
+            return;
+        }
+        break;
+    case NukiControllerStateReadingConfiguration:
+        if (command == NukiUtils::CommandConfig) {
+            processNukiConfigData(payload);
             setState(NukiControllerStateIdle);
             return;
         }
@@ -424,6 +471,45 @@ void NukiController::sendReadLockStateRequest()
     m_userDataCharacteristic->writeCharacteristic(message);
 }
 
+void NukiController::sendReadConfigurationRequest()
+{
+    qCDebug(dcNuki()) << "Controller: Reading configurations";
+
+    // Create data for encryption
+    QByteArray payload;
+    QDataStream stream(&payload, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream << static_cast<quint16>(NukiUtils::CommandRequestConfig);
+    for (int i = 0; i < m_nukiNonce.length(); i++) {
+        stream << static_cast<quint8>(m_nukiNonce.at(i));
+    }
+
+    // Create unencrypted PDATA
+    QByteArray unencryptedMessage = NukiUtils::createRequestMessageForUnencryptedForEncryption(m_nukiAuthenticator->authorizationId(), NukiUtils::CommandRequestData, payload);
+
+    // Encrypt PDATA
+    QByteArray nonce = m_nukiAuthenticator->generateNonce(crypto_box_NONCEBYTES);
+    QByteArray encryptedMessage = m_nukiAuthenticator->encryptData(unencryptedMessage, nonce);
+
+    // Create ADATA
+    QByteArray header;
+    header.append(nonce);
+    header.append(m_nukiAuthenticator->authorizationIdRawData());
+    header.append(NukiUtils::converUint16ToByteArrayLittleEndian(static_cast<quint16>(encryptedMessage.length())));
+
+    // Message ADATA + PDATA
+    QByteArray message;
+    message.append(header);
+    message.append(encryptedMessage);
+
+    // Send data
+    qCDebug(dcNuki()) << "Controller: Sending get config request";
+    if (m_debug) qCDebug(dcNuki()) << "    Nonce          :" << NukiUtils::convertByteArrayToHexStringCompact(nonce);
+    if (m_debug) qCDebug(dcNuki()) << "    Header         :" << NukiUtils::convertByteArrayToHexStringCompact(header);
+    if (m_debug) qCDebug(dcNuki()) << "Controller: -->" << NukiUtils::convertByteArrayToHexStringCompact(message);
+    m_userDataCharacteristic->writeCharacteristic(message);
+}
+
 void NukiController::sendRequestChallengeRequest()
 {
     qCDebug(dcNuki()) << "Controller: Request challenge";
@@ -508,47 +594,27 @@ void NukiController::onUserDataCharacteristicChanged(const QByteArray &value)
 {
     if (m_debug) qCDebug(dcNuki()) << "Controller: Data received: <--" << NukiUtils::convertByteArrayToHexStringCompact(value);
 
-    if (m_messageBufferCounter <= 0) {
-        // New data arrived
-        m_messageBuffer.append(value);
-        m_messageBufferCounter++;
-    } else {
-        // We are currently collecting
-        m_messageBuffer.append(value);
-        m_messageBufferCounter++;
+    m_messageBuffer = value;
 
-        // In the second buffer message is the complete message length
-        if (m_messageBufferCounter == 2) {
-            if (m_messageBuffer.count() < 30) {
-                qCWarning(dcNuki()) << "Controller: Cannot understand message. Rejecting.";
-                resetMessageBuffer();
-                return;
-            }
-
-            // Parse message length
-            // ADATA: 24 byte nonce, 4 byte autorization, 2 byte encrypted message length
-            m_messageBufferAData = m_messageBuffer.left(30);
-            m_messageBufferPData = m_messageBuffer.right(m_messageBuffer.count() - 30);
-
-            m_messageBufferNonce = m_messageBufferAData.left(24);
-            QByteArray messageInformation = m_messageBufferAData.right(6);
-
-            QDataStream stream(&messageInformation, QIODevice::ReadOnly);
-            stream.setByteOrder(QDataStream::LittleEndian);
-            stream >> m_messageBufferIdentifier >> m_messageBufferLength;
-            if (m_messageBufferPData.count() == m_messageBufferLength) {
-                processUserDataNotification(m_messageBufferNonce, m_messageBufferIdentifier, m_messageBufferPData);
-                resetMessageBuffer();
-            }
-
-        } else {
-            // We already know the message length and are still collecting p data
-            m_messageBufferPData.append(value);
-            if (m_messageBufferPData.count() == m_messageBufferLength) {
-                // Message finished
-                processUserDataNotification(m_messageBufferNonce, m_messageBufferIdentifier, m_messageBufferPData);
-                resetMessageBuffer();
-            }
-        }
+    if (m_messageBuffer.count() < 30) {
+        qCWarning(dcNuki()) << "Controller: Cannot understand message. Rejecting.";
+        resetMessageBuffer();
+        return;
     }
+
+    // Parse message length
+    // ADATA: 24 byte nonce, 4 byte autorization, 2 byte encrypted message length
+    m_messageBufferAData = m_messageBuffer.left(30);
+    m_messageBufferPData = m_messageBuffer.right(m_messageBuffer.count() - 30);
+    m_messageBufferNonce = m_messageBufferAData.left(24);
+    QByteArray messageInformation = m_messageBufferAData.right(6);
+
+    QDataStream stream(&messageInformation, QIODevice::ReadOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream >> m_messageBufferIdentifier >> m_messageBufferLength;
+    if (m_messageBufferPData.count() == m_messageBufferLength) {
+        processUserDataNotification(m_messageBufferNonce, m_messageBufferIdentifier, m_messageBufferPData);
+        resetMessageBuffer();
+    }
+
 }

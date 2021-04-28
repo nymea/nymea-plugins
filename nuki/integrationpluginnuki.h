@@ -76,10 +76,6 @@ private slots:
     void onBluetoothEnabledChanged(const bool &enabled);
     void onBluetoothDiscoveryFinished(ThingDiscoveryInfo *info);
 
-    void onAsyncSetupNukiAvailableChanged(bool available);
-
-    void onNukiAuthenticationProcessFinished(const PairingTransactionId &pairingTransactionId, bool success);
-
 };
 
 #endif // INTEGRATIONPLUGINNUKI_H
