@@ -1,5 +1,6 @@
 import nymea
 from pyairctrl.http_client import HTTPAirClient
+from pyairctrl.coap_client import CoAPAirClient
 
 # py-air-control library: https://github.com/rgerganov/py-air-control/blob/master/pyairctrl/airctrl.py
 
@@ -21,7 +22,8 @@ def discoverThings(info):
         thingDescriptor = nymea.ThingDescriptor(purifierThingClassId, device["modelName"], device["modelNumber"], device["friendlyName"])
         # TODO: Store serial number instead of IP in params and re-discover in setupThing
         thingDescriptor.params = [
-            nymea.Param(purifierThingIpParamTypeId, device["ip"])
+            nymea.Param(purifierThingIpParamTypeId, device["ip"]),
+            nymea.Param(purifierThingProtocolParamTypeId, "HTTP")
         ]
 
         info.addDescriptor(thingDescriptor)
@@ -31,8 +33,28 @@ def discoverThings(info):
 
 
 def setupThing(info):
-    ip = info.paramValue(purifierThingIpParamTypeId)
-    purifier = HTTPAirClient(ip, debug=True)
+    ip = info.thing.paramValue(purifierThingIpParamTypeId)
+    protocol = info.thing.paramValue(purifierThingProtocolParamTypeId)
+    purifier = None
+    try:
+        if protocol == "CoAP":
+            purifier = CoAPAirClient(ip, 5683, debug=True)
+        elif protocol == "HTTP":
+            purifier = HTTPAirClient(ip, debug=True)
+    except Exception as e:
+        logger.warn("Error connecting to Philips air purifier", str(e))
+        info.finish(nymea.ThingErrorHardwareNotAvailable, "Unable to connect to the Philips Air Purifier. Please check if IP and Protocol are set correctly and the purifier is turned on.")
+        return
+
+    status = self._client.get_status(debug)
+    if status is None:
+        logger.warn("Error reading status from Philips air purifier")
+        info.finish(nymea.ThingErrorHardwareNotAvailable, "Unable to read status from the Philips Air Purifier.")
+        return
+
+    logger.log("Philips air purifier status:")
+    logger.log(json.dumps(status))
+
     purifiersMap[info.thing] = purifier
     info.finish(nymea.ThingErrorNoError)
     return

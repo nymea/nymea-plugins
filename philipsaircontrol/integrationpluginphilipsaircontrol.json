@@ -12,7 +12,7 @@
                     "id": "65b70505-6500-43ed-b4b8-2d011c5f3594",
                     "name": "purifier",
                     "displayName": "Air purifier",
-                    "createMethods": ["Discovery"],
+                    "createMethods": ["Discovery", "User"],
                     "paramTypes": [
                         {
                             "id": "870c2920-b829-46db-8196-fbd4d8e93885",
@@ -20,6 +20,14 @@
                             "displayName": "IP Address",
                             "defaultValue": "",
                             "type": "QString"
+                        },
+                        {
+                            "id": "e449624a-0300-416c-9aeb-91cec756f41a",
+                            "name": "protocol",
+                            "displayName": "Protocol",
+                            "type": "QString",
+                            "allowedValues": ["CoAP", "HTTP"],
+                            "defaultValue": "CoAP"
                         }
                     ]
                 }
