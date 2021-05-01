@@ -7,7 +7,6 @@ TARGET = $$qtLibraryTarget(nymea_integrationpluginws2812fx)
 SOURCES += \
     integrationpluginws2812fx.cpp \
     nymealight.cpp \
-    nymealightinterface.cpp \
     nymealightserialinterface.cpp
 
 

@@ -111,6 +111,7 @@ public:
     explicit IntegrationPluginWs2812fx();
 
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void executeAction(ThingActionInfo *info) override;
