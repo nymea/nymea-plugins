@@ -28,22 +28,7 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page ws2812fx.html
-    \title WS2812FX Control
-    \brief Plug-In to control WS2812FX over USB
 
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{ThingClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-s
-    \quotefile plugins/deviceplugins/ws2812fx/devicepluginws2812fx.json
-*/
 #include <QColor>
 #include <QRgb>
 
@@ -60,34 +45,46 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QString interface = thing->paramValue(ws2812fxThingSerialPortParamTypeId).toString();
+    if (thing->thingClassId() == nymeaLightSerialThingClassId) {
+        QString interface = thing->paramValue(nymeaLightSerialThingSerialPortParamTypeId).toString();
 
-    if (m_usedInterfaces.contains(interface)) {
-        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("This serial port is already used."));
-        return;
+        if (m_usedInterfaces.contains(interface)) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("This serial port is already in use."));
+            return;
+        }
+
+        NymeaLightSerialInterface *lightInterface = new NymeaLightSerialInterface(interface, thing);
+        NymeaLight *light = new NymeaLight(lightInterface, this);
+        lightInterface->setParent(light);
+        m_usedInterfaces.append(interface);
+        m_lights.insert(thing, light);
+
+
+        connect(light, &NymeaLight::availableChanged, thing, [=](bool available){
+            qCDebug(dcWs2812fx()) << thing << "available changed" << available;
+            thing->setStateValue(nymeaLightSerialConnectedStateTypeId, available);
+
+            if (available) {
+                // Set the light to the current states
+                light->setPower(thing->stateValue(nymeaLightSerialPowerStateTypeId).toBool());
+                light->setBrightness(thing->stateValue(nymeaLightSerialBrightnessStateTypeId).toUInt());
+                light->setColor(thing->stateValue(nymeaLightSerialColorStateTypeId).value<QColor>());
+                light->setEffect(thing->stateValue(nymeaLightSerialEffectModeStateTypeId).toUInt());
+                light->setSpeed(thing->stateValue(nymeaLightSerialSpeedStateTypeId).toUInt());
+            }
+        });
+
+
+        info->finish(Thing::ThingErrorNoError);
     }
+}
 
-    NymeaLightSerialInterface *lightInterface = new NymeaLightSerialInterface(interface, thing);
-    NymeaLight *light = new NymeaLight(lightInterface, this);
-    lightInterface->setParent(light);
-
-    if (!lightInterface->open()) {
-        qCWarning(dcWs2812fx()) << "Could not open interface" << interface;
-        light->deleteLater();
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error opening serial port."));
-        return;
+void IntegrationPluginWs2812fx::postSetupThing(Thing *thing)
+{
+    if (thing->thingClassId() == nymeaLightSerialThingClassId) {
+        NymeaLight *light = m_lights.value(thing);
+        light->enable();
     }
-
-    connect(light, &NymeaLight::availableChanged, thing, [=](bool available){
-        qCDebug(dcWs2812fx()) << thing << "available changed" << available;
-        thing->setStateValue(ws2812fxConnectedStateTypeId, available);
-    });
-
-    qCDebug(dcWs2812fx()) << "Setup successfully serial port" << interface;
-    thing->setStateValue(ws2812fxConnectedStateTypeId, true);
-    m_usedInterfaces.append(interface);
-    m_lights.insert(thing, light);
-    info->finish(Thing::ThingErrorNoError);
 }
 
 
@@ -96,15 +93,14 @@ void IntegrationPluginWs2812fx::discoverThings(ThingDiscoveryInfo *info)
     // Create the list of available serial interfaces
 
     Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-
         qCDebug(dcWs2812fx()) << "Found serial port:" << port.portName();
-        QString description = port.manufacturer() + " " + port.description();
-        ThingDescriptor descriptor(info->thingClassId(), port.portName(), description);
-        foreach (Thing *existingThing, myThings().filterByParam(ws2812fxThingSerialPortParamTypeId, port.portName())) {
+        QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
+        ThingDescriptor descriptor(info->thingClassId(), QT_TR_NOOP("Nymea light"), description);
+        foreach (Thing *existingThing, myThings().filterByParam(nymeaLightSerialThingSerialPortParamTypeId, port.systemLocation())) {
             descriptor.setThingId(existingThing->id());
         }
         ParamList parameters;
-        parameters.append(Param(ws2812fxThingSerialPortParamTypeId, port.portName()));
+        parameters.append(Param(nymeaLightSerialThingSerialPortParamTypeId, port.systemLocation()));
         descriptor.setParams(parameters);
         info->addThingDescriptor(descriptor);
     }
@@ -122,16 +118,11 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (action.actionTypeId() == ws2812fxPowerActionTypeId) {
-        bool power = action.param(ws2812fxPowerActionPowerParamTypeId).value().toBool();
-        quint8 brightness = 0;
-        if (power) {
-            quint8 brightnessPercentage = thing->stateValue(ws2812fxBrightnessStateTypeId).toUInt();
-            brightness = qRound(255.0 * brightnessPercentage / 100);
-        }
+    if (action.actionTypeId() == nymeaLightSerialPowerActionTypeId) {
+        bool power = action.param(nymeaLightSerialPowerActionPowerParamTypeId).value().toBool();
 
         qCDebug(dcWs2812fx()) << "Set power" << power;
-        NymeaLightInterfaceReply *reply = light->setBrightness(brightness, 500);
+        NymeaLightInterfaceReply *reply = light->setPower(power, 500);
         connect(info, &ThingActionInfo::aborted, reply, &NymeaLightInterfaceReply::finished);
         connect(reply, &NymeaLightInterfaceReply::finished, this, [=](){
             if (reply->status() != NymeaLightInterface::StatusSuccess) {
@@ -140,11 +131,11 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
             }
 
             qCDebug(dcWs2812fx()) << "Set power finished successfully" << power;
-            thing->setStateValue(ws2812fxPowerStateTypeId, power);
+            thing->setStateValue(nymeaLightSerialPowerStateTypeId, power);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (action.actionTypeId() == ws2812fxColorActionTypeId) {
-        QColor color = action.param(ws2812fxColorActionColorParamTypeId).value().value<QColor>();
+    } else if (action.actionTypeId() == nymeaLightSerialColorActionTypeId) {
+        QColor color = action.param(nymeaLightSerialColorActionColorParamTypeId).value().value<QColor>();
         qCDebug(dcWs2812fx()) << "Set color to" << color.name(QColor::HexRgb);
         NymeaLightInterfaceReply *reply = light->setColor(color);
         connect(info, &ThingActionInfo::aborted, reply, &NymeaLightInterfaceReply::finished);
@@ -154,12 +145,12 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
                 return;
             }
             qCDebug(dcWs2812fx()) << "Set color finished successfully" << color.name(QColor::HexRgb);
-            thing->setStateValue(ws2812fxColorStateTypeId, color);
+            thing->setStateValue(nymeaLightSerialColorStateTypeId, color);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (action.actionTypeId() == ws2812fxColorTemperatureActionTypeId) {
+    } else if (action.actionTypeId() == nymeaLightSerialColorTemperatureActionTypeId) {
         // minValue 153, maxValue 500
-        uint colorTemperature = action.param(ws2812fxColorTemperatureActionColorTemperatureParamTypeId).value().toDouble();
+        uint colorTemperature = action.param(nymeaLightSerialColorTemperatureActionColorTemperatureParamTypeId).value().toDouble();
         QColor color;
         color.setRgb(255, 255, qRound((255.00 - (((colorTemperature - 153.00) / 347.00)) * 255.00)));
 
@@ -173,11 +164,11 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
             }
 
             qCDebug(dcWs2812fx()) << "Set color temperature finished successfully" << colorTemperature;
-            thing->setStateValue(ws2812fxColorTemperatureStateTypeId, colorTemperature);
+            thing->setStateValue(nymeaLightSerialColorTemperatureStateTypeId, colorTemperature);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (action.actionTypeId() == ws2812fxBrightnessActionTypeId) {
-        quint8 brightnessPercentage = action.param(ws2812fxBrightnessActionBrightnessParamTypeId).value().toUInt();
+    } else if (action.actionTypeId() == nymeaLightSerialBrightnessActionTypeId) {
+        quint8 brightnessPercentage = action.param(nymeaLightSerialBrightnessActionBrightnessParamTypeId).value().toUInt();
         quint8 brightness = qRound(255.0 * brightnessPercentage / 100);
         qCDebug(dcWs2812fx()) << "Set brightness to" << brightnessPercentage << brightness;
         NymeaLightInterfaceReply *reply = light->setBrightness(brightness, 1000);
@@ -189,11 +180,11 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
             }
 
             qCDebug(dcWs2812fx()) << "Set brightness finished successfully" << brightness;
-            thing->setStateValue(ws2812fxBrightnessStateTypeId, brightnessPercentage);
+            thing->setStateValue(nymeaLightSerialBrightnessStateTypeId, brightnessPercentage);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (action.actionTypeId() == ws2812fxSpeedActionTypeId) {
-        quint16 speedPercentage = action.param(ws2812fxSpeedActionSpeedParamTypeId).value().toUInt();
+    } else if (action.actionTypeId() == nymeaLightSerialSpeedActionTypeId) {
+        quint16 speedPercentage = action.param(nymeaLightSerialSpeedActionSpeedParamTypeId).value().toUInt();
         quint16 speed = 2000 - (speedPercentage * 20);
 
         qCDebug(dcWs2812fx()) << "Set speed" << speedPercentage << "%" << speed << "ms";
@@ -206,11 +197,11 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
             }
 
             qCDebug(dcWs2812fx()) << "Set speed finished successfully" << speedPercentage << "%" << speed << "ms";
-            thing->setStateValue(ws2812fxSpeedStateTypeId, speedPercentage);
+            thing->setStateValue(nymeaLightSerialSpeedStateTypeId, speedPercentage);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (action.actionTypeId() == ws2812fxEffectModeActionTypeId) {
-        QString effectMode = action.param(ws2812fxEffectModeActionEffectModeParamTypeId).value().toString();
+    } else if (action.actionTypeId() == nymeaLightSerialEffectModeActionTypeId) {
+        QString effectMode = action.param(nymeaLightSerialEffectModeActionEffectModeParamTypeId).value().toString();
         quint8 mode = FX_MODE_STATIC;
         if (effectMode == "Static") {
             mode = FX_MODE_STATIC;
@@ -340,7 +331,7 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
             }
 
             qCDebug(dcWs2812fx()) << "Set mode finished successfully" << effectMode << mode;
-            thing->setStateValue(ws2812fxEffectModeStateTypeId, effectMode);
+            thing->setStateValue(nymeaLightSerialEffectModeStateTypeId, effectMode);
             info->finish(Thing::ThingErrorNoError);
         });
     }
@@ -349,9 +340,8 @@ void IntegrationPluginWs2812fx::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginWs2812fx::thingRemoved(Thing *thing)
 {
-    if (thing->thingClassId() == ws2812fxThingClassId) {
-
-        m_usedInterfaces.removeAll(thing->paramValue(ws2812fxThingSerialPortParamTypeId).toString());
+    if (thing->thingClassId() == nymeaLightSerialThingClassId) {
+        m_usedInterfaces.removeAll(thing->paramValue(nymeaLightSerialThingSerialPortParamTypeId).toString());
         NymeaLight *light = m_lights.take(thing);
         light->deleteLater();
     }

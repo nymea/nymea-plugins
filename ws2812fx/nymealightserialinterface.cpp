@@ -4,9 +4,10 @@
 #include <QDataStream>
 
 NymeaLightSerialInterface::NymeaLightSerialInterface(const QString &name, QObject *parent) :
-    NymeaLightInterface(parent)
+    NymeaLightInterface(parent),
+    m_serialPortName(name)
 {
-    m_serialPort = new QSerialPort(name, this);
+    m_serialPort = new QSerialPort(m_serialPortName, this);
     m_serialPort->setBaudRate(115200);
     m_serialPort->setDataBits(QSerialPort::DataBits::Data8);
     m_serialPort->setParity(QSerialPort::Parity::NoParity);
@@ -33,8 +34,26 @@ NymeaLightSerialInterface::NymeaLightSerialInterface(const QString &name, QObjec
 
 bool NymeaLightSerialInterface::open()
 {
+    bool serialPortFound = false;
+    foreach(const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts()) {
+        if (serialPortInfo.systemLocation() == m_serialPortName) {
+            serialPortFound = true;
+            break;
+        }
+    }
+
+    // Prevent repeating warnings...
+    if (!serialPortFound) {
+        if (!m_reconnectTimer->isActive()) {
+            m_reconnectTimer->start();
+        }
+        return false;
+    }
+
+    // The serial port is available...lt's try to open it
     if (!m_serialPort->open(QIODevice::ReadWrite)) {
         qCWarning(dcWs2812fx()) << "Could not open serial port" << m_serialPort->portName() << m_serialPort->errorString();
+        m_reconnectTimer->start();
         return false;
     }
 
@@ -130,7 +149,7 @@ void NymeaLightSerialInterface::onReadyRead()
 void NymeaLightSerialInterface::onSerialError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError && m_serialPort->isOpen()) {
-        qCCritical(dcWs2812fx()) << "Serial port error:" << error << m_serialPort->errorString();
+        qCWarning(dcWs2812fx()) << "Serial port error:" << error << m_serialPort->errorString();
         m_reconnectTimer->start();
         m_serialPort->close();
         emit availableChanged(false);

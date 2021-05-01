@@ -9,14 +9,21 @@ class NymeaLightInterface : public QObject
     Q_OBJECT
 public:
     enum Command {
-        CommandSetColor = 0x00,
-        CommandSetBrightness = 0x01,
-        CommandSetSpeed = 0x02,
-        CommandSetEffect = 0x03,
-        CommandDebug = 0xFE,
-        CommandCustom = 0xFF
+        CommandGetStatus = 0x00,
+        CommandSetPower = 0x01,
+        CommandSetColor = 0x02,
+        CommandSetBrightness = 0x03,
+        CommandSetSpeed = 0x04,
+        CommandSetEffect = 0x05,
+        CommandCustom = 0xEF
     };
     Q_ENUM(Command)
+
+    enum Notification {
+        NotificationReady = 0xF0,
+        NotificationDebugMessage = 0xF1
+    };
+    Q_ENUM(Notification)
 
     enum Status {
         StatusSuccess = 0x00,
@@ -34,7 +41,8 @@ public:
     };
     Q_ENUM(Mode)
 
-    explicit NymeaLightInterface(QObject *parent = nullptr);
+    inline explicit NymeaLightInterface(QObject *parent = nullptr) : QObject(parent) { };
+    virtual ~NymeaLightInterface() = default;
 
     virtual bool open() = 0;
     virtual void close() = 0;
