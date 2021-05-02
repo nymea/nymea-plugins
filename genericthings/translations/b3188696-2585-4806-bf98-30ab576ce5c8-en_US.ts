@@ -1081,6 +1081,78 @@ The name of the StateType ({22c1eac6-9bb5-4cc1-ac0d-e3e1499edd3c}) of ThingClass
         <extracomment>The name of the EventType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Battery critical</source>
+        <extracomment>The name of the ParamType (ThingClass: battery, EventType: batteryCritical, ID: {e95dc037-002d-40a2-8c15-cd5489bd354a})
+----------
+The name of the StateType ({e95dc037-002d-40a2-8c15-cd5489bd354a}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery level</source>
+        <extracomment>The name of the ParamType (ThingClass: battery, EventType: batteryLevel, ID: {d37eed4a-befc-40d4-b435-40a761f99314})
+----------
+The name of the StateType ({d37eed4a-befc-40d4-b435-40a761f99314}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery level changed</source>
+        <extracomment>The name of the EventType ({d37eed4a-befc-40d4-b435-40a761f99314}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery level control</source>
+        <extracomment>The name of the ParamType (ThingClass: battery, ActionType: batteryLevelControl, ID: {3336f0c2-158b-4353-b74f-f1bb9c4e8447})
+----------
+The name of the ParamType (ThingClass: battery, EventType: batteryLevelControl, ID: {3336f0c2-158b-4353-b74f-f1bb9c4e8447})
+----------
+The name of the StateType ({3336f0c2-158b-4353-b74f-f1bb9c4e8447}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery level control changed</source>
+        <extracomment>The name of the EventType ({3336f0c2-158b-4353-b74f-f1bb9c4e8447}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Charging</source>
+        <extracomment>The name of the ParamType (ThingClass: battery, ActionType: charging, ID: {a61c0328-b982-46a5-9cc0-b4fa4d0ab84d})
+----------
+The name of the ParamType (ThingClass: battery, EventType: charging, ID: {a61c0328-b982-46a5-9cc0-b4fa4d0ab84d})
+----------
+The name of the StateType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic battery</source>
+        <extracomment>The name of the ThingClass ({81418556-cae3-4803-aa0c-9c4b3304a3eb})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Critical battery level</source>
+        <extracomment>The name of the ParamType (ThingClass: battery, Type: settings, ID: {8d875cb7-3a14-42d1-bf1b-759e5fd95a8f})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery entered or left critical state</source>
+        <extracomment>The name of the EventType ({e95dc037-002d-40a2-8c15-cd5489bd354a}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Charging started or stopped</source>
+        <extracomment>The name of the EventType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set battery level</source>
+        <extracomment>The name of the ActionType ({3336f0c2-158b-4353-b74f-f1bb9c4e8447}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set charging</source>
+        <extracomment>The name of the ActionType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass battery</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>

@@ -257,7 +257,15 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         int operatingMode = sgReadyOperatingMode(relay1, relay2);
         thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
         thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+    } else if  (thing->thingClassId() == batteryThingClassId) {
+        connect(thing, &Thing::settingChanged, [thing](const ParamTypeId &settingTypeId, const QVariant &value){
+            if (settingTypeId == batterySettingsCriticalLevelParamTypeId) {
+                int currentBatteryLevel = thing->stateValue(batteryBatteryLevelStateTypeId).toInt();
+                thing->setStateValue(batteryBatteryCriticalStateTypeId, currentBatteryLevel <= value.toInt());
+            }
+        });
     }
+
     info->finish(Thing::ThingErrorNoError);
 }
 
@@ -749,6 +757,20 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             if (isPresent) {
                 thing->setStateValue(presenceSensorLastSeenTimeStateTypeId, QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000);
             }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    } else if (thing->thingClassId() == batteryThingClassId) {
+        if (action.actionTypeId() == batteryBatteryLevelControlActionTypeId) {
+            int value = action.paramValue(batteryBatteryLevelControlActionBatteryLevelControlParamTypeId).toInt();
+            thing->setStateValue(batteryBatteryLevelStateTypeId, value);
+            thing->setStateValue(batteryBatteryLevelControlStateTypeId, value);
+            int criticalValue = thing->setting(batterySettingsCriticalLevelParamTypeId).toInt();
+            thing->setStateValue(batteryBatteryCriticalStateTypeId, value <= criticalValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else if (action.actionTypeId() == batteryChargingActionTypeId) {
+            thing->setStateValue(batteryChargingStateTypeId, action.paramValue(batteryChargingActionChargingParamTypeId));
             info->finish(Thing::ThingErrorNoError);
             return;
         }
