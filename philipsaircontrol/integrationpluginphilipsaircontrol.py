@@ -46,7 +46,7 @@ def setupThing(info):
         info.finish(nymea.ThingErrorHardwareNotAvailable, "Unable to connect to the Philips Air Purifier. Please check if IP and Protocol are set correctly and the purifier is turned on.")
         return
 
-    status = self._client.get_status(debug)
+    status = purifier.get_status(debug)
     if status is None:
         logger.warn("Error reading status from Philips air purifier")
         info.finish(nymea.ThingErrorHardwareNotAvailable, "Unable to read status from the Philips Air Purifier.")
