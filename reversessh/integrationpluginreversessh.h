@@ -33,43 +33,29 @@
 
 #include "plugintimer.h"
 #include "integrations/integrationplugin.h"
+#include "extern-plugininfo.h"
 
 #include <QProcess>
 
-class IntegrationPluginRemoteSsh : public IntegrationPlugin
+class IntegrationPluginReverseSsh : public IntegrationPlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginremotessh.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginreversessh.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginRemoteSsh();
+    explicit IntegrationPluginReverseSsh();
+    ~IntegrationPluginReverseSsh();
 
-    void init() override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &user, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
 
 private:
-    QHash<QProcess *, Thing *> m_reverseSSHProcess;
-    QHash<QProcess *, Thing *> m_sshKeyGenProcess;
-
-    QHash<QProcess *, ThingActionInfo*> m_startingProcess;
-    QHash<QProcess *, ThingActionInfo*> m_killingProcess;
-
-    PluginTimer *m_pluginTimer = nullptr;
-
-    bool m_aboutToQuit = false;
-    QString m_identityFilePath;
-
-    QProcess *startReverseSSHProcess(Thing *thing);
-
-private slots:
-    void onPluginTimeout();
-    void processReadyRead();
-    void processStateChanged(QProcess::ProcessState state);
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    QHash<Thing*, QProcess*> m_processes;
+    PluginTimer *m_watchdog = nullptr;
 };
 
 #endif // INTEGRATIONPLUGINREMOTESSH_H
