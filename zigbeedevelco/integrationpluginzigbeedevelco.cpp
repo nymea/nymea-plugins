@@ -137,9 +137,9 @@ void IntegrationPluginZigbeeDevelco::setupThing(ThingSetupInfo *info)
             }
 
             connect(basicCluster, &ZigbeeCluster::attributeChanged, this, [=](const ZigbeeClusterAttribute &attribute){
-               if (attribute.id() == DEVELCO_ATTRIBUTE_SW_VERSION) {
-                   thing->setStateValue(ioModuleVersionStateTypeId, parseDevelcoVersionString(primaryEndpoint));
-               }
+                if (attribute.id() == DEVELCO_ATTRIBUTE_SW_VERSION) {
+                    thing->setStateValue(ioModuleVersionStateTypeId, parseDevelcoVersionString(primaryEndpoint));
+                }
             });
         }
 
@@ -338,28 +338,28 @@ void IntegrationPluginZigbeeDevelco::executeAction(ThingActionInfo *info)
                 qCWarning(dcZigbeeDevelco()) << "Could not find endpoint for output 1 on" << thing << node;
                 info->finish(Thing::ThingErrorHardwareFailure);
                 return;
-            } else {
-                ZigbeeClusterOnOff *onOffCluster = output1Endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
-                if (!onOffCluster) {
-                    qCWarning(dcZigbeeDevelco()) << "Could not find On/Off cluster on" << thing << node << output1Endpoint;
-                    info->finish(Thing::ThingErrorHardwareFailure);
-                    return;
-                } else {
-                    ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
-                    connect(reply, &ZigbeeClusterReply::finished, info, [=](){
-                        // Note: reply will be deleted automatically
-                        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
-                            qCWarning(dcZigbeeDevelco()) << "Failed to set power for output 1 on" << thing << reply->error();
-                            info->finish(Thing::ThingErrorHardwareFailure);
-                        } else {
-                            info->finish(Thing::ThingErrorNoError);
-                            qCDebug(dcZigbeeDevelco()) << "Set power on output 1 finished successfully for" << thing;
-                            thing->setStateValue(ioModuleOutput1StateTypeId, power);
-                        }
-                    });
-                    return;
-                }
             }
+
+            ZigbeeClusterOnOff *onOffCluster = output1Endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigbeeDevelco()) << "Could not find On/Off cluster on" << thing << node << output1Endpoint;
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+            connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+                // Note: reply will be deleted automatically
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    qCWarning(dcZigbeeDevelco()) << "Failed to set power for output 1 on" << thing << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    info->finish(Thing::ThingErrorNoError);
+                    qCDebug(dcZigbeeDevelco()) << "Set power on output 1 finished successfully for" << thing;
+                    thing->setStateValue(ioModuleOutput1StateTypeId, power);
+                }
+            });
+            return;
         }
 
         // Output 2
@@ -372,28 +372,70 @@ void IntegrationPluginZigbeeDevelco::executeAction(ThingActionInfo *info)
                 qCWarning(dcZigbeeDevelco()) << "Could not find endpoint for output 2 on" << thing << node;
                 info->finish(Thing::ThingErrorHardwareFailure);
                 return;
-            } else {
-                ZigbeeClusterOnOff *onOffCluster = output2Endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
-                if (!onOffCluster) {
-                    qCWarning(dcZigbeeDevelco()) << "Could not find On/Off cluster on" << thing << node << output2Endpoint;
-                    info->finish(Thing::ThingErrorHardwareFailure);
-                    return;
-                } else {
-                    ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
-                    connect(reply, &ZigbeeClusterReply::finished, info, [=](){
-                        // Note: reply will be deleted automatically
-                        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
-                            qCWarning(dcZigbeeDevelco()) << "Failed to set power for output 2 on" << thing << reply->error();
-                            info->finish(Thing::ThingErrorHardwareFailure);
-                        } else {
-                            info->finish(Thing::ThingErrorNoError);
-                            qCDebug(dcZigbeeDevelco()) << "Set power on output 2 finished successfully for" << thing;
-                            thing->setStateValue(ioModuleOutput2StateTypeId, power);
-                        }
-                    });
-                    return;
-                }
             }
+
+            ZigbeeClusterOnOff *onOffCluster = output2Endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigbeeDevelco()) << "Could not find On/Off cluster on" << thing << node << output2Endpoint;
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+            connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+                // Note: reply will be deleted automatically
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    qCWarning(dcZigbeeDevelco()) << "Failed to set power for output 2 on" << thing << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    info->finish(Thing::ThingErrorNoError);
+                    qCDebug(dcZigbeeDevelco()) << "Set power on output 2 finished successfully for" << thing;
+                    thing->setStateValue(ioModuleOutput2StateTypeId, power);
+                }
+            });
+            return;
+        }
+
+        // Impulse action
+        if (info->action().actionTypeId() == ioModuleImpulseOutput1ActionTypeId || info->action().actionTypeId() == ioModuleImpulseOutput2ActionTypeId) {
+            // Uint for time is 1/10 s
+            uint impulseDuration = thing->settings().paramValue(ioModuleSettingsImpulseDurationParamTypeId).toUInt();
+            quint16 impulseDurationScaled = static_cast<quint16>(qRound(impulseDuration / 100.0));
+
+            ZigbeeNodeEndpoint *endpoint = nullptr;
+            if (info->action().actionTypeId() == ioModuleImpulseOutput1ActionTypeId) {
+                endpoint = node->getEndpoint(IO_MODULE_EP_OUTPUT1);
+                qCDebug(dcZigbeeDevelco()) << "Execute output 1 impulse with" << impulseDurationScaled * 100 << "ms";
+            } else if (info->action().actionTypeId() == ioModuleImpulseOutput2ActionTypeId) {
+                endpoint = node->getEndpoint(IO_MODULE_EP_OUTPUT2);
+                qCDebug(dcZigbeeDevelco()) << "Execute output 2 impulse with" << impulseDurationScaled * 100 << "ms";
+            }
+
+            if (!endpoint) {
+                qCWarning(dcZigbeeDevelco()) << "Could not find endpoint for impulse action on" << thing << node;
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigbeeDevelco()) << "Could not find On/Off cluster on" << thing << node << endpoint;
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            ZigbeeClusterReply *reply = onOffCluster->commandOnWithTimedOff(false, impulseDurationScaled, 0);
+            connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+                // Note: reply will be deleted automatically
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    qCWarning(dcZigbeeDevelco()) << "Failed to set on with timed off on" << thing << endpoint << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    info->finish(Thing::ThingErrorNoError);
+                    qCDebug(dcZigbeeDevelco()) << "Set on with timed off on finished successfully for" << thing << endpoint;
+                }
+            });
+            return;
         }
     }
 
@@ -456,8 +498,16 @@ void IntegrationPluginZigbeeDevelco::initIoModule(ZigbeeNode *node)
 {
     qCDebug(dcZigbeeDevelco()) << "Start initializing IO Module" << node;
     readDevelcoFirmwareVersion(node, node->getEndpoint(IO_MODULE_EP_INPUT1));
+
+    // Binding and reporting outputs
     configureOnOffPowerReporting(node, node->getEndpoint(IO_MODULE_EP_OUTPUT1));
-    configureOnOffPowerReporting(node, node->getEndpoint(IO_MODULE_EP_OUTPUT1));
+    configureOnOffPowerReporting(node, node->getEndpoint(IO_MODULE_EP_OUTPUT2));
+
+    // Binding and reporting inputs
+    configureBinaryInputReporting(node, node->getEndpoint(IO_MODULE_EP_INPUT1));
+    configureBinaryInputReporting(node, node->getEndpoint(IO_MODULE_EP_INPUT2));
+    configureBinaryInputReporting(node, node->getEndpoint(IO_MODULE_EP_INPUT3));
+    configureBinaryInputReporting(node, node->getEndpoint(IO_MODULE_EP_INPUT4));
 }
 
 void IntegrationPluginZigbeeDevelco::configureOnOffPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
@@ -474,8 +524,9 @@ void IntegrationPluginZigbeeDevelco::configureOnOffPowerReporting(ZigbeeNode *no
         // Configure attribute reporting for lock state
         ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
         reportingConfig.attributeId = ZigbeeClusterOnOff::AttributeOnOff;
+        reportingConfig.minReportingInterval = 0;
+        reportingConfig.maxReportingInterval = 600;
         reportingConfig.dataType = Zigbee::Bool;
-        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
 
         qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for on/off cluster" << node << endpoint;
         ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->configureReporting({reportingConfig});
@@ -503,8 +554,9 @@ void IntegrationPluginZigbeeDevelco::configureBinaryInputReporting(ZigbeeNode *n
         // Configure attribute reporting for lock state
         ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
         reportingConfig.attributeId = ZigbeeClusterBinaryInput::AttributePresentValue;
+        reportingConfig.minReportingInterval = 0;
+        reportingConfig.maxReportingInterval = 600;
         reportingConfig.dataType = Zigbee::Bool;
-        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
 
         qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for binary input cluster" << node << endpoint;
         ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdBinaryInput)->configureReporting({reportingConfig});

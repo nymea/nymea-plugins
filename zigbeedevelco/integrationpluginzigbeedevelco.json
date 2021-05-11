@@ -38,7 +38,7 @@
                             "type": "uint",
                             "unit": "MilliSeconds",
                             "defaultValue": 100,
-                            "minValue": 10
+                            "minValue": 100
                         }
                     ],
                     "stateTypes": [
@@ -135,6 +135,16 @@
                             "id": "62c5562a-8bdf-49b4-8e1d-f27442b2b360",
                             "name": "alert",
                             "displayName": "Identify"
+                        },
+                        {
+                            "id": "45ec5c65-0719-4148-82ea-3e69b34be939",
+                            "name": "impulseOutput1",
+                            "displayName": "Impulse output 1"
+                        },
+                        {
+                            "id": "d780946c-4ddf-4b59-a669-dbf6ecfda5d6",
+                            "name": "impulseOutput2",
+                            "displayName": "Impulse output 2"
                         }
                     ]
                 }
