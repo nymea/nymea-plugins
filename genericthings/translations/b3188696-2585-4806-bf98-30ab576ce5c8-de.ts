@@ -1153,6 +1153,106 @@ The name of the StateType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass
         <extracomment>The name of the ActionType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass battery</extracomment>
         <translation>Setze Laden</translation>
     </message>
+    <message>
+        <source>Analog input</source>
+        <extracomment>The name of the ParamType (ThingClass: generic, ActionType: analogInput, ID: {810fcd3c-7854-4bb1-82f6-1403ba54875e})
+----------
+The name of the ParamType (ThingClass: generic, EventType: analogInput, ID: {810fcd3c-7854-4bb1-82f6-1403ba54875e})
+----------
+The name of the StateType ({810fcd3c-7854-4bb1-82f6-1403ba54875e}) of ThingClass generic</extracomment>
+        <translation>Analoger Eingang</translation>
+    </message>
+    <message>
+        <source>Analog input changed</source>
+        <extracomment>The name of the EventType ({810fcd3c-7854-4bb1-82f6-1403ba54875e}) of ThingClass generic</extracomment>
+        <translation>Analoger Eingang geändert</translation>
+    </message>
+    <message>
+        <source>Analog output</source>
+        <extracomment>The name of the ParamType (ThingClass: generic, ActionType: analogOutput, ID: {de8ec1b1-8026-4fd8-aefb-dedc07616aa4})
+----------
+The name of the ParamType (ThingClass: generic, EventType: analogOutput, ID: {de8ec1b1-8026-4fd8-aefb-dedc07616aa4})
+----------
+The name of the StateType ({de8ec1b1-8026-4fd8-aefb-dedc07616aa4}) of ThingClass generic</extracomment>
+        <translation>Analoger Ausgang</translation>
+    </message>
+    <message>
+        <source>Analog output changed</source>
+        <extracomment>The name of the EventType ({de8ec1b1-8026-4fd8-aefb-dedc07616aa4}) of ThingClass generic</extracomment>
+        <translation>Analoger Ausgang geändret</translation>
+    </message>
+    <message>
+        <source>Digital input</source>
+        <extracomment>The name of the ParamType (ThingClass: generic, ActionType: digitalInput, ID: {3cf5eb01-dae8-49cd-8c5f-b0224be0044f})
+----------
+The name of the ParamType (ThingClass: generic, EventType: digitalInput, ID: {3cf5eb01-dae8-49cd-8c5f-b0224be0044f})
+----------
+The name of the StateType ({3cf5eb01-dae8-49cd-8c5f-b0224be0044f}) of ThingClass generic</extracomment>
+        <translation>Digitaler Eingang</translation>
+    </message>
+    <message>
+        <source>Digital input changed</source>
+        <extracomment>The name of the EventType ({3cf5eb01-dae8-49cd-8c5f-b0224be0044f}) of ThingClass generic</extracomment>
+        <translation>Digitaler Eingang geändert</translation>
+    </message>
+    <message>
+        <source>Digital output</source>
+        <extracomment>The name of the ParamType (ThingClass: generic, ActionType: digitalOutput, ID: {605b4d8e-71a7-441e-900a-e07c305acd93})
+----------
+The name of the ParamType (ThingClass: generic, EventType: digitalOutput, ID: {605b4d8e-71a7-441e-900a-e07c305acd93})
+----------
+The name of the StateType ({605b4d8e-71a7-441e-900a-e07c305acd93}) of ThingClass generic</extracomment>
+        <translation>Digitaler Ausgang</translation>
+    </message>
+    <message>
+        <source>Digital output changed</source>
+        <extracomment>The name of the EventType ({605b4d8e-71a7-441e-900a-e07c305acd93}) of ThingClass generic</extracomment>
+        <translation>Digitaler Ausgang geändert</translation>
+    </message>
+    <message>
+        <source>Generic thing</source>
+        <extracomment>The name of the ThingClass ({f5c02d35-b06e-4950-8238-847d50cabfdf})</extracomment>
+        <translation>Generisches &quot;Thing&quot;</translation>
+    </message>
+    <message>
+        <source>Set analog input</source>
+        <extracomment>The name of the ActionType ({810fcd3c-7854-4bb1-82f6-1403ba54875e}) of ThingClass generic</extracomment>
+        <translation>Setze Analogen Eingang</translation>
+    </message>
+    <message>
+        <source>Set analog output</source>
+        <extracomment>The name of the ActionType ({de8ec1b1-8026-4fd8-aefb-dedc07616aa4}) of ThingClass generic</extracomment>
+        <translation>Setze analogen Ausgang</translation>
+    </message>
+    <message>
+        <source>Set digital input</source>
+        <extracomment>The name of the ActionType ({3cf5eb01-dae8-49cd-8c5f-b0224be0044f}) of ThingClass generic</extracomment>
+        <translation>Setze digitalen Eingang</translation>
+    </message>
+    <message>
+        <source>Set digital output</source>
+        <extracomment>The name of the ActionType ({605b4d8e-71a7-441e-900a-e07c305acd93}) of ThingClass generic</extracomment>
+        <translation>Setze digitalen Ausgang</translation>
+    </message>
+    <message>
+        <source>Set string state</source>
+        <extracomment>The name of the ActionType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass generic</extracomment>
+        <translation>Setze Zeichenkette</translation>
+    </message>
+    <message>
+        <source>String state</source>
+        <extracomment>The name of the ParamType (ThingClass: generic, ActionType: stringState, ID: {f477e227-0d2d-4d88-a545-7dedf36266d5})
+----------
+The name of the ParamType (ThingClass: generic, EventType: stringState, ID: {f477e227-0d2d-4d88-a545-7dedf36266d5})
+----------
+The name of the StateType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass generic</extracomment>
+        <translation>Zeichenkette</translation>
+    </message>
+    <message>
+        <source>String state changed</source>
+        <extracomment>The name of the EventType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass generic</extracomment>
+        <translation>Zeichenkette geändert</translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>

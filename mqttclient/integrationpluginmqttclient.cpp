@@ -33,7 +33,7 @@
 #include "plugininfo.h"
 #include "network/mqtt/mqttprovider.h"
 
-#include "nymea-mqtt/mqttclient.h"
+#include <mqttclient.h>
 
 IntegrationPluginMqttClient::IntegrationPluginMqttClient()
 {

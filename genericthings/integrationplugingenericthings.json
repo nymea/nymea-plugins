@@ -9,6 +9,72 @@
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "thingClasses": [
                 {
+                    "id": "f5c02d35-b06e-4950-8238-847d50cabfdf",
+                    "name": "generic",
+                    "displayName": "Generic thing",
+                    "createMethods": ["user"],
+                    "stateTypes": [
+                        {
+                            "id": "f477e227-0d2d-4d88-a545-7dedf36266d5",
+                            "name": "stringState",
+                            "displayName": "String state",
+                            "displayNameEvent": "String state changed",
+                            "displayNameAction": "Set string state",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "writable": true
+                        },
+                        {
+                            "id": "3cf5eb01-dae8-49cd-8c5f-b0224be0044f",
+                            "name": "digitalInput",
+                            "displayName": "Digital input",
+                            "displayNameEvent": "Digital input changed",
+                            "displayNameAction": "Set digital input",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "605b4d8e-71a7-441e-900a-e07c305acd93",
+                            "name": "digitalOutput",
+                            "displayName": "Digital output",
+                            "displayNameEvent": "Digital output changed",
+                            "displayNameAction": "Set digital output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "810fcd3c-7854-4bb1-82f6-1403ba54875e",
+                            "name": "analogInput",
+                            "displayName": "Analog input",
+                            "displayNameEvent": "Analog input changed",
+                            "displayNameAction": "Set analog input",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "de8ec1b1-8026-4fd8-aefb-dedc07616aa4",
+                            "name": "analogOutput",
+                            "displayName": "Analog output",
+                            "displayNameEvent": "Analog output changed",
+                            "displayNameAction": "Set analog output",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogOutput",
+                            "writable": true
+                        }
+                    ]
+                },
+                {
                     "id": "9e69585f-90ba-44e4-ad90-5b4bffbe345a",
                     "name": "awning",
                     "displayName": "Generic awning",

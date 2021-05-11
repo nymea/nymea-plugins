@@ -274,6 +274,34 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
+    if (thing->thingClassId() == genericThingClassId) {
+        if (action.actionTypeId() == genericAnalogInputActionTypeId) {
+            thing->setStateValue(genericAnalogInputStateTypeId, action.paramValue(genericAnalogInputActionAnalogInputParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == genericAnalogOutputActionTypeId) {
+            thing->setStateValue(genericAnalogOutputStateTypeId, action.paramValue(genericAnalogOutputActionAnalogOutputParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == genericDigitalInputActionTypeId) {
+            thing->setStateValue(genericDigitalInputStateTypeId, action.paramValue(genericDigitalInputActionDigitalInputParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == genericDigitalOutputActionTypeId) {
+            thing->setStateValue(genericDigitalOutputStateTypeId, action.paramValue(genericDigitalOutputActionDigitalOutputParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == genericStringStateActionTypeId) {
+            thing->setStateValue(genericStringStateStateTypeId, action.paramValue(genericStringStateActionStringStateParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
     if (thing->thingClassId() == awningThingClassId) {
         if (action.actionTypeId() == awningOpenActionTypeId) {
             thing->setStateValue(awningStatusStateTypeId, "Opening");
