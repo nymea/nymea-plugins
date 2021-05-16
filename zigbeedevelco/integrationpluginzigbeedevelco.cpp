@@ -40,12 +40,16 @@
 IntegrationPluginZigbeeDevelco::IntegrationPluginZigbeeDevelco()
 {
     m_ieeeAddressParamTypeIds[ioModuleThingClassId] = ioModuleThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[airQualitySensorThingClassId] = airQualitySensorThingIeeeAddressParamTypeId;
 
     m_networkUuidParamTypeIds[ioModuleThingClassId] = ioModuleThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[airQualitySensorThingClassId] = airQualitySensorThingNetworkUuidParamTypeId;
 
     m_connectedStateTypeIds[ioModuleThingClassId] = ioModuleConnectedStateTypeId;
+    m_connectedStateTypeIds[airQualitySensorThingClassId] = airQualitySensorConnectedStateTypeId;
 
     m_signalStrengthStateTypeIds[ioModuleThingClassId] = ioModuleSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[airQualitySensorThingClassId] = airQualitySensorSignalStrengthStateTypeId;
 }
 
 QString IntegrationPluginZigbeeDevelco::name() const
@@ -69,6 +73,13 @@ bool IntegrationPluginZigbeeDevelco::handleNode(ZigbeeNode *node, const QUuid &n
             createThing(ioModuleThingClassId, networkUuid, node);
             handled = true;
         }
+    } else if (node->modelName() == "AQSZB-110") {
+        if (node->hasEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR)) {
+            qCDebug(dcZigbeeDevelco()) << "Found air quality sensor" << node << networkUuid.toString();
+            initAirQualitySensor(node);
+            createThing(airQualitySensorThingClassId, networkUuid, node);
+            handled = true;
+        }
     }
 
     return handled;
@@ -81,7 +92,6 @@ void IntegrationPluginZigbeeDevelco::handleRemoveNode(ZigbeeNode *node, const QU
     if (thing) {
         qCDebug(dcZigbeeDevelco()) << node << "for" << thing << "has left the network.";
         emit autoThingDisappeared(thing->id());
-
         // Removing it from our map to prevent a loop that would ask the zigbee network to remove this node (see thingRemoved())
         m_thingNodes.remove(thing);
     }
@@ -128,16 +138,17 @@ void IntegrationPluginZigbeeDevelco::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorSetupFailed);
             return;
         }
+
         if (primaryEndpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdBasic)) {
             ZigbeeCluster *basicCluster = primaryEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdBasic);
-            if (basicCluster->hasAttribute(DEVELCO_ATTRIBUTE_SW_VERSION)) {
+            if (basicCluster->hasAttribute(DEVELCO_BASIC_ATTRIBUTE_SW_VERSION)) {
                 thing->setStateValue(ioModuleVersionStateTypeId, parseDevelcoVersionString(primaryEndpoint));
             } else {
                 readDevelcoFirmwareVersion(node, primaryEndpoint);
             }
 
             connect(basicCluster, &ZigbeeCluster::attributeChanged, this, [=](const ZigbeeClusterAttribute &attribute){
-                if (attribute.id() == DEVELCO_ATTRIBUTE_SW_VERSION) {
+                if (attribute.id() == DEVELCO_BASIC_ATTRIBUTE_SW_VERSION) {
                     thing->setStateValue(ioModuleVersionStateTypeId, parseDevelcoVersionString(primaryEndpoint));
                 }
             });
@@ -267,6 +278,114 @@ void IntegrationPluginZigbeeDevelco::setupThing(ThingSetupInfo *info)
                     thing->setStateValue(ioModuleInput4StateTypeId, presentValue);
                 });
             }
+        }
+    } else if (thing->thingClassId() == airQualitySensorThingClassId) {
+        ZigbeeNodeEndpoint *sensorEndpoint = node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR);
+        if (!sensorEndpoint) {
+            qCWarning(dcZigbeeDevelco()) << "Failed to set up air quality sensor" << thing << ". Could not find endpoint for version parsing.";
+            info->finish(Thing::ThingErrorSetupFailed);
+            return;
+        }
+
+        // Handle reachable state from node
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), node->reachable());
+        connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
+            thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), reachable);
+        });
+
+        // Version state
+        if (sensorEndpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdBasic)) {
+            ZigbeeCluster *basicCluster = sensorEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdBasic);
+            if (basicCluster->hasAttribute(DEVELCO_BASIC_ATTRIBUTE_SW_VERSION)) {
+                thing->setStateValue(airQualitySensorVersionStateTypeId, parseDevelcoVersionString(sensorEndpoint));
+            }
+
+            connect(basicCluster, &ZigbeeCluster::attributeChanged, this, [=](const ZigbeeClusterAttribute &attribute){
+                if (attribute.id() == DEVELCO_BASIC_ATTRIBUTE_SW_VERSION) {
+                    thing->setStateValue(airQualitySensorVersionStateTypeId, parseDevelcoVersionString(sensorEndpoint));
+                }
+            });
+        }
+
+        // Temperature
+        ZigbeeClusterTemperatureMeasurement *temperatureCluster = sensorEndpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
+        if (!temperatureCluster) {
+            qCWarning(dcZigbeeDevelco()) << "Could not find the temperature measurement server cluster on" << thing << sensorEndpoint;
+        } else {
+            // Only set the state if the cluster actually has the attribute
+            if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
+                thing->setStateValue(airQualitySensorTemperatureStateTypeId, temperatureCluster->temperature());
+            }
+            connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
+                qCDebug(dcZigbeeDevelco()) << thing << "temperature changed" << temperature << "°C";
+                thing->setStateValue(airQualitySensorTemperatureStateTypeId, temperature);
+            });
+        }
+
+        // Humidity
+        ZigbeeClusterRelativeHumidityMeasurement *humidityCluster = sensorEndpoint->inputCluster<ZigbeeClusterRelativeHumidityMeasurement>(ZigbeeClusterLibrary::ClusterIdRelativeHumidityMeasurement);
+        if (!humidityCluster) {
+            qCWarning(dcZigbeeDevelco()) << "Could not find the humidity measurement server cluster on" << thing << sensorEndpoint;
+        } else {
+            // Only set the state if the cluster actually has the attribute
+            if (humidityCluster->hasAttribute(ZigbeeClusterRelativeHumidityMeasurement::AttributeMeasuredValue)) {
+                thing->setStateValue(airQualitySensorHumidityStateTypeId, humidityCluster->humidity());
+            }
+            connect(humidityCluster, &ZigbeeClusterRelativeHumidityMeasurement::humidityChanged, thing, [thing](double humidity){
+                qCDebug(dcZigbeeDevelco()) << thing << "humidity changed" << humidity << "%";
+                thing->setStateValue(airQualitySensorHumidityStateTypeId, humidity);
+            });
+        }
+
+        // Battery voltage
+        ZigbeeClusterPowerConfiguration *powerConfigurationCluster = sensorEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+        if (!powerConfigurationCluster) {
+            qCWarning(dcZigbeeDevelco()) << "Could not find the power configuration server cluster on" << thing << sensorEndpoint;
+        } else {
+            // Only set the state if the cluster actually has the attribute
+            if (powerConfigurationCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryVoltage)) {
+                int batteryVoltage = powerConfigurationCluster->attribute(ZigbeeClusterPowerConfiguration::AttributeBatteryVoltage).dataType().toUInt8() * 100;
+                qCDebug(dcZigbeeDevelco()) << thing << "battery voltage" << batteryVoltage << "mV";
+                thing->setStateValue(airQualitySensorBatteryCriticalStateTypeId, batteryVoltage < 2500);
+            }
+            connect(powerConfigurationCluster, &ZigbeeClusterPowerConfiguration::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
+                if (attribute.id() == ZigbeeClusterPowerConfiguration::AttributeBatteryVoltage) {
+                    int batteryVoltage = attribute.dataType().toUInt8() * 100;
+                    qCDebug(dcZigbeeDevelco()) << thing << "battery voltage" << batteryVoltage << "mV";
+                    thing->setStateValue(airQualitySensorBatteryCriticalStateTypeId, batteryVoltage < 2500);
+                }
+            });
+        }
+
+        // VOC
+        ZigbeeCluster *vocCluster = sensorEndpoint->getInputCluster(static_cast<ZigbeeClusterLibrary::ClusterId>(AIR_QUALITY_SENSOR_VOC_MEASUREMENT_CLUSTER_ID));
+        if (!vocCluster) {
+            qCWarning(dcZigbeeDevelco()) << "Could not find the VOC measurement server cluster on" << thing << sensorEndpoint;
+        } else {
+            // Only set the state if the cluster actually has the attribute
+            if (vocCluster->hasAttribute(AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MEASURED_VALUE)) {
+                ZigbeeClusterAttribute measuredValueAttribute = vocCluster->attribute(AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MEASURED_VALUE);
+                bool valueOk = false;
+                quint16 value = measuredValueAttribute.dataType().toUInt16(&valueOk);
+                if (valueOk) {
+                    thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                } else {
+                    qCWarning(dcZigbeeDevelco()) << "Failed to convert VOC measurment value" << measuredValueAttribute;
+                }
+            }
+
+            connect(vocCluster, &ZigbeeCluster::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
+                if (attribute.id() == AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MEASURED_VALUE) {
+                    bool valueOk = false;
+                    quint16 value = attribute.dataType().toUInt16(&valueOk);
+                    if (valueOk) {
+                        qCDebug(dcZigbeeDevelco()) << thing << "VOC changed" << value << "ppm";
+                        thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                    } else {
+                        qCWarning(dcZigbeeDevelco()) << "Failed to convert VOC measurment value" << attribute;
+                    }
+                }
+            });
         }
     }
 
@@ -473,12 +592,12 @@ QString IntegrationPluginZigbeeDevelco::parseDevelcoVersionString(ZigbeeNodeEndp
         return versionString;
     }
 
-    if (!basicCluster->hasAttribute(DEVELCO_ATTRIBUTE_SW_VERSION)) {
+    if (!basicCluster->hasAttribute(DEVELCO_BASIC_ATTRIBUTE_SW_VERSION)) {
         qCWarning(dcZigbeeDevelco()) << "Could not find manufacturer specific develco software version attribute in basic cluster on" << endpoint;
         return versionString;
     }
 
-    ZigbeeClusterAttribute versionAttribute = basicCluster->attribute(DEVELCO_ATTRIBUTE_SW_VERSION);
+    ZigbeeClusterAttribute versionAttribute = basicCluster->attribute(DEVELCO_BASIC_ATTRIBUTE_SW_VERSION);
     // 1 Byte octet string length, 3 byte version infromation
     if (versionAttribute.dataType().data().length() < 4 || versionAttribute.dataType().data().at(0) != 3) {
         qCWarning(dcZigbeeDevelco()) << "Failed to parse version string from manufacturer specific develco software version attribute" << versionAttribute;
@@ -510,6 +629,17 @@ void IntegrationPluginZigbeeDevelco::initIoModule(ZigbeeNode *node)
     configureBinaryInputReporting(node, node->getEndpoint(IO_MODULE_EP_INPUT4));
 }
 
+void IntegrationPluginZigbeeDevelco::initAirQualitySensor(ZigbeeNode *node)
+{
+    qCDebug(dcZigbeeDevelco()) << "Start initializing air quality sensor" << node;
+    readDevelcoFirmwareVersion(node, node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR));
+
+    configureTemperatureReporting(node, node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR));
+    configureHumidityReporting(node, node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR));
+    configureBattryVoltageReporting(node, node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR));
+    configureVocReporting(node, node->getEndpoint(AIR_QUALITY_SENSOR_EP_SENSOR));
+}
+
 void IntegrationPluginZigbeeDevelco::configureOnOffPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
 {
     qCDebug(dcZigbeeDevelco()) << "Bind on/off cluster to coordinator IEEE address" << node << endpoint;
@@ -521,7 +651,7 @@ void IntegrationPluginZigbeeDevelco::configureOnOffPowerReporting(ZigbeeNode *no
             qCDebug(dcZigbeeDevelco()) << "Bind on/off cluster to coordinator finished successfully";
         }
 
-        // Configure attribute reporting for lock state
+        // Configure attribute reporting
         ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
         reportingConfig.attributeId = ZigbeeClusterOnOff::AttributeOnOff;
         reportingConfig.minReportingInterval = 0;
@@ -551,7 +681,7 @@ void IntegrationPluginZigbeeDevelco::configureBinaryInputReporting(ZigbeeNode *n
             qCDebug(dcZigbeeDevelco()) << "Bind binary input cluster to coordinator finished successfully";
         }
 
-        // Configure attribute reporting for lock state
+        // Configure attribute reporting
         ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
         reportingConfig.attributeId = ZigbeeClusterBinaryInput::AttributePresentValue;
         reportingConfig.minReportingInterval = 0;
@@ -570,6 +700,136 @@ void IntegrationPluginZigbeeDevelco::configureBinaryInputReporting(ZigbeeNode *n
     });
 }
 
+void IntegrationPluginZigbeeDevelco::configureTemperatureReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Note: don not read initial value since it returns an invalid masurement. The device needs some time for initial measuring
+
+    qCDebug(dcZigbeeDevelco()) << "Bind temperature measurement cluster to coordinator IEEE address" << node << endpoint;
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeDevelco()) << "Failed to bind temperature measurement cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeDevelco()) << "Bind temperature measurement cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue;
+        reportingConfig.dataType = Zigbee::Int16;
+        reportingConfig.minReportingInterval = 60;
+        reportingConfig.maxReportingInterval = 300;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<qint16>(10)).data();
+
+        qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for temperature measurement cluster" << node << endpoint;
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeDevelco()) << "Failed configure attribute reporting on temperature measurement cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeDevelco()) << "Attribute reporting configuration finished for on temperature measurement cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeDevelco::configureHumidityReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Note: don not read initial value since it returns an invalid masurement. The device needs some time for initial measuring
+    qCDebug(dcZigbeeDevelco()) << "Bind humidity measurement cluster to coordinator IEEE address" << node << endpoint;
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdRelativeHumidityMeasurement, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeDevelco()) << "Failed to bind humidity measurement cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeDevelco()) << "Bind humidity measurement cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterRelativeHumidityMeasurement::AttributeMeasuredValue;
+        reportingConfig.dataType = Zigbee::Uint16;
+        reportingConfig.minReportingInterval = 60;
+        reportingConfig.maxReportingInterval = 300;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint16>(10)).data();
+
+        qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for humidity measurement cluster" << node << endpoint;
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdRelativeHumidityMeasurement)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeDevelco()) << "Failed configure attribute reporting on humidity measurement cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeDevelco()) << "Attribute reporting configuration finished for on humidity measurement cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeDevelco::configureBattryVoltageReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Note: don not read initial value since it returns an invalid masurement. The device needs some time for initial measuring
+    qCDebug(dcZigbeeDevelco()) << "Bind power configuration cluster to coordinator IEEE address" << node << endpoint;
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeDevelco()) << "Failed to bind power configuration cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeDevelco()) << "Bind power configuration cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryVoltage;
+        reportingConfig.dataType = Zigbee::Uint8;
+        reportingConfig.minReportingInterval = 60;
+        reportingConfig.maxReportingInterval = 300;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for power configuration cluster" << node << endpoint;
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeDevelco()) << "Failed configure attribute reporting on power configuration cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeDevelco()) << "Attribute reporting configuration finished for on power configuration cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeDevelco::configureVocReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Note: don not read initial value since it returns an invalid masurement. The device needs some time for initial measuring
+
+    qCDebug(dcZigbeeDevelco()) << "Bind VOC measurement cluster to coordinator IEEE address" << node << endpoint;
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), AIR_QUALITY_SENSOR_VOC_MEASUREMENT_CLUSTER_ID, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeDevelco()) << "Failed to bind VOC measurement cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeDevelco()) << "Bind VOC measurement cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MEASURED_VALUE;
+        reportingConfig.dataType = Zigbee::Uint16;
+        reportingConfig.minReportingInterval = 60;
+        reportingConfig.maxReportingInterval = 300;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint16>(10)).data();
+
+        qCDebug(dcZigbeeDevelco()) << "Configure attribute reporting for VOC measurement cluster" << node << endpoint;
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(static_cast<ZigbeeClusterLibrary::ClusterId>(AIR_QUALITY_SENSOR_VOC_MEASUREMENT_CLUSTER_ID))->configureReporting({reportingConfig}, Zigbee::Develco);
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeDevelco()) << "Failed configure attribute reporting on VOC measurement cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeDevelco()) << "Attribute reporting configuration finished for on VOC measurement cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
 void IntegrationPluginZigbeeDevelco::readDevelcoFirmwareVersion(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
 {
     // Read manufacturer specific basic cluster attribute 0x8000
@@ -580,7 +840,7 @@ void IntegrationPluginZigbeeDevelco::readDevelcoFirmwareVersion(ZigbeeNode *node
     }
 
     // We have to read the color capabilities
-    ZigbeeClusterReply *reply = basicCluster->readAttributes({DEVELCO_ATTRIBUTE_SW_VERSION}, Zigbee::Develco);
+    ZigbeeClusterReply *reply = basicCluster->readAttributes({DEVELCO_BASIC_ATTRIBUTE_SW_VERSION}, Zigbee::Develco);
     connect(reply, &ZigbeeClusterReply::finished, node, [=](){
         if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
             qCWarning(dcZigbeeDevelco()) << "Failed to read manufacturer specific version attribute on" << node << endpoint << basicCluster;

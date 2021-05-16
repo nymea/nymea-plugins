@@ -59,19 +59,21 @@
 #define IO_MODULE_EP_OUTPUT1 0x74
 #define IO_MODULE_EP_OUTPUT2 0x75
 
-
-/* Develco manufacturer specific Basic cluster attributes
- * 0x8000 Primary SW version
- * 0x8010 Primary Bootloader SW version
- * 0x8020 Primary HW version
- * 0x8030 Primary HW name
- * 0x8050 Primary SW version 3rd party
+/* Air quality sensor - manufacturer specific clustr
+ * https://www.develcoproducts.com/media/1674/aqszb-110-technical-manual-air-quality-sensor-04-08-20.pdf
  */
-#define DEVELCO_ATTRIBUTE_SW_VERSION 0x8000
-#define DEVELCO_ATTRIBUTE_BOOTLOADER_VERSION 0x8010
-#define DEVELCO_ATTRIBUTE_HARDWARE_VERSION 0x8020
-#define DEVELCO_ATTRIBUTE_HARDWARE_NAME 0x8030
-#define DEVELCO_ATTRIBUTE_3RD_PARTY_SW_VERSION 0x8050
+#define AIR_QUALITY_SENSOR_EP_SENSOR 0x26
+#define AIR_QUALITY_SENSOR_VOC_MEASUREMENT_CLUSTER_ID 0xfc03
+#define AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MEASURED_VALUE 0x0000
+#define AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_MIN_MEASURED_VALUE 0x0001
+#define AIR_QUALITY_SENSOR_VOC_MEASUREMENT_ATTRIBUTE_RESOLUTION 0x0003
+
+/* Develco manufacturer specific Basic cluster attributes */
+#define DEVELCO_BASIC_ATTRIBUTE_SW_VERSION 0x8000
+#define DEVELCO_BASIC_ATTRIBUTE_BOOTLOADER_VERSION 0x8010
+#define DEVELCO_BASIC_ATTRIBUTE_HARDWARE_VERSION 0x8020
+#define DEVELCO_BASIC_ATTRIBUTE_HARDWARE_NAME 0x8030
+#define DEVELCO_BASIC_ATTRIBUTE_3RD_PARTY_SW_VERSION 0x8050
 
 
 class IntegrationPluginZigbeeDevelco: public IntegrationPlugin, public ZigbeeHandler
@@ -108,8 +110,15 @@ private:
     QString parseDevelcoVersionString(ZigbeeNodeEndpoint *endpoint);
 
     void initIoModule(ZigbeeNode *node);
+    void initAirQualitySensor(ZigbeeNode *node);
+
     void configureOnOffPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void configureBinaryInputReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    void configureTemperatureReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void configureHumidityReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void configureBattryVoltageReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void configureVocReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
     void readDevelcoFirmwareVersion(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void readOnOffPowerAttribute(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);

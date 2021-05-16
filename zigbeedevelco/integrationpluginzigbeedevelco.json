@@ -147,6 +147,99 @@
                             "displayName": "Impulse output 2"
                         }
                     ]
+                },
+                {
+                    "id": "9f966405-4d63-4ae8-8472-a3ab7bbcadaa",
+                    "name": "airQualitySensor",
+                    "displayName": "Air qualiy sensor",
+                    "createMethods": ["auto"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "battery", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "dbad9e63-1adc-45ef-8bfc-4947060f19f4",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "7c042425-f95d-479b-a6af-cee7e8ce9c38",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c6f65bb8-1234-40f2-8855-84ca28f48150",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "19cfb35b-6a2e-4efe-9366-287c2f13c027",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "5d1c46ca-9306-473a-a721-165831ff53cc",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "2d31d98e-dcd7-4700-a90e-a0d051ad6b40",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
+                        },
+                        {
+                            "id": "5bc2825c-666f-4013-9583-3a88ceebecc2",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "unit": "Percentage",
+                            "type": "double",
+                            "defaultValue": 0.0
+                        },
+                        {
+                            "id": "048ed452-785f-4361-b7a1-f955f4a622b2",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "1ba14107-4241-46d0-b65f-eb6e8c6f8e08",
+                            "name": "voc",
+                            "displayName": "VOC",
+                            "displayNameEvent": "VOC changed",
+                            "type": "uint",
+                            "unit": "PartsPerMillion",
+                            "suggestLogging": true,
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [ ]
                 }
             ]
         }
