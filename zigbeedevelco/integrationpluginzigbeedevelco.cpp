@@ -368,7 +368,13 @@ void IntegrationPluginZigbeeDevelco::setupThing(ThingSetupInfo *info)
                 bool valueOk = false;
                 quint16 value = measuredValueAttribute.dataType().toUInt16(&valueOk);
                 if (valueOk) {
-                    thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                    if (value == 0xFFFF) {
+                        qCWarning(dcZigbeeDevelco()) << "Received invalid VOC measurment. The sensor is not ready yet.";
+                    } else {
+                        qCDebug(dcZigbeeDevelco()) << thing << "VOC changed" << value << "ppm";
+                        thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                        updateIndoorAirQuality(thing, value);
+                    }
                 } else {
                     qCWarning(dcZigbeeDevelco()) << "Failed to convert VOC measurment value" << measuredValueAttribute;
                 }
@@ -379,8 +385,13 @@ void IntegrationPluginZigbeeDevelco::setupThing(ThingSetupInfo *info)
                     bool valueOk = false;
                     quint16 value = attribute.dataType().toUInt16(&valueOk);
                     if (valueOk) {
-                        qCDebug(dcZigbeeDevelco()) << thing << "VOC changed" << value << "ppm";
-                        thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                        if (value == 0xFFFF) {
+                            qCWarning(dcZigbeeDevelco()) << "Received invalid VOC measurment. The sensor is not ready yet.";
+                        } else {
+                            qCDebug(dcZigbeeDevelco()) << thing << "VOC changed" << value << "ppm";
+                            thing->setStateValue(airQualitySensorVocStateTypeId, value);
+                            updateIndoorAirQuality(thing, value);
+                        }
                     } else {
                         qCWarning(dcZigbeeDevelco()) << "Failed to convert VOC measurment value" << attribute;
                     }
@@ -828,6 +839,21 @@ void IntegrationPluginZigbeeDevelco::configureVocReporting(ZigbeeNode *node, Zig
             }
         });
     });
+}
+
+void IntegrationPluginZigbeeDevelco::updateIndoorAirQuality(Thing *thing, uint voc)
+{
+    if (voc <= 65) {
+        thing->setStateValue(airQualitySensorIndoorAirQualityStateTypeId, "Excellent");
+    } else if (voc <= 220) {
+        thing->setStateValue(airQualitySensorIndoorAirQualityStateTypeId, "Good");
+    } else if (voc <= 660) {
+        thing->setStateValue(airQualitySensorIndoorAirQualityStateTypeId, "Moderate");
+    } else if (voc <= 2200) {
+        thing->setStateValue(airQualitySensorIndoorAirQualityStateTypeId, "Poor");
+    } else {
+        thing->setStateValue(airQualitySensorIndoorAirQualityStateTypeId, "Unhealthy");
+    }
 }
 
 void IntegrationPluginZigbeeDevelco::readDevelcoFirmwareVersion(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)

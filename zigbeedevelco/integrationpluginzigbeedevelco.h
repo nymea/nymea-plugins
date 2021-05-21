@@ -119,6 +119,7 @@ private:
     void configureHumidityReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void configureBattryVoltageReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void configureVocReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void updateIndoorAirQuality(Thing *thing, uint voc);
 
     void readDevelcoFirmwareVersion(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void readOnOffPowerAttribute(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);

@@ -153,7 +153,7 @@
                     "name": "airQualitySensor",
                     "displayName": "Air qualiy sensor",
                     "createMethods": ["auto"],
-                    "interfaces": ["temperaturesensor", "humiditysensor", "battery", "wirelessconnectable"],
+                    "interfaces": ["indoorairquality", "temperaturesensor", "humiditysensor", "battery", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "dbad9e63-1adc-45ef-8bfc-4947060f19f4",
@@ -227,6 +227,21 @@
                             "displayNameEvent": "Battery critical changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "8396ec7e-54d4-452f-9558-c366e0904b2f",
+                            "name": "indoorAirQuality",
+                            "displayName": "Air quality",
+                            "displayNameEvent": "Air quality changed",
+                            "type": "QString",
+                            "defaultValue": "Good",
+                            "possibleValues": [
+                                "Excellent",
+                                "Good",
+                                "Moderate",
+                                "Poor",
+                                "Unhealthy"
+                            ]
                         },
                         {
                             "id": "1ba14107-4241-46d0-b65f-eb6e8c6f8e08",
