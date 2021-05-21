@@ -103,17 +103,19 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
     } else if ((thing->thingClassId() == inverterThingClassId) ||
                (thing->thingClassId() == meterThingClassId)    ||
                (thing->thingClassId() == storageThingClassId)) {
+
         Thing *loggerThing = myThings().findById(thing->parentId());
         if (!loggerThing) {
             qCWarning(dcFronius()) << "Could not find Logger Thing for thing " << thing->name();
             return info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
         }
+
         if (!loggerThing->setupComplete()) {
             //wait for the parent to finish the setup process
             connect(loggerThing, &Thing::setupStatusChanged, info, [this, info, loggerThing] {
-
-                if (loggerThing->setupComplete())
+                if (loggerThing->setupComplete()) {
                     setupChild(info, loggerThing);
+                }
             });
             return;
         }
@@ -163,22 +165,18 @@ void IntegrationPluginFronius::thingRemoved(Thing *thing)
         FroniusLogger *logger = m_froniusLoggers.key(thing);
         m_froniusLoggers.remove(logger);
         logger->deleteLater();
-        return;
     } else if (thing->thingClassId() == inverterThingClassId) {
         FroniusInverter *inverter = m_froniusInverters.key(thing);
         m_froniusInverters.remove(inverter);
         inverter->deleteLater();
-        return;
     } else if (thing->thingClassId() == meterThingClassId) {
         FroniusMeter *meter = m_froniusMeters.key(thing);
         m_froniusMeters.remove(meter);
         meter->deleteLater();
-        return;
     } else if (thing->thingClassId() == storageThingClassId) {
         FroniusStorage *storage = m_froniusStorages.key(thing);
         m_froniusStorages.remove(storage);
         storage->deleteLater();
-        return;
     } else {
         Q_ASSERT_X(false, "thingRemoved", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -197,7 +195,6 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
     qCDebug(dcFronius()) << "Execute action" << thing->name() << action.actionTypeId().toString();
 
     if (thing->thingClassId() == dataloggerThingClassId) {
-
         if (action.actionTypeId() == dataloggerSearchDevicesActionTypeId) {
             searchNewThings(m_froniusLoggers.key(thing));
             info->finish(Thing::ThingErrorNoError);
@@ -213,7 +210,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
 {
     qCDebug(dcFronius()) << "Update thing values for" << thing->name();
 
-    if(thing->thingClassId() == inverterThingClassId) {
+    if (thing->thingClassId() == inverterThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
@@ -223,7 +220,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 return;
             }
             QByteArray data = reply->readAll();
-            if(m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
+            if (m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
                 m_froniusInverters.key(thing)->updateThingInfo(data);
             }
         });
@@ -235,7 +232,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 return;
             }
             QByteArray data = next_reply->readAll();
-            if(m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
+            if (m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
                 m_froniusInverters.key(thing)->updateActivityInfo(data);
             }
         });
@@ -249,7 +246,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 return;
             }
             QByteArray data = reply->readAll();
-            if(m_froniusLoggers.values().contains(thing)){ // check if thing was not removed before reply was received
+            if (m_froniusLoggers.values().contains(thing)){ // check if thing was not removed before reply was received
                 m_froniusLoggers.key(thing)->updateThingInfo(data);
             }
         });
@@ -263,7 +260,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 return;
             }
             QByteArray data = reply->readAll();
-            if(m_froniusMeters.values().contains(thing)){ // check if thing was not removed before reply was received
+            if (m_froniusMeters.values().contains(thing)){ // check if thing was not removed before reply was received
                 m_froniusMeters.key(thing)->updateThingInfo(data);
             }
         });
@@ -278,7 +275,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 return;
             }
             QByteArray data = reply->readAll();
-            if(m_froniusStorages.values().contains(thing)){ // check if thing was not removed before reply was received
+            if (m_froniusStorages.values().contains(thing)){ // check if thing was not removed before reply was received
                 m_froniusStorages.key(thing)->updateThingInfo(data);
             }
         });
@@ -297,7 +294,6 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
     } else {
         Q_ASSERT_X(false, "updateThingState", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
-
     }
 }
 
@@ -333,7 +329,7 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
+            qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
             return;
         }
 
@@ -342,12 +338,13 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
 
         // Check reply information
         QVariantMap bodyMap = jsonDoc.toVariant().toMap().value("Body").toMap();
+        qCDebug(dcFronius()) << "System:" << qUtf8Printable(QJsonDocument::fromVariant(bodyMap).toJson(QJsonDocument::Indented));
 
         // Parse reply for inverters at the host address
         QVariantMap inverterMap = bodyMap.value("Data").toMap().value("Inverter").toMap();
         foreach (QString inverterId, inverterMap.keys()) {
             //check if thing already connected to logger
-            if(!thingExists(inverterThingIdParamTypeId,inverterId)) {
+            if (!thingExists(inverterThingIdParamTypeId,inverterId)) {
                 QString thingName = loggerThing->name() + " Inverter " + inverterId;
                 ThingDescriptor descriptor(inverterThingClassId, thingName, "Fronius Solar Inverter", loggerThing->id());
                 ParamList params;
@@ -409,10 +406,10 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
     });
 }
 
-bool IntegrationPluginFronius::thingExists(ParamTypeId thingParamId, QString thingId)
+bool IntegrationPluginFronius::thingExists(const ParamTypeId &thingParamId, QString thingId)
 {
     foreach(Thing *thing, myThings()) {
-        if(thing->paramValue(thingParamId).toString() == thingId) {
+        if (thing->paramValue(thingParamId).toString() == thingId) {
             return true;
         }
     }
