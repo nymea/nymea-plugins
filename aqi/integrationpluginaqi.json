@@ -22,7 +22,7 @@
                     "id": "23ea32c9-38b0-4155-bacc-3afa8c09f6ee",
                     "name": "airQualityIndex",
                     "displayName": "Air quality index",
-                    "interfaces": ["windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
+                    "interfaces": ["airquality", "windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
                     "createMethods": ["discovery", "user"],
                     "paramTypes": [
                         {
@@ -84,10 +84,10 @@
                         },
                         {
                             "id": "bc8c4c83-d229-4be4-8732-bc4f2390f399",
-                            "name": "pm25",
+                            "name": "airQualityIndex",
                             "displayName": "Fine particles pollution level (PM2.5)",
                             "displayNameEvent": "Fine particles pollution level (PM2.5) changed",
-                            "type": "int",
+                            "type": "uint",
                             "defaultValue": 0
                         },
                         {

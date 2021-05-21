@@ -181,7 +181,7 @@ void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityI
         thing->setStateValue(airQualityIndexNo2StateTypeId, data.no2);
         thing->setStateValue(airQualityIndexSo2StateTypeId, data.so2);
         thing->setStateValue(airQualityIndexPm10StateTypeId, data.pm10);
-        thing->setStateValue(airQualityIndexPm25StateTypeId, data.pm25);
+        thing->setStateValue(airQualityIndexAirQualityIndexStateTypeId, data.pm25);
         thing->setStateValue(airQualityIndexWindSpeedStateTypeId, data.windSpeed);
 
         if (data.pm25 <= 50.00) {
