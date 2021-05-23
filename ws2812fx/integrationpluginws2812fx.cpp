@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -72,20 +72,19 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("This serial port is already in use."));
                 return;
             }
-
             NymeaLightSerialInterface *lightInterface = new NymeaLightSerialInterface(interface, thing);
             light = new NymeaLight(lightInterface, this);
             lightInterface->setParent(light);
-            m_usedInterfaces.append(interface);
 
-            info->finish(Thing::ThingErrorNoError);
         } else if (thing->paramValue(nymeaLightThingConnectionTypeParamTypeId).toString() == "Network") {
-            if (m_usedInterfaces.contains(interface)) {
-                m_usedInterfaces.removeAll(interface);
+            if (m_lights.contains(thing)) {
                 qCDebug(dcWs2812fx()) << "Setup after reconfiguration, cleaning up ...";
+                m_lights.take(thing)->deleteLater();
+                m_usedInterfaces.removeAll(interface);
             }
 
             if (QHostAddress(interface).isNull()) {
+                qCWarning(dcWs2812fx()) << "Setup failed, address not valid";
                 info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Address not valid"));
                 return;
             }
@@ -93,39 +92,31 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
             NymeaLightTcpInterface *lightInterface = new NymeaLightTcpInterface(QHostAddress(interface), thing);
             light = new NymeaLight(lightInterface, this);
             lightInterface->setParent(light);
-            m_usedInterfaces.append(interface);
-
         }
-        m_lights.insert(thing, light);
 
-        connect(light, &NymeaLight::availableChanged, thing, [=](bool available){
+        connect(light, &NymeaLight::availableChanged, thing, [=] (bool available) {
             qCDebug(dcWs2812fx()) << thing << "available changed" << available;
             thing->setStateValue(nymeaLightConnectedStateTypeId, available);
 
             if (available) {
+                m_lights.insert(thing, light);
+                m_usedInterfaces.append(interface);
                 // Set the light to the current states
                 light->setPower(thing->stateValue(nymeaLightPowerStateTypeId).toBool());
                 light->setBrightness(thing->stateValue(nymeaLightBrightnessStateTypeId).toUInt());
                 light->setColor(thing->stateValue(nymeaLightColorStateTypeId).value<QColor>());
                 light->setEffect(thing->stateValue(nymeaLightEffectModeStateTypeId).toUInt());
                 light->setSpeed(thing->stateValue(nymeaLightSpeedStateTypeId).toUInt());
+                info->finish(Thing::ThingErrorNoError);
             }
         });
+        light->enable();
+
     } else {
         qCWarning(dcWs2812fx()) << "ThingClass not supported" << thing->thingClassId();
         return info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
-
-void IntegrationPluginWs2812fx::postSetupThing(Thing *thing)
-{
-    qCDebug(dcWs2812fx()) << "Post setup thing" << thing;
-    if (thing->thingClassId() == nymeaLightThingClassId) {
-        NymeaLight *light = m_lights.value(thing);
-        light->enable();
-    }
-}
-
 
 void IntegrationPluginWs2812fx::discoverThings(ThingDiscoveryInfo *info)
 {
