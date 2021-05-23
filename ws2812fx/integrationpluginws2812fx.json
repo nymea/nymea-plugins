@@ -10,18 +10,37 @@
             "thingClasses": [
                 {
                     "id": "24364e36-b199-4e35-b468-c44da58c009c",
-                    "name": "nymeaLightSerial",
-                    "displayName": "Serial nymea light",
+                    "name": "nymeaLight",
+                    "displayName": "nymea light",
                     "createMethods": ["user", "discovery"],
                     "interfaces": ["colorlight", "connectable"],
                     "paramTypes": [
                         {
-                            "id": "ed49f7d8-ab18-4c37-9b80-1004b75dcb91",
-                            "name": "serialPort",
-                            "displayName": "Serial port",
+                            "id": "a02dcbf9-c1d8-4dc3-9fb6-92ea75e0539d",
+                            "name": "connectionType",
+                            "displayName": "Connection type",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "defaultValue": "/dev/ttyAMC0"
+                            "allowedValues": [
+                                "Serial",
+                                "Network"
+                            ],
+                            "defaultValue": "Serial",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "7faf014a-a13d-4c41-9c12-d4427313e2c2",
+                            "name": "serialnumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "ed49f7d8-ab18-4c37-9b80-1004b75dcb91",
+                            "name": "address",
+                            "displayName": "Serial port or network address",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
