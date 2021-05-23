@@ -95,6 +95,8 @@
 
 #include "integrations/integrationplugin.h"
 #include "nymealight.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -110,6 +112,7 @@ class IntegrationPluginWs2812fx : public IntegrationPlugin
 public:
     explicit IntegrationPluginWs2812fx();
 
+    void init() override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
@@ -119,6 +122,8 @@ public:
 private:
     QHash<Thing *, NymeaLight *> m_lights;
     QList<QString> m_usedInterfaces;
+
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
 private slots:
 
