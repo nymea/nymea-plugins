@@ -97,6 +97,7 @@
 #include "nymealight.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
+#include "nymealighttcpinterface.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -120,6 +121,7 @@ public:
 
 private:
     QHash<Thing *, NymeaLight *> m_lights;
+    QHash<Thing *, NymeaLightTcpInterface *> m_lightTcpInterface;
     QList<QString> m_usedInterfaces;
 
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;

@@ -38,7 +38,6 @@
 #include "network/zeroconf/zeroconfservicebrowser.h"
 
 #include "nymealightserialinterface.h"
-#include "nymealighttcpinterface.h"
 
 IntegrationPluginWs2812fx ::IntegrationPluginWs2812fx ()
 {
@@ -48,12 +47,30 @@ void IntegrationPluginWs2812fx::init()
 {
     m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
     connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=] (const ZeroConfServiceEntry &entry){
-        qCDebug(dcWs2812fx()) << "mDNS service added" << entry;
-        foreach (Thing *thing, myThings().filterByThingClassId(nymeaLightThingClassId)) {
-            Q_UNUSED(thing) //TODO auto address update
-            if (entry.txt().contains("nymea-light")) {
-            }
+        if (!entry.serviceType().contains("nymealight")) {
+            return;
         }
+        if (entry.txt("mac").isEmpty()) {
+            return;
+        }
+
+        ParamList parameters;
+        parameters.append(Param(nymeaLightThingConnectionTypeParamTypeId, "Network"));
+        parameters.append(Param(nymeaLightThingSerialnumberParamTypeId, entry.txt("mac")));
+
+        Thing *thing = myThings().findByParams(parameters);
+        if (!thing) {
+            return;
+        }
+        qCDebug(dcWs2812fx()) << "Updating IP address" << thing << "to" << entry.hostAddress();
+        thing->setParamValue(nymeaLightThingAddressParamTypeId, entry.hostAddress().toString());
+
+        if (!m_lights.contains(thing)) {
+            qCWarning(dcWs2812fx()) << "No nyema light connection found for" << thing;
+            return;
+        }
+        NymeaLightTcpInterface *lightInterface = qobject_cast<NymeaLightTcpInterface *>(m_lights.value(thing)->parent());
+        lightInterface->setAddress(entry.hostAddress());
     });
 }
 
@@ -121,7 +138,6 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
 void IntegrationPluginWs2812fx::discoverThings(ThingDiscoveryInfo *info)
 {
     // Create the list of available serial interfaces
-
     Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
         qCDebug(dcWs2812fx()) << "Found serial port:" << port.portName();
         QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
@@ -137,17 +153,30 @@ void IntegrationPluginWs2812fx::discoverThings(ThingDiscoveryInfo *info)
         info->addThingDescriptor(descriptor);
     }
 
+    if (!hardwareManager()->zeroConfController()->available()) {
+        qCWarning(dcWs2812fx()) << "ZeroConfController not available";
+    }
+
     Q_FOREACH (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
-        qCDebug(dcWs2812fx()) << "mDNS service entry:" << service;
-        if (service.txt().contains("nymea-light")) {
-            ThingDescriptor descriptor(info->thingClassId(), service.name(), service.hostAddress().toString());
+
+        if (service.serviceType().contains("nymealight")) {
+            if (service.txt("mac").isEmpty()) {
+                qCDebug(dcWs2812fx()) << "Found nymea light but mac txt record is missing, ignoring.";
+                continue;
+            }
+            QString name;
+            if (!service.txt("name").isEmpty()) {
+                name = service.txt("name");
+            } else {
+                name = service.name();
+            }
+            ThingDescriptor descriptor(info->thingClassId(), name, service.hostAddress().toString());
 
             ParamList parameters;
             parameters.append(Param(nymeaLightThingConnectionTypeParamTypeId, "Network"));
-            parameters.append(Param(nymeaLightThingSerialnumberParamTypeId, "")); //TODO fixme
+            parameters.append(Param(nymeaLightThingSerialnumberParamTypeId, service.txt("mac")));
             parameters.append(Param(nymeaLightThingAddressParamTypeId, service.hostAddress().toString()));
             descriptor.setParams(parameters);
-            info->addThingDescriptor(descriptor);
             info->addThingDescriptor(descriptor);
         }
     }
