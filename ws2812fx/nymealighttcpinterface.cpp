@@ -58,12 +58,14 @@ NymeaLightTcpInterface::NymeaLightTcpInterface(const QHostAddress &address, QObj
 
 bool NymeaLightTcpInterface::open()
 {
+    qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: Connecting to host" << m_address << "port" << 1080;
     m_socket->connectToHost(m_address, 1080);
     return true;
 }
 
 void NymeaLightTcpInterface::close()
 {
+    qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: Closing socket";
     m_socket->close();
 }
 
@@ -80,6 +82,7 @@ void NymeaLightTcpInterface::sendData(const QByteArray &data)
 
 void NymeaLightTcpInterface::setAddress(const QHostAddress &address)
 {
+    qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: Set address to" << address;
     m_address = address;
 }
 
@@ -90,24 +93,23 @@ QHostAddress NymeaLightTcpInterface::address() const
 
 void NymeaLightTcpInterface::onReadyRead()
 {
+    qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: Received data";
     QByteArray data;
-
     while (m_socket->canReadLine()) {
         data = m_socket->readLine();
-
-        if (!m_buffer.isEmpty() && m_buffer.length() >= 3) {
-            emit dataReceived(m_buffer);
-        }
-        m_buffer.clear();
+        qCDebug(dcWs2812fx()) << "      - New line, length" << data.length() << data;
+        emit dataReceived(data);
     }
 }
 
 void NymeaLightTcpInterface::onStateChanged(QAbstractSocket::SocketState state)
 {
+    qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: State changed" << state;
     if (state == QAbstractSocket::SocketState::ConnectedState) {
         emit availableChanged(true);
     } else if (state == QAbstractSocket::SocketState::UnconnectedState) {
         emit availableChanged(false);
+        qCDebug(dcWs2812fx()) << "NymeaLightTcpInterface: Starting reconnect timer";
         m_reconnectTimer->start();
     }
 }
