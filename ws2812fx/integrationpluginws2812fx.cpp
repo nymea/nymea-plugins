@@ -89,7 +89,7 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("This serial port is already in use."));
                 return;
             }
-            NymeaLightSerialInterface *lightInterface = new NymeaLightSerialInterface(interface, thing);
+            NymeaLightSerialInterface *lightInterface = new NymeaLightSerialInterface(interface);
             light = new NymeaLight(lightInterface, this);
             lightInterface->setParent(light);
 
@@ -106,7 +106,7 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
                 return;
             }
 
-            NymeaLightTcpInterface *lightInterface = new NymeaLightTcpInterface(QHostAddress(interface), thing);
+            NymeaLightTcpInterface *lightInterface = new NymeaLightTcpInterface(QHostAddress(interface));
             light = new NymeaLight(lightInterface, this);
             lightInterface->setParent(light);
         }
