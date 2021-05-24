@@ -41,7 +41,7 @@ NymeaLight::NymeaLight(NymeaLightInterface *interface, QObject *parent) :
     connect(m_interface, &NymeaLightInterface::availableChanged, this, [=](bool available){
         m_interfaceAvailable = available;
         if (m_interfaceAvailable) {
-            qCDebug(dcWs2812fx()) << "Nymea light interface is now available. Start polling status of the light controller...";
+            qCDebug(dcWs2812fx()) << "NymeaLight: Interface is now available. Start polling status of the light controller...";
             m_pollStatusRetryCount = 0;
             pollStatus();
         } else {
@@ -142,13 +142,13 @@ bool NymeaLight::available() const
 void NymeaLight::enable()
 {
     m_interface->open();
-    qCDebug(dcWs2812fx()) << "Nymea light enabled";
+    qCDebug(dcWs2812fx()) << "NymeaLight: Enabled";
 }
 
 void NymeaLight::disable()
 {
     m_interface->close();
-    qCDebug(dcWs2812fx()) << "Nymea light disabled";
+    qCDebug(dcWs2812fx()) << "NymeaLight: Disabled";
 }
 
 NymeaLightInterfaceReply *NymeaLight::createReply(const QByteArray &requestData)
@@ -175,7 +175,7 @@ void NymeaLight::sendNextRequest()
     // TODO: if not available, finish all replies with unknown error
 
     m_currentReply = m_pendingRequests.dequeue();
-    qCDebug(dcWs2812fx()) << "Sending request" << m_currentReply->command() << m_currentReply->requestId() << m_currentReply->requestData().toHex();
+    qCDebug(dcWs2812fx()) << "NymeaLight: Sending request" << m_currentReply->command() << m_currentReply->requestId() << m_currentReply->requestData().toHex();
     m_interface->sendData(m_currentReply->requestData());
     m_currentReply->m_timer->start();
 }
@@ -186,21 +186,21 @@ void NymeaLight::pollStatus()
     NymeaLightInterfaceReply *reply = getStatus();
     connect(reply, &NymeaLightInterfaceReply::finished, this, [=](){
         if (reply->status() == NymeaLightInterface::StatusSuccess) {
-            qCDebug(dcWs2812fx()) << "Get status request finished successfully. The firmware is ready to operate.";
+            qCDebug(dcWs2812fx()) << "NymeaLight: Get status request finished successfully. The firmware is ready to operate.";
             m_ready = true;
             m_pollStatusRetryCount = 0;
             emit availableChanged(true);
         } else {
             m_pollStatusRetryCount++;
             if (m_pollStatusRetryCount >= m_pollStatusRetryLimit) {
-                qCWarning(dcWs2812fx()) << "Firmware did not respond to get status request after" << m_pollStatusRetryCount << "attempts. Giving up.";
+                qCWarning(dcWs2812fx()) << "NymeaLight: Firmware did not respond to get status request after" << m_pollStatusRetryCount << "attempts. Giving up.";
                 m_ready = false;
             } else {
                 if (!m_ready && m_interfaceAvailable) {
-                    qCDebug(dcWs2812fx()) << "Get status request finished with error" << reply->status() << "Retry" << m_pollStatusRetryCount << "/" << m_pollStatusRetryLimit;
+                    qCDebug(dcWs2812fx()) << "NymeaLight: Get status request finished with error" << reply->status() << "Retry" << m_pollStatusRetryCount << "/" << m_pollStatusRetryLimit;
                     pollStatus();
                 } else {
-                    qCDebug(dcWs2812fx()) << "Get status request finished with error, but that's ok since we received the ready notification." << reply->status();
+                    qCDebug(dcWs2812fx()) << "NymeaLight: Get status request finished with error, but that's ok since we received the ready notification." << reply->status();
                 }
             }
         }
@@ -209,7 +209,7 @@ void NymeaLight::pollStatus()
 
 NymeaLightInterfaceReply *NymeaLight::getStatus()
 {
-    qCDebug(dcWs2812fx()) << "Request status of nymea light";
+    qCDebug(dcWs2812fx()) << "NymeaLight: Request status of nymea light";
     QByteArray requestData;
     QDataStream stream(&requestData, QIODevice::WriteOnly);
     stream << static_cast<quint8>(NymeaLightInterface::CommandGetStatus);
@@ -228,7 +228,7 @@ void NymeaLight::onDataReceived(const QByteArray &data)
     quint8 commandInt = static_cast<quint8>((data.at(0)));
     quint8 requestId = static_cast<quint8>(data.at(1));
 
-    qCDebug(dcWs2812fx()) << "Recived data" << commandInt << requestId << data.toHex();
+    qCDebug(dcWs2812fx()) << "NymeaLight: Received data" << commandInt << requestId << data.toHex();
 
     // Check if command or notification
     if (commandInt < 0xF0) {
@@ -242,15 +242,15 @@ void NymeaLight::onDataReceived(const QByteArray &data)
                 m_currentReply->m_status = status;
 
                 if (status != NymeaLightInterface::StatusSuccess) {
-                    qCWarning(dcWs2812fx()) << "Request finished with error" << command << m_currentReply->requestId() << status;
+                    qCWarning(dcWs2812fx()) << "NymeaLight: Request finished with error" << command << m_currentReply->requestId() << status;
                 } else {
-                    qCDebug(dcWs2812fx()) << "Request finished" << command << m_currentReply->requestId() << status;
+                    qCDebug(dcWs2812fx()) << "NymeaLight: Request finished" << command << m_currentReply->requestId() << status;
                 }
 
                 emit m_currentReply->finished();
             }
         } else {
-            qCWarning(dcWs2812fx()) << "Received unhandled command response data" << data.toHex();
+            qCWarning(dcWs2812fx()) << "NymeaLight: Received unhandled command response data" << data.toHex();
         }
     } else {
         NymeaLightInterface::Notification notification = static_cast<NymeaLightInterface::Notification>(commandInt);
@@ -261,13 +261,12 @@ void NymeaLight::onDataReceived(const QByteArray &data)
             emit availableChanged(true);
             break;
         case NymeaLightInterface::NotificationDebugMessage:
-            qCDebug(dcWs2812fx()) << "Firmware debug:" << QString::fromUtf8(data.right(data.length() - 2));
+            qCDebug(dcWs2812fx()) << "NymeaLight: Firmware debug:" << QString::fromUtf8(data.right(data.length() - 2));
             break;
         default:
-            qCWarning(dcWs2812fx()) << "Unhandled notification received" << data.toHex();
+            qCWarning(dcWs2812fx()) << "NymeaLight: Unhandled notification received" << data.toHex();
             break;
         }
     }
-
 }
 
