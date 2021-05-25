@@ -63,7 +63,12 @@ void IntegrationPluginKeba::init()
                     if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != host.address()) {
                         qCDebug(dcKebaKeContact()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << host.address();
                         existingThing->setParamValue(wallboxThingIpAddressParamTypeId, host.address());
-
+                        KeContact *keba = m_kebaDevices.value(existingThing->id());
+                        if (keba) {
+                            keba->setAddress(QHostAddress(host.address()));
+                        } else {
+                            qCWarning(dcKebaKeContact()) << "Could not update IP address, for" << existingThing;
+                        }
                     } else {
                         qCDebug(dcKebaKeContact()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << host.address();
                     }
