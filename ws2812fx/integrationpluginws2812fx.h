@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -95,6 +95,9 @@
 
 #include "integrations/integrationplugin.h"
 #include "nymealight.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
+#include "nymealighttcpinterface.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -110,15 +113,18 @@ class IntegrationPluginWs2812fx : public IntegrationPlugin
 public:
     explicit IntegrationPluginWs2812fx();
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
     void executeAction(ThingActionInfo *info) override;
+    void thingRemoved(Thing *thing) override;
 
 private:
     QHash<Thing *, NymeaLight *> m_lights;
+    QHash<Thing *, NymeaLightTcpInterface *> m_lightTcpInterface;
     QList<QString> m_usedInterfaces;
+
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
 private slots:
 
