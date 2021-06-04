@@ -45,10 +45,12 @@ class IntegrationPluginWakeOnLan : public IntegrationPlugin
 public:
     explicit IntegrationPluginWakeOnLan();
 
+    void discoverThings(ThingDiscoveryInfo *info) override;
+
     void executeAction(ThingActionInfo *info) override;
 
 private slots:
-    void wakeup(QString mac);
+    void wakeup(const QString &macAddress);
 
 };
 
