@@ -65,8 +65,19 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
             if (myThings().filterByParam(wolThingMacParamTypeId, networkDevice.macAddress()).count() != 0)
                 continue;
 
-            QString title = networkDevice.address().toString() + " (" + networkDevice.hostName() + ")";
-            ThingDescriptor descriptor(wolThingClassId, title, networkDevice.macAddress());
+            QString title;
+            if (networkDevice.hostName().isEmpty()) {
+                title = networkDevice.address().toString();
+            } else {
+                title = networkDevice.address().toString() + " (" + networkDevice.hostName() + ")";
+            }
+            QString description;
+            if (networkDevice.macAddressManufacturer().isEmpty()) {
+                description = networkDevice.macAddress();
+            } else {
+                description = networkDevice.macAddress() + " (" + networkDevice.macAddressManufacturer() + ")";
+            }
+            ThingDescriptor descriptor(wolThingClassId, title, description);
             ParamList params;
             params.append(Param(wolThingMacParamTypeId, networkDevice.macAddress()));
             descriptor.setParams(params);
