@@ -20,6 +20,12 @@
                             "name":"ipAddress",
                             "displayName": "IP address",
                             "type": "QString"
+                        },
+                        {
+                            "id": "0e30e30f-ad96-417e-b739-cac85f75de39",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString"
                         }
                     ],
                     "stateTypes":[

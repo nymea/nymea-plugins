@@ -30,6 +30,7 @@
 
 #include "plugininfo.h"
 #include "integrationplugingoecharger.h"
+#include "network/networkdevicediscovery.h"
 
 #include <QUrlQuery>
 #include <QHostAddress>
@@ -37,7 +38,7 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
-// Modbus documentation: https://github.com/goecharger/go-eCharger-API-v1
+// API documentation: https://github.com/goecharger/go-eCharger-API-v1
 
 IntegrationPluginGoECharger::IntegrationPluginGoECharger()
 {
@@ -46,8 +47,49 @@ IntegrationPluginGoECharger::IntegrationPluginGoECharger()
 
 void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 {
-    // TODO: perform nmap discovery and filter for "go-eCharger" hosts
-    info->finish(Thing::ThingErrorNoError);
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcGoECharger()) << "The network discovery is not available on this platform.";
+        info->finish(Thing::ThingErrorUnsupportedFeature, QT_TR_NOOP("The network device discovery is not available."));
+        return;
+    }
+
+    // Perform a network device discovery and filter for "go-eCharger" hosts
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
+            qCDebug(dcGoECharger()) << "Found" << networkDevice;
+            QString title;
+            if (networkDevice.hostName().isEmpty()) {
+                title = networkDevice.address().toString();
+            } else {
+                title = networkDevice.hostName() + " (" + networkDevice.address().toString() + ")";
+            }
+
+            QString description;
+            if (networkDevice.macAddressManufacturer().isEmpty()) {
+                description = networkDevice.macAddress();
+            } else {
+                description = networkDevice.macAddress() + " (" + networkDevice.macAddressManufacturer() + ")";
+            }
+
+            ThingDescriptor descriptor(goeHomeThingClassId, title, description);
+            ParamList params;
+            params << Param(goeHomeThingIpAddressParamTypeId, networkDevice.address().toString());
+            params << Param(goeHomeThingMacAddressParamTypeId, networkDevice.macAddress());
+            descriptor.setParams(params);
+
+            // Check if we already have set up this device
+            Things existingThings = myThings().filterByParam(goeHomeThingMacAddressParamTypeId, networkDevice.macAddress());
+            if (existingThings.count() == 1) {
+                qCDebug(dcGoECharger()) << "This go-eCharger already exists in the system!" << networkDevice;
+                descriptor.setThingId(existingThings.first()->id());
+            }
+
+            info->addThingDescriptor(descriptor);
+        }
+
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
