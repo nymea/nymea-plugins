@@ -35,11 +35,8 @@
 #include "plugintimer.h"
 #include "kecontact.h"
 #include "kecontactdatalayer.h"
-#include "discovery.h"
-#include "host.h"
 
 #include <QHash>
-#include <QNetworkReply>
 #include <QUdpSocket>
 #include <QDateTime>
 #include <QUdpSocket>
@@ -69,7 +66,6 @@ private:
 
     KeContactDataLayer *m_kebaData = nullptr;
 
-    Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<ThingId, int> m_lastSessionId;
 
@@ -77,6 +73,8 @@ private:
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);
+
+    void searchNetworkDevices();
 
 private slots:
     void onConnectionChanged(bool status);
