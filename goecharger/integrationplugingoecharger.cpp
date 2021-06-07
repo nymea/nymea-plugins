@@ -242,10 +242,12 @@ QNetworkRequest IntegrationPluginGoECharger::buildConfigurationRequest(const QHo
 void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap)
 {
     Thing *thing = info->thing();
-    QString statusTopic = QString("go-eCharger/%1/status").arg(statusMap.value("sse").toString());
+    QString serialNumber = statusMap.value("sse").toString();
+    QString clientId = QString("go-eCharger:%1:%2").arg(serialNumber).arg(statusMap.value("rbc").toInt());
+    QString statusTopic = QString("go-eCharger/%1/status").arg(serialNumber);
     qCDebug(dcGoECharger()) << "Setting up mqtt channel for" << thing << address.toString() << statusTopic;
 
-    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString(), address, {statusTopic});
+    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(clientId, address, {statusTopic});
     if (!channel) {
         qCWarning(dcGoECharger()) << "Failed to create MQTT channel for" << thing;
         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));
