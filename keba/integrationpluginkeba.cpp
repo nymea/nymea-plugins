@@ -291,6 +291,12 @@ void IntegrationPluginKeba::searchNetworkDevices()
                     if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != networkDevice.address().toString()) {
                         qCDebug(dcKebaKeContact()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << networkDevice.address().toString();
                         existingThing->setParamValue(wallboxThingIpAddressParamTypeId, networkDevice.address().toString());
+                        KeContact *keba = m_kebaDevices.value(existingThing->id());
+                        if (keba) {
+                            keba->setAddress(QHostAddress(networkDevice.address()));
+                        } else {
+                            qCWarning(dcKebaKeContact()) << "Could not update IP address, for" << existingThing;
+                        }
                     } else {
                         qCDebug(dcKebaKeContact()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << networkDevice.address().toString();
                     }
