@@ -57,12 +57,16 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
+
             qCDebug(dcGoECharger()) << "Found" << networkDevice;
+            if (!networkDevice.hostName().toLower().contains("go-echarger"))
+                continue;
+
             QString title;
             if (networkDevice.hostName().isEmpty()) {
                 title = networkDevice.address().toString();
             } else {
-                title = networkDevice.hostName() + " (" + networkDevice.address().toString() + ")";
+                title = "go-eCharger (" + networkDevice.address().toString() + ")";
             }
 
             QString description;
@@ -112,7 +116,6 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             }
 
             QByteArray data = reply->readAll();
-
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
@@ -141,11 +144,63 @@ void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
 
 void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
 {
-    //Thing *thing = info->thing();
-    //Action action = info->action();
+    Thing *thing = info->thing();
+    Action action = info->action();
 
+    if (thing->thingClassId() != goeHomeThingClassId) {
+        info->finish(Thing::ThingErrorThingClassNotFound);
+        return;
+    }
 
-    info->finish(Thing::ThingErrorNoError);
+    if (thing->stateValue(goeHomeConnectedStateTypeId).toBool()) {
+        info->finish(Thing::ThingErrorHardwareNotAvailable);
+        return;
+    }
+
+    if (thing->stateValue(goeHomeSerialNumberStateTypeId).toString().isEmpty()) {
+        qCDebug(dcGoECharger()) << "Could not execute action because the serial number is missing.";
+        info->finish(Thing::ThingErrorHardwareFailure);
+        return;
+    }
+
+    if (action.actionTypeId() == goeHomePowerActionTypeId) {
+        bool power = action.paramValue(goeHomePowerActionPowerParamTypeId).toBool();
+        qCDebug(dcGoECharger()) << "Setting charging allowed to" << power;
+        // Set the allow value
+        QString configuration = QString("alw=%1").arg(power ? 1: 0);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
+        int maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+        qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
+        // Set the allow value
+        QString configuration = QString("ama=%1").arg(maxChargingCurrent);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else if (action.actionTypeId() == goeHomeCloudActionTypeId) {
+        bool enabled = action.paramValue(goeHomeCloudActionCloudParamTypeId).toBool();
+        qCDebug(dcGoECharger()) << "Set cloud" << (enabled ? "enabled" : "disabled");
+        // Set the allow value
+        QString configuration = QString("cdi=%1").arg(enabled ? 1: 0);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else if (action.actionTypeId() == goeHomeLedBrightnessActionTypeId) {
+        quint8 brightness = action.paramValue(goeHomeLedBrightnessActionLedBrightnessParamTypeId).toUInt();
+        qCDebug(dcGoECharger()) << "Set led brightnss to" << brightness << "/" << 255;
+        // Set the allow value
+        QString configuration = QString("lbr=%1").arg(brightness);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else if (action.actionTypeId() == goeHomeLedEnergySaveActionTypeId) {
+        bool enabled = action.paramValue(goeHomeLedEnergySaveActionLedEnergySaveParamTypeId).toBool();
+        qCDebug(dcGoECharger()) << "Set led energy saving" << (enabled ? "enabled" : "disabled");
+        // Set the allow value
+        QString configuration = QString("lse=%1").arg(enabled ? 1: 0);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else {
+        info->finish(Thing::ThingErrorActionTypeNotFound);
+    }
 }
 
 void IntegrationPluginGoECharger::onClientConnected(MqttChannel *channel)
@@ -180,7 +235,18 @@ void IntegrationPluginGoECharger::onPublishReceived(MqttChannel *channel, const 
         return;
     }
 
-    qCDebug(dcGoECharger()) << thing << "publish received" << topic << qUtf8Printable(payload);
+    qCDebug(dcGoECharger()) << thing << "publish received" << topic;
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(payload) << error.errorString();
+        return;
+    }
+
+    QString serialNumber = thing->stateValue(goeHomeSerialNumberStateTypeId).toString();
+    if (topic == QString("go-eCharger/%1/status").arg(serialNumber)) {
+        update(thing, jsonDoc.toVariant().toMap());
+    }
 }
 
 void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &statusMap)
@@ -216,13 +282,24 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
             break;
         }
 
-        thing->setStateValue(goeHomeTotalEnergyStateTypeId, statusMap.value("eto").toUInt() / 10.0);
+        QVariantList temperatureSensorList = statusMap.value("tma").toList();
+        if (temperatureSensorList.count() == 4) {
+            thing->setStateValue(goeHomeTemperatureSensor1StateTypeId, temperatureSensorList.at(0).toDouble());
+            thing->setStateValue(goeHomeTemperatureSensor2StateTypeId, temperatureSensorList.at(1).toDouble());
+            thing->setStateValue(goeHomeTemperatureSensor3StateTypeId, temperatureSensorList.at(2).toDouble());
+            thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
+        }
+
+        thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
         thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
+        thing->setStateValue(goeHomeAdapterConnectedStateTypeId, (statusMap.value("adi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
         thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("ama").toUInt());
+        thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
+        thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
         thing->setStateValue(goeHomeSerialNumberStateTypeId, statusMap.value("sse").toString());
     }
 }
@@ -237,6 +314,33 @@ QNetworkRequest IntegrationPluginGoECharger::buildConfigurationRequest(const QHo
     query.addQueryItem("payload", configuration);
     requestUrl.setQuery(query);
     return QNetworkRequest(requestUrl);
+}
+
+void IntegrationPluginGoECharger::sendActionRequest(Thing *thing, ThingActionInfo *info, const QString &configuration)
+{
+    // Lets use rest here since we get a reply on the rest request. For using MQTT publish to topic "go-eCharger/<serialnumber>/cmd/req"
+    QNetworkRequest request = buildConfigurationRequest(QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString()), configuration);
+    QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
+    connect(reply, &QNetworkReply::finished, thing, [=](){
+        reply->deleteLater();
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
+            return;
+        }
+
+        qCDebug(dcGoECharger()) << "Action response" << jsonDoc.toJson(QJsonDocument::Compact);
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap)
@@ -272,7 +376,6 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
         }
 
         QByteArray data = reply->readAll();
-
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -302,7 +405,6 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
             }
 
             QByteArray data = reply->readAll();
-
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
@@ -332,7 +434,6 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                 }
 
                 QByteArray data = reply->readAll();
-
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
@@ -362,7 +463,6 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                     }
 
                     QByteArray data = reply->readAll();
-
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                     if (error.error != QJsonParseError::NoError) {
@@ -392,7 +492,6 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                         }
 
                         QByteArray data = reply->readAll();
-
                         QJsonParseError error;
                         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                         if (error.error != QJsonParseError::NoError) {

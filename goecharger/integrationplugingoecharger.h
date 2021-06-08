@@ -89,7 +89,9 @@ private:
 
     void update(Thing *thing, const QVariantMap &statusMap);
     QNetworkRequest buildConfigurationRequest(const QHostAddress &address, const QString &configuration);
+    void sendActionRequest(Thing *thing, ThingActionInfo *info, const QString &configuration);
     void setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+
 
 private slots:
     void onClientConnected(MqttChannel* channel);
