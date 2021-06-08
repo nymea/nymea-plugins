@@ -69,7 +69,7 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
             if (networkDevice.hostName().isEmpty()) {
                 title = networkDevice.address().toString();
             } else {
-                title = networkDevice.address().toString() + " (" + networkDevice.hostName() + ")";
+                title = networkDevice.hostName() + " (" + networkDevice.address().toString() + ")";
             }
             QString description;
             if (networkDevice.macAddressManufacturer().isEmpty()) {
