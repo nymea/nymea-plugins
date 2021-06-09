@@ -59,7 +59,12 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
         foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
 
             qCDebug(dcGoECharger()) << "Found" << networkDevice;
+            // Filter by hostname
             if (!networkDevice.hostName().toLower().contains("go-echarger"))
+                continue;
+
+            // We need also the mac address
+            if (!networkDevice.macAddress().isEmpty())
                 continue;
 
             QString title;
@@ -152,7 +157,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (thing->stateValue(goeHomeConnectedStateTypeId).toBool()) {
+    if (!thing->stateValue(goeHomeConnectedStateTypeId).toBool()) {
+        qCWarning(dcGoECharger()) << thing << "failed to execute action. The device seems not to be connected.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
@@ -246,6 +252,8 @@ void IntegrationPluginGoECharger::onPublishReceived(MqttChannel *channel, const 
     QString serialNumber = thing->stateValue(goeHomeSerialNumberStateTypeId).toString();
     if (topic == QString("go-eCharger/%1/status").arg(serialNumber)) {
         update(thing, jsonDoc.toVariant().toMap());
+    } else {
+        qCDebug(dcGoECharger()) << "Unhandled topic publish received:" << topic << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
     }
 }
 
@@ -338,8 +346,8 @@ void IntegrationPluginGoECharger::sendActionRequest(Thing *thing, ThingActionInf
             return;
         }
 
-        qCDebug(dcGoECharger()) << "Action response" << jsonDoc.toJson(QJsonDocument::Compact);
         info->finish(Thing::ThingErrorNoError);
+        update(thing, jsonDoc.toVariant().toMap());
     });
 }
 
@@ -349,9 +357,10 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
     QString serialNumber = statusMap.value("sse").toString();
     QString clientId = QString("go-eCharger:%1:%2").arg(serialNumber).arg(statusMap.value("rbc").toInt());
     QString statusTopic = QString("go-eCharger/%1/status").arg(serialNumber);
-    qCDebug(dcGoECharger()) << "Setting up mqtt channel for" << thing << address.toString() << statusTopic;
+    QString commandTopic = QString("go-eCharger/%1/cmd/req").arg(serialNumber);
+    qCDebug(dcGoECharger()) << "Setting up mqtt channel for" << thing << address.toString() << statusTopic << commandTopic;
 
-    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(clientId, address, {statusTopic});
+    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(clientId, address, {statusTopic, commandTopic});
     if (!channel) {
         qCWarning(dcGoECharger()) << "Failed to create MQTT channel for" << thing;
         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));

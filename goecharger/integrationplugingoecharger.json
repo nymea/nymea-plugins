@@ -50,7 +50,8 @@
                                 "Waiting for vehicle",
                                 "Charging finished and vehicle still connected"
                             ],
-                            "defaultValue": "Ready but no vehicle connected"
+                            "defaultValue": "Ready but no vehicle connected",
+                            "suggestLogging": true
                         },
                         {
                             "id": "d80e1ed8-c3ae-4b68-bf86-21b4d7b2b201",
@@ -63,7 +64,8 @@
                                 "RFID",
                                 "Automatic"
                             ],
-                            "defaultValue": "Open"
+                            "defaultValue": "Open",
+                            "suggestLogging": true
                         },
                         {
                             "id": "8a7ab9f1-0143-494c-98ee-69f94125fe42",
@@ -96,7 +98,8 @@
                             "displayNameEvent": "Cloud enabled changed",
                             "type": "bool",
                             "defaultValue": true,
-                            "writable": true
+                            "writable": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "08b107bc-1284-455d-9e5a-6a1c3adc389f",
@@ -104,7 +107,8 @@
                             "displayName": "Update available",
                             "displayNameEvent": "Update available changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "suggestLogging": true
                         },
                         {
                             "id": "d557e59e-ca22-4aff-bf80-dfee44db0f69",
@@ -112,7 +116,8 @@
                             "displayName": "Adapter connected",
                             "displayNameEvent": "Adapter connected changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "suggestLogging": true
                         },
                         {
                             "id": "d8f5abb6-5db3-4040-8829-553b1d881ce4",
@@ -130,7 +135,8 @@
                             "displayNameEvent": "Charge energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "b06479d5-7a38-4fbd-867e-e55bdb54651b",
@@ -161,7 +167,8 @@
                             "displayNameEvent": "Temperature 1 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "558e273a-4028-495a-902a-e4e932a0ae24",
@@ -170,7 +177,8 @@
                             "displayNameEvent": "Temperature 2 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "dbf8a5dc-b8f5-437a-ac0c-c4cf8a09aacb",
@@ -179,7 +187,8 @@
                             "displayNameEvent": "Temperature 3 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "1953e29f-fe28-4016-9b05-f4baf4c311ff",
@@ -188,7 +197,8 @@
                             "displayNameEvent": "Temperature 4 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "5d18b48d-b886-409e-ab2e-336d9c94a55c",
