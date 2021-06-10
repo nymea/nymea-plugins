@@ -58,13 +58,13 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
 
-            qCDebug(dcGoECharger()) << "Found" << networkDevice;
+            qCDebug(dcGoECharger()) << "Checking discovered" << networkDevice;
             // Filter by hostname
             if (!networkDevice.hostName().toLower().contains("go-echarger"))
                 continue;
 
             // We need also the mac address
-            if (!networkDevice.macAddress().isEmpty())
+            if (networkDevice.macAddress().isEmpty())
                 continue;
 
             QString title;
@@ -90,7 +90,7 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
             // Check if we already have set up this device
             Things existingThings = myThings().filterByParam(goeHomeThingMacAddressParamTypeId, networkDevice.macAddress());
             if (existingThings.count() == 1) {
-                qCDebug(dcGoECharger()) << "This go-eCharger already exists in the system!" << networkDevice;
+                qCDebug(dcGoECharger()) << "This go-eCharger already exists in the system" << networkDevice;
                 descriptor.setThingId(existingThings.first()->id());
             }
 
