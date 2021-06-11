@@ -55,31 +55,31 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         ThingDescriptors descriptors;
-        qCDebug(dcWakeOnLan()) << "Discovery finished. Found" << discoveryReply->networkDevices().count() << "devices";
-        foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
+        qCDebug(dcWakeOnLan()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
             // We need the mac address...
-            if (networkDevice.macAddress().isEmpty())
+            if (networkDeviceInfo.macAddress().isEmpty())
                 continue;
 
             // Filter out already added network devices, rediscovery is in this case no option
-            if (myThings().filterByParam(wolThingMacParamTypeId, networkDevice.macAddress()).count() != 0)
+            if (myThings().filterByParam(wolThingMacParamTypeId, networkDeviceInfo.macAddress()).count() != 0)
                 continue;
 
             QString title;
-            if (networkDevice.hostName().isEmpty()) {
-                title = networkDevice.address().toString();
+            if (networkDeviceInfo.hostName().isEmpty()) {
+                title = networkDeviceInfo.address().toString();
             } else {
-                title = networkDevice.hostName() + " (" + networkDevice.address().toString() + ")";
+                title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
             }
             QString description;
-            if (networkDevice.macAddressManufacturer().isEmpty()) {
-                description = networkDevice.macAddress();
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description = networkDeviceInfo.macAddress();
             } else {
-                description = networkDevice.macAddress() + " (" + networkDevice.macAddressManufacturer() + ")";
+                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
             }
             ThingDescriptor descriptor(wolThingClassId, title, description);
             ParamList params;
-            params.append(Param(wolThingMacParamTypeId, networkDevice.macAddress()));
+            params.append(Param(wolThingMacParamTypeId, networkDeviceInfo.macAddress()));
             descriptor.setParams(params);
             descriptors.append(descriptor);
         }
