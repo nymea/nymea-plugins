@@ -56,41 +56,41 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
     // Perform a network device discovery and filter for "go-eCharger" hosts
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-        foreach (const NetworkDevice &networkDevice, discoveryReply->networkDevices()) {
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
 
-            qCDebug(dcGoECharger()) << "Checking discovered" << networkDevice;
+            qCDebug(dcGoECharger()) << "Checking discovered" << networkDeviceInfo;
             // Filter by hostname
-            if (!networkDevice.hostName().toLower().contains("go-echarger"))
+            if (!networkDeviceInfo.hostName().contains("go-eCharger"))
                 continue;
 
             // We need also the mac address
-            if (networkDevice.macAddress().isEmpty())
+            if (networkDeviceInfo.macAddress().isEmpty())
                 continue;
 
             QString title;
-            if (networkDevice.hostName().isEmpty()) {
-                title = networkDevice.address().toString();
+            if (networkDeviceInfo.hostName().isEmpty()) {
+                title = networkDeviceInfo.address().toString();
             } else {
-                title = "go-eCharger (" + networkDevice.address().toString() + ")";
+                title = "go-eCharger (" + networkDeviceInfo.address().toString() + ")";
             }
 
             QString description;
-            if (networkDevice.macAddressManufacturer().isEmpty()) {
-                description = networkDevice.macAddress();
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description = networkDeviceInfo.macAddress();
             } else {
-                description = networkDevice.macAddress() + " (" + networkDevice.macAddressManufacturer() + ")";
+                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
             }
 
             ThingDescriptor descriptor(goeHomeThingClassId, title, description);
             ParamList params;
-            params << Param(goeHomeThingIpAddressParamTypeId, networkDevice.address().toString());
-            params << Param(goeHomeThingMacAddressParamTypeId, networkDevice.macAddress());
+            params << Param(goeHomeThingIpAddressParamTypeId, networkDeviceInfo.address().toString());
+            params << Param(goeHomeThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
             descriptor.setParams(params);
 
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(goeHomeThingMacAddressParamTypeId, networkDevice.macAddress());
+            Things existingThings = myThings().filterByParam(goeHomeThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
             if (existingThings.count() == 1) {
-                qCDebug(dcGoECharger()) << "This go-eCharger already exists in the system" << networkDevice;
+                qCDebug(dcGoECharger()) << "This go-eCharger already exists in the system" << networkDeviceInfo;
                 descriptor.setThingId(existingThings.first()->id());
             }
 
