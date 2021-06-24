@@ -106,7 +106,8 @@
                             "displayNameEvent": "Current market price changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "f5ffd03d-e21f-4a27-bc69-f1aed426281c",
