@@ -141,7 +141,7 @@ void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
 
             QRegExp modelFilter;
             if (info->thingClassId() == kasaPlug100ThingClassId) {
-                modelFilter = QRegExp("(HS100|HS103|HS105|KP100).*");
+                modelFilter = QRegExp("(HS100|HS103|HS105|KP100|KP105).*");
             } else if (info->thingClassId() == kasaPlug110ThingClassId) {
                 modelFilter = QRegExp("HS110.*");
             } else if (info->thingClassId() == kasaSwitch200ThingClassId) {
