@@ -399,6 +399,12 @@ The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass
 ----------
 The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
 ----------
+The name of the ParamType (ThingClass: ventilationFlow, ActionType: power, ID: {adf9a8dd-da13-4070-a3bd-9d4be26ebcd1})
+----------
+The name of the ParamType (ThingClass: ventilationFlow, EventType: power, ID: {adf9a8dd-da13-4070-a3bd-9d4be26ebcd1})
+----------
+The name of the StateType ({adf9a8dd-da13-4070-a3bd-9d4be26ebcd1}) of ThingClass ventilationFlow
+----------
 The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
 The name of the ParamType (ThingClass: ventilation, EventType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
@@ -598,14 +604,18 @@ The name of the StateType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass
     </message>
     <message>
         <source>Turn on or off</source>
-        <extracomment>The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
+        <extracomment>The name of the ActionType ({adf9a8dd-da13-4070-a3bd-9d4be26ebcd1}) of ThingClass ventilationFlow
+----------
+The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
 ----------
 The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Turned on or off</source>
-        <extracomment>The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
+        <extracomment>The name of the EventType ({adf9a8dd-da13-4070-a3bd-9d4be26ebcd1}) of ThingClass ventilationFlow
+----------
+The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
 ----------
 The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
         <translation type="unfinished"></translation>
@@ -1251,6 +1261,29 @@ The name of the StateType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass
     <message>
         <source>String state changed</source>
         <extracomment>The name of the EventType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass generic</extracomment>
+    </message>
+    <message>
+        <source>Air flow rate</source>
+        <extracomment>The name of the ParamType (ThingClass: ventilationFlow, ActionType: flowRate, ID: {5a273bba-0bef-49fb-870a-7f2df8fc14b6})
+----------
+The name of the ParamType (ThingClass: ventilationFlow, EventType: flowRate, ID: {5a273bba-0bef-49fb-870a-7f2df8fc14b6})
+----------
+The name of the StateType ({5a273bba-0bef-49fb-870a-7f2df8fc14b6}) of ThingClass ventilationFlow</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Air flow rate changed</source>
+        <extracomment>The name of the EventType ({5a273bba-0bef-49fb-870a-7f2df8fc14b6}) of ThingClass ventilationFlow</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic ventilation with flow control</source>
+        <extracomment>The name of the ThingClass ({a7eec5f7-3cc3-4edb-baa7-1f6b6f935bf8})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set air flow rate</source>
+        <extracomment>The name of the ActionType ({5a273bba-0bef-49fb-870a-7f2df8fc14b6}) of ThingClass ventilationFlow</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
