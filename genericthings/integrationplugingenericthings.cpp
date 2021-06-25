@@ -181,24 +181,24 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 }
             }
         });
-    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+    } else if (thing->thingClassId() == smartMeterThingClassId) {
 
         QTimer* smartMeterTimer = new QTimer(this);
-        int timeframe = thing->setting(extendedSmartMeterConsumerSettingsImpulseTimeframeParamTypeId).toInt();
+        int timeframe = thing->setting(smartMeterSettingsImpulseTimeframeParamTypeId).toInt();
         smartMeterTimer->setInterval(timeframe * 1000);
         m_smartMeterTimer.insert(thing, smartMeterTimer);
         smartMeterTimer->start();
         connect(thing, &Thing::settingChanged, smartMeterTimer, [smartMeterTimer] (const ParamTypeId &paramTypeId, const QVariant &value) {
-            if (paramTypeId == extendedSmartMeterConsumerSettingsImpulseTimeframeParamTypeId) {
+            if (paramTypeId == smartMeterSettingsImpulseTimeframeParamTypeId) {
                 smartMeterTimer->setInterval(value.toInt() * 1000);
             }
         });
 
         connect(smartMeterTimer, &QTimer::timeout, thing, [this, smartMeterTimer, thing] {
-            double impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toDouble();
+            double impulsePerKwh = thing->setting(smartMeterSettingsImpulsePerKwhParamTypeId).toDouble();
             int interval = smartMeterTimer->interval()/1000;
             double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(interval/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
-            thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
+            thing->setStateValue(smartMeterCurrentPowerStateTypeId, power*1000);
             m_pulsesPerTimeframe.insert(thing, 0);
         });
     } else if (thing->thingClassId() == extendedStatefulGaragedoorThingClassId) {
@@ -589,14 +589,14 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
-    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
-        if (action.actionTypeId() == extendedSmartMeterConsumerImpulseInputActionTypeId) {
-            bool value = info->action().param(extendedSmartMeterConsumerImpulseInputActionImpulseInputParamTypeId).value().toBool();
-            thing->setStateValue(extendedSmartMeterConsumerImpulseInputStateTypeId, value);
-            int impulsePerKwh = info->thing()->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toInt();
+    } else if (thing->thingClassId() == smartMeterThingClassId) {
+        if (action.actionTypeId() == smartMeterImpulseInputActionTypeId) {
+            bool value = info->action().param(smartMeterImpulseInputActionImpulseInputParamTypeId).value().toBool();
+            thing->setStateValue(smartMeterImpulseInputStateTypeId, value);
+            int impulsePerKwh = info->thing()->setting(smartMeterSettingsImpulsePerKwhParamTypeId).toInt();
             if (value) {
-                double currentEnergy = thing->stateValue(extendedSmartMeterConsumerTotalEnergyConsumedStateTypeId).toDouble();
-                thing->setStateValue(extendedSmartMeterConsumerTotalEnergyConsumedStateTypeId ,currentEnergy + (1.00/impulsePerKwh));
+                double currentEnergy = thing->stateValue(smartMeterTotalEnergyConsumedStateTypeId).toDouble();
+                thing->setStateValue(smartMeterTotalEnergyConsumedStateTypeId ,currentEnergy + (1.00/impulsePerKwh));
                 m_pulsesPerTimeframe[thing]++;
             }
             info->finish(Thing::ThingErrorNoError);
@@ -767,9 +767,9 @@ void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
         m_extendedBlindTargetPercentage.remove(thing);
         m_venetianBlindAngleTimer.take(thing)->deleteLater();
         m_venetianBlindTargetAngle.remove(thing);
-    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+    } else if (thing->thingClassId() == smartMeterThingClassId) {
         m_pulsesPerTimeframe.remove(thing);
-    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+    } else if (thing->thingClassId() == smartMeterThingClassId) {
         m_smartMeterTimer.take(thing)->deleteLater();
         m_pulsesPerTimeframe.remove(thing);
     }

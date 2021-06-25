@@ -395,7 +395,7 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
         thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.voltagePhase1);
         thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.voltagePhase2);
         thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.voltagePhase3);
-        thing->setStateValue(wallboxPowerConsumptionStateTypeId, reportThree.power);
+        thing->setStateValue(wallboxCurrentPowerStateTypeId, reportThree.power);
         thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.energySession);
         thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.powerFactor);
         thing->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.energyTotal);

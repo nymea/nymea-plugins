@@ -81,7 +81,7 @@ void FroniusInverter::updateThingInfo(const QByteArray &data)
     // Set the inverter device state
     if (dataMap.contains("PAC")) {
         if(dataMap.value("PAC").toMap().values().at(0) == "W")
-            pluginThing()->setStateValue(inverterCurrentPowerStateTypeId, dataMap.value("PAC").toMap().values().at(1).toInt());
+            pluginThing()->setStateValue(inverterCurrentPowerStateTypeId, -dataMap.value("PAC").toMap().values().at(1).toDouble());
     }
 
     if (dataMap.contains("DAY_ENERGY")) {

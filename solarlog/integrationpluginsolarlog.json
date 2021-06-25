@@ -13,7 +13,7 @@
                     "name": "solarlog",
                     "displayName": "Solar-Log",
                     "createMethods": [ "user", "discovery" ],
-                    "interfaces": ["extendedsmartmeterproducer", "connectable" ],
+                    "interfaces": ["smartmeterproducer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "84bd8a41-2411-4bb0-87a9-ab7e01044b10",
@@ -125,7 +125,7 @@
                         },
                         {
                             "id": "5b665247-278a-4b59-9046-add40763e937",
-                            "name": "currentTotalConsumption",
+                            "name": "powerUsage",
                             "displayName": "Current total power consumption",
                             "displayNameEvent": "Current total power consumption changed",
                             "type": "double",

@@ -134,7 +134,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         thing->setStateValue(solarlogYieldMonthStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldMonth)).toDouble()/1000.00));
         thing->setStateValue(solarlogYieldYearStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldYear)).toDouble()/1000.00));
         thing->setStateValue(solarlogTotalEnergyProducedStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldTotal)).toDouble()/1000.00));
-        thing->setStateValue(solarlogCurrentTotalConsumptionStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsPac)));
+        thing->setStateValue(solarlogPowerUsageStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsPac)));
         thing->setStateValue(solarlogConsYieldDayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldDay)));
         thing->setStateValue(solarlogConsYieldYesterdayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldYesterday)));
         thing->setStateValue(solarlogConsYieldMonthStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldMonth)));
