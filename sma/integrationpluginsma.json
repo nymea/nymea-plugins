@@ -13,7 +13,7 @@
                     "name": "sunnyWebBox",
                     "displayName": "Sunny WebBox",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["extendedsmartmeterproducer"],
+                    "interfaces": ["smartmeterproducer"],
                     "paramTypes": [
                         {
                             "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
