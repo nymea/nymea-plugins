@@ -47,11 +47,11 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!hardwareManager()->networkDeviceDiscovery()->available()) {
         qCWarning(dcWakeOnLan()) << "Failed to discover network devices. The network device discovery is not available.";
-        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The discovery is not available."));
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discovery devices in your network."));
         return;
     }
 
-    qCDebug(dcWakeOnLan()) << "Start discovering network devices...";
+    qCDebug(dcWakeOnLan()) << "Starting network discovery...";
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         ThingDescriptors descriptors;

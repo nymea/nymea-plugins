@@ -5,7 +5,7 @@
     <name>IntegrationPluginWakeOnLan</name>
     <message>
         <location filename="../integrationpluginwakeonlan.cpp" line="50"/>
-        <source>The discovery is not available.</source>
+        <source>Unable to discovery devices in your network.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
