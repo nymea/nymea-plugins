@@ -1,7 +1,7 @@
 {
     "title": "ZigBee Develco",
     "tagline": "Connect and control native ZigBee devices from Develco.",
-    "icon": "zigbee.svg",
+    "icon": "develcologo.png",
     "stability": "consumer",
     "offline": true,
     "technologies": [
