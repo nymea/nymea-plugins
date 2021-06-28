@@ -66,7 +66,7 @@ void IntegrationPluginReverseSsh::confirmPairing(ThingPairingInfo *info, const Q
     process->setArguments(arguments);
 
     arguments.replace(1, "xxxxxx");
-    qCInfo(dcReverseSsh()) << "Testing SSH connection:" << process->program() << arguments.join(" ");
+    qCDebug(dcReverseSsh()) << "Testing SSH connection:" << process->program() << arguments.join(" ");
 
     typedef void (QProcess:: *finishedSignal)(int exitCode, QProcess::ExitStatus exitStatus);
     connect(process, static_cast<finishedSignal>(&QProcess::finished), this, [=](int exitCode, QProcess::ExitStatus exitStatus){
@@ -112,6 +112,7 @@ void IntegrationPluginReverseSsh::setupThing(ThingSetupInfo *info)
     pluginStorage()->endGroup();
 
     arguments << "-p" << password << "ssh" << "-o StrictHostKeyChecking=no" << "-oUserKnownHostsFile=/dev/null";
+    arguments << "-o ServerAliveInterval=60";
     arguments << "-TN" << "-R" << QString("%1:localhost:%2").arg(remoteOpenPort).arg(localPort) << QString("%1@%2").arg(user, address) << "-p" << QString::number(remotePort);
     QProcess *process = new QProcess(thing);
     process->setProgram("sshpass");
