@@ -1,9 +1,9 @@
 # go-eCharger
 
-nymea plug-in for go-eCharger smart wallbox for electic vehicles.
+nymea plugin for go-eCharger smart wallbox for electic vehicles.
 
 Once you connect to the go-eCharger, nymea will configure the wallbox to use MQTT and send information to nymea.
-Please make sure no ther service is using the custom MQTT server in the local network, otherwise they will exclude each other, depending who comes first.
+Please make sure no other service is using the custom MQTT server in the local network, otherwise they will exclude each other, depending who comes first.
 
 ## Supported Things
 

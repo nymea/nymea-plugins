@@ -113,7 +113,8 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 
         QNetworkRequest request(requestUrl);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-        connect(reply, &QNetworkReply::finished, thing, [=](){
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [=](){
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                 info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -329,8 +330,8 @@ void IntegrationPluginGoECharger::sendActionRequest(Thing *thing, ThingActionInf
     // Lets use rest here since we get a reply on the rest request. For using MQTT publish to topic "go-eCharger/<serialnumber>/cmd/req"
     QNetworkRequest request = buildConfigurationRequest(QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString()), configuration);
     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-    connect(reply, &QNetworkReply::finished, thing, [=](){
-        reply->deleteLater();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -376,8 +377,8 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
     QNetworkRequest request = buildConfigurationRequest(address, QString("mcs=%1").arg(channel->serverAddress().toString()));
     qCDebug(dcGoECharger()) << "Configure nymea mqtt server address on" << thing << request.url().toString();
     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-    connect(reply, &QNetworkReply::finished, thing, [=](){
-        reply->deleteLater();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -405,8 +406,8 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
         QNetworkRequest request = buildConfigurationRequest(address, QString("mcp=%1").arg(channel->serverPort()));
         qCDebug(dcGoECharger()) << "Configure nymea mqtt server port on" << thing << request.url().toString();
         QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-        connect(reply, &QNetworkReply::finished, thing, [=](){
-            reply->deleteLater();
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [=](){
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                 info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -434,8 +435,8 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
             QNetworkRequest request = buildConfigurationRequest(address, QString("mcu=%1").arg(channel->username()));
             qCDebug(dcGoECharger()) << "Configure nymea mqtt server user name on" << thing << request.url().toString();
             QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-            connect(reply, &QNetworkReply::finished, thing, [=](){
-                reply->deleteLater();
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -463,8 +464,8 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                 QNetworkRequest request = buildConfigurationRequest(address, QString("mck=%1").arg(channel->password()));
                 qCDebug(dcGoECharger()) << "Configure nymea mqtt server password on" << thing << request.url().toString();
                 QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-                connect(reply, &QNetworkReply::finished, thing, [=](){
-                    reply->deleteLater();
+                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                connect(reply, &QNetworkReply::finished, info, [=](){
                     if (reply->error() != QNetworkReply::NoError) {
                         qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                         info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
@@ -492,8 +493,8 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                     QNetworkRequest request = buildConfigurationRequest(address, QString("mce=1"));
                     qCDebug(dcGoECharger()) << "Enable custom mqtt server on" << thing << request.url().toString();
                     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
-                    connect(reply, &QNetworkReply::finished, thing, [=](){
-                        reply->deleteLater();
+                    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                    connect(reply, &QNetworkReply::finished, info, [=](){
                         if (reply->error() != QNetworkReply::NoError) {
                             qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
