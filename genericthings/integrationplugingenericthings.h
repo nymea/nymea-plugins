@@ -33,6 +33,7 @@
 
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
+#include "extern-plugininfo.h"
 
 #include <QTimer>
 

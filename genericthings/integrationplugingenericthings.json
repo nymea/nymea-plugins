@@ -1301,6 +1301,70 @@
                             "defaultValue": 0
                         }
                     ]
+                },
+                {
+                    "id": "81418556-cae3-4803-aa0c-9c4b3304a3eb",
+                    "name": "battery",
+                    "displayName": "Generic battery",
+                    "createMethods": ["user"],
+                    "interfaces": ["battery"],
+                    "settingsTypes": [
+                        {
+                            "id": "8d875cb7-3a14-42d1-bf1b-759e5fd95a8f",
+                            "name": "criticalLevel",
+                            "displayName": "Critical battery level",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d37eed4a-befc-40d4-b435-40a761f99314",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "3336f0c2-158b-4353-b74f-f1bb9c4e8447",
+                            "name": "batteryLevelControl",
+                            "displayName": "Battery level control",
+                            "displayNameEvent": "Battery level control changed",
+                            "displayNameAction": "Set battery level",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        },
+                        {
+                            "id": "a61c0328-b982-46a5-9cc0-b4fa4d0ab84d",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging started or stopped",
+                            "displayNameAction": "Set charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "e95dc037-002d-40a2-8c15-cd5489bd354a",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery entered or left critical state",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
                 }
             ]
         }
