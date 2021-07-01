@@ -1,7 +1,44 @@
-nymea-plugins (0.28.0) UNRELEASED; urgency=medium
+nymea-plugins (0.28.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly motion sensor
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Thu, 29 Apr 2021 16:13:37 +0200
+  [ Simon Stürz ]
+  * New Plugin: ZigbeeDevelco
+
+  [ Jenkins ]
+  * Neato: Bump cryptography from 3.3 to 3.3.2
+
+  [ Michael Zanetti ]
+  * 0.28
+  * GenericThings: Add a generic battery thing
+  * GenericThings: Add a totally generic thing
+
+  [ Simon Stürz ]
+  * ZigbeeDevelco: Add zigbee air quality sensor
+  * Fronius: Fix timer clean up on things removed and code cleaning
+  * New plugin: go-eCharger based on MQTT
+
+  [ Jenkins ]
+  * Fastcom: Bump urllib3 from 1.25.10 to 1.26.5
+  * Neato: Bump urllib3 from 1.26.3 to 1.26.5
+
+  [ Simon Stürz ]
+  * WakeOnLan: Add network device discovery
+  * Keba: Update discovery to nymea internal discovery mechanism
+
+  [ Simon Seres ]
+  * Add logging to awattar state "currentMarketPrice"
+
+  [ Michael Zanetti ]
+  * TP-Link Kasa: Add KP105
+  * GenericThing: Add a generic ventilation thing with flow control
+    support
+  * Update plugins to new smartmeter interface
+  * ReverseSSH: Reworked plugin
+  * Tado: Fix login url
+
+ -- Jenkins <jenkins@nymea.io>  Thu, 01 Jul 2021 17:07:31 +0200
 
 nymea-plugins (0.27.1) xenial; urgency=medium
 
