@@ -927,7 +927,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0/power") {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         if (currentPowerStateTypeMap.contains(thing->thingClassId())) {
             double power = payload.toDouble();
             thing->setStateValue(currentPowerStateTypeMap.value(thing->thingClassId()), power);
@@ -1015,26 +1015,26 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         QVariant value = payload;
         QHash<int, QHash<QString, StateTypeId>> channelMap;
         QHash<QString, StateTypeId> stateTypeIdMap;
-        stateTypeIdMap["power"] = shellyEm3PhaseAPowerStateTypeId;
-        stateTypeIdMap["pf"] = shellyEm3PhaseAPowerFactorStateTypeId;
-        stateTypeIdMap["current"] = shellyEm3PhaseACurrentStateTypeId;
-        stateTypeIdMap["voltage"] = shellyEm3PhaseAVoltageStateTypeId;
-        stateTypeIdMap["total"] = shellyEm3PhaseATotalEnergyConsumedStateTypeId;
-        stateTypeIdMap["total_returned"] = shellyEm3PhaseATotalEnergyReturnedStateTypeId;
+        stateTypeIdMap["power"] = shellyEm3CurrentPowerPhaseAStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PowerFactorPhaseAStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3CurrentPhaseAStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3VoltagePhaseAStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3EnergyConsumedPhaseAStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3EnergyProducedPhaseAStateTypeId;
         channelMap[0] = stateTypeIdMap;
-        stateTypeIdMap["power"] = shellyEm3PhaseBPowerStateTypeId;
-        stateTypeIdMap["pf"] = shellyEm3PhaseBPowerFactorStateTypeId;
-        stateTypeIdMap["current"] = shellyEm3PhaseBCurrentStateTypeId;
-        stateTypeIdMap["voltage"] = shellyEm3PhaseBVoltageStateTypeId;
-        stateTypeIdMap["total"] = shellyEm3PhaseBTotalEnergyConsumedStateTypeId;
-        stateTypeIdMap["total_returned"] = shellyEm3PhaseBTotalEnergyReturnedStateTypeId;
+        stateTypeIdMap["power"] = shellyEm3CurrentPowerPhaseBStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PowerFactorPhaseBStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3CurrentPhaseBStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3VoltagePhaseBStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3EnergyConsumedPhaseBStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3EnergyProducedPhaseBStateTypeId;
         channelMap[1] = stateTypeIdMap;
-        stateTypeIdMap["power"] = shellyEm3PhaseCPowerStateTypeId;
-        stateTypeIdMap["pf"] = shellyEm3PhaseCPowerFactorStateTypeId;
-        stateTypeIdMap["current"] = shellyEm3PhaseCCurrentStateTypeId;
-        stateTypeIdMap["voltage"] = shellyEm3PhaseCVoltageStateTypeId;
-        stateTypeIdMap["total"] = shellyEm3PhaseCTotalEnergyConsumedStateTypeId;
-        stateTypeIdMap["total_returned"] = shellyEm3PhaseCTotalEnergyReturnedStateTypeId;
+        stateTypeIdMap["power"] = shellyEm3CurrentPowerPhaseCStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PowerFactorPhaseCStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3CurrentPhaseCStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3VoltagePhaseCStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3EnergyConsumedPhaseCStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3EnergyProducedPhaseCStateTypeId;
         channelMap[2] = stateTypeIdMap;
         StateTypeId stateTypeId = channelMap.value(channel).value(stateName);
         if (stateTypeId.isNull()) {
@@ -1052,17 +1052,17 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         // and calculate the total ourselves. In order to not produce intermediate totals for each incoming message
         // we'll only refresh the total when we get the last value for the last channel.
         if (channel == 2 && stateName == "total_returned") {
-            double grandTotal = thing->stateValue(shellyEm3PhaseATotalEnergyConsumedStateTypeId).toDouble();
-            grandTotal += thing->stateValue(shellyEm3PhaseBTotalEnergyConsumedStateTypeId).toDouble();
-            grandTotal += thing->stateValue(shellyEm3PhaseCTotalEnergyConsumedStateTypeId).toDouble();
+            double grandTotal = thing->stateValue(shellyEm3EnergyConsumedPhaseAStateTypeId).toDouble();
+            grandTotal += thing->stateValue(shellyEm3EnergyConsumedPhaseBStateTypeId).toDouble();
+            grandTotal += thing->stateValue(shellyEm3EnergyConsumedPhaseCStateTypeId).toDouble();
             thing->setStateValue(shellyEm3TotalEnergyConsumedStateTypeId, grandTotal);
-            double grandTotalReturned = thing->stateValue(shellyEm3PhaseATotalEnergyReturnedStateTypeId).toDouble();
-            grandTotalReturned += thing->stateValue(shellyEm3PhaseBTotalEnergyReturnedStateTypeId).toDouble();
-            grandTotalReturned += thing->stateValue(shellyEm3PhaseCTotalEnergyReturnedStateTypeId).toDouble();
+            double grandTotalReturned = thing->stateValue(shellyEm3EnergyProducedPhaseAStateTypeId).toDouble();
+            grandTotalReturned += thing->stateValue(shellyEm3EnergyProducedPhaseBStateTypeId).toDouble();
+            grandTotalReturned += thing->stateValue(shellyEm3EnergyProducedPhaseCStateTypeId).toDouble();
             thing->setStateValue(shellyEm3TotalEnergyProducedStateTypeId, grandTotalReturned);
-            double totalPower = thing->stateValue(shellyEm3PhaseAPowerStateTypeId).toDouble();
-            totalPower += thing->stateValue(shellyEm3PhaseBPowerStateTypeId).toDouble();
-            totalPower += thing->stateValue(shellyEm3PhaseCPowerStateTypeId).toDouble();
+            double totalPower = thing->stateValue(shellyEm3CurrentPowerPhaseAStateTypeId).toDouble();
+            totalPower += thing->stateValue(shellyEm3CurrentPowerPhaseBStateTypeId).toDouble();
+            totalPower += thing->stateValue(shellyEm3CurrentPowerPhaseCStateTypeId).toDouble();
             thing->setStateValue(shellyEm3CurrentPowerStateTypeId, totalPower);
         }
     }

@@ -151,7 +151,7 @@
                     "name": "inverter",
                     "displayName": "Fronius Solar Inverter",
                     "createMethods": ["auto"],
-                    "interfaces" : ["extendedsmartmeterproducer", "connectable"],
+                    "interfaces" : ["smartmeterproducer", "connectable"],
                     "paramTypes": [
                         {
                             "id": "f2f8c2f5-dd6a-4786-b336-82fc84e5bb98",
@@ -184,7 +184,7 @@
                             "id": "788accbc-b86e-471b-b37f-14c9c6411526",
                             "name": "currentPower",
                             "displayName": "Current power",
-                            "displayNameEvent": "Current Power changed",
+                            "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": "0"
@@ -223,7 +223,7 @@
                     "name": "meter",
                     "displayName": "Fronius smart meter",
                     "createMethods": ["auto"],
-                    "interfaces": [ "extendedsmartmeterconsumer", "extendedsmartmeterproducer", "connectable" ],
+                    "interfaces": [ "smartmeterconsumer", "smartmeterproducer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "cf3a7025-d368-475a-8f48-efc1344a8409",
@@ -247,8 +247,8 @@
                         {
                             "id": "e5056ea1-88a2-410b-9c5e-6322aca4cb17",
                             "name": "currentPower",
-                            "displayName": "Total current power",
-                            "displayNameEvent": "Total current power changed",
+                            "displayName": "Current power usage",
+                            "displayNameEvent": "Current power usage changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": "0"

@@ -787,7 +787,7 @@
                     "name": "smartMeter",
                     "displayName": "Smart Meter",
                     "createMethods": ["user"],
-                    "interfaces": ["extendedsmartmeterconsumer", "extendedsmartmeterproducer", "connectable" ],
+                    "interfaces": ["smartmeterconsumer", "smartmeterproducer", "connectable" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -801,8 +801,8 @@
                         {
                             "id": "d57f4d9c-759e-40eb-999e-a1acbc8df2b1",
                             "name": "currentPower",
-                            "displayName": "Current power flow",
-                            "displayNameEvent": "Power power flow changed",
+                            "displayName": "Current power usage",
+                            "displayNameEvent": "Power power usage changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0
@@ -832,7 +832,7 @@
                     "name": "solarPanel",
                     "displayName": "Solar panel",
                     "createMethods": ["user"],
-                    "interfaces": ["extendedsmartmeterproducer"],
+                    "interfaces": ["smartmeterproducer"],
                     "paramTypes": [],
                     "stateTypes": [
                         {
