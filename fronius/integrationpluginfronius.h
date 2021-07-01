@@ -68,7 +68,7 @@ private:
     void updateThingStates(Thing *thing);
 
     void searchNewThings(FroniusLogger *logger);
-    bool thingExists(ParamTypeId thingParamId, QString thingId);
+    bool thingExists(const ParamTypeId &thingParamId, QString thingId);
 
     void setupChild(ThingSetupInfo *info, Thing *parentThing);
 };
