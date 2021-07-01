@@ -744,6 +744,40 @@
                     ]
                 },
                 {
+                    "id": "a7eec5f7-3cc3-4edb-baa7-1f6b6f935bf8",
+                    "name": "ventilationFlow",
+                    "displayName": "Generic ventilation with flow control",
+                    "createMethods": ["user"],
+                    "interfaces": ["ventilation"],
+                    "stateTypes": [
+                        {
+                            "id": "adf9a8dd-da13-4070-a3bd-9d4be26ebcd1",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "5a273bba-0bef-49fb-870a-7f2df8fc14b6",
+                            "name": "flowRate",
+                            "displayName": "Air flow rate",
+                            "displayNameEvent": "Air flow rate changed",
+                            "displayNameAction": "Set air flow rate",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "writable": true,
+                            "defaultValue": 0,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
                     "id": "cf3d65db-6f68-457b-968c-cfb66cbd5311",
                     "name": "temperatureSensor",
                     "displayName": "Generic temperature sensor",

@@ -535,6 +535,18 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == ventilationFlowThingClassId) {
+        if (action.actionTypeId() == ventilationFlowPowerActionTypeId) {
+            thing->setStateValue(ventilationFlowPowerStateTypeId, action.param(ventilationFlowPowerActionPowerParamTypeId).value());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else if (action.actionTypeId() == ventilationFlowFlowRateActionTypeId) {
+            thing->setStateValue(ventilationFlowFlowRateStateTypeId, action.param(ventilationFlowFlowRateActionFlowRateParamTypeId).value());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
     } else if (thing->thingClassId() == temperatureSensorThingClassId) {
         if (action.actionTypeId() == temperatureSensorInputActionTypeId) {
             double value = info->action().param(temperatureSensorInputActionInputParamTypeId).value().toDouble();
