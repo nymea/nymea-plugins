@@ -33,12 +33,59 @@
 #include "integrations/thing.h"
 #include "plugininfo.h"
 
+#include "network/networkdevicediscovery.h"
+
 #include <QDebug>
 #include <QStringList>
 #include <QUdpSocket>
 
 IntegrationPluginWakeOnLan::IntegrationPluginWakeOnLan()
 {
+}
+
+void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
+{
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcWakeOnLan()) << "Failed to discover network devices. The network device discovery is not available.";
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discovery devices in your network."));
+        return;
+    }
+
+    qCDebug(dcWakeOnLan()) << "Starting network discovery...";
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        ThingDescriptors descriptors;
+        qCDebug(dcWakeOnLan()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+            // We need the mac address...
+            if (networkDeviceInfo.macAddress().isEmpty())
+                continue;
+
+            // Filter out already added network devices, rediscovery is in this case no option
+            if (myThings().filterByParam(wolThingMacParamTypeId, networkDeviceInfo.macAddress()).count() != 0)
+                continue;
+
+            QString title;
+            if (networkDeviceInfo.hostName().isEmpty()) {
+                title = networkDeviceInfo.address().toString();
+            } else {
+                title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
+            }
+            QString description;
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description = networkDeviceInfo.macAddress();
+            } else {
+                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+            }
+            ThingDescriptor descriptor(wolThingClassId, title, description);
+            ParamList params;
+            params.append(Param(wolThingMacParamTypeId, networkDeviceInfo.macAddress()));
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+        }
+        info->addThingDescriptors(descriptors);
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginWakeOnLan::executeAction(ThingActionInfo *info)
@@ -48,12 +95,12 @@ void IntegrationPluginWakeOnLan::executeAction(ThingActionInfo *info)
     return info->finish(Thing::ThingErrorNoError);
 }
 
-void IntegrationPluginWakeOnLan::wakeup(QString mac)
+void IntegrationPluginWakeOnLan::wakeup(const QString &macAddress)
 {
     const char header[] = {char(0xff), char(0xff), char(0xff), char(0xff), char(0xff), char(0xff)};
     QByteArray packet = QByteArray::fromRawData(header, sizeof(header));
     for(int i = 0; i < 16; ++i) {
-        packet.append(QByteArray::fromHex(mac.remove(':').toLocal8Bit()));
+        packet.append(QByteArray::fromHex(QString(macAddress).remove(':').toLocal8Bit()));
     }
     qCDebug(dcWakeOnLan) << "Created magic packet:" << packet.toHex();
     QUdpSocket udpSocket;
