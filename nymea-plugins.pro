@@ -49,7 +49,7 @@ PLUGIN_DIRS = \
     shelly              \
     solarlog            \
     systemmonitor       \
-    remotessh           \
+    reversessh          \
     senic               \
     serialportcommander \
     simulation          \

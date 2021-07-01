@@ -1001,11 +1001,15 @@ Description: nymea.io plugin for keba
  This package will install the nymea.io plugin for keba
 
 
-Package: nymea-plugin-remotessh
+Package: nymea-plugin-reversessh
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         sshpass,
          nymea-plugins-translations,
+Recommends: openssh-server
+Replaces: nymea-plugin-remotessh
+Conflicts: nymea-plugin-remotessh
 Description: nymea.io plugin to configure remotessh for your nymea:core
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
