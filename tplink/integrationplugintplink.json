@@ -11,7 +11,7 @@
                 {
                     "id": "48f981ba-3836-4810-9744-a349088f4545",
                     "name": "kasaPlug100",
-                    "displayName": "Kasa Smart Wi-Fi Plug (HS100/HS103/HS105/KP100)",
+                    "displayName": "Kasa Smart Wi-Fi Plug (HS100/HS103/HS105/KP100/KP105)",
                     "createMethods": ["discovery"],
                     "interfaces": [ "powersocket", "wirelessconnectable" ],
                     "paramTypes": [
