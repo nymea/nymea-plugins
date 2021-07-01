@@ -1,0 +1,154 @@
+{
+    "name": "ZigbeeDevelco",
+    "displayName": "Zigbee Develco",
+    "id": "1b9e976d-e842-40e1-9fad-87d71a69c721",
+    "vendors": [
+        {
+            "name": "develco",
+            "displayName": "Develco",
+            "id": "e4b36f3e-ccdc-4a88-8968-39025c3ec742",
+            "thingClasses": [
+                {
+                    "id": "3fb419ef-795d-4f4d-b801-e7eaff16cdb0",
+                    "name": "ioModule",
+                    "displayName": "IO Module",
+                    "createMethods": ["auto"],
+                    "interfaces": ["wirelessconnectable", "alert"],
+                    "paramTypes": [
+                        {
+                            "id": "d9a3afa7-c460-43e7-bc84-c8b5ff1adf44",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "f4c83d2b-06e1-4206-98b7-e3ace79ff447",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "c2806b97-bf94-4ad2-ae22-5b5d7d1eaf5a",
+                            "name": "impulseDuration",
+                            "displayName": "Impulse duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "defaultValue": 100,
+                            "minValue": 100
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "16d5ebb7-21d1-4294-98a6-ca06eea8e3a3",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "0e09e6a6-8b3f-4b63-acb1-ac04ab31957a",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "f28c9a61-b8ab-419c-bd85-58692df26ac7",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                           "id": "aaeda2c6-439a-452a-b829-45d6249bdee6",
+                           "name": "output1",
+                           "displayName": "Output 1",
+                           "displayNameEvent": "Output 1 changed",
+                           "displayNameAction": "Set output 1",
+                           "type": "bool",
+                           "writable": true,
+                           "defaultValue": false,
+                           "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "105cf314-35b5-4a8b-8e6d-d011009f97ff",
+                            "name": "output2",
+                            "displayName": "Output 2",
+                            "displayNameEvent": "Output 2 changed",
+                            "displayNameAction": "Set output 2",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "bc23c7e8-f4ad-47c4-b938-f9af2dbd3393",
+                            "name": "input1",
+                            "displayName": "Input 1",
+                            "displayNameEvent": "Input 1 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "065b0dc0-6d31-40ec-b356-02fea57e2fe1",
+                            "name": "input2",
+                            "displayName": "Input 2",
+                            "displayNameEvent": "Input 2 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "8f2b052a-30b7-49aa-a8d4-503cb0b9b66b",
+                            "name": "input3",
+                            "displayName": "Input 3",
+                            "displayNameEvent": "Input 3 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "caef986c-da13-4ef3-ab81-316244c7be1e",
+                            "name": "input4",
+                            "displayName": "Input 4",
+                            "displayNameEvent": "Input 4 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "62c5562a-8bdf-49b4-8e1d-f27442b2b360",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        },
+                        {
+                            "id": "45ec5c65-0719-4148-82ea-3e69b34be939",
+                            "name": "impulseOutput1",
+                            "displayName": "Impulse output 1"
+                        },
+                        {
+                            "id": "d780946c-4ddf-4b59-a669-dbf6ecfda5d6",
+                            "name": "impulseOutput2",
+                            "displayName": "Impulse output 2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
