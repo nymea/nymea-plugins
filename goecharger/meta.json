@@ -1,0 +1,13 @@
+{
+    "title": "go-eCharger",
+    "tagline": "Control and monitor the go-eCharger smart wallbox for electric vehicles.",
+    "icon": "go-e-logo.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
