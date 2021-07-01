@@ -15,7 +15,7 @@ The currently supported devices are:
 * Shelly 3EM
 * Shelly H+T
 * Shelly i3
-
+* Shelly Motion
 
 ## Requirements
 Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required
@@ -42,7 +42,5 @@ perfectly fine in the low power mode.
 When adding a Shelly device that is meant to be installed in walls and has connectors to switches, a new Gateway type device 
 representing the Shelly device itself will be added. The gateway device allow basic monitoring (such as the connected state)
 and interaction (e.g. reboot the Shelly device). In addition to that, a power switch device will appear which will reflect
-presses on the Shelly's SW input. This power switch device also offers the possiblity to configure the used switch (e.g. 
-toggle, momentary, edge or detached from the Shelly's output). If a connected device has been selected during setup, an
-additional device, e.g. the light will appear in the system and can be used to control the power output of the Shelly,
-e.g. turning on or off the connected light.
+presses on the Shelly's SW input. You can use generic things to connect them to those switches in order to represent your actual
+devices connected to the Shelly devices.

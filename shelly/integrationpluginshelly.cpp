@@ -55,257 +55,366 @@ static QHash<QString, QString> updateStatusMap = {
     {"unknown", "idle"}
 };
 
+static QHash<ThingClassId, ParamTypeId> idParamTypeMap = {
+    {shelly1ThingClassId, shelly1ThingIdParamTypeId},
+    {shelly1pmThingClassId, shelly1pmThingIdParamTypeId},
+    {shelly1lThingClassId, shelly1lThingIdParamTypeId},
+    {shellyPlugThingClassId, shellyPlugThingIdParamTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2ThingIdParamTypeId},
+    {shellyDimmerThingClassId, shellyDimmerThingIdParamTypeId},
+    {shelly2ThingClassId, shelly2ThingIdParamTypeId},
+    {shelly25ThingClassId, shelly25ThingIdParamTypeId},
+    {shellyButton1ThingClassId, shellyButton1ThingIdParamTypeId},
+    {shellyEm3ThingClassId, shellyEm3ThingIdParamTypeId},
+    {shellyHTThingClassId, shellyHTThingIdParamTypeId},
+    {shellyI3ThingClassId, shellyI3ThingIdParamTypeId},
+    {shellyMotionThingClassId, shellyMotionThingIdParamTypeId},
+};
+
+static QHash<ThingClassId, ParamTypeId> usernameParamTypeMap = {
+    {shelly1ThingClassId, shelly1ThingUsernameParamTypeId},
+    {shelly1pmThingClassId, shelly1pmThingUsernameParamTypeId},
+    {shelly1lThingClassId, shelly1lThingUsernameParamTypeId},
+    {shellyPlugThingClassId, shellyPlugThingUsernameParamTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2ThingUsernameParamTypeId},
+    {shellyDimmerThingClassId, shellyDimmerThingUsernameParamTypeId},
+    {shelly2ThingClassId, shelly2ThingUsernameParamTypeId},
+    {shelly25ThingClassId, shelly25ThingUsernameParamTypeId},
+    {shellyButton1ThingClassId, shellyButton1ThingUsernameParamTypeId},
+    {shellyEm3ThingClassId, shellyEm3ThingUsernameParamTypeId},
+    {shellyHTThingClassId, shellyHTThingUsernameParamTypeId},
+    {shellyI3ThingClassId, shellyI3ThingUsernameParamTypeId},
+    {shellyMotionThingClassId, shellyMotionThingUsernameParamTypeId}
+};
+
+static QHash<ThingClassId, ParamTypeId> passwordParamTypeMap = {
+    {shelly1ThingClassId, shelly1ThingPasswordParamTypeId},
+    {shelly1pmThingClassId, shelly1pmThingPasswordParamTypeId},
+    {shelly1lThingClassId, shelly1lThingPasswordParamTypeId},
+    {shellyPlugThingClassId, shellyPlugThingPasswordParamTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2ThingPasswordParamTypeId},
+    {shellyDimmerThingClassId, shellyDimmerThingPasswordParamTypeId},
+    {shelly2ThingClassId, shelly2ThingPasswordParamTypeId},
+    {shelly25ThingClassId, shelly25ThingPasswordParamTypeId},
+    {shellyButton1ThingClassId, shellyButton1ThingPasswordParamTypeId},
+    {shellyEm3ThingClassId, shellyEm3ThingPasswordParamTypeId},
+    {shellyHTThingClassId, shellyHTThingPasswordParamTypeId},
+    {shellyI3ThingClassId, shellyI3ThingPasswordParamTypeId},
+    {shellyMotionThingClassId, shellyMotionThingPasswordParamTypeId}
+};
+
+static QHash<ThingClassId, ParamTypeId> connectedDeviceParamTypeMap = {
+    {shelly2ThingClassId, shelly2ThingConnectedDevice1ParamTypeId},
+    {shelly25ThingClassId, shelly25ThingConnectedDevice1ParamTypeId}
+};
+
+static QHash<ThingClassId, ParamTypeId> connectedDevice2ParamTypeMap = {
+    {shelly2ThingClassId, shelly2ThingConnectedDevice2ParamTypeId},
+    {shelly25ThingClassId, shelly25ThingConnectedDevice2ParamTypeId},
+};
+
+static QHash<ThingClassId, ParamTypeId> channelParamTypeMap = {
+    {shellyGenericThingClassId, shellyGenericThingChannelParamTypeId},
+    {shellyLightThingClassId, shellyLightThingChannelParamTypeId},
+    {shellySocketThingClassId, shellySocketThingChannelParamTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMThingChannelParamTypeId},
+    {shellyLightPMThingClassId, shellyLightPMThingChannelParamTypeId},
+    {shellySocketPMThingClassId, shellySocketPMThingChannelParamTypeId},
+    {shellyRollerThingClassId, shellyRollerThingChannelParamTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> connectedStateTypesMap = {
+    {shelly1ThingClassId, shelly1ConnectedStateTypeId},
+    {shelly1pmThingClassId, shelly1pmConnectedStateTypeId},
+    {shelly1lThingClassId, shelly1lConnectedStateTypeId},
+    {shelly2ThingClassId, shelly2ConnectedStateTypeId},
+    {shelly25ThingClassId, shelly25ConnectedStateTypeId},
+    {shellyPlugThingClassId, shellyPlugConnectedStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2ConnectedStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerConnectedStateTypeId},
+    {shellyButton1ThingClassId, shellyButton1ConnectedStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3ConnectedStateTypeId},
+    {shellyHTThingClassId, shellyHTConnectedStateTypeId},
+    {shellySwitchThingClassId, shellySwitchConnectedStateTypeId},
+    {shellyGenericThingClassId, shellyGenericConnectedStateTypeId},
+    {shellyLightThingClassId, shellyLightConnectedStateTypeId},
+    {shellySocketThingClassId, shellySocketConnectedStateTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMConnectedStateTypeId},
+    {shellyLightPMThingClassId, shellyLightPMConnectedStateTypeId},
+    {shellySocketPMThingClassId, shellySocketPMConnectedStateTypeId},
+    {shellyRollerThingClassId, shellyRollerConnectedStateTypeId},
+    {shellyI3ThingClassId, shellyI3ConnectedStateTypeId},
+    {shellyMotionThingClassId, shellyMotionConnectedStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> signalStrengthStateTypesMap = {
+    {shelly1ThingClassId, shelly1SignalStrengthStateTypeId},
+    {shelly1pmThingClassId, shelly1pmSignalStrengthStateTypeId},
+    {shelly1lThingClassId, shelly1lSignalStrengthStateTypeId},
+    {shelly2ThingClassId, shelly2SignalStrengthStateTypeId},
+    {shelly25ThingClassId, shelly25SignalStrengthStateTypeId},
+    {shellyPlugThingClassId, shellyPlugSignalStrengthStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2SignalStrengthStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerSignalStrengthStateTypeId},
+    {shellyButton1ThingClassId, shellyButton1SignalStrengthStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3SignalStrengthStateTypeId},
+    {shellyHTThingClassId, shellyHTSignalStrengthStateTypeId},
+    {shellySwitchThingClassId, shellySwitchSignalStrengthStateTypeId},
+    {shellyGenericThingClassId, shellyGenericSignalStrengthStateTypeId},
+    {shellyLightThingClassId, shellyLightSignalStrengthStateTypeId},
+    {shellySocketThingClassId, shellySocketSignalStrengthStateTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMSignalStrengthStateTypeId},
+    {shellyLightPMThingClassId, shellyLightPMSignalStrengthStateTypeId},
+    {shellySocketPMThingClassId, shellySocketPMSignalStrengthStateTypeId},
+    {shellyRollerThingClassId, shellyRollerSignalStrengthStateTypeId},
+    {shellyI3ThingClassId, shellyI3SignalStrengthStateTypeId},
+    {shellyMotionThingClassId, shellyMotionSignalStrengthStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> powerStateTypeMap = {
+    {shelly1ThingClassId, shelly1PowerStateTypeId},
+    {shelly1pmThingClassId, shelly1pmPowerStateTypeId},
+    {shelly1lThingClassId, shelly1lPowerStateTypeId},
+    {shellyPlugThingClassId, shellyPlugPowerStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2PowerStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerPowerStateTypeId},
+    {shellyGenericThingClassId, shellyGenericPowerStateTypeId},
+    {shellyLightThingClassId, shellyLightPowerStateTypeId},
+    {shellySocketThingClassId, shellySocketPowerStateTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMPowerStateTypeId},
+    {shellyLightPMThingClassId, shellyLightPMPowerStateTypeId},
+    {shellySocketPMThingClassId, shellySocketPMPowerStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3PowerStateTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> currentPowerStateTypeMap = {
+    {shelly1pmThingClassId, shelly1pmCurrentPowerStateTypeId},
+    {shelly1lThingClassId, shelly1lCurrentPowerStateTypeId},
+    {shellyPlugThingClassId, shellyPlugCurrentPowerStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2CurrentPowerStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerCurrentPowerStateTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMCurrentPowerStateTypeId},
+    {shellyLightPMThingClassId, shellyLightPMCurrentPowerStateTypeId},
+    {shellySocketPMThingClassId, shellySocketPMCurrentPowerStateTypeId},
+    {shellyRollerThingClassId, shellyRollerCurrentPowerStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3CurrentPowerStateTypeId},
+};
+
+
+static QHash<ThingClassId, StateTypeId> totalEnergyConsumedStateTypeMap = {
+    {shellyPlugThingClassId, shellyPlugTotalEnergyConsumedStateTypeId},
+    {shellyGenericPMThingClassId, shellyGenericPMTotalEnergyConsumedStateTypeId},
+    {shellyLightPMThingClassId, shellyLightPMTotalEnergyConsumedStateTypeId},
+    {shellySocketPMThingClassId, shellySocketPMTotalEnergyConsumedStateTypeId},
+    {shellyRollerThingClassId, shellyRollerTotalEnergyConsumedStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3TotalEnergyConsumedStateTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> colorStateTypeMap = {
+    {shellyRgbw2ThingClassId, shellyRgbw2ColorStateTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> colorTemperatureStateTypeMap = {
+    {shellyRgbw2ThingClassId, shellyRgbw2ColorTemperatureStateTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> brightnessStateTypeMap = {
+    {shellyRgbw2ThingClassId, shellyRgbw2BrightnessStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerBrightnessStateTypeId},
+};
+
+static QHash<ThingClassId, StateTypeId> updateStatusStateTypesMap = {
+    {shelly1ThingClassId, shelly1UpdateStatusStateTypeId},
+    {shelly1pmThingClassId, shelly1pmUpdateStatusStateTypeId},
+    {shelly1lThingClassId, shelly1lUpdateStatusStateTypeId},
+    {shelly2ThingClassId, shelly2UpdateStatusStateTypeId},
+    {shelly25ThingClassId, shelly25UpdateStatusStateTypeId},
+    {shellyPlugThingClassId, shellyPlugUpdateStatusStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2UpdateStatusStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerUpdateStatusStateTypeId},
+    {shellyButton1ThingClassId, shellyButton1UpdateStatusStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3UpdateStatusStateTypeId},
+    {shellyHTThingClassId, shellyHTUpdateStatusStateTypeId},
+    {shellyI3ThingClassId, shellyI3UpdateStatusStateTypeId},
+    {shellyMotionThingClassId, shellyMotionUpdateStatusStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> currentVersionStateTypesMap = {
+    {shelly1ThingClassId, shelly1CurrentVersionStateTypeId},
+    {shelly1pmThingClassId, shelly1pmCurrentVersionStateTypeId},
+    {shelly1lThingClassId, shelly1lCurrentVersionStateTypeId},
+    {shelly2ThingClassId, shelly2CurrentVersionStateTypeId},
+    {shelly25ThingClassId, shelly25CurrentVersionStateTypeId},
+    {shellyPlugThingClassId, shellyPlugCurrentVersionStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2CurrentVersionStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerCurrentVersionStateTypeId},
+    {shellyButton1ThingClassId, shellyButton1CurrentVersionStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3CurrentVersionStateTypeId},
+    {shellyHTThingClassId, shellyHTCurrentVersionStateTypeId},
+    {shellyI3ThingClassId, shellyI3CurrentVersionStateTypeId},
+    {shellyMotionThingClassId, shellyMotionCurrentVersionStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> availableVersionStateTypesMap = {
+    {shelly1ThingClassId, shelly1AvailableVersionStateTypeId},
+    {shelly1pmThingClassId, shelly1pmAvailableVersionStateTypeId},
+    {shelly1lThingClassId, shelly1lAvailableVersionStateTypeId},
+    {shelly2ThingClassId, shelly2AvailableVersionStateTypeId},
+    {shelly25ThingClassId, shelly25AvailableVersionStateTypeId},
+    {shellyPlugThingClassId, shellyPlugAvailableVersionStateTypeId},
+    {shellyRgbw2ThingClassId, shellyRgbw2AvailableVersionStateTypeId},
+    {shellyDimmerThingClassId, shellyDimmerAvailableVersionStateTypeId},
+    {shellyButton1ThingClassId, shellyButton1AvailableVersionStateTypeId},
+    {shellyEm3ThingClassId, shellyEm3AvailableVersionStateTypeId},
+    {shellyHTThingClassId, shellyHTAvailableVersionStateTypeId},
+    {shellyI3ThingClassId, shellyI3AvailableVersionStateTypeId},
+    {shellyMotionThingClassId, shellyMotionAvailableVersionStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> batteryLevelStateTypesMap = {
+    {shellyButton1ThingClassId, shellyButton1BatteryLevelStateTypeId},
+    {shellyHTThingClassId, shellyHTBatteryLevelStateTypeId},
+    {shellyMotionThingClassId, shellyMotionBatteryLevelStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> batteryCriticalStateTypesMap = {
+    {shellyButton1ThingClassId, shellyButton1BatteryCriticalStateTypeId},
+    {shellyHTThingClassId, shellyHTBatteryCriticalStateTypeId},
+    {shellyMotionThingClassId, shellyMotionBatteryCriticalStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> presenceStateTypesMap = {
+    {shellyMotionThingClassId, shellyMotionIsPresentStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> lightIntensityStateTypesMap = {
+    {shellyMotionThingClassId, shellyMotionLightIntensityStateTypeId}
+};
+
+static QHash<ThingClassId, StateTypeId> vibrationStateTypesMap = {
+    {shellyMotionThingClassId, shellyMotionVibrationStateTypeId}
+};
+
+// Actions and their params
+static QHash<ActionTypeId, ThingClassId> rebootActionTypeMap = {
+    {shelly1RebootActionTypeId, shelly1ThingClassId},
+    {shelly1pmRebootActionTypeId, shelly1pmThingClassId},
+    {shelly1lRebootActionTypeId, shelly1lThingClassId},
+    {shellyPlugRebootActionTypeId, shellyPlugThingClassId},
+    {shellyRgbw2RebootActionTypeId, shellyRgbw2ThingClassId},
+    {shellyDimmerRebootActionTypeId, shellyDimmerThingClassId},
+    {shelly2RebootActionTypeId, shelly2ThingClassId},
+    {shelly25RebootActionTypeId, shelly25ThingClassId},
+    {shellyI3RebootActionTypeId, shellyI3ThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
+    {shelly1PowerActionTypeId, shelly1ThingClassId},
+    {shelly1pmPowerActionTypeId, shelly1pmThingClassId},
+    {shelly1lPowerActionTypeId, shelly1lThingClassId},
+    {shellyPlugPowerActionTypeId, shellyPlugThingClassId},
+    {shellyGenericPowerActionTypeId, shellyGenericThingClassId},
+    {shellyLightPowerActionTypeId, shellyLightThingClassId},
+    {shellySocketPowerActionTypeId, shellySocketThingClassId},
+    {shellyGenericPMPowerActionTypeId, shellyGenericPMThingClassId},
+    {shellyLightPMPowerActionTypeId, shellyLightPMThingClassId},
+    {shellySocketPMPowerActionTypeId, shellySocketPMThingClassId},
+    {shellyEm3PowerActionTypeId, shellyEm3ThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
+    {shelly1PowerActionTypeId, shelly1PowerActionPowerParamTypeId},
+    {shelly1pmPowerActionTypeId, shelly1pmPowerActionPowerParamTypeId},
+    {shelly1lPowerActionTypeId, shelly1lPowerActionPowerParamTypeId},
+    {shellyPlugPowerActionTypeId, shellyPlugPowerActionPowerParamTypeId},
+    {shellyGenericPowerActionTypeId, shellyGenericPowerActionPowerParamTypeId},
+    {shellyLightPowerActionTypeId, shellyLightPowerActionPowerParamTypeId},
+    {shellySocketPowerActionTypeId, shellySocketPowerActionPowerParamTypeId},
+    {shellyGenericPMPowerActionTypeId, shellyGenericPMPowerActionPowerParamTypeId},
+    {shellyLightPMPowerActionTypeId, shellyLightPMPowerActionPowerParamTypeId},
+    {shellySocketPMPowerActionTypeId, shellySocketPMPowerActionPowerParamTypeId},
+    {shellyEm3PowerActionTypeId, shellyEm3PowerActionPowerParamTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorPowerActionTypesMap = {
+    {shellyRgbw2PowerActionTypeId, shellyRgbw2ThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorPowerActionParamTypesMap = {
+    {shellyRgbw2PowerActionPowerParamTypeId, shellyRgbw2PowerActionTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorActionTypesMap = {
+    {shellyRgbw2ColorActionTypeId, shellyRgbw2ThingClassId},
+};
+
+static QHash<ParamTypeId, ActionTypeId> colorActionParamTypesMap = {
+    {shellyRgbw2ColorActionTypeId, shellyRgbw2ColorActionTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorBrightnessActionTypesMap = {
+    {shellyRgbw2BrightnessActionTypeId, shellyRgbw2ThingClassId},
+};
+
+static QHash<ParamTypeId, ActionTypeId> colorBrightnessActionParamTypesMap = {
+    {shellyRgbw2BrightnessActionBrightnessParamTypeId, shellyRgbw2BrightnessActionTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorTemperatureActionTypesMap = {
+    {shellyRgbw2ColorTemperatureActionTypeId, shellyRgbw2ThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> colorTemperatureActionParamTypesMap = {
+    {shellyRgbw2ColorTemperatureActionTypeId, shellyRgbw2ColorTemperatureActionColorTemperatureParamTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> dimmablePowerActionTypesMap = {
+    {shellyDimmerPowerActionTypeId, shellyDimmerThingClassId},
+};
+
+static QHash<ParamTypeId, ActionTypeId> dimmablePowerActionParamTypesMap = {
+    {shellyDimmerPowerActionTypeId, shellyDimmerPowerActionPowerParamTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> dimmableBrightnessActionTypesMap = {
+    {shellyDimmerBrightnessActionTypeId, shellyDimmerThingClassId},
+};
+
+static QHash<ParamTypeId, ActionTypeId> dimmableBrightnessActionParamTypesMap = {
+    {shellyDimmerBrightnessActionTypeId, shellyDimmerBrightnessActionBrightnessParamTypeId},
+};
+
+static QHash<ActionTypeId, ThingClassId> rollerOpenActionTypeMap = {
+    {shellyRollerOpenActionTypeId, shellyRollerThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> rollerCloseActionTypeMap = {
+    {shellyRollerCloseActionTypeId, shellyRollerThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> rollerStopActionTypeMap = {
+    {shellyRollerStopActionTypeId, shellyRollerThingClassId},
+};
+
+static QHash<ActionTypeId, ThingClassId> updateActionTypesMap = {
+    {shelly1PerformUpdateActionTypeId, shelly1ThingClassId},
+    {shelly1pmPerformUpdateActionTypeId, shelly1pmThingClassId},
+    {shelly1lPerformUpdateActionTypeId, shelly1lThingClassId},
+    {shelly2PerformUpdateActionTypeId, shelly2ThingClassId},
+    {shelly25PerformUpdateActionTypeId, shelly25ThingClassId},
+    {shellyPlugPerformUpdateActionTypeId, shellyPlugThingClassId},
+    {shellyRgbw2PerformUpdateActionTypeId, shellyRgbw2ThingClassId},
+    {shellyDimmerPerformUpdateActionTypeId, shellyDimmerThingClassId},
+    {shellyButton1PerformUpdateActionTypeId, shellyButton1ThingClassId},
+    {shellyEm3PerformUpdateActionTypeId, shellyEm3ThingClassId},
+    {shellyHTPerformUpdateActionTypeId, shellyHTThingClassId},
+    {shellyI3PerformUpdateActionTypeId, shellyI3ThingClassId},
+    {shellyMotionPerformUpdateActionTypeId, shellyMotionThingClassId}
+};
+
+
 IntegrationPluginShelly::IntegrationPluginShelly()
 {
-    // Device param types
-    m_idParamTypeMap[shelly1ThingClassId] = shelly1ThingIdParamTypeId;
-    m_idParamTypeMap[shelly1pmThingClassId] = shelly1pmThingIdParamTypeId;
-    m_idParamTypeMap[shelly1lThingClassId] = shelly1lThingIdParamTypeId;
-    m_idParamTypeMap[shellyPlugThingClassId] = shellyPlugThingIdParamTypeId;
-    m_idParamTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ThingIdParamTypeId;
-    m_idParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingIdParamTypeId;
-    m_idParamTypeMap[shelly2ThingClassId] = shelly2ThingIdParamTypeId;
-    m_idParamTypeMap[shelly25ThingClassId] = shelly25ThingIdParamTypeId;
-    m_idParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingIdParamTypeId;
-    m_idParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingIdParamTypeId;
-    m_idParamTypeMap[shellyHTThingClassId] = shellyHTThingIdParamTypeId;
-    m_idParamTypeMap[shellyI3ThingClassId] = shellyI3ThingIdParamTypeId;
-
-    m_usernameParamTypeMap[shelly1ThingClassId] = shelly1ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shelly1pmThingClassId] = shelly1pmThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shelly1lThingClassId] = shelly1lThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyPlugThingClassId] = shellyPlugThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shelly2ThingClassId] = shelly2ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shelly25ThingClassId] = shelly25ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyHTThingClassId] = shellyHTThingUsernameParamTypeId;
-    m_usernameParamTypeMap[shellyI3ThingClassId] = shellyI3ThingUsernameParamTypeId;
-
-    m_passwordParamTypeMap[shelly1ThingClassId] = shelly1ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shelly1pmThingClassId] = shelly1pmThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shelly1lThingClassId] = shelly1lThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyPlugThingClassId] = shellyPlugThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shelly2ThingClassId] = shelly2ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shelly25ThingClassId] = shelly25ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyHTThingClassId] = shellyHTThingPasswordParamTypeId;
-    m_passwordParamTypeMap[shellyI3ThingClassId] = shellyI3ThingPasswordParamTypeId;
-
-    m_connectedDeviceParamTypeMap[shelly2ThingClassId] = shelly2ThingConnectedDevice1ParamTypeId;
-    m_connectedDeviceParamTypeMap[shelly25ThingClassId] = shelly25ThingConnectedDevice1ParamTypeId;
-
-    m_connectedDevice2ParamTypeMap[shelly2ThingClassId] = shelly2ThingConnectedDevice2ParamTypeId;
-    m_connectedDevice2ParamTypeMap[shelly25ThingClassId] = shelly25ThingConnectedDevice2ParamTypeId;
-
-    m_channelParamTypeMap[shellyGenericThingClassId] = shellyGenericThingChannelParamTypeId;
-    m_channelParamTypeMap[shellyLightThingClassId] = shellyLightThingChannelParamTypeId;
-    m_channelParamTypeMap[shellySocketThingClassId] = shellySocketThingChannelParamTypeId;
-    m_channelParamTypeMap[shellyGenericPMThingClassId] = shellyGenericPMThingChannelParamTypeId;
-    m_channelParamTypeMap[shellyLightPMThingClassId] = shellyLightPMThingChannelParamTypeId;
-    m_channelParamTypeMap[shellySocketPMThingClassId] = shellySocketPMThingChannelParamTypeId;
-    m_channelParamTypeMap[shellyRollerThingClassId] = shellyRollerThingChannelParamTypeId;
-
-    // States
-    m_connectedStateTypesMap[shelly1ThingClassId] = shelly1ConnectedStateTypeId;
-    m_connectedStateTypesMap[shelly1pmThingClassId] = shelly1pmConnectedStateTypeId;
-    m_connectedStateTypesMap[shelly1lThingClassId] = shelly1lConnectedStateTypeId;
-    m_connectedStateTypesMap[shelly2ThingClassId] = shelly2ConnectedStateTypeId;
-    m_connectedStateTypesMap[shelly25ThingClassId] = shelly25ConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyPlugThingClassId] = shellyPlugConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2ConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyDimmerThingClassId] = shellyDimmerConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyButton1ThingClassId] = shellyButton1ConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyEm3ThingClassId] = shellyEm3ConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyHTThingClassId] = shellyHTConnectedStateTypeId;
-    m_connectedStateTypesMap[shellySwitchThingClassId] = shellySwitchConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyGenericThingClassId] = shellyGenericConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyLightThingClassId] = shellyLightConnectedStateTypeId;
-    m_connectedStateTypesMap[shellySocketThingClassId] = shellySocketConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyGenericPMThingClassId] = shellyGenericPMConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyLightPMThingClassId] = shellyLightPMConnectedStateTypeId;
-    m_connectedStateTypesMap[shellySocketPMThingClassId] = shellySocketPMConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyRollerThingClassId] = shellyRollerConnectedStateTypeId;
-    m_connectedStateTypesMap[shellyI3ThingClassId] = shellyI3ConnectedStateTypeId;
-
-    m_signalStrengthStateTypesMap[shelly1ThingClassId] = shelly1SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shelly1pmThingClassId] = shelly1pmSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shelly1lThingClassId] = shelly1lSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shelly2ThingClassId] = shelly2SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shelly25ThingClassId] = shelly25SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyPlugThingClassId] = shellyPlugSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyDimmerThingClassId] = shellyDimmerSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyButton1ThingClassId] = shellyButton1SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyEm3ThingClassId] = shellyEm3SignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyHTThingClassId] = shellyHTSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellySwitchThingClassId] = shellySwitchSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyGenericThingClassId] = shellyGenericSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyLightThingClassId] = shellyLightSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellySocketThingClassId] = shellySocketSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyGenericPMThingClassId] = shellyGenericPMSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyLightPMThingClassId] = shellyLightPMSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellySocketPMThingClassId] = shellySocketPMSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyRollerThingClassId] = shellyRollerSignalStrengthStateTypeId;
-    m_signalStrengthStateTypesMap[shellyI3ThingClassId] = shellyI3SignalStrengthStateTypeId;
-
-    m_powerStateTypeMap[shelly1ThingClassId] = shelly1PowerStateTypeId;
-    m_powerStateTypeMap[shelly1pmThingClassId] = shelly1pmPowerStateTypeId;
-    m_powerStateTypeMap[shelly1lThingClassId] = shelly1lPowerStateTypeId;
-    m_powerStateTypeMap[shellyPlugThingClassId] = shellyPlugPowerStateTypeId;
-    m_powerStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2PowerStateTypeId;
-    m_powerStateTypeMap[shellyDimmerThingClassId] = shellyDimmerPowerStateTypeId;
-    m_powerStateTypeMap[shellyGenericThingClassId] = shellyGenericPowerStateTypeId;
-    m_powerStateTypeMap[shellyLightThingClassId] = shellyLightPowerStateTypeId;
-    m_powerStateTypeMap[shellySocketThingClassId] = shellySocketPowerStateTypeId;
-    m_powerStateTypeMap[shellyGenericPMThingClassId] = shellyGenericPMPowerStateTypeId;
-    m_powerStateTypeMap[shellyLightPMThingClassId] = shellyLightPMPowerStateTypeId;
-    m_powerStateTypeMap[shellySocketPMThingClassId] = shellySocketPMPowerStateTypeId;
-    m_powerStateTypeMap[shellyEm3ThingClassId] = shellyEm3PowerStateTypeId;
-
-    m_currentPowerStateTypeMap[shelly1pmThingClassId] = shelly1pmCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shelly1lThingClassId] = shelly1lCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyPlugThingClassId] = shellyPlugCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2CurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyDimmerThingClassId] = shellyDimmerCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyGenericPMThingClassId] = shellyGenericPMCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyLightPMThingClassId] = shellyLightPMCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellySocketPMThingClassId] = shellySocketPMCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyRollerThingClassId] = shellyRollerCurrentPowerStateTypeId;
-    m_currentPowerStateTypeMap[shellyEm3ThingClassId] = shellyEm3CurrentPowerStateTypeId;
-
-    m_totalEnergyConsumedStateTypeMap[shellyPlugThingClassId] = shellyPlugTotalEnergyConsumedStateTypeId;
-    m_totalEnergyConsumedStateTypeMap[shellyGenericPMThingClassId] = shellyGenericPMTotalEnergyConsumedStateTypeId;
-    m_totalEnergyConsumedStateTypeMap[shellyLightPMThingClassId] = shellyLightPMTotalEnergyConsumedStateTypeId;
-    m_totalEnergyConsumedStateTypeMap[shellySocketPMThingClassId] = shellySocketPMTotalEnergyConsumedStateTypeId;
-    m_totalEnergyConsumedStateTypeMap[shellyRollerThingClassId] = shellyRollerTotalEnergyConsumedStateTypeId;
-    m_totalEnergyConsumedStateTypeMap[shellyEm3ThingClassId] = shellyEm3TotalEnergyConsumedStateTypeId;
-
-    m_colorStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ColorStateTypeId;
-    m_colorTemperatureStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ColorTemperatureStateTypeId;
-
-    m_brightnessStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2BrightnessStateTypeId;
-    m_brightnessStateTypeMap[shellyDimmerThingClassId] = shellyDimmerBrightnessStateTypeId;
-
-    m_updateStatusStateTypesMap[shelly1ThingClassId] = shelly1UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shelly1pmThingClassId] = shelly1pmUpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shelly1lThingClassId] = shelly1lUpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shelly2ThingClassId] = shelly2UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shelly25ThingClassId] = shelly25UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyPlugThingClassId] = shellyPlugUpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyDimmerThingClassId] = shellyDimmerUpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyButton1ThingClassId] = shellyButton1UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyEm3ThingClassId] = shellyEm3UpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyHTThingClassId] = shellyHTUpdateStatusStateTypeId;
-    m_updateStatusStateTypesMap[shellyI3ThingClassId] = shellyI3UpdateStatusStateTypeId;
-
-    m_currentVersionStateTypesMap[shelly1ThingClassId] = shelly1CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmCurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shelly1lThingClassId] = shelly1lCurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shelly2ThingClassId] = shelly2CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shelly25ThingClassId] = shelly25CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyPlugThingClassId] = shellyPlugCurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerCurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3CurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyHTThingClassId] = shellyHTCurrentVersionStateTypeId;
-    m_currentVersionStateTypesMap[shellyI3ThingClassId] = shellyI3CurrentVersionStateTypeId;
-
-    m_availableVersionStateTypesMap[shelly1ThingClassId] = shelly1AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmAvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shelly1lThingClassId] = shelly1lAvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shelly2ThingClassId] = shelly2AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shelly25ThingClassId] = shelly25AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyPlugThingClassId] = shellyPlugAvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerAvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3AvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyHTThingClassId] = shellyHTAvailableVersionStateTypeId;
-    m_availableVersionStateTypesMap[shellyI3ThingClassId] = shellyI3AvailableVersionStateTypeId;
-
-    m_batteryLevelStateTypeMap[shellyButton1ThingClassId] = shellyButton1BatteryLevelStateTypeId;
-    m_batteryLevelStateTypeMap[shellyHTThingClassId] = shellyHTBatteryLevelStateTypeId;
-
-    m_batteryCriticalStateTypeMap[shellyButton1ThingClassId] = shellyButton1BatteryCriticalStateTypeId;
-    m_batteryCriticalStateTypeMap[shellyHTThingClassId] = shellyHTBatteryCriticalStateTypeId;
-
-    // Actions and their params
-    m_rebootActionTypeMap[shelly1RebootActionTypeId] = shelly1ThingClassId;
-    m_rebootActionTypeMap[shelly1pmRebootActionTypeId] = shelly1pmThingClassId;
-    m_rebootActionTypeMap[shelly1lRebootActionTypeId] = shelly1lThingClassId;
-    m_rebootActionTypeMap[shellyPlugRebootActionTypeId] = shellyPlugThingClassId;
-    m_rebootActionTypeMap[shellyRgbw2RebootActionTypeId] = shellyRgbw2ThingClassId;
-    m_rebootActionTypeMap[shellyDimmerRebootActionTypeId] = shellyDimmerThingClassId;
-    m_rebootActionTypeMap[shelly2RebootActionTypeId] = shelly2ThingClassId;
-    m_rebootActionTypeMap[shelly25RebootActionTypeId] = shelly25ThingClassId;
-    m_rebootActionTypeMap[shellyI3RebootActionTypeId] = shellyI3ThingClassId;
-
-    m_powerActionTypesMap[shelly1PowerActionTypeId] = shelly1ThingClassId;
-    m_powerActionTypesMap[shelly1pmPowerActionTypeId] = shelly1pmThingClassId;
-    m_powerActionTypesMap[shelly1lPowerActionTypeId] = shelly1lThingClassId;
-    m_powerActionTypesMap[shellyPlugPowerActionTypeId] = shellyPlugThingClassId;
-    m_powerActionTypesMap[shellyGenericPowerActionTypeId] = shellyGenericThingClassId;
-    m_powerActionTypesMap[shellyLightPowerActionTypeId] = shellyLightThingClassId;
-    m_powerActionTypesMap[shellySocketPowerActionTypeId] = shellySocketThingClassId;
-    m_powerActionTypesMap[shellyGenericPMPowerActionTypeId] = shellyGenericPMThingClassId;
-    m_powerActionTypesMap[shellyLightPMPowerActionTypeId] = shellyLightPMThingClassId;
-    m_powerActionTypesMap[shellySocketPMPowerActionTypeId] = shellySocketPMThingClassId;
-    m_powerActionTypesMap[shellyEm3PowerActionTypeId] = shellyEm3ThingClassId;
-
-    m_powerActionParamTypesMap[shelly1PowerActionTypeId] = shelly1PowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shelly1pmPowerActionTypeId] = shelly1pmPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shelly1lPowerActionTypeId] = shelly1lPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyPlugPowerActionTypeId] = shellyPlugPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyGenericPowerActionTypeId] = shellyGenericPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyLightPowerActionTypeId] = shellyLightPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellySocketPowerActionTypeId] = shellySocketPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyGenericPMPowerActionTypeId] = shellyGenericPMPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyLightPMPowerActionTypeId] = shellyLightPMPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellySocketPMPowerActionTypeId] = shellySocketPMPowerActionPowerParamTypeId;
-    m_powerActionParamTypesMap[shellyEm3PowerActionTypeId] = shellyEm3PowerActionPowerParamTypeId;
-
-    m_colorPowerActionTypesMap[shellyRgbw2PowerActionTypeId] = shellyRgbw2ThingClassId;
-    m_colorPowerActionParamTypesMap[shellyRgbw2PowerActionPowerParamTypeId] = shellyRgbw2PowerActionTypeId;
-
-    m_colorActionTypesMap[shellyRgbw2ColorActionTypeId] = shellyRgbw2ThingClassId;
-    m_colorActionParamTypesMap[shellyRgbw2ColorActionTypeId] = shellyRgbw2ColorActionTypeId;
-
-    m_colorBrightnessActionTypesMap[shellyRgbw2BrightnessActionTypeId] = shellyRgbw2ThingClassId;
-    m_colorBrightnessActionParamTypesMap[shellyRgbw2BrightnessActionBrightnessParamTypeId] = shellyRgbw2BrightnessActionTypeId;
-
-    m_colorTemperatureActionTypesMap[shellyRgbw2ColorTemperatureActionTypeId] = shellyRgbw2ThingClassId;
-    m_colorTemperatureActionParamTypesMap[shellyRgbw2ColorTemperatureActionTypeId] = shellyRgbw2ColorTemperatureActionColorTemperatureParamTypeId;
-
-    m_dimmablePowerActionTypesMap[shellyDimmerPowerActionTypeId] = shellyDimmerThingClassId;
-    m_dimmablePowerActionParamTypesMap[shellyDimmerPowerActionTypeId] = shellyDimmerPowerActionPowerParamTypeId;
-
-    m_dimmableBrightnessActionTypesMap[shellyDimmerBrightnessActionTypeId] = shellyDimmerThingClassId;
-    m_dimmableBrightnessActionParamTypesMap[shellyDimmerBrightnessActionTypeId] = shellyDimmerBrightnessActionBrightnessParamTypeId;
-
-    m_rollerOpenActionTypeMap[shellyRollerOpenActionTypeId] = shellyRollerThingClassId;
-    m_rollerCloseActionTypeMap[shellyRollerCloseActionTypeId] = shellyRollerThingClassId;
-    m_rollerStopActionTypeMap[shellyRollerStopActionTypeId] = shellyRollerThingClassId;
-
-    m_updateActionTypesMap[shelly1PerformUpdateActionTypeId] = shelly1ThingClassId;
-    m_updateActionTypesMap[shelly1pmPerformUpdateActionTypeId] = shelly1pmThingClassId;
-    m_updateActionTypesMap[shelly1lPerformUpdateActionTypeId] = shelly1lThingClassId;
-    m_updateActionTypesMap[shelly2PerformUpdateActionTypeId] = shelly2ThingClassId;
-    m_updateActionTypesMap[shelly25PerformUpdateActionTypeId] = shelly25ThingClassId;
-    m_updateActionTypesMap[shellyPlugPerformUpdateActionTypeId] = shellyPlugThingClassId;
-    m_updateActionTypesMap[shellyRgbw2PerformUpdateActionTypeId] = shellyRgbw2ThingClassId;
-    m_updateActionTypesMap[shellyDimmerPerformUpdateActionTypeId] = shellyDimmerThingClassId;
-    m_updateActionTypesMap[shellyButton1PerformUpdateActionTypeId] = shellyButton1ThingClassId;
-    m_updateActionTypesMap[shellyEm3PerformUpdateActionTypeId] = shellyEm3ThingClassId;
-    m_updateActionTypesMap[shellyHTPerformUpdateActionTypeId] = shellyHTThingClassId;
-    m_updateActionTypesMap[shellyI3PerformUpdateActionTypeId] = shellyI3ThingClassId;
 }
 
 IntegrationPluginShelly::~IntegrationPluginShelly()
@@ -320,7 +429,7 @@ void IntegrationPluginShelly::init()
 void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
 {
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
-//        qCDebug(dcShelly()) << "Have entry" << entry;
+        //        qCDebug(dcShelly()) << "Have entry" << entry;
         QRegExp namePattern;
         if (info->thingClassId() == shelly1ThingClassId) {
             namePattern = QRegExp("^shelly1-[0-9A-Z]+$");
@@ -346,6 +455,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("shellyht-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyI3ThingClassId) {
             namePattern = QRegExp("shellyix3-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyMotionThingClassId) {
+            namePattern = QRegExp("shellymotionsensor-[0-9A-Z]+$");
         }
         if (!entry.name().contains(namePattern)) {
             continue;
@@ -355,18 +466,18 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
 
         ThingDescriptor descriptor(info->thingClassId(), entry.name(), entry.hostAddress().toString());
         ParamList params;
-        params << Param(m_idParamTypeMap.value(info->thingClassId()), entry.name());
-        params << Param(m_usernameParamTypeMap.value(info->thingClassId()), "");
-        params << Param(m_passwordParamTypeMap.value(info->thingClassId()), "");
-        if (m_connectedDeviceParamTypeMap.contains(info->thingClassId())) {
-            params << Param(m_connectedDeviceParamTypeMap.value(info->thingClassId()), "None");
+        params << Param(idParamTypeMap.value(info->thingClassId()), entry.name());
+        params << Param(usernameParamTypeMap.value(info->thingClassId()), "");
+        params << Param(passwordParamTypeMap.value(info->thingClassId()), "");
+        if (connectedDeviceParamTypeMap.contains(info->thingClassId())) {
+            params << Param(connectedDeviceParamTypeMap.value(info->thingClassId()), "None");
         }
-        if (m_connectedDevice2ParamTypeMap.contains(info->thingClassId())) {
-            params << Param(m_connectedDevice2ParamTypeMap.value(info->thingClassId()), "None");
+        if (connectedDevice2ParamTypeMap.contains(info->thingClassId())) {
+            params << Param(connectedDevice2ParamTypeMap.value(info->thingClassId()), "None");
         }
         descriptor.setParams(params);
 
-        Things existingThings = myThings().filterByParam(m_idParamTypeMap.value(info->thingClassId()), entry.name());
+        Things existingThings = myThings().filterByParam(idParamTypeMap.value(info->thingClassId()), entry.name());
         if (existingThings.count() == 1) {
             qCDebug(dcShelly()) << "This shelly already exists in the system!";
             descriptor.setThingId(existingThings.first()->id());
@@ -382,7 +493,7 @@ void IntegrationPluginShelly::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (m_idParamTypeMap.contains(thing->thingClassId())) {
+    if (idParamTypeMap.contains(thing->thingClassId())) {
         setupShellyGateway(info);
         return;
     }
@@ -408,13 +519,13 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    if (m_rebootActionTypeMap.contains(action.actionTypeId())) {
+    if (rebootActionTypeMap.contains(action.actionTypeId())) {
         QUrl url;
         url.setScheme("http");
         url.setHost(getIP(info->thing()));
         url.setPath("/reboot");
-        url.setUserName(thing->paramValue(m_usernameParamTypeMap.value(thing->thingClassId())).toString());
-        url.setPassword(thing->paramValue(m_passwordParamTypeMap.value(thing->thingClassId())).toString());
+        url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
+        url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
         connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
@@ -423,44 +534,44 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (m_updateActionTypesMap.contains(action.actionTypeId())) {
+    if (updateActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+        QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
         channel->publish(QString("shellies/%1/command").arg(shellyId), "update_fw");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_powerActionTypesMap.contains(action.actionTypeId())) {
+    if (powerActionTypesMap.contains(action.actionTypeId())) {
         // If the main shelly has a power action (e.g. Shelly Plug, there is no parentId)
         Thing *parentDevice = thing->parentId().isNull() ? thing : myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         int relay = 1;
-        if (m_channelParamTypeMap.contains(thing->thingClassId())) {
-            relay = thing->paramValue(m_channelParamTypeMap.value(thing->thingClassId())).toInt();
+        if (channelParamTypeMap.contains(thing->thingClassId())) {
+            relay = thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt();
         }
-        ParamTypeId powerParamTypeId = m_powerActionParamTypesMap.value(action.actionTypeId());
+        ParamTypeId powerParamTypeId = powerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(powerParamTypeId).value().toBool();
         channel->publish(QString("shellies/%1/relay/%2/command").arg(shellyId).arg(relay - 1), on ? "on" : "off");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_colorPowerActionTypesMap.contains(action.actionTypeId())) {
+    if (colorPowerActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId colorPowerParamTypeId = m_colorPowerActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId colorPowerParamTypeId = colorPowerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(colorPowerParamTypeId).value().toBool();
         channel->publish("shellies/" + shellyId + "/color/0/command", on ? "on" : "off");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_colorActionTypesMap.contains(action.actionTypeId())) {
+    if (colorActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId colorParamTypeId = m_colorActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId colorParamTypeId = colorActionParamTypesMap.value(action.actionTypeId());
         QColor color = action.param(colorParamTypeId).value().value<QColor>();
         QVariantMap data;
         data.insert("turn", "on"); // Should we really?
@@ -474,10 +585,10 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (m_colorTemperatureStateTypeMap.contains(action.actionTypeId())) {
+    if (colorTemperatureStateTypeMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId colorTemperatureParamTypeId = m_colorTemperatureActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId colorTemperatureParamTypeId = colorTemperatureActionParamTypesMap.value(action.actionTypeId());
         int ct = action.param(colorTemperatureParamTypeId).value().toInt();
         QVariantMap data;
         data.insert("turn", "on"); // Should we really?
@@ -491,10 +602,10 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (m_colorBrightnessActionTypesMap.contains(action.actionTypeId())) {
+    if (colorBrightnessActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId brightnessParamTypeId = m_colorBrightnessActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId brightnessParamTypeId = colorBrightnessActionParamTypesMap.value(action.actionTypeId());
         int brightness = action.param(brightnessParamTypeId).value().toInt();
         QVariantMap data;
         data.insert("turn", "on"); // Should we really?
@@ -505,20 +616,20 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (m_dimmablePowerActionTypesMap.contains(action.actionTypeId())) {
+    if (dimmablePowerActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId powerParamTypeId = m_dimmablePowerActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId powerParamTypeId = dimmablePowerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(powerParamTypeId).value().toBool();
         channel->publish("shellies/" + shellyId + "/light/0/command", on ? "on" : "off");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_dimmableBrightnessActionTypesMap.contains(action.actionTypeId())) {
+    if (dimmableBrightnessActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        ParamTypeId brightnessParamTypeId = m_dimmableBrightnessActionParamTypesMap.value(action.actionTypeId());
+        QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
+        ParamTypeId brightnessParamTypeId = dimmableBrightnessActionParamTypesMap.value(action.actionTypeId());
         int brightness = action.param(brightnessParamTypeId).value().toInt();
         QVariantMap data;
         data.insert("turn", "on"); // Should we really?
@@ -529,28 +640,28 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (m_rollerOpenActionTypeMap.contains(action.actionTypeId())) {
+    if (rollerOpenActionTypeMap.contains(action.actionTypeId())) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         channel->publish("shellies/" + shellyId + "/roller/0/command", "open");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_rollerCloseActionTypeMap.contains(action.actionTypeId())) {
+    if (rollerCloseActionTypeMap.contains(action.actionTypeId())) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         channel->publish("shellies/" + shellyId + "/roller/0/command", "close");
         info->finish(Thing::ThingErrorNoError);
         return;
     }
 
-    if (m_rollerStopActionTypeMap.contains(action.actionTypeId())) {
+    if (rollerStopActionTypeMap.contains(action.actionTypeId())) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         channel->publish("shellies/" + shellyId + "/roller/0/command", "stop");
         info->finish(Thing::ThingErrorNoError);
         return;
@@ -567,7 +678,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyRollerCalibrateActionTypeId) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         channel->publish("shellies/" + shellyId + "/roller/0/command", "rc");
         info->finish(Thing::ThingErrorNoError);
         return;
@@ -576,7 +687,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyRollerPercentageActionTypeId) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
-        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         channel->publish("shellies/" + shellyId + "/roller/0/command/pos", QByteArray::number(action.param(shellyRollerPercentageActionPercentageParamTypeId).value().toInt()));
         info->finish(Thing::ThingErrorNoError);
         return;
@@ -592,10 +703,10 @@ void IntegrationPluginShelly::onClientConnected(MqttChannel *channel)
         qCWarning(dcShelly()) << "Received a client connect for a thing we don't know!";
         return;
     }
-    thing->setStateValue(m_connectedStateTypesMap.value(thing->thingClassId()), true);
+    thing->setStateValue(connectedStateTypesMap.value(thing->thingClassId()), true);
 
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
-        child->setStateValue(m_connectedStateTypesMap[child->thingClassId()], true);
+        child->setStateValue(connectedStateTypesMap[child->thingClassId()], true);
     }
 }
 
@@ -606,10 +717,10 @@ void IntegrationPluginShelly::onClientDisconnected(MqttChannel *channel)
         qCWarning(dcShelly()) << "Received a client disconnect for a thing we don't know!";
         return;
     }
-    thing->setStateValue(m_connectedStateTypesMap.value(thing->thingClassId()), false);
+    thing->setStateValue(connectedStateTypesMap.value(thing->thingClassId()), false);
 
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
-        child->setStateValue(m_connectedStateTypesMap[child->thingClassId()], false);
+        child->setStateValue(connectedStateTypesMap[child->thingClassId()], false);
     }
 }
 
@@ -623,7 +734,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic;
 
-    QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+    QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
     if (topic == "shellies/" + shellyId + "/info") {
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
@@ -632,7 +743,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << qUtf8Printable(payload);
             return;
         }
-//        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+        //        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap data = jsonDoc.toVariant().toMap();
 
         // Wifi signal strength
@@ -641,16 +752,16 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             int rssi = data.value("wifi_sta").toMap().value("rssi").toInt();
             signalStrength = qMin(100, qMax(0, (rssi + 100) * 2));
         }
-        thing->setStateValue(m_signalStrengthStateTypesMap.value(thing->thingClassId()), signalStrength);
+        thing->setStateValue(signalStrengthStateTypesMap.value(thing->thingClassId()), signalStrength);
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
-            child->setStateValue(m_signalStrengthStateTypesMap.value(child->thingClassId()), signalStrength);
+            child->setStateValue(signalStrengthStateTypesMap.value(child->thingClassId()), signalStrength);
         }
 
         // Firmware update
         QString updateStatus = updateStatusMap.value(data.value("update").toMap().value("status").toString());
-        thing->setStateValue(m_updateStatusStateTypesMap.value(thing->thingClassId()), updateStatus);
-        thing->setStateValue(m_currentVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("old_version").toString());
-        thing->setStateValue(m_availableVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("new_version").toString());
+        thing->setStateValue(updateStatusStateTypesMap.value(thing->thingClassId()), updateStatus);
+        thing->setStateValue(currentVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("old_version").toString());
+        thing->setStateValue(availableVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("new_version").toString());
 
         // While we normally use the specific topics instead of the "info" object, the Shell H&T posts it very rarely
         // and in combination with its power safe mode let's use this one to get temp/humidity
@@ -666,29 +777,29 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
 
     if (topic.startsWith("shellies/" + shellyId + "/input/")) {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         int channel = topic.split("/").last().toInt();
         // "1" or "0"
         // Emit event button pressed
         bool on = payload == "1";
         if (thing->thingClassId() == shellyI3ThingClassId) {
-           if (channel == 0) {
-               if (thing->stateValue(shellyI3Input1StateTypeId).toBool() != on) {
-                   thing->setStateValue(shellyI3Input1StateTypeId, on);
-                   emit emitEvent(Event(shellyI3Input1EventTypeId, thing->id()));
-               }
-           } else if (channel == 1) {
-               if (thing->stateValue(shellyI3Input2StateTypeId).toBool() != on) {
-                   thing->setStateValue(shellyI3Input2StateTypeId, on);
-                   emit emitEvent(Event(shellyI3Input2EventTypeId, thing->id()));
-               }
-           } else {
-               if (thing->stateValue(shellyI3Input3StateTypeId).toBool() != on) {
-                   thing->setStateValue(shellyI3Input3StateTypeId, on);
-                   emit emitEvent(Event(shellyI3Input3EventTypeId, thing->id()));
-               }
-           }
-           return;
+            if (channel == 0) {
+                if (thing->stateValue(shellyI3Input1StateTypeId).toBool() != on) {
+                    thing->setStateValue(shellyI3Input1StateTypeId, on);
+                    emit emitEvent(Event(shellyI3Input1EventTypeId, thing->id()));
+                }
+            } else if (channel == 1) {
+                if (thing->stateValue(shellyI3Input2StateTypeId).toBool() != on) {
+                    thing->setStateValue(shellyI3Input2StateTypeId, on);
+                    emit emitEvent(Event(shellyI3Input2EventTypeId, thing->id()));
+                }
+            } else {
+                if (thing->stateValue(shellyI3Input3StateTypeId).toBool() != on) {
+                    thing->setStateValue(shellyI3Input3StateTypeId, on);
+                    emit emitEvent(Event(shellyI3Input3EventTypeId, thing->id()));
+                }
+            }
+            return;
         }
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
             if (child->thingClassId() == shellySwitchThingClassId && child->paramValue(shellySwitchThingChannelParamTypeId).toInt() == channel + 1) {
@@ -702,21 +813,21 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     QRegExp topicMatcher = QRegExp("shellies/" + shellyId + "/relay/[0-1]");
     if (topicMatcher.exactMatch(topic)) {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         bool on = payload == "on";
 
         // If the shelly main thing has a power state (e.g. Shelly Plug)
-        if (m_powerStateTypeMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
+        if (powerStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
         }
         // And switch all childs of this shelly too
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
-            if (m_powerStateTypeMap.contains(child->thingClassId())) {
-                ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(child->thingClassId());
+            if (powerStateTypeMap.contains(child->thingClassId())) {
+                ParamTypeId channelParamTypeId = channelParamTypeMap.value(child->thingClassId());
                 if (child->paramValue(channelParamTypeId).toInt() == channel + 1) {
-                    child->setStateValue(m_powerStateTypeMap.value(child->thingClassId()), on);
+                    child->setStateValue(powerStateTypeMap.value(child->thingClassId()), on);
                 }
             }
         }
@@ -724,53 +835,53 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/power");
     if (topicMatcher.exactMatch(topic)) {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         double power = payload.toDouble();
         // If this gateway thing supports power measuring (e.g. Shelly Plug S) set it directly here
-        if (m_currentPowerStateTypeMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_currentPowerStateTypeMap.value(thing->thingClassId()), power);
+        if (currentPowerStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(currentPowerStateTypeMap.value(thing->thingClassId()), power);
         }
         // For multi-channel devices, power measurements are per-channel, so, find the child thing
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedsmartmeterconsumer")) {
-            ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(child->thingClassId());
+            ParamTypeId channelParamTypeId = channelParamTypeMap.value(child->thingClassId());
             if (child->paramValue(channelParamTypeId).toInt() == channel + 1) {
-                child->setStateValue(m_currentPowerStateTypeMap.value(child->thingClassId()), power);
+                child->setStateValue(currentPowerStateTypeMap.value(child->thingClassId()), power);
             }
         }
     }
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/energy");
     if (topicMatcher.exactMatch(topic)) {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         // W/min => kW/h
         double energy = payload.toDouble() / 1000 / 60;
         // If this gateway thing supports energy measuring (e.g. Shelly Plug S) set it directly here
-        if (m_totalEnergyConsumedStateTypeMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_totalEnergyConsumedStateTypeMap.value(thing->thingClassId()), energy);
+        if (totalEnergyConsumedStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(totalEnergyConsumedStateTypeMap.value(thing->thingClassId()), energy);
         }
         // For multi-channel devices, power measurements are per-channel, so, find the child thing
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedsmartmeterconsumer")) {
-            ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(child->thingClassId());
+            ParamTypeId channelParamTypeId = channelParamTypeMap.value(child->thingClassId());
             if (child->paramValue(channelParamTypeId).toInt() == channel + 1) {
-                child->setStateValue(m_totalEnergyConsumedStateTypeMap.value(child->thingClassId()), energy);
+                child->setStateValue(totalEnergyConsumedStateTypeMap.value(child->thingClassId()), energy);
             }
         }
     }
 
     if (topic == "shellies/" + shellyId + "/color/0") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
-        if (m_powerStateTypeMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
+        if (powerStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
         }
     }
 
     if (topic == "shellies/" + shellyId + "/color/0/status") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -778,25 +889,25 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             return;
         }
         QVariantMap statusMap = jsonDoc.toVariant().toMap();
-        if (m_colorStateTypeMap.contains(thing->thingClassId())) {
+        if (colorStateTypeMap.contains(thing->thingClassId())) {
             QColor color = QColor(statusMap.value("red").toInt(), statusMap.value("green").toInt(), statusMap.value("blue").toInt());
-            thing->setStateValue(m_colorStateTypeMap.value(thing->thingClassId()), color);
+            thing->setStateValue(colorStateTypeMap.value(thing->thingClassId()), color);
         }
-        if (m_brightnessStateTypeMap.contains(thing->thingClassId())) {
+        if (brightnessStateTypeMap.contains(thing->thingClassId())) {
             int brightness = statusMap.value("gain").toInt();
-            thing->setStateValue(m_brightnessStateTypeMap.value(thing->thingClassId()), brightness);
+            thing->setStateValue(brightnessStateTypeMap.value(thing->thingClassId()), brightness);
         }
-        if (m_currentPowerStateTypeMap.contains(thing->thingClassId())) {
+        if (currentPowerStateTypeMap.contains(thing->thingClassId())) {
             double power = statusMap.value("power").toDouble();
-            thing->setStateValue(m_currentPowerStateTypeMap.value(thing->thingClassId()), power);
+            thing->setStateValue(currentPowerStateTypeMap.value(thing->thingClassId()), power);
         }
     }
 
     if (topic == "shellies/" + shellyId + "/light/0") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
-        if (m_powerStateTypeMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
+        if (powerStateTypeMap.contains(thing->thingClassId())) {
+            thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
         }
     }
 
@@ -807,31 +918,31 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << "Error parsing JSON from Shelly:" << error.error << error.errorString() << payload;
             return;
         }
-//        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+        //        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap statusMap = jsonDoc.toVariant().toMap();
-        if (m_brightnessStateTypeMap.contains(thing->thingClassId())) {
+        if (brightnessStateTypeMap.contains(thing->thingClassId())) {
             int brightness = statusMap.value("brightness").toInt();
-            thing->setStateValue(m_brightnessStateTypeMap.value(thing->thingClassId()), brightness);
+            thing->setStateValue(brightnessStateTypeMap.value(thing->thingClassId()), brightness);
         }
     }
 
     if (topic == "shellies/" + shellyId + "/light/0/power") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
-        if (m_currentPowerStateTypeMap.contains(thing->thingClassId())) {
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
+        if (currentPowerStateTypeMap.contains(thing->thingClassId())) {
             double power = payload.toDouble();
-            thing->setStateValue(m_currentPowerStateTypeMap.value(thing->thingClassId()), power);
+            thing->setStateValue(currentPowerStateTypeMap.value(thing->thingClassId()), power);
         }
     }
 
     if (topic == "shellies/" + shellyId + "/roller/0") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
             child->setStateValue(shellyRollerMovingStateTypeId, payload != "stop");
         }
     }
     if (topic == "shellies/" + shellyId + "/roller/0/pos") {
-//        qCDebug(dcShelly()) << "Payload:" << payload;
+        //        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         int pos = payload.toInt();
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
@@ -840,10 +951,10 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/sensor/battery") {
-        if (m_batteryLevelStateTypeMap.contains(thing->thingClassId())) {
+        if (batteryLevelStateTypesMap.contains(thing->thingClassId())) {
             int batteryLevel = payload.toInt();
-            thing->setStateValue(m_batteryLevelStateTypeMap.value(thing->thingClassId()), batteryLevel);
-            thing->setStateValue(m_batteryCriticalStateTypeMap.value(thing->thingClassId()), batteryLevel < 10);
+            thing->setStateValue(batteryLevelStateTypesMap.value(thing->thingClassId()), batteryLevel);
+            thing->setStateValue(batteryCriticalStateTypesMap.value(thing->thingClassId()), batteryLevel < 10);
         }
     }
 
@@ -877,7 +988,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 return;
             }
             QString param = "";
-            EventTypeId eventTypeId = shellyI3LongPressedEventTypeId;;
+            EventTypeId eventTypeId = shellyI3LongPressedEventTypeId;
             ParamTypeId paramTypeId = shellyI3LongPressedEventButtonNameParamTypeId;
             ParamTypeId param2TypeId = shellyI3LongPressedEventOriginParamTypeId;
             if (event == "L") {
@@ -955,13 +1066,38 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             thing->setStateValue(shellyEm3CurrentPowerStateTypeId, totalPower);
         }
     }
+
+    if (topic == "shellies/" + shellyId + "/status") {
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcShelly()) << "Error parsing JSON from Shelly:" << error.error << error.errorString() << payload;
+            return;
+        }
+        //        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+        QVariantMap statusMap = jsonDoc.toVariant().toMap();
+
+        if (presenceStateTypesMap.contains(thing->thingClassId())) {
+            thing->setStateValue(presenceStateTypesMap.value(thing->thingClassId()), statusMap.value("motion").toBool());
+        }
+        if (lightIntensityStateTypesMap.contains(thing->thingClassId())) {
+            thing->setStateValue(lightIntensityStateTypesMap.value(thing->thingClassId()), statusMap.value("lux").toDouble());
+        }
+        if (vibrationStateTypesMap.contains(thing->thingClassId())) {
+            thing->setStateValue(vibrationStateTypesMap.value(thing->thingClassId()), statusMap.value("vibration").toBool());
+        }
+        if (batteryLevelStateTypesMap.contains(thing->thingClassId()) && statusMap.contains("bat")) {
+            thing->setStateValue(batteryLevelStateTypesMap.value(thing->thingClassId()), statusMap.value("bat").toMap().value("value").toInt());
+            thing->setStateValue(batteryCriticalStateTypesMap.value(thing->thingClassId()), statusMap.value("bat").toMap().value("value").toInt() < 10);
+        }
+    }
 }
 
 void IntegrationPluginShelly::updateStatus()
 {
     foreach (Thing *thing, m_mqttChannels.keys()) {
         MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+        QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
         qCDebug(dcShelly()) << "Requesting announcement" << QString("shellies/%1/info").arg(shellyId);
         channel->publish(QString("shellies/%1/command").arg(shellyId), "announce");
     }
@@ -970,7 +1106,7 @@ void IntegrationPluginShelly::updateStatus()
 void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
+    QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
     ZeroConfServiceEntry zeroConfEntry;
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
         if (entry.name() == shellyId) {
@@ -997,8 +1133,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     // Validate params
     bool rollerMode = false;
     if (info->thing()->thingClassId() == shelly2ThingClassId || info->thing()->thingClassId() == shelly25ThingClassId) {
-        QString connectedDevice1 = info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString();
-        QString connectedDevice2 = info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString();
+        QString connectedDevice1 = info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString();
+        QString connectedDevice2 = info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString();
         if (connectedDevice1.startsWith("Roller Shutter") && !connectedDevice2.startsWith("Roller Shutter")) {
             qCWarning(dcShelly()) << "Cannot mix roller and relay mode. This won't work..";
             info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Roller shutter mode can't be mixed with relay mode. Please configure both connected devices to control a shutter or relays."));
@@ -1035,8 +1171,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     url.setHost(address.toString());
     url.setPort(80);
     url.setPath("/settings");
-    url.setUserName(info->thing()->paramValue(m_usernameParamTypeMap.value(info->thing()->thingClassId())).toString());
-    url.setPassword(info->thing()->paramValue(m_passwordParamTypeMap.value(info->thing()->thingClassId())).toString());
+    url.setUserName(info->thing()->paramValue(usernameParamTypeMap.value(info->thing()->thingClassId())).toString());
+    url.setPassword(info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString());
 
     QUrlQuery query;
     query.addQueryItem("mqtt_server", channel->serverAddress().toString() + ":" + QString::number(channel->serverPort()));
@@ -1131,35 +1267,35 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             // No PM devices for shelly 1 and 2
             if (info->thing()->thingClassId() == shelly1ThingClassId
                     || info->thing()->thingClassId() == shelly2ThingClassId) {
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
                     ThingDescriptor genericChild(shellyGenericThingClassId, info->thing()->name() + " connected device", QString(), info->thing()->id());
                     genericChild.setParams(ParamList() << Param(shellyGenericThingChannelParamTypeId, 1));
                     autoChilds.append(genericChild);
                 }
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
                     ThingDescriptor lightChild(shellyLightThingClassId, info->thing()->name() + " connected light", QString(), info->thing()->id());
                     lightChild.setParams(ParamList() << Param(shellyLightThingChannelParamTypeId, 1));
                     autoChilds.append(lightChild);
                 }
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
                     ThingDescriptor socketChild(shellySocketThingClassId, info->thing()->name() + " connected socket", QString(), info->thing()->id());
                     socketChild.setParams(ParamList() << Param(shellySocketThingChannelParamTypeId, 1));
                     autoChilds.append(socketChild);
                 }
-            // PM devices for shelly 1 pm and 2.5
+                // PM devices for shelly 1 pm and 2.5
             } else if (info->thing()->thingClassId() == shelly1pmThingClassId
                        || info->thing()->thingClassId() == shelly25ThingClassId) {
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
                     ThingDescriptor genericChild(shellyGenericPMThingClassId, info->thing()->name() + " connected device", QString(), info->thing()->id());
                     genericChild.setParams(ParamList() << Param(shellyGenericPMThingChannelParamTypeId, 1));
                     autoChilds.append(genericChild);
                 }
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
                     ThingDescriptor lightChild(shellyLightPMThingClassId, info->thing()->name() + " connected light", QString(), info->thing()->id());
                     lightChild.setParams(ParamList() << Param(shellyLightPMThingChannelParamTypeId, 1));
                     autoChilds.append(lightChild);
                 }
-                if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
+                if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
                     ThingDescriptor socketChild(shellySocketPMThingClassId, info->thing()->name() + " connected socket", QString(), info->thing()->id());
                     socketChild.setParams(ParamList() << Param(shellySocketPMThingChannelParamTypeId, 1));
                     autoChilds.append(socketChild);
@@ -1167,17 +1303,17 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 
                 // Second channel for shelly 2 (no power metering)
                 if (info->thing()->thingClassId() == shelly2ThingClassId) {
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
                         ThingDescriptor genericChild(shellyGenericThingClassId, info->thing()->name() + " connected thing 2", QString(), info->thing()->id());
                         genericChild.setParams(ParamList() << Param(shellyGenericThingChannelParamTypeId, 2));
                         autoChilds.append(genericChild);
                     }
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
                         ThingDescriptor lightChild(shellyLightThingClassId, info->thing()->name() + " connected light 2", QString(), info->thing()->id());
                         lightChild.setParams(ParamList() << Param(shellyLightThingChannelParamTypeId, 2));
                         autoChilds.append(lightChild);
                     }
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
                         ThingDescriptor socketChild(shellySocketThingClassId, info->thing()->name() + " connected socket 2", QString(), info->thing()->id());
                         socketChild.setParams(ParamList() << Param(shellySocketThingChannelParamTypeId, 2));
                         autoChilds.append(socketChild);
@@ -1186,17 +1322,17 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 
                 // Second channel for shelly 2.5 (with power metering)
                 if (info->thing()->thingClassId() == shelly25ThingClassId) {
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Generic") {
                         ThingDescriptor genericChild(shellyGenericPMThingClassId, info->thing()->name() + " connected thing 2", QString(), info->thing()->id());
                         genericChild.setParams(ParamList() << Param(shellyGenericPMThingChannelParamTypeId, 2));
                         autoChilds.append(genericChild);
                     }
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Light") {
                         ThingDescriptor lightChild(shellyLightPMThingClassId, info->thing()->name() + " connected light 2", QString(), info->thing()->id());
                         lightChild.setParams(ParamList() << Param(shellyLightPMThingChannelParamTypeId, 2));
                         autoChilds.append(lightChild);
                     }
-                    if (info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
+                    if (info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Socket") {
                         ThingDescriptor socketChild(shellySocketPMThingClassId, info->thing()->name() + " connected socket 2", QString(), info->thing()->id());
                         socketChild.setParams(ParamList() << Param(shellySocketPMThingChannelParamTypeId, 2));
                         autoChilds.append(socketChild);
@@ -1206,8 +1342,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
                 // And finally the special roller shutter mode
                 if (info->thing()->thingClassId() == shelly2ThingClassId
                         || info->thing()->thingClassId() == shelly25ThingClassId) {
-                    if (info->thing()->paramValue(m_connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Roller Shutter Up"
-                            && info->thing()->paramValue(m_connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Roller Shutter Down") {
+                    if (info->thing()->paramValue(connectedDeviceParamTypeMap.value(info->thing()->thingClassId())).toString() == "Roller Shutter Up"
+                            && info->thing()->paramValue(connectedDevice2ParamTypeMap.value(info->thing()->thingClassId())).toString() == "Roller Shutter Down") {
                         ThingDescriptor rollerShutterChild(shellyRollerThingClassId, info->thing()->name() + " connected shutter", QString(), info->thing()->id());
                         rollerShutterChild.setParams(ParamList() << Param(shellyRollerThingChannelParamTypeId, 1));
                         autoChilds.append(rollerShutterChild);
@@ -1226,8 +1362,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
         }
 
         // Make sure authentication is enalbed if the user wants it
-        QString username = info->thing()->paramValue(m_usernameParamTypeMap.value(info->thing()->thingClassId())).toString();
-        QString password = info->thing()->paramValue(m_passwordParamTypeMap.value(info->thing()->thingClassId())).toString();
+        QString username = info->thing()->paramValue(usernameParamTypeMap.value(info->thing()->thingClassId())).toString();
+        QString password = info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString();
         if (!username.isEmpty()) {
             QUrl url;
             url.setScheme("http");
@@ -1264,8 +1400,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             url.setScheme("http");
             url.setHost(address);
             url.setPort(80);
-            url.setUserName(thing->paramValue(m_usernameParamTypeMap.value(thing->thingClassId())).toString());
-            url.setPassword(thing->paramValue(m_passwordParamTypeMap.value(thing->thingClassId())).toString());
+            url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
+            url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
 
             QUrlQuery query;
             if (settingTypeId == shellyPlugSettingsDefaultStateParamTypeId) {
@@ -1325,8 +1461,8 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
         url.setHost(address);
         url.setPort(80);
         url.setPath("/settings/relay/0");
-        url.setUserName(parentDevice->paramValue(m_usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
-        url.setPassword(parentDevice->paramValue(m_passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
+        url.setUserName(parentDevice->paramValue(usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
+        url.setPassword(parentDevice->paramValue(passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
 
         QUrlQuery query;
         if (paramTypeId == shellySwitchSettingsButtonTypeParamTypeId) {
