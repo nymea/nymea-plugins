@@ -97,7 +97,7 @@ public:
     bool authenticated();
     bool connected();
 
-    void getApiCredentials(const QString &url = "https://my.tado.com/webapp/env.js");
+    void getApiCredentials(const QString &url = "https://app.tado.com/env.js");
     void getToken(const QString &password);
     void getHomes();
     void getZones(const QString &homeId);
