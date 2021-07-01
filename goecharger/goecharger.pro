@@ -1,7 +1,5 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationplugingoecharger)
-
 QT += network
 
 PKGCONFIG += nymea-mqtt
