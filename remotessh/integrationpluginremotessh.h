@@ -46,8 +46,11 @@ class IntegrationPluginRemoteSsh : public IntegrationPlugin
 public:
     explicit IntegrationPluginRemoteSsh();
 
-    void init() override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
@@ -60,13 +63,10 @@ private:
 
     PluginTimer *m_pluginTimer = nullptr;
 
-    bool m_aboutToQuit = false;
-    QString m_identityFilePath;
-
     QProcess *startReverseSSHProcess(Thing *thing);
+    QProcess *startSshKeyGenProcess(Thing *thing);
 
 private slots:
-    void onPluginTimeout();
     void processReadyRead();
     void processStateChanged(QProcess::ProcessState state);
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
