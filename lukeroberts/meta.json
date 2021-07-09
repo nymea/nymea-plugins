@@ -1,0 +1,13 @@
+{
+    "title": "Luke Roberts",
+    "tagline": "Control Luke Roberts model F.",
+    "icon": "lukeroberts.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "bluetooth"
+    ],
+    "categories": [
+        "light"
+    ]
+}
