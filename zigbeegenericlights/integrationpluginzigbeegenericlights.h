@@ -68,6 +68,7 @@ private:
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
 
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
+    QHash<Thing *, ThingActionInfo *> m_pendingBrightnessActions;
 
     // Get the endpoint for the given thing
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
@@ -86,6 +87,11 @@ private:
     void readLightLevelState(Thing *thing);
     void readLightColorTemperatureState(Thing *thing);
     void readLightColorXYState(Thing *thing);
+
+    // Configure reporting
+    void configureLightPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void configureLightBrightnessReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
 
     // Color temperature information handling
     typedef struct ColorTemperatureRange {
