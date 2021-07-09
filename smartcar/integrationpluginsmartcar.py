@@ -117,12 +117,15 @@ def createSmartcarClient():
     clientSecret = apiKey.data("clientSecret")
     redirectUri = "https://127.0.0.1:8888"
     
+    testMode = configValue(smartcarPluginTestModeParamTypeId)
+    logger.log("Test mode enabled: ", testMode)    
+    
     smartcarClient = smartcar.AuthClient(
         client_id=clientId,
         client_secret=clientSecret,
         redirect_uri=redirectUri,
         scope=['required:read_vehicle_info', 'required:read_battery', 'required:read_charge'],
-        test_mode=True
+        test_mode=testMode
     )    
     return smartcarClient
 
@@ -200,5 +203,11 @@ def getAccessToken(client, thingId):
     if smartcar.is_expired(expiration_date_time_obj):
         token = client.exchange_refresh_token(token['refresh_token'])
         saveToken(thingId, token)
-    return token['access_token']    
+    return token['access_token']
+
+
+def configValueChanged(paramTypeId, value):    
+    if paramTypeId == smartcarPluginTestModeParamTypeId:
+        logger.log("Test mode enabled changed to: ", value)
+        #should retrigger a setup somehow here
     

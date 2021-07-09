@@ -4,6 +4,13 @@
     "id": "f33bb38d-640e-4b15-a39e-f0e7b2cc6993",
     "paramTypes": [
         {
+            "id": "70e2c7a1-55b4-47fd-83b5-549de30b1391",
+            "name": "testMode",
+            "displayName": "Test Mode",
+            "type": "bool",                            
+            "defaultValue": false                            
+        },
+        {
             "id": "bb5ee037-5034-4921-b1d8-3936bc515fa6",
             "name": "customClientId",
             "displayName": "Client ID",

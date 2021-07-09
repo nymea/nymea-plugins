@@ -1,4 +1,11 @@
-Flask==1.0.2
-flask-cors==3.0.9
-requests==2.20.1
-smartcar==5.2.1
+Flask==1.0.2 \
+    --hash=sha256:2271c0070dbcb5275fad4a82e29f23ab92682dc45f9dfbc22c02ba9b9322ce48 \
+    --hash=sha256:a080b744b7e345ccfcbc77954861cb05b3c63786e93f2b3875e0913d44b43f05
+Flask-Cors==3.0.9 \
+    --hash=sha256:6bcfc100288c5d1bcb1dbb854babd59beee622ffd321e444b05f24d6d58466b8 \
+    --hash=sha256:cee4480aaee421ed029eaa788f4049e3e26d15b5affb6a880dade6bafad38324
+requests==2.20.1 \
+    --hash=sha256:65b3a120e4329e33c9889db89c80976c5272f56ea92d3e74da8a463992e3ff54 \
+    --hash=sha256:ea881206e59f41dbd0bd445437d792e43906703fff75ca8ff43ccdb11f33f263
+smartcar==5.2.1 \
+    --hash=sha256:ee296d917b5fcf3f756737fb87a158558b0beaa5f0c5626de6a7c10f493ff957
