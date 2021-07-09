@@ -592,6 +592,45 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == phSensorThingClassId) {
+        if (action.actionTypeId() == phSensorInputActionTypeId) {
+            double value = info->action().paramValue(phSensorInputActionInputParamTypeId).toDouble();
+            thing->setStateValue(phSensorInputStateTypeId, value);
+            double min = info->thing()->setting(phSensorSettingsMinInputParamTypeId).toDouble();
+            double max = info->thing()->setting(phSensorSettingsMaxInputParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, min, max, 0, 14);
+            double roundingFactor = qPow(10, info->thing()->setting(phSensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(phSensorPhStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    } else if (thing->thingClassId() == orpSensorThingClassId) {
+        if (action.actionTypeId() == orpSensorInputActionTypeId) {
+            double value = info->action().paramValue(orpSensorInputActionInputParamTypeId).toDouble();
+            thing->setStateValue(orpSensorInputStateTypeId, value);
+            double min = info->thing()->setting(orpSensorSettingsMinORPParamTypeId).toDouble();
+            double max = info->thing()->setting(orpSensorSettingsMaxORPParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, 0, 100, min, max);
+            double roundingFactor = qPow(10, info->thing()->setting(orpSensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(orpSensorOrpStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    } else if (thing->thingClassId() == o2SensorThingClassId) {
+        if (action.actionTypeId() == o2SensorInputActionTypeId) {
+            double value = info->action().paramValue(o2SensorInputActionInputParamTypeId).toDouble();
+            thing->setStateValue(o2SensorInputStateTypeId, value);
+            double min = info->thing()->setting(o2SensorSettingsMinInputParamTypeId).toDouble();
+            double max = info->thing()->setting(o2SensorSettingsMaxInputParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, min, max, 0, 100);
+            double roundingFactor = qPow(10, info->thing()->setting(o2SensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(o2SensorO2saturationStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
     } else if (thing->thingClassId() == pressureSensorThingClassId) {
         if (action.actionTypeId() == pressureSensorInputActionTypeId) {
             double value = info->action().param(pressureSensorInputActionInputParamTypeId).value().toDouble();
