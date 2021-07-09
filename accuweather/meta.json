@@ -1,0 +1,14 @@
+{
+    "title": "AccuWeather",
+    "tagline": "Get current weather data for your location",
+    "icon": "accuweather.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "weather",
+        "online-service"
+    ]
+}
