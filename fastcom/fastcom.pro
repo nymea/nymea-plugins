@@ -1,4 +1,3 @@
-TEMPLATE = aux
+PY_SOURCES = integrationpluginfastcom.py
 
-OTHER_FILES = integrationpluginfastcom.py \
-    integrationpluginfastcom.json
+include(../python-plugins.pri)

@@ -1,5 +1,3 @@
-TEMPLATE = aux
+PY_SOURCES += integrationpluginneatobotvac.py
 
-OTHER_FILES = integrationpluginneatobotvac.json \
-        integrationpluginneatobotvac.py
-
+include(../python-plugins.pri)

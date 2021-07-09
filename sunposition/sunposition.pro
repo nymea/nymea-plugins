@@ -1,5 +1,4 @@
-TEMPLATE = aux
 
-OTHER_FILES = integrationpluginsunposition.json \
-        integrationpluginsunposition.py
+PY_SOURCES = integrationpluginsunposition.py
 
+include(../python-plugins.pri)

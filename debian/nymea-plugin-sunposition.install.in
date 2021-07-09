@@ -1,4 +1,1 @@
-sunposition/integrationpluginsunposition.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
-sunposition/integrationpluginsunposition.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
-sunposition/sunposition.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
-sunposition/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
