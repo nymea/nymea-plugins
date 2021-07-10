@@ -422,6 +422,49 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Hue on/off light
+    if (thing->thingClassId() == onOffLightThingClassId) {
+        qCDebug(dcPhilipsHue) << "Setup Hue white light" << thing->params();
+
+        HueLight *hueLight = new HueLight(bridge, this);
+
+        /* // Migrate thing parameters after changing param type UUIDs in 0.14.
+        QMap<QString, ParamTypeId> migrationMap;
+        migrationMap.insert("095a463b-f59e-46b1-989a-a71f9cbe3e30", onOffLightThingModelIdParamTypeId);
+        migrationMap.insert("3f3467ef-4483-4eb9-bcae-84e628322f84", onOffLightThingTypeParamTypeId);
+        migrationMap.insert("1a5129ca-006c-446c-9f2e-79b065de715f", onOffLightThingUuidParamTypeId);
+        migrationMap.insert("491dc012-ccf2-4d3a-9f18-add98f7374af", onOffLightThingLightIdParamTypeId);
+
+        ParamList migratedParams;
+        foreach (const Param &oldParam, thing->params()) {
+            QString oldId = oldParam.paramTypeId().toString();
+            oldId.remove(QRegExp("[{}]"));
+            if (migrationMap.contains(oldId)) {
+                ParamTypeId newId = migrationMap.value(oldId);
+                QVariant oldValue = oldParam.value();
+                qCDebug(dcPhilipsHue()) << "Migrating hue onoff light param:" << oldId << "->" << newId << ":" << oldValue;
+                Param newParam(newId, oldValue);
+                migratedParams << newParam;
+            } else {
+                migratedParams << oldParam;
+            }
+        }
+        thing->setParams(migratedParams);
+        // Migration done */
+
+        hueLight->setModelId(thing->paramValue(onOffLightThingModelIdParamTypeId).toString());
+        hueLight->setType(thing->paramValue(onOffLightThingTypeParamTypeId).toString());
+        hueLight->setUuid(thing->paramValue(onOffLightThingUuidParamTypeId).toString());
+        hueLight->setId(thing->paramValue(onOffLightThingLightIdParamTypeId).toInt());
+
+        connect(hueLight, &HueLight::stateChanged, this, &IntegrationPluginPhilipsHue::lightStateChanged);
+
+        m_lights.insert(hueLight, thing);
+        refreshLight(thing);
+
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
     // Hue remote
     if (thing->thingClassId() == remoteThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue remote" << thing->params() << thing->thingClassId();
@@ -600,6 +643,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
     if (thing->thingClassId() == colorLightThingClassId
             || thing->thingClassId() == colorTemperatureLightThingClassId
             || thing->thingClassId() == dimmableLightThingClassId
+            || thing->thingClassId() == onOffLightThingClassId
             || thing->thingClassId() == smartPlugThingClassId) {
         HueLight *light = m_lights.key(thing);
         m_lights.remove(light);
@@ -827,6 +871,7 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == colorLightThingClassId ||
             thing->thingClassId() == colorTemperatureLightThingClassId ||
             thing->thingClassId() == dimmableLightThingClassId ||
+            thing->thingClassId() == onOffLightThingClassId ||
             thing->thingClassId() == smartPlugThingClassId) {
 
         HueLight *light = m_lights.key(thing);
@@ -878,6 +923,11 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         } else if (action.actionTypeId() == dimmableLightAlertActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
+            reply = hardwareManager()->networkManager()->put(request.first, request.second);
+        }
+        // On/Off light
+        else if (action.actionTypeId() == onOffLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(onOffLightPowerActionPowerParamTypeId).value().toBool());
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         }
 
@@ -1088,6 +1138,9 @@ void IntegrationPluginPhilipsHue::lightStateChanged()
         thing->setStateValue(dimmableLightConnectedStateTypeId, light->reachable());
         thing->setStateValue(dimmableLightPowerStateTypeId, light->power());
         thing->setStateValue(dimmableLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+    } else if (thing->thingClassId() == onOffLightThingClassId) {
+        thing->setStateValue(onOffLightConnectedStateTypeId, light->reachable());
+        thing->setStateValue(onOffLightPowerStateTypeId, light->power());
     } else if (thing->thingClassId() == smartPlugThingClassId) {
         thing->setStateValue(smartPlugConnectedStateTypeId, light->reachable());
         thing->setStateValue(smartPlugPowerStateTypeId, light->power());
@@ -1405,6 +1458,17 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
             descriptors.append(descriptor);
 
             qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
+        } else if (type == "On/Off light") {
+            ThingDescriptor descriptor(onOffLightThingClassId, lightMap.value("name").toString(), "Philips Hue On/Off Light", thing->id());
+            ParamList params;
+            params.append(Param(onOffLightThingModelIdParamTypeId, model));
+            params.append(Param(onOffLightThingTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(onOffLightThingUuidParamTypeId, uuid));
+            params.append(Param(onOffLightThingLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+
+            qCDebug(dcPhilipsHue) << "Found new on/off light" << lightMap.value("name").toString() << model;
         } else if (type == "Color temperature light") {
             ThingDescriptor descriptor(colorTemperatureLightThingClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", thing->id());
             ParamList params;
@@ -1858,7 +1922,7 @@ void IntegrationPluginPhilipsHue::processSetNameResponse(Thing *thing, const QBy
         return;
     }
 
-    if (thing->thingClassId() == colorLightThingClassId || thing->thingClassId() == dimmableLightThingClassId)
+    if (thing->thingClassId() == colorLightThingClassId || thing->thingClassId() == dimmableLightThingClassId || thing->thingClassId() == onOffLightThingClassId)
         refreshLight(thing);
 
 }
@@ -1881,6 +1945,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                         m_lights.value(light)->setStateValue(colorTemperatureLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->thingClassId() == dimmableLightThingClassId) {
                         m_lights.value(light)->setStateValue(dimmableLightConnectedStateTypeId, false);
+                    } else if (m_lights.value(light)->thingClassId() == onOffLightThingClassId) {
+                        m_lights.value(light)->setStateValue(onOffLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->thingClassId() == smartPlugThingClassId) {
                         m_lights.value(light)->setStateValue(smartPlugConnectedStateTypeId, false);
                     }
@@ -1931,6 +1997,10 @@ bool IntegrationPluginPhilipsHue::lightAlreadyAdded(const QString &uuid)
             }
         } else if (thing->thingClassId() == dimmableLightThingClassId) {
             if (thing->paramValue(dimmableLightThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        } else if (thing->thingClassId() == onOffLightThingClassId) {
+            if (thing->paramValue(onOffLightThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
