@@ -428,30 +428,6 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
         HueLight *hueLight = new HueLight(bridge, this);
 
-        /* // Migrate thing parameters after changing param type UUIDs in 0.14.
-        QMap<QString, ParamTypeId> migrationMap;
-        migrationMap.insert("095a463b-f59e-46b1-989a-a71f9cbe3e30", onOffLightThingModelIdParamTypeId);
-        migrationMap.insert("3f3467ef-4483-4eb9-bcae-84e628322f84", onOffLightThingTypeParamTypeId);
-        migrationMap.insert("1a5129ca-006c-446c-9f2e-79b065de715f", onOffLightThingUuidParamTypeId);
-        migrationMap.insert("491dc012-ccf2-4d3a-9f18-add98f7374af", onOffLightThingLightIdParamTypeId);
-
-        ParamList migratedParams;
-        foreach (const Param &oldParam, thing->params()) {
-            QString oldId = oldParam.paramTypeId().toString();
-            oldId.remove(QRegExp("[{}]"));
-            if (migrationMap.contains(oldId)) {
-                ParamTypeId newId = migrationMap.value(oldId);
-                QVariant oldValue = oldParam.value();
-                qCDebug(dcPhilipsHue()) << "Migrating hue onoff light param:" << oldId << "->" << newId << ":" << oldValue;
-                Param newParam(newId, oldValue);
-                migratedParams << newParam;
-            } else {
-                migratedParams << oldParam;
-            }
-        }
-        thing->setParams(migratedParams);
-        // Migration done */
-
         hueLight->setModelId(thing->paramValue(onOffLightThingModelIdParamTypeId).toString());
         hueLight->setType(thing->paramValue(onOffLightThingTypeParamTypeId).toString());
         hueLight->setUuid(thing->paramValue(onOffLightThingUuidParamTypeId).toString());
