@@ -421,6 +421,64 @@
                     ]
                 },
                 {
+                    "id": "f720f31d-9523-4a74-9f10-19cbc9edeb58",
+                    "name": "onOffLight",
+                    "displayName": "Hue On/Off light",
+                    "interfaces": ["light", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "2e4274e8-c810-4b1b-8b27-86239e0e8a12",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3b4b377a-de33-4b1f-a65f-c4915a797cde",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "c5b62efe-b18d-4e10-b8f3-8cbe5938cce5",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "dfd0ed05-26b1-4906-b1a1-384d2340c236",
+                            "name": "lightId",
+                            "displayName": "light id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "111a5a4a-63d4-4d1d-ac72-b5b5a29fd0aa",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "5dc5e71b-789e-4c68-abb6-1534c8af019e",
+                            "name": "power",
+                            "displayName": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
                     "id": "bb482d39-67ef-46dc-88e9-7b181d642b28",
                     "name": "remote",
                     "displayName": "Hue Remote",
