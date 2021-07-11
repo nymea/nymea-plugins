@@ -576,6 +576,103 @@
                     ]
                 },
                 {
+                    "id": "2b40aea0-e0f3-4cde-b034-3ae8a69a5d9d",
+                    "name": "dimmerSwitch2",
+                    "displayName": "Hue Dimmer Switch V2",
+                    "interfaces": ["longpressmultibutton", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "985fdf8a-e4a5-4a6e-bf2c-47559b32f395",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "a821e27e-216e-4fd4-9105-15cd822ab6b2",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "200b5daa-1023-49cb-a933-bdd1ac7df4bd",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "b8121363-321a-4569-bb34-a02f846aa9c5",
+                            "name": "sensorId",
+                            "displayName": "sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "45f75511-7d72-410e-aed0-5720cc497bf8",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "cb6e045c-e305-4950-9cd4-fb3989912156",
+                            "name": "batteryLevel",
+                            "displayName": "battery",
+                            "displayNameEvent": "battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "88cc3794-3e83-47d4-8889-0b3246336bf7",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "b7a5b3df-2c60-4b97-bf99-b97e6012a194",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "562f2d4d-351e-4c2c-98bf-187b948587e4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["POWER", "HUE", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "d5052592-044d-42e8-b98a-d3fe9f2f53ae",
+                            "name": "longPressed",
+                            "displayName": "Button longpress",
+                            "paramTypes": [
+                                {
+                                    "id": "c03bb1ad-f8c9-4993-9d25-557ade2d2c13",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["POWER", "HUE", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "id": "1e34a056-9f37-4741-b249-a5eca7a4ab4e",
                     "name": "smartButton",
                     "displayName": "Hue Smart Button",
