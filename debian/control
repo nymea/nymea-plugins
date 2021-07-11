@@ -1035,6 +1035,22 @@ Description: nymea.io plugin to send and receive strings over a serial port
  .
  This package will install the nymea.io plugin for serial ports
 
+
+Package: nymea-plugin-sma
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for SMA PV-Inverter
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for SMA PV-Inverter
+
+
 Package: nymea-plugin-systemmonitor
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1231,6 +1247,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-shelly,
          nymea-plugin-senic,
          nymea-plugin-somfytahoma,
+         nymea-plugin-sma,
          nymea-plugin-sonos,
          nymea-plugin-solarlog,
          nymea-plugin-tado,

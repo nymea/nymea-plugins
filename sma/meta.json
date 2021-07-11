@@ -1,0 +1,13 @@
+{
+    "title": "SMA",
+    "tagline": "Connect to SMA solar equipment.",
+    "icon": "sma.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+
+    ]
+}
