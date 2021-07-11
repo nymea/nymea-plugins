@@ -422,6 +422,25 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Hue on/off light
+    if (thing->thingClassId() == onOffLightThingClassId) {
+        qCDebug(dcPhilipsHue) << "Setup Hue white light" << thing->params();
+
+        HueLight *hueLight = new HueLight(bridge, this);
+
+        hueLight->setModelId(thing->paramValue(onOffLightThingModelIdParamTypeId).toString());
+        hueLight->setType(thing->paramValue(onOffLightThingTypeParamTypeId).toString());
+        hueLight->setUuid(thing->paramValue(onOffLightThingUuidParamTypeId).toString());
+        hueLight->setId(thing->paramValue(onOffLightThingLightIdParamTypeId).toInt());
+
+        connect(hueLight, &HueLight::stateChanged, this, &IntegrationPluginPhilipsHue::lightStateChanged);
+
+        m_lights.insert(hueLight, thing);
+        refreshLight(thing);
+
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
     // Hue remote
     if (thing->thingClassId() == remoteThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue remote" << thing->params() << thing->thingClassId();
@@ -461,6 +480,24 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         connect(hueRemote, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
 
         m_remotes.insert(hueRemote, thing);
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
+    // Hue Dimmer Switch V2
+    if (thing->thingClassId() == dimmerSwitch2ThingClassId) {
+        qCDebug(dcPhilipsHue) << "Setup Hue Dimmer Switch V2" << thing->params() << thing->thingClassId();
+
+        HueRemote *hueDimmerSwitch2 = new HueRemote(bridge, this);
+
+        hueDimmerSwitch2->setId(thing->paramValue(dimmerSwitch2ThingSensorIdParamTypeId).toInt());
+        hueDimmerSwitch2->setModelId(thing->paramValue(dimmerSwitch2ThingModelIdParamTypeId).toString());
+        hueDimmerSwitch2->setType(thing->paramValue(dimmerSwitch2ThingTypeParamTypeId).toString());
+        hueDimmerSwitch2->setUuid(thing->paramValue(dimmerSwitch2ThingUuidParamTypeId).toString());
+
+        connect(hueDimmerSwitch2, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
+        connect(hueDimmerSwitch2, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(hueDimmerSwitch2, thing);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -600,13 +637,14 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
     if (thing->thingClassId() == colorLightThingClassId
             || thing->thingClassId() == colorTemperatureLightThingClassId
             || thing->thingClassId() == dimmableLightThingClassId
+            || thing->thingClassId() == onOffLightThingClassId
             || thing->thingClassId() == smartPlugThingClassId) {
         HueLight *light = m_lights.key(thing);
         m_lights.remove(light);
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == tapThingClassId || thing->thingClassId() == smartButtonThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
@@ -827,6 +865,7 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == colorLightThingClassId ||
             thing->thingClassId() == colorTemperatureLightThingClassId ||
             thing->thingClassId() == dimmableLightThingClassId ||
+            thing->thingClassId() == onOffLightThingClassId ||
             thing->thingClassId() == smartPlugThingClassId) {
 
         HueLight *light = m_lights.key(thing);
@@ -878,6 +917,11 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         } else if (action.actionTypeId() == dimmableLightAlertActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
+            reply = hardwareManager()->networkManager()->put(request.first, request.second);
+        }
+        // On/Off light
+        else if (action.actionTypeId() == onOffLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(onOffLightPowerActionPowerParamTypeId).value().toBool());
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         }
 
@@ -1088,6 +1132,9 @@ void IntegrationPluginPhilipsHue::lightStateChanged()
         thing->setStateValue(dimmableLightConnectedStateTypeId, light->reachable());
         thing->setStateValue(dimmableLightPowerStateTypeId, light->power());
         thing->setStateValue(dimmableLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+    } else if (thing->thingClassId() == onOffLightThingClassId) {
+        thing->setStateValue(onOffLightConnectedStateTypeId, light->reachable());
+        thing->setStateValue(onOffLightPowerStateTypeId, light->power());
     } else if (thing->thingClassId() == smartPlugThingClassId) {
         thing->setStateValue(smartPlugConnectedStateTypeId, light->reachable());
         thing->setStateValue(smartPlugPowerStateTypeId, light->power());
@@ -1107,6 +1154,10 @@ void IntegrationPluginPhilipsHue::remoteStateChanged()
         thing->setStateValue(remoteConnectedStateTypeId, remote->reachable());
         thing->setStateValue(remoteBatteryLevelStateTypeId, remote->battery());
         thing->setStateValue(remoteBatteryCriticalStateTypeId, remote->battery() < 5);
+    } else if (thing->thingClassId() == dimmerSwitch2ThingClassId) {
+        thing->setStateValue(dimmerSwitch2ConnectedStateTypeId, remote->reachable());
+        thing->setStateValue(dimmerSwitch2BatteryLevelStateTypeId, remote->battery());
+        thing->setStateValue(dimmerSwitch2BatteryCriticalStateTypeId, remote->battery() < 5);
     } else if (thing->thingClassId() == tapThingClassId) {
         thing->setStateValue(tapConnectedStateTypeId, remote->reachable());
     } else if (thing->thingClassId() == smartButtonThingClassId) {
@@ -1166,6 +1217,49 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Remote:" << buttonCode;
             return;
         }
+    } else if (thing->thingClassId() == dimmerSwitch2ThingClassId) {
+        switch (buttonCode) {
+        case 1002:
+            param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "POWER");
+            id = dimmerSwitch2PressedEventTypeId;
+            break;
+        case 1000:
+            param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "POWER");
+            id = dimmerSwitch2LongPressedEventTypeId;
+            break;
+        case 2002:
+            param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM UP");
+            id = dimmerSwitch2PressedEventTypeId;
+            break;
+        case 2000:
+            param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM UP");
+            id = dimmerSwitch2LongPressedEventTypeId;
+            break;
+        case 3002:
+            param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM DOWN");
+            id = dimmerSwitch2PressedEventTypeId;
+            break;
+        case 3000:
+            param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM DOWN");
+            id = dimmerSwitch2LongPressedEventTypeId;
+            break;
+        case 4002:
+            param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "HUE");
+            id = dimmerSwitch2PressedEventTypeId;
+            break;
+        case 4000:
+            param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "HUE");
+            id = dimmerSwitch2LongPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Dimmer Switch V2:" << buttonCode;
+            return;
+        }
+        // codes ending in 2 (e.g. 1002) are short presses;
+        // for long presses the Dimmer Switch V2 sends 3 codes: 
+        // * codes ending in 0 (e.g. 1000) indicate start of long press
+        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
+        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
     } else if (thing->thingClassId() == tapThingClassId) {
         switch (buttonCode) {
         case 34:
@@ -1405,6 +1499,17 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
             descriptors.append(descriptor);
 
             qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
+        } else if (type == "On/Off light") {
+            ThingDescriptor descriptor(onOffLightThingClassId, lightMap.value("name").toString(), "Philips Hue On/Off Light", thing->id());
+            ParamList params;
+            params.append(Param(onOffLightThingModelIdParamTypeId, model));
+            params.append(Param(onOffLightThingTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(onOffLightThingUuidParamTypeId, uuid));
+            params.append(Param(onOffLightThingLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+
+            qCDebug(dcPhilipsHue) << "Found new on/off light" << lightMap.value("name").toString() << model;
         } else if (type == "Color temperature light") {
             ThingDescriptor descriptor(colorTemperatureLightThingClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", thing->id());
             ParamList params;
@@ -1518,6 +1623,18 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             descriptor.setParams(params);
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
+
+            // Dimmer Switch V2
+        } else if (model == "RWL022") {
+            ThingDescriptor descriptor(dimmerSwitch2ThingClassId, sensorMap.value("name").toString(), "Philips Hue Dimmer Switch V2", thing->id());
+            ParamList params;
+            params.append(Param(dimmerSwitch2ThingModelIdParamTypeId, model));
+            params.append(Param(dimmerSwitch2ThingTypeParamTypeId, sensorMap.value("type").toString()));
+            params.append(Param(dimmerSwitch2ThingUuidParamTypeId, uuid));
+            params.append(Param(dimmerSwitch2ThingSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoThingsAppeared({descriptor});
+            qCDebug(dcPhilipsHue) << "Found new dimmer switch v2" << sensorMap.value("name").toString() << model;
 
             // Smart Button
         } else if (model == "ROM001") {
@@ -1858,7 +1975,7 @@ void IntegrationPluginPhilipsHue::processSetNameResponse(Thing *thing, const QBy
         return;
     }
 
-    if (thing->thingClassId() == colorLightThingClassId || thing->thingClassId() == dimmableLightThingClassId)
+    if (thing->thingClassId() == colorLightThingClassId || thing->thingClassId() == dimmableLightThingClassId || thing->thingClassId() == onOffLightThingClassId)
         refreshLight(thing);
 
 }
@@ -1881,6 +1998,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                         m_lights.value(light)->setStateValue(colorTemperatureLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->thingClassId() == dimmableLightThingClassId) {
                         m_lights.value(light)->setStateValue(dimmableLightConnectedStateTypeId, false);
+                    } else if (m_lights.value(light)->thingClassId() == onOffLightThingClassId) {
+                        m_lights.value(light)->setStateValue(onOffLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->thingClassId() == smartPlugThingClassId) {
                         m_lights.value(light)->setStateValue(smartPlugConnectedStateTypeId, false);
                     }
@@ -1892,6 +2011,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                     remote->setReachable(false);
                     if (m_remotes.value(remote)->thingClassId() == remoteThingClassId) {
                         m_remotes.value(remote)->setStateValue(remoteConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->thingClassId() == dimmerSwitch2ThingClassId) {
+                        m_remotes.value(remote)->setStateValue(dimmerSwitch2ConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == tapThingClassId) {
                         m_remotes.value(remote)->setStateValue(tapConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == smartButtonThingClassId) {
@@ -1933,6 +2054,10 @@ bool IntegrationPluginPhilipsHue::lightAlreadyAdded(const QString &uuid)
             if (thing->paramValue(dimmableLightThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
+        } else if (thing->thingClassId() == onOffLightThingClassId) {
+            if (thing->paramValue(onOffLightThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
         }
         if (thing->thingClassId() == colorTemperatureLightThingClassId) {
             if (thing->paramValue(colorTemperatureLightThingUuidParamTypeId).toString() == uuid) {
@@ -1954,6 +2079,13 @@ bool IntegrationPluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
         // Hue remote
         if (thing->thingClassId() == remoteThingClassId) {
             if (thing->paramValue(remoteThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
+        // Hue dimmer switch V2
+        if (thing->thingClassId() == dimmerSwitch2ThingClassId) {
+            if (thing->paramValue(dimmerSwitch2ThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
