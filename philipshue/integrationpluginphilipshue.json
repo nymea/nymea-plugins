@@ -579,7 +579,7 @@
                     "id": "2b40aea0-e0f3-4cde-b034-3ae8a69a5d9d",
                     "name": "dimmerSwitch2",
                     "displayName": "Hue Dimmer Switch V2",
-                    "interfaces": ["longpressmultibutton", "wirelessconnectable"],
+                    "interfaces": ["longpressmultibutton", "batterylevel", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
