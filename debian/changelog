@@ -1,6 +1,21 @@
-nymea-plugins (0.29.0) UNRELEASED; urgency=medium
+nymea-plugins (0.29.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Fri, 09 Jul 2021 13:39:09 +0200
+  [ Bernhard Trinnes ]
+  * New PlugIn: SMA
+
+  [ Jenkins ]
+  * WIP: New plugin - smartcar
+
+  [ Michael Zanetti ]
+  * Bump version to 0.29.0
+  * GenericThings: Added O2, PH and ORP generic sensors
+  * Fix qmake warning message if plugin.pri isn't found
+
+  [ Jenkins ]
+  * Philips Hue: Add support for on/off light
+  * Philips hue add dimmer switch v2
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 12 Jul 2021 00:07:01 +0200
 
 nymea-plugins (0.28.0) xenial; urgency=medium
 
