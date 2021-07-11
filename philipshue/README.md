@@ -8,7 +8,7 @@ This plugin allows to interact with the Hue bridge. Each light bulb, sensor and 
     * Auto network discovery
     * Connected devices appear automatically
     * No internet or cloud connection required
-* Hue Dimmer switch
+* Hue Dimmer switch V1 and V2
 * Hue Tap Switch
 * Hue Smart Button
 * Hue Motion Sensor
