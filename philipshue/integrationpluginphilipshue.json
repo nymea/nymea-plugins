@@ -421,6 +421,64 @@
                     ]
                 },
                 {
+                    "id": "f720f31d-9523-4a74-9f10-19cbc9edeb58",
+                    "name": "onOffLight",
+                    "displayName": "Hue On/Off light",
+                    "interfaces": ["light", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "2e4274e8-c810-4b1b-8b27-86239e0e8a12",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3b4b377a-de33-4b1f-a65f-c4915a797cde",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "c5b62efe-b18d-4e10-b8f3-8cbe5938cce5",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "dfd0ed05-26b1-4906-b1a1-384d2340c236",
+                            "name": "lightId",
+                            "displayName": "light id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "111a5a4a-63d4-4d1d-ac72-b5b5a29fd0aa",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "5dc5e71b-789e-4c68-abb6-1534c8af019e",
+                            "name": "power",
+                            "displayName": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
                     "id": "bb482d39-67ef-46dc-88e9-7b181d642b28",
                     "name": "remote",
                     "displayName": "Hue Remote",
@@ -512,6 +570,103 @@
                                     "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "2b40aea0-e0f3-4cde-b034-3ae8a69a5d9d",
+                    "name": "dimmerSwitch2",
+                    "displayName": "Hue Dimmer Switch V2",
+                    "interfaces": ["longpressmultibutton", "battery", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "985fdf8a-e4a5-4a6e-bf2c-47559b32f395",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "a821e27e-216e-4fd4-9105-15cd822ab6b2",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "200b5daa-1023-49cb-a933-bdd1ac7df4bd",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "b8121363-321a-4569-bb34-a02f846aa9c5",
+                            "name": "sensorId",
+                            "displayName": "sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "45f75511-7d72-410e-aed0-5720cc497bf8",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "cb6e045c-e305-4950-9cd4-fb3989912156",
+                            "name": "batteryLevel",
+                            "displayName": "battery",
+                            "displayNameEvent": "battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "88cc3794-3e83-47d4-8889-0b3246336bf7",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "b7a5b3df-2c60-4b97-bf99-b97e6012a194",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "562f2d4d-351e-4c2c-98bf-187b948587e4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["POWER", "HUE", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "d5052592-044d-42e8-b98a-d3fe9f2f53ae",
+                            "name": "longPressed",
+                            "displayName": "Button longpress",
+                            "paramTypes": [
+                                {
+                                    "id": "c03bb1ad-f8c9-4993-9d25-557ade2d2c13",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["POWER", "HUE", "DIM UP", "DIM DOWN"]
                                 }
                             ]
                         }
@@ -655,6 +810,70 @@
                                     "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["•", "••", "•••", "••••"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "692bc4be-07b8-4b77-ab0b-a36185b17d76",
+                    "name": "foh",
+                    "displayName": "Friends of Hue Switch",
+                    "interfaces": ["multibutton", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "664c7091-12eb-4402-8239-31da85f73d38",
+                            "name": "modelId",
+                            "displayName": "Model ID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "16ca2ee1-d738-4f51-8f9a-53547d3d824e",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "2ca66286-1caf-4e09-8e18-05bb7d7df314",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "7559d16c-b56b-42e2-8347-65582fa276c0",
+                            "name": "sensorId",
+                            "displayName": "Sensor ID",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "840b220c-656b-4f56-bbaa-ce818cffad64",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "2cc68bd3-ad73-4bf3-9905-639870d071bd",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "f1da229e-fce2-4329-8850-1c92b5bc5925",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["UPPER LEFT", "LOWER LEFT", "UPPER RIGHT", "LOWER RIGHT"]
                                 }
                             ]
                         }
