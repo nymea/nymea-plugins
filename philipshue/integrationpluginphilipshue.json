@@ -816,6 +816,70 @@
                     ]
                 },
                 {
+                    "id": "692bc4be-07b8-4b77-ab0b-a36185b17d76",
+                    "name": "foh",
+                    "displayName": "Friends of Hue Switch",
+                    "interfaces": ["multibutton", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "664c7091-12eb-4402-8239-31da85f73d38",
+                            "name": "modelId",
+                            "displayName": "Model ID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "16ca2ee1-d738-4f51-8f9a-53547d3d824e",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "2ca66286-1caf-4e09-8e18-05bb7d7df314",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "7559d16c-b56b-42e2-8347-65582fa276c0",
+                            "name": "sensorId",
+                            "displayName": "Sensor ID",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "840b220c-656b-4f56-bbaa-ce818cffad64",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "2cc68bd3-ad73-4bf3-9905-639870d071bd",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "f1da229e-fce2-4329-8850-1c92b5bc5925",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["UPPER LEFT", "LOWER LEFT", "UPPER RIGHT", "LOWER RIGHT"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "id": "32dc6390-600f-4eb4-b349-cc2d6796a82a",
                     "name": "outdoorSensor",
                     "displayName": "Hue Outdoor Sensor",

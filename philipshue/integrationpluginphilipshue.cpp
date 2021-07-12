@@ -516,6 +516,21 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Friends of Hue switch
+    if (thing->thingClassId() == fohThingClassId) {
+        HueRemote *hueFoh = new HueRemote(bridge, this);
+        hueFoh->setName(thing->name());
+        hueFoh->setId(thing->paramValue(fohThingSensorIdParamTypeId).toInt());
+        hueFoh->setModelId(thing->paramValue(fohThingModelIdParamTypeId).toString());
+        hueFoh->setUuid(thing->paramValue(fohThingUuidParamTypeId).toString());
+
+        connect(hueFoh, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
+        connect(hueFoh, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(hueFoh, thing);
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
     // Hue smart button
     if (thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *smartButton = new HueRemote(bridge, this);
@@ -644,7 +659,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == smartButtonThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
@@ -1160,6 +1175,8 @@ void IntegrationPluginPhilipsHue::remoteStateChanged()
         thing->setStateValue(dimmerSwitch2BatteryCriticalStateTypeId, remote->battery() < 5);
     } else if (thing->thingClassId() == tapThingClassId) {
         thing->setStateValue(tapConnectedStateTypeId, remote->reachable());
+    } else if (thing->thingClassId() == fohThingClassId) {
+        thing->setStateValue(fohConnectedStateTypeId, remote->reachable());
     } else if (thing->thingClassId() == smartButtonThingClassId) {
         thing->setStateValue(smartButtonConnectedStateTypeId, remote->reachable());
         thing->setStateValue(smartButtonBatteryLevelStateTypeId, remote->battery());
@@ -1280,6 +1297,28 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             break;
         default:
             qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Tap:" << buttonCode;
+            return;
+        }
+    } else if (thing->thingClassId() == fohThingClassId) {
+        switch (buttonCode) {
+        case 20:
+            param = Param(fohPressedEventButtonNameParamTypeId, "UPPER LEFT");
+            id = fohPressedEventTypeId;
+            break;
+        case 21:
+            param = Param(fohPressedEventButtonNameParamTypeId, "LOWER LEFT");
+            id = fohPressedEventTypeId;
+            break;
+        case 23:
+            param = Param(fohPressedEventButtonNameParamTypeId, "UPPER RIGHT");
+            id = fohPressedEventTypeId;
+            break;
+        case 22:
+            param = Param(fohPressedEventButtonNameParamTypeId, "LOWER RIGHT");
+            id = fohPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Received unhandled button code from Friends of Hue switch:" << buttonCode;
             return;
         }
     } else if (thing->thingClassId() == smartButtonThingClassId) {
@@ -1648,6 +1687,18 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new smart button" << sensorMap.value("name").toString() << model;
 
+            // Friends of Hue switch
+        } else if (model == "FOHSWITCH") {
+            ThingDescriptor descriptor(fohThingClassId, sensorMap.value("name").toString(), "Friends of Hue Switch", thing->id());
+            ParamList params;
+            params.append(Param(fohThingModelIdParamTypeId, model));
+            params.append(Param(fohThingTypeParamTypeId, sensorMap.value("type").toString()));
+            params.append(Param(fohThingUuidParamTypeId, uuid));
+            params.append(Param(fohThingSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoThingsAppeared({descriptor});
+            qCDebug(dcPhilipsHue) << "Found new friends of hue switch" << sensorMap.value("name").toString() << model;
+
             // Hue Tap
         } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
             ThingDescriptor descriptor(tapThingClassId, sensorMap.value("name").toString(), "Philips Hue Tap", thing->id());
@@ -2015,6 +2066,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                         m_remotes.value(remote)->setStateValue(dimmerSwitch2ConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == tapThingClassId) {
                         m_remotes.value(remote)->setStateValue(tapConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->thingClassId() == fohThingClassId) {
+                        m_remotes.value(remote)->setStateValue(fohConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == smartButtonThingClassId) {
                         m_remotes.value(remote)->setStateValue(smartButtonConnectedStateTypeId, false);
                     }
@@ -2093,6 +2146,13 @@ bool IntegrationPluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
         // Hue tap
         if (thing->thingClassId() == tapThingClassId) {
             if (thing->paramValue(tapThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
+        // Friends of Hue
+        if (thing->thingClassId() == fohThingClassId) {
+            if (thing->paramValue(fohThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
