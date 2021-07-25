@@ -45,14 +45,16 @@ class TvEventHandler : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TvEventHandler(const QHostAddress &host, const int &port = 8080, QObject *parent = 0);
+    explicit TvEventHandler(const QHostAddress &host, quint16 eventHandlerPort = 9000, QObject *parent = 0);
+
+    static uint getFreePort();
 
 protected:
     void incomingConnection(qintptr socket) override;
 
 private:
     QHostAddress m_host;
-    int m_port;
+    quint16 m_port;
     bool m_expectingData;
 
 signals:

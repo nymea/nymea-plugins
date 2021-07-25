@@ -61,6 +61,9 @@ public:
 
     void executeAction(ThingActionInfo *info) override;
 
+    void browseThing(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Thing *> m_tvList;
@@ -75,6 +78,8 @@ private:
     void pairTvDevice(Thing *thing);
     void unpairTvDevice(Thing *thing);
     void refreshTv(Thing *thing);
+
+    void loadAppList(Thing *thing);
 
 private slots:
     void onPluginTimer();
