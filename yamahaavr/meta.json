@@ -1,0 +1,13 @@
+{
+    "title": "Yamaha AV receiver",
+    "tagline": "Connect to and control your (non-Musiccast) Yamaha AV receivers",
+    "icon": "yamaha.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "multimedia"
+    ]
+}
