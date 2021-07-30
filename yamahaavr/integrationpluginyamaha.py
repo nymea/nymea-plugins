@@ -48,8 +48,7 @@ class ZeroconfListener(object):
         return
 
 pollTimer = None
-
-playPoll = False
+pollFrequency = 40
 
 def discoverThings(info):
     if info.thingClassId == receiverThingClassId:
@@ -314,7 +313,7 @@ def setupThing(info):
         return
 
 def pollReceiver(info):
-    global playPoll
+    global pollFrequency
     if info.thingClassId == zoneThingClassId:
         # get parent receiver thing, needed to get deviceIp
         for possibleParent in myThings():
@@ -333,301 +332,320 @@ def pollReceiver(info):
     rUrl = 'http://' + deviceIp + ':80/YamahaRemoteControl/ctrl'
     body = bodyStart + '<Basic_Status>GetParam</Basic_Status>' + bodyEnd
     headers = {'Content-Type': 'text/xml', 'Accept': '*/*'}
-    pr = requests.post(rUrl, headers=headers, data=body)
-    pollResponse = pr.text
-    # add distinction between receiver & zone
-    if info.thingClassId == receiverThingClassId:
-        receiver = info
-        if pr.status_code == requests.codes.ok:
-            receiver.setStateValue(receiverConnectedStateTypeId, True)
-            # Get power state
-            if pollResponse.find("<Power>Standby</Power>") != -1:
-                receiver.setStateValue(receiverPowerStateTypeId, False)
-                powerState = False
-            elif pollResponse.find("<Power>On</Power>") != -1:
-                receiver.setStateValue(receiverPowerStateTypeId, True)
-                powerState = True
-            else:
-                logger.log("Power state not found!")
-            # Get sleep state
-            stringIndex1 = pollResponse.find("<Sleep>")
-            stringIndex2 = pollResponse.find("</Sleep>")
-            responseExtract = pollResponse[stringIndex1+7:stringIndex2]
-            receiver.setStateValue(receiverSleepStateTypeId, responseExtract)
-            # Get mute state
-            if pollResponse.find("<Mute>Off</Mute>") != -1:
-                receiver.setStateValue(receiverMuteStateTypeId, False)
-            elif pollResponse.find("<Mute>On</Mute>") != -1:
-                receiver.setStateValue(receiverMuteStateTypeId, True)
-            else:
-                logger.log("Mute state not found!")
-            # Get pure direct state
-            if pollResponse.find("<Pure_Direct><Mode>Off</Mode></Pure_Direct>") != -1:
-                receiver.setStateValue(receiverPureDirectStateTypeId, False)
-            elif pollResponse.find("<Pure_Direct><Mode>On</Mode></Pure_Direct>") != -1:
-                receiver.setStateValue(receiverPureDirectStateTypeId, True)
-            else:
-                logger.log("Pure Direct state not found!")
-            # Get enhancer state
-            if pollResponse.find("<Enhancer>Off</Enhancer>") != -1:
-                receiver.setStateValue(receiverEnhancerStateTypeId, False)
-            elif pollResponse.find("<Enhancer>On</Enhancer>") != -1:
-                receiver.setStateValue(receiverEnhancerStateTypeId, True)
-            else:
-                logger.log("Enhancer state not found!")
-            # Get input
-            stringIndex1 = pollResponse.find("<Input><Input_Sel>")
-            stringIndex2 = pollResponse.find("</Input_Sel>")
-            inputSource = pollResponse[stringIndex1+18:stringIndex2]
-            receiver.setStateValue(receiverInputSourceStateTypeId, inputSource)
-            videoSources = ["HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","AV1","AV2","AV3","AV4","AV5","AV6","V-AUX"]
-            if inputSource in videoSources:
-                receiver.setStateValue(receiverPlayerTypeStateTypeId, "video")
-            else:
-                receiver.setStateValue(receiverPlayerTypeStateTypeId, "audio")
-            # Get sound program
-            stringIndex1 = pollResponse.find("<Sound_Program>")
-            stringIndex2 = pollResponse.find("</Sound_Program>")
-            responseExtract = pollResponse[stringIndex1+15:stringIndex2]
-            receiver.setStateValue(receiverSurroundModeStateTypeId, responseExtract)
-            # Get Cinema DSP 3D state
-            stringIndex1 = pollResponse.find("<_3D_Cinema_DSP>")
-            stringIndex2 = pollResponse.find("</_3D_Cinema_DSP>")
-            responseExtract = pollResponse[stringIndex1+16:stringIndex2]
-            receiver.setStateValue(receiverCinemaDSP3DStateTypeId, responseExtract)
-            # Get Adaptive DRC state
-            stringIndex1 = pollResponse.find("<Adaptive_DRC>")
-            stringIndex2 = pollResponse.find("</Adaptive_DRC>")
-            responseExtract = pollResponse[stringIndex1+14:stringIndex2]
-            receiver.setStateValue(receiverAdaptiveDRCStateTypeId, responseExtract)
-            # Get volume - volume is represented by int in Yamaha API, but shown as double = int/10 in Yamaha UI - this is ignored here as nymea wants volume to be an int
-            stringIndex1 = pollResponse.find("<Volume><Lvl><Val>")
-            responseExtract = pollResponse[stringIndex1+18:stringIndex1+30]
-            stringIndex2 = responseExtract.find("</Val>")
-            responseExtract = responseExtract[0:stringIndex2]
-            volume = int(responseExtract)
-            receiver.setStateValue(receiverVolumeStateTypeId, volume)
-            # Get bass
-            stringIndex1 = pollResponse.find("<Bass><Val>")
-            responseExtract = pollResponse[stringIndex1+11:stringIndex1+30]
-            stringIndex2 = responseExtract.find("</Val>")
-            responseExtract = responseExtract[0:stringIndex2]
-            bass = int(responseExtract)
-            receiver.setStateValue(receiverBassStateTypeId, bass)
-            # Get treble
-            stringIndex1 = pollResponse.find("<Treble><Val>")
-            responseExtract = pollResponse[stringIndex1+13:stringIndex1+30]
-            stringIndex2 = responseExtract.find("</Val>")
-            responseExtract = responseExtract[0:stringIndex2]
-            treble = int(responseExtract)
-            receiver.setStateValue(receiverTrebleStateTypeId, treble)
-            # Get dialogue level
-            stringIndex1 = pollResponse.find("<Dialogue_Lvl>")
-            stringIndex2 = pollResponse.find("</Dialogue_Lvl>")
-            responseExtract = pollResponse[stringIndex1+14:stringIndex2]
-            dialogueLvl = int(responseExtract)
-            receiver.setStateValue(receiverDialogueLevelStateTypeId, dialogueLvl)
-            # Get dialogue lift
-            stringIndex1 = pollResponse.find("<Dialogue_Lift>")
-            stringIndex2 = pollResponse.find("</Dialogue_Lift>")
-            responseExtract = pollResponse[stringIndex1+15:stringIndex2]
-            dialogueLift = int(responseExtract)
-            receiver.setStateValue(receiverDialogueLiftStateTypeId, dialogueLift)
-            # Get subwoofer trim
-            stringIndex1 = pollResponse.find("<Subwoofer_Trim><Val>")
-            responseExtract = pollResponse[stringIndex1+21:stringIndex1+30]
-            stringIndex2 = responseExtract.find("</Val>")
-            responseExtract = responseExtract[0:stringIndex2]
-            subTrim = int(responseExtract)
-            receiver.setStateValue(receiverSubwooferTrimStateTypeId, subTrim)
-            # Get player info
-            body = '<YAMAHA_AV cmd="GET"><' + inputSource + '><Play_Info>GetParam</Play_Info></' + inputSource + '></YAMAHA_AV>'
-            headers = {'Content-Type': 'text/xml', 'Accept': '*/*'}
-            plr = requests.post(rUrl, headers=headers, data=body)
-            if plr.status_code == requests.codes.ok and powerState == True:
-                playerResponse = plr.text
-                # Get repeat state
-                stringIndex1 = playerResponse.find("<Repeat>")
-                stringIndex2 = playerResponse.find("</Repeat>")
-                responseExtract = playerResponse[stringIndex1+8:stringIndex2]
-                if responseExtract not in ["None", "One", "All"]:
-                    responseExtract = "None"
-                receiver.setStateValue(receiverRepeatStateTypeId, responseExtract)
-                # Get shuffle state
-                stringIndex1 = playerResponse.find("<Shuffle>")
-                stringIndex2 = playerResponse.find("</Shuffle>")
-                responseExtract = playerResponse[stringIndex1+9:stringIndex2]
-                if responseExtract == "On":
-                    shuffleStatus = True
+    try:
+        pr = requests.post(rUrl, headers=headers, data=body)
+        polled = True
+    except:
+        logger.log("Device didn't respond to http request to get basic status", deviceIp, info.name)
+        polled = False
+        logger.log("Temporarily reducing pollfrequency to give the device some rest")
+        pollFrequency = 120
+    if polled == True:
+        pollResponse = pr.text
+        # add distinction between receiver & zone
+        if info.thingClassId == receiverThingClassId:
+            receiver = info
+            if pr.status_code == requests.codes.ok:
+                receiver.setStateValue(receiverConnectedStateTypeId, True)
+                # Get power state
+                if pollResponse.find("<Power>Standby</Power>") != -1:
+                    receiver.setStateValue(receiverPowerStateTypeId, False)
+                    powerState = False
+                elif pollResponse.find("<Power>On</Power>") != -1:
+                    receiver.setStateValue(receiverPowerStateTypeId, True)
+                    powerState = True
                 else:
-                    shuffleStatus = False
-                receiver.setStateValue(receiverShuffleStateTypeId, shuffleStatus)
-                # Get playback state
-                stringIndex1 = playerResponse.find("<Playback_Info>")
-                stringIndex2 = playerResponse.find("</Playback_Info>")
-                responseExtract = playerResponse[stringIndex1+15:stringIndex2]
-                if responseExtract == "Play":
-                    playStatus = "Playing"
-                    playPoll = True or playPoll
-                elif responseExtract == "Pause":
-                    playStatus = "Paused"
-                    playPoll = True or playPoll
+                    logger.log("Power state not found!")
+                # Get sleep state
+                stringIndex1 = pollResponse.find("<Sleep>")
+                stringIndex2 = pollResponse.find("</Sleep>")
+                responseExtract = pollResponse[stringIndex1+7:stringIndex2]
+                receiver.setStateValue(receiverSleepStateTypeId, responseExtract)
+                # Get mute state
+                if pollResponse.find("<Mute>Off</Mute>") != -1:
+                    receiver.setStateValue(receiverMuteStateTypeId, False)
+                elif pollResponse.find("<Mute>On</Mute>") != -1:
+                    receiver.setStateValue(receiverMuteStateTypeId, True)
                 else:
-                    playStatus = "Stopped"
-                    playPoll = False or playPoll
-                receiver.setStateValue(receiverPlaybackStatusStateTypeId, playStatus)
-                # Get meta info
-                stringIndex1 = playerResponse.find("<Artist>")
-                stringIndex2 = playerResponse.find("</Artist>")
-                responseExtract = playerResponse[stringIndex1+8:stringIndex2]
-                receiver.setStateValue(receiverArtistStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
-                stringIndex1 = playerResponse.find("<Album>")
-                stringIndex2 = playerResponse.find("</Album>")
-                responseExtract = playerResponse[stringIndex1+7:stringIndex2]
-                receiver.setStateValue(receiverCollectionStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
-                stringIndex1 = playerResponse.find("<Song>")
-                stringIndex2 = playerResponse.find("</Song>")
-                responseExtract = playerResponse[stringIndex1+6:stringIndex2]
-                receiver.setStateValue(receiverTitleStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
-                # Get artwork --> Yamaha artwork file type isn't recognized by nymea: browse for external cover art?
-                stringIndex1 = playerResponse.find("<URL>")
-                stringIndex2 = playerResponse.find("</URL>")
-                responseExtract = playerResponse[stringIndex1+5:stringIndex2]
-                artURL = 'http://' + deviceIp + ':80' + responseExtract
-                receiver.setStateValue(receiverArtworkStateTypeId, artURL)
-            else:
-                # Playing from external source so no info available 
-                receiver.setStateValue(receiverRepeatStateTypeId, "None")
-                receiver.setStateValue(receiverShuffleStateTypeId, False)
-                receiver.setStateValue(receiverPlaybackStatusStateTypeId, "Stopped")
-                receiver.setStateValue(receiverArtistStateTypeId, "")
-                receiver.setStateValue(receiverCollectionStateTypeId, "")
-                receiver.setStateValue(receiverTitleStateTypeId, "")
-                receiver.setStateValue(receiverArtworkStateTypeId, "")
-        else:
-            receiver.setStateValue(receiverConnectedStateTypeId, False)
-    elif info.thingClassId == zoneThingClassId:
-        zone = info
-        if pr.status_code == requests.codes.ok:
-            zone.setStateValue(zoneConnectedStateTypeId, True)
-            # Get power state
-            if pollResponse.find("<Power>Standby</Power>") != -1:
-                zone.setStateValue(zonePowerStateTypeId, False)
-                powerState = False
-            elif pollResponse.find("<Power>On</Power>") != -1:
-                zone.setStateValue(zonePowerStateTypeId, True)
-                powerState = True
-            else:
-                logger.log("Power state not found!")
-            # Get sleep state
-            stringIndex1 = pollResponse.find("<Sleep>")
-            stringIndex2 = pollResponse.find("</Sleep>")
-            responseExtract = pollResponse[stringIndex1+7:stringIndex2]
-            zone.setStateValue(zoneSleepStateTypeId, responseExtract)
-            # Get mute state
-            if pollResponse.find("<Mute>Off</Mute>") != -1:
-                zone.setStateValue(zoneMuteStateTypeId, False)
-            elif pollResponse.find("<Mute>On</Mute>") != -1:
-                zone.setStateValue(zoneMuteStateTypeId, True)
-            else:
-                logger.log("Mute state not found!")
-            # Get input
-            stringIndex1 = pollResponse.find("<Input><Input_Sel>")
-            stringIndex2 = pollResponse.find("</Input_Sel>")
-            inputSource = pollResponse[stringIndex1+18:stringIndex2]
-            zone.setStateValue(zoneInputSourceStateTypeId, inputSource)
-            videoSources = ["HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","AV1","AV2","AV3","AV4","AV5","AV6","V-AUX"]
-            if inputSource in videoSources:
-                zone.setStateValue(zonePlayerTypeStateTypeId, "video")
-            else:
-                zone.setStateValue(zonePlayerTypeStateTypeId, "audio")
-            # Get volume
-            stringIndex1 = pollResponse.find("<Volume><Lvl><Val>")
-            responseExtract = pollResponse[stringIndex1+18:stringIndex1+30]
-            stringIndex2 = responseExtract.find("</Val>")
-            responseExtract = responseExtract[0:stringIndex2]
-            volume = int(responseExtract)
-            zone.setStateValue(zoneVolumeStateTypeId, volume)
-            # Get player info
-            body = '<YAMAHA_AV cmd="GET"><' + inputSource + '><Play_Info>GetParam</Play_Info></' + inputSource + '></YAMAHA_AV>'
-            headers = {'Content-Type': 'text/xml', 'Accept': '*/*'}
-            plr = requests.post(rUrl, headers=headers, data=body)
-            if plr.status_code == requests.codes.ok and powerState == True:
-                playerResponse = plr.text
-                # Get repeat state
-                stringIndex1 = playerResponse.find("<Repeat>")
-                stringIndex2 = playerResponse.find("</Repeat>")
-                responseExtract = playerResponse[stringIndex1+8:stringIndex2]
-                if responseExtract not in ["None", "One", "All"]:
-                    responseExtract = "None"
-                zone.setStateValue(zoneRepeatStateTypeId, responseExtract)
-                # Get shuffle state
-                stringIndex1 = playerResponse.find("<Shuffle>")
-                stringIndex2 = playerResponse.find("</Shuffle>")
-                responseExtract = playerResponse[stringIndex1+9:stringIndex2]
-                if responseExtract == "On":
-                    shuffleStatus = True
+                    logger.log("Mute state not found!")
+                # Get pure direct state
+                if pollResponse.find("<Pure_Direct><Mode>Off</Mode></Pure_Direct>") != -1:
+                    receiver.setStateValue(receiverPureDirectStateTypeId, False)
+                elif pollResponse.find("<Pure_Direct><Mode>On</Mode></Pure_Direct>") != -1:
+                    receiver.setStateValue(receiverPureDirectStateTypeId, True)
                 else:
-                    shuffleStatus = False
-                zone.setStateValue(zoneShuffleStateTypeId, shuffleStatus)
-                # Get playback state
-                stringIndex1 = playerResponse.find("<Playback_Info>")
-                stringIndex2 = playerResponse.find("</Playback_Info>")
-                responseExtract = playerResponse[stringIndex1+15:stringIndex2]
-                if responseExtract == "Play":
-                    playStatus = "Playing"
-                    playPoll = True or playPoll
-                elif responseExtract == "Pause":
-                    playStatus = "Paused"
-                    playPoll = True or playPoll
+                    logger.log("Pure Direct state not found!")
+                # Get enhancer state
+                if pollResponse.find("<Enhancer>Off</Enhancer>") != -1:
+                    receiver.setStateValue(receiverEnhancerStateTypeId, False)
+                elif pollResponse.find("<Enhancer>On</Enhancer>") != -1:
+                    receiver.setStateValue(receiverEnhancerStateTypeId, True)
                 else:
-                    playStatus = "Stopped"
-                    playPoll = False or playPoll
-                zone.setStateValue(zonePlaybackStatusStateTypeId, playStatus)
-                # Get meta info
-                stringIndex1 = playerResponse.find("<Artist>")
-                stringIndex2 = playerResponse.find("</Artist>")
-                responseExtract = playerResponse[stringIndex1+8:stringIndex2]
-                zone.setStateValue(zoneArtistStateTypeId, responseExtract)
-                stringIndex1 = playerResponse.find("<Album>")
-                stringIndex2 = playerResponse.find("</Album>")
-                responseExtract = playerResponse[stringIndex1+7:stringIndex2]
-                zone.setStateValue(zoneCollectionStateTypeId, responseExtract)
-                stringIndex1 = playerResponse.find("<Song>")
-                stringIndex2 = playerResponse.find("</Song>")
-                responseExtract = playerResponse[stringIndex1+6:stringIndex2]
-                zone.setStateValue(zoneTitleStateTypeId, responseExtract)
-                stringIndex1 = playerResponse.find("<URL>")
-                stringIndex2 = playerResponse.find("</URL>")
-                responseExtract = playerResponse[stringIndex1+5:stringIndex2]
-                artURL = 'http://' + deviceIp + ':80' + responseExtract
-                zone.setStateValue(zoneArtworkStateTypeId, artURL)
+                    logger.log("Enhancer state not found!")
+                # Get input
+                stringIndex1 = pollResponse.find("<Input><Input_Sel>")
+                stringIndex2 = pollResponse.find("</Input_Sel>")
+                inputSource = pollResponse[stringIndex1+18:stringIndex2]
+                receiver.setStateValue(receiverInputSourceStateTypeId, inputSource)
+                videoSources = ["HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","AV1","AV2","AV3","AV4","AV5","AV6","V-AUX"]
+                if inputSource in videoSources:
+                    receiver.setStateValue(receiverPlayerTypeStateTypeId, "video")
+                else:
+                    receiver.setStateValue(receiverPlayerTypeStateTypeId, "audio")
+                # Get sound program
+                stringIndex1 = pollResponse.find("<Sound_Program>")
+                stringIndex2 = pollResponse.find("</Sound_Program>")
+                responseExtract = pollResponse[stringIndex1+15:stringIndex2]
+                receiver.setStateValue(receiverSurroundModeStateTypeId, responseExtract)
+                # Get Cinema DSP 3D state
+                stringIndex1 = pollResponse.find("<_3D_Cinema_DSP>")
+                stringIndex2 = pollResponse.find("</_3D_Cinema_DSP>")
+                responseExtract = pollResponse[stringIndex1+16:stringIndex2]
+                receiver.setStateValue(receiverCinemaDSP3DStateTypeId, responseExtract)
+                # Get Adaptive DRC state
+                stringIndex1 = pollResponse.find("<Adaptive_DRC>")
+                stringIndex2 = pollResponse.find("</Adaptive_DRC>")
+                responseExtract = pollResponse[stringIndex1+14:stringIndex2]
+                receiver.setStateValue(receiverAdaptiveDRCStateTypeId, responseExtract)
+                # Get volume - volume is represented by int in Yamaha API, but shown as double = int/10 in Yamaha UI - this is ignored here as nymea wants volume to be an int
+                stringIndex1 = pollResponse.find("<Volume><Lvl><Val>")
+                responseExtract = pollResponse[stringIndex1+18:stringIndex1+30]
+                stringIndex2 = responseExtract.find("</Val>")
+                responseExtract = responseExtract[0:stringIndex2]
+                volume = int(responseExtract)
+                receiver.setStateValue(receiverVolumeStateTypeId, volume)
+                # Get bass
+                stringIndex1 = pollResponse.find("<Bass><Val>")
+                responseExtract = pollResponse[stringIndex1+11:stringIndex1+30]
+                stringIndex2 = responseExtract.find("</Val>")
+                responseExtract = responseExtract[0:stringIndex2]
+                bass = int(responseExtract)
+                receiver.setStateValue(receiverBassStateTypeId, bass)
+                # Get treble
+                stringIndex1 = pollResponse.find("<Treble><Val>")
+                responseExtract = pollResponse[stringIndex1+13:stringIndex1+30]
+                stringIndex2 = responseExtract.find("</Val>")
+                responseExtract = responseExtract[0:stringIndex2]
+                treble = int(responseExtract)
+                receiver.setStateValue(receiverTrebleStateTypeId, treble)
+                # Get dialogue level
+                stringIndex1 = pollResponse.find("<Dialogue_Lvl>")
+                stringIndex2 = pollResponse.find("</Dialogue_Lvl>")
+                responseExtract = pollResponse[stringIndex1+14:stringIndex2]
+                dialogueLvl = int(responseExtract)
+                receiver.setStateValue(receiverDialogueLevelStateTypeId, dialogueLvl)
+                # Get dialogue lift
+                stringIndex1 = pollResponse.find("<Dialogue_Lift>")
+                stringIndex2 = pollResponse.find("</Dialogue_Lift>")
+                responseExtract = pollResponse[stringIndex1+15:stringIndex2]
+                dialogueLift = int(responseExtract)
+                receiver.setStateValue(receiverDialogueLiftStateTypeId, dialogueLift)
+                # Get subwoofer trim
+                stringIndex1 = pollResponse.find("<Subwoofer_Trim><Val>")
+                responseExtract = pollResponse[stringIndex1+21:stringIndex1+30]
+                stringIndex2 = responseExtract.find("</Val>")
+                responseExtract = responseExtract[0:stringIndex2]
+                subTrim = int(responseExtract)
+                receiver.setStateValue(receiverSubwooferTrimStateTypeId, subTrim)
+                # Get player info
+                body = '<YAMAHA_AV cmd="GET"><' + inputSource + '><Play_Info>GetParam</Play_Info></' + inputSource + '></YAMAHA_AV>'
+                headers = {'Content-Type': 'text/xml', 'Accept': '*/*'}
+                try:
+                    plr = requests.post(rUrl, headers=headers, data=body)
+                    polled = True
+                except:
+                    logger.log("Device didn't respond to http request to get player status", deviceIp, info.name)
+                    polled = False
+                    logger.log("Temporarily reducing pollfrequency to give the device some rest")
+                    pollFrequency = 120
+                if polled == True:
+                    if plr.status_code == requests.codes.ok and powerState == True:
+                        playerResponse = plr.text
+                        # Get repeat state
+                        stringIndex1 = playerResponse.find("<Repeat>")
+                        stringIndex2 = playerResponse.find("</Repeat>")
+                        responseExtract = playerResponse[stringIndex1+8:stringIndex2]
+                        if responseExtract not in ["None", "One", "All"]:
+                            responseExtract = "None"
+                        receiver.setStateValue(receiverRepeatStateTypeId, responseExtract)
+                        # Get shuffle state
+                        stringIndex1 = playerResponse.find("<Shuffle>")
+                        stringIndex2 = playerResponse.find("</Shuffle>")
+                        responseExtract = playerResponse[stringIndex1+9:stringIndex2]
+                        if responseExtract == "On":
+                            shuffleStatus = True
+                        else:
+                            shuffleStatus = False
+                        receiver.setStateValue(receiverShuffleStateTypeId, shuffleStatus)
+                        # Get playback state
+                        stringIndex1 = playerResponse.find("<Playback_Info>")
+                        stringIndex2 = playerResponse.find("</Playback_Info>")
+                        responseExtract = playerResponse[stringIndex1+15:stringIndex2]
+                        if responseExtract == "Play":
+                            playStatus = "Playing"
+                            pollFrequency = min(10, pollFrequency)
+                        elif responseExtract == "Pause":
+                            playStatus = "Paused"
+                            pollFrequency = min(10, pollFrequency)
+                        else:
+                            playStatus = "Stopped"
+                            pollFrequency = min(30, pollFrequency)
+                        receiver.setStateValue(receiverPlaybackStatusStateTypeId, playStatus)
+                        # Get meta info
+                        stringIndex1 = playerResponse.find("<Artist>")
+                        stringIndex2 = playerResponse.find("</Artist>")
+                        responseExtract = playerResponse[stringIndex1+8:stringIndex2]
+                        receiver.setStateValue(receiverArtistStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
+                        stringIndex1 = playerResponse.find("<Album>")
+                        stringIndex2 = playerResponse.find("</Album>")
+                        responseExtract = playerResponse[stringIndex1+7:stringIndex2]
+                        receiver.setStateValue(receiverCollectionStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
+                        stringIndex1 = playerResponse.find("<Song>")
+                        stringIndex2 = playerResponse.find("</Song>")
+                        responseExtract = playerResponse[stringIndex1+6:stringIndex2]
+                        receiver.setStateValue(receiverTitleStateTypeId, unescape(responseExtract, {"&amp;": "&", "&apos;": "'", "&quot;": '"'}))
+                        # Get artwork --> Yamaha artwork file type isn't recognized by nymea: browse for external cover art?
+                        stringIndex1 = playerResponse.find("<URL>")
+                        stringIndex2 = playerResponse.find("</URL>")
+                        responseExtract = playerResponse[stringIndex1+5:stringIndex2]
+                        artURL = 'http://' + deviceIp + ':80' + responseExtract
+                        receiver.setStateValue(receiverArtworkStateTypeId, artURL)
+                    else:
+                        # Playing from external source so no info available 
+                        receiver.setStateValue(receiverRepeatStateTypeId, "None")
+                        receiver.setStateValue(receiverShuffleStateTypeId, False)
+                        receiver.setStateValue(receiverPlaybackStatusStateTypeId, "Stopped")
+                        receiver.setStateValue(receiverArtistStateTypeId, "")
+                        receiver.setStateValue(receiverCollectionStateTypeId, "")
+                        receiver.setStateValue(receiverTitleStateTypeId, "")
+                        receiver.setStateValue(receiverArtworkStateTypeId, "")
             else:
-                # Playing from external source so no info available 
-                zone.setStateValue(zoneRepeatStateTypeId, "None")
-                zone.setStateValue(zoneShuffleStateTypeId, False)
-                zone.setStateValue(zonePlaybackStatusStateTypeId, "Stopped")
-                zone.setStateValue(zoneArtistStateTypeId, "")
-                zone.setStateValue(zoneCollectionStateTypeId, "")
-                zone.setStateValue(zoneTitleStateTypeId, "")
-                zone.setStateValue(zoneArtworkStateTypeId, "")
-        else:
-            zone.setStateValue(zoneConnectedStateTypeId, False)
+                receiver.setStateValue(receiverConnectedStateTypeId, False)
+        elif info.thingClassId == zoneThingClassId:
+            zone = info
+            if pr.status_code == requests.codes.ok:
+                zone.setStateValue(zoneConnectedStateTypeId, True)
+                # Get power state
+                if pollResponse.find("<Power>Standby</Power>") != -1:
+                    zone.setStateValue(zonePowerStateTypeId, False)
+                    powerState = False
+                elif pollResponse.find("<Power>On</Power>") != -1:
+                    zone.setStateValue(zonePowerStateTypeId, True)
+                    powerState = True
+                else:
+                    logger.log("Power state not found!")
+                # Get sleep state
+                stringIndex1 = pollResponse.find("<Sleep>")
+                stringIndex2 = pollResponse.find("</Sleep>")
+                responseExtract = pollResponse[stringIndex1+7:stringIndex2]
+                zone.setStateValue(zoneSleepStateTypeId, responseExtract)
+                # Get mute state
+                if pollResponse.find("<Mute>Off</Mute>") != -1:
+                    zone.setStateValue(zoneMuteStateTypeId, False)
+                elif pollResponse.find("<Mute>On</Mute>") != -1:
+                    zone.setStateValue(zoneMuteStateTypeId, True)
+                else:
+                    logger.log("Mute state not found!")
+                # Get input
+                stringIndex1 = pollResponse.find("<Input><Input_Sel>")
+                stringIndex2 = pollResponse.find("</Input_Sel>")
+                inputSource = pollResponse[stringIndex1+18:stringIndex2]
+                zone.setStateValue(zoneInputSourceStateTypeId, inputSource)
+                videoSources = ["HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","AV1","AV2","AV3","AV4","AV5","AV6","V-AUX"]
+                if inputSource in videoSources:
+                    zone.setStateValue(zonePlayerTypeStateTypeId, "video")
+                else:
+                    zone.setStateValue(zonePlayerTypeStateTypeId, "audio")
+                # Get volume
+                stringIndex1 = pollResponse.find("<Volume><Lvl><Val>")
+                responseExtract = pollResponse[stringIndex1+18:stringIndex1+30]
+                stringIndex2 = responseExtract.find("</Val>")
+                responseExtract = responseExtract[0:stringIndex2]
+                volume = int(responseExtract)
+                zone.setStateValue(zoneVolumeStateTypeId, volume)
+                # Get player info
+                body = '<YAMAHA_AV cmd="GET"><' + inputSource + '><Play_Info>GetParam</Play_Info></' + inputSource + '></YAMAHA_AV>'
+                headers = {'Content-Type': 'text/xml', 'Accept': '*/*'}
+                try:
+                    plr = requests.post(rUrl, headers=headers, data=body)
+                    polled = True
+                except:
+                    logger.log("Device didn't respond to http request to get player status", deviceIp, info.name)
+                    polled = False
+                    logger.log("Temporarily reducing pollfrequency to give the device some rest")
+                    pollFrequency = 120
+                if polled == True:
+                    if plr.status_code == requests.codes.ok and powerState == True:
+                        playerResponse = plr.text
+                        # Get repeat state
+                        stringIndex1 = playerResponse.find("<Repeat>")
+                        stringIndex2 = playerResponse.find("</Repeat>")
+                        responseExtract = playerResponse[stringIndex1+8:stringIndex2]
+                        if responseExtract not in ["None", "One", "All"]:
+                            responseExtract = "None"
+                        zone.setStateValue(zoneRepeatStateTypeId, responseExtract)
+                        # Get shuffle state
+                        stringIndex1 = playerResponse.find("<Shuffle>")
+                        stringIndex2 = playerResponse.find("</Shuffle>")
+                        responseExtract = playerResponse[stringIndex1+9:stringIndex2]
+                        if responseExtract == "On":
+                            shuffleStatus = True
+                        else:
+                            shuffleStatus = False
+                        zone.setStateValue(zoneShuffleStateTypeId, shuffleStatus)
+                        # Get playback state
+                        stringIndex1 = playerResponse.find("<Playback_Info>")
+                        stringIndex2 = playerResponse.find("</Playback_Info>")
+                        responseExtract = playerResponse[stringIndex1+15:stringIndex2]
+                        if responseExtract == "Play":
+                            playStatus = "Playing"
+                            pollFrequency = min(10, pollFrequency)
+                        elif responseExtract == "Pause":
+                            playStatus = "Paused"
+                            pollFrequency = min(10, pollFrequency)
+                        else:
+                            playStatus = "Stopped"
+                            pollFrequency = min(30, pollFrequency)
+                        zone.setStateValue(zonePlaybackStatusStateTypeId, playStatus)
+                        # Get meta info
+                        stringIndex1 = playerResponse.find("<Artist>")
+                        stringIndex2 = playerResponse.find("</Artist>")
+                        responseExtract = playerResponse[stringIndex1+8:stringIndex2]
+                        zone.setStateValue(zoneArtistStateTypeId, responseExtract)
+                        stringIndex1 = playerResponse.find("<Album>")
+                        stringIndex2 = playerResponse.find("</Album>")
+                        responseExtract = playerResponse[stringIndex1+7:stringIndex2]
+                        zone.setStateValue(zoneCollectionStateTypeId, responseExtract)
+                        stringIndex1 = playerResponse.find("<Song>")
+                        stringIndex2 = playerResponse.find("</Song>")
+                        responseExtract = playerResponse[stringIndex1+6:stringIndex2]
+                        zone.setStateValue(zoneTitleStateTypeId, responseExtract)
+                        stringIndex1 = playerResponse.find("<URL>")
+                        stringIndex2 = playerResponse.find("</URL>")
+                        responseExtract = playerResponse[stringIndex1+5:stringIndex2]
+                        artURL = 'http://' + deviceIp + ':80' + responseExtract
+                        zone.setStateValue(zoneArtworkStateTypeId, artURL)
+                    else:
+                        # Playing from external source so no info available 
+                        zone.setStateValue(zoneRepeatStateTypeId, "None")
+                        zone.setStateValue(zoneShuffleStateTypeId, False)
+                        zone.setStateValue(zonePlaybackStatusStateTypeId, "Stopped")
+                        zone.setStateValue(zoneArtistStateTypeId, "")
+                        zone.setStateValue(zoneCollectionStateTypeId, "")
+                        zone.setStateValue(zoneTitleStateTypeId, "")
+                        zone.setStateValue(zoneArtworkStateTypeId, "")
+            else:
+                zone.setStateValue(zoneConnectedStateTypeId, False)
 
 def pollService():
     logger.log("pollService!!!")
     global pollTimer
-    global playPoll
-    # restart the timer for next poll (if player was playing at previous poll, increase poll frequency)
-    # we start the timer before polling the receivers to test if this avoids the timer not restarting due to request errors in pollReceiver
-    if playPoll == True:
-        interval = 10
-    else:
-        interval = 30    
-    logger.log("Restarting timer @ pollService")
-    pollTimer = threading.Timer(interval, pollService)
+    global pollFrequency
+    # restart the timer for next poll
+    logger.log("Restarting timer @ pollService, with frequency", pollFrequency)
+    pollTimer = threading.Timer(pollFrequency, pollService)
     pollTimer.start()
-    playPoll = False
+    pollFrequency = 30
     # Poll all receivers we know
     for thing in myThings():
         if thing.thingClassId == receiverThingClassId or thing.thingClassId == zoneThingClassId:
