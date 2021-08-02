@@ -209,6 +209,17 @@ Description: nymea.io plugin for denon
  This package will install the nymea.io plugin for denon
 
 
+Package: nymea-plugin-dht
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+         python3-pip,
+Description: nymea.io plugin for DHT11/DHT22/AM2302
+ This plugin add support for the DHT11, DHT22 and AM2302 temperature and humidity
+ sensors to nymea.
+
+
 Package: nymea-plugin-doorbird
 Architecture: any
 Depends: ${shlibs:Depends},

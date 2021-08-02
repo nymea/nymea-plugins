@@ -1,0 +1,93 @@
+{
+    "name": "dht",
+    "displayName": "DHT11/DHT22/AM3202",
+    "id": "04172a94-6c04-4ce7-9f12-fc95a83faabb",
+    "vendors": [
+        {
+            "name": "aosong",
+            "displayName": "AOSONG",
+            "id": "8b8677a0-7f27-45c1-95ba-367d7ddc611f",
+            "thingClasses": [
+                {
+                    "id": "e81d51c8-ea50-44ef-846d-15b4bc8a34dc",
+                    "name": "dht11",
+                    "displayName": "DHT11",
+                    "createMethods": ["User"],
+                    "interfaces": ["temperaturesensor", "humiditysensor"],
+                    "paramTypes": [
+                        {
+                            "id": "b22a85fa-04c6-4100-8592-e6b73f7758ce",
+                            "name": "rpiGpio",
+                            "displayName": "Raspberry Pi GPIO",
+                            "type": "QString",
+                            "defaultValue": "4",
+                            "allowedValues": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"]
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "0601aff0-77cf-4514-ac01-dd00b1abde87",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e8a37289-db0e-4fd8-b1d0-7a8fdf4f68bf",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ]
+                },
+                {
+                    "id": "6978e5fe-7abf-4a37-898b-0391e83f2d8f",
+                    "name": "dht22",
+                    "displayName": "DHT22/AM2302",
+                    "createMethods": ["User"],
+                    "interfaces": ["temperaturesensor", "humiditysensor"],
+                    "paramTypes": [
+                        {
+                            "id": "aaf2b9aa-ae46-44c2-9e3c-d2aebee54a8a",
+                            "name": "rpiGpio",
+                            "displayName": "Raspberry Pi GPIO",
+                            "type": "QString",
+                            "defaultValue": "4",
+                            "allowedValues": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"]
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "d94e4b35-db5f-4774-9872-7ae8f804a52f",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "52ad8bb2-4ae8-400e-be5d-8d6bdce218f2",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
