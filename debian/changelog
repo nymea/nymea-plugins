@@ -1,3 +1,11 @@
+nymea-plugins (0.28.1) xenial; urgency=medium
+
+  [ Michael Zanetti ]
+  * Fix qmake warning message if plugin.pri isn't found
+  * Fix neatobotvac and homeconnect categories
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 03 Aug 2021 13:46:41 +0200
+
 nymea-plugins (0.28.0) xenial; urgency=medium
 
   [ Michael Zanetti ]
