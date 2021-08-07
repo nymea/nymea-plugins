@@ -1244,17 +1244,17 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
         if (myThings().filterByParentId(info->thing()->id()).isEmpty()) {
             // Always create the switch thing if we don't have one yet for shellies with input (1, 1pm etc)
             if (info->thing()->thingClassId() == shelly1ThingClassId
-                    || info->thing()->thingClassId() == shelly1pmThingClassId
-                    || info->thing()->thingClassId() == shelly1lThingClassId) {
+                    || info->thing()->thingClassId() == shelly1pmThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
             }
 
-            // Create 2 switches for shelly 2.5
+            // Create 2 switches for some that have 2
             if (info->thing()->thingClassId() == shelly2ThingClassId
                     || info->thing()->thingClassId() == shelly25ThingClassId
-                    || info->thing()->thingClassId() == shellyDimmerThingClassId) {
+                    || info->thing()->thingClassId() == shellyDimmerThingClassId
+                    || info->thing()->thingClassId() == shelly1lThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
