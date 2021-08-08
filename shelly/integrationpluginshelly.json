@@ -531,6 +531,28 @@
                             "displayNameEvent": "Available firmware version changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "118d572c-cc12-4037-82d8-7d8f6fb4a364",
+                            "name": "channel1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Channel 1 turned on or off",
+                            "displayNameAction": "Turn channel 1 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "7952aec0-cd27-4ef9-87a6-c499564bc1d4",
+                            "name": "channel2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Channel 2 turned on or off",
+                            "displayNameAction": "Turn channel 2 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ],
                     "actionTypes": [
