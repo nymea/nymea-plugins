@@ -1154,14 +1154,22 @@ The name of the StateType ({e95dc037-002d-40a2-8c15-cd5489bd354a}) of ThingClass
     </message>
     <message>
         <source>Battery level</source>
-        <extracomment>The name of the ParamType (ThingClass: battery, EventType: batteryLevel, ID: {d37eed4a-befc-40d4-b435-40a761f99314})
+        <extracomment>The name of the ParamType (ThingClass: car, ActionType: batteryLevel, ID: {3f1cca10-8988-4ec6-b937-0775653cde12})
+----------
+The name of the ParamType (ThingClass: car, EventType: batteryLevel, ID: {3f1cca10-8988-4ec6-b937-0775653cde12})
+----------
+The name of the StateType ({3f1cca10-8988-4ec6-b937-0775653cde12}) of ThingClass car
+----------
+The name of the ParamType (ThingClass: battery, EventType: batteryLevel, ID: {d37eed4a-befc-40d4-b435-40a761f99314})
 ----------
 The name of the StateType ({d37eed4a-befc-40d4-b435-40a761f99314}) of ThingClass battery</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Battery level changed</source>
-        <extracomment>The name of the EventType ({d37eed4a-befc-40d4-b435-40a761f99314}) of ThingClass battery</extracomment>
+        <extracomment>The name of the EventType ({3f1cca10-8988-4ec6-b937-0775653cde12}) of ThingClass car
+----------
+The name of the EventType ({d37eed4a-befc-40d4-b435-40a761f99314}) of ThingClass battery</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1199,7 +1207,9 @@ The name of the StateType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass
     </message>
     <message>
         <source>Battery entered or left critical state</source>
-        <extracomment>The name of the EventType ({e95dc037-002d-40a2-8c15-cd5489bd354a}) of ThingClass battery</extracomment>
+        <extracomment>The name of the EventType ({d33982d6-6467-4281-b448-68c1b1db088d}) of ThingClass car
+----------
+The name of the EventType ({e95dc037-002d-40a2-8c15-cd5489bd354a}) of ThingClass battery</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1209,7 +1219,9 @@ The name of the StateType ({a61c0328-b982-46a5-9cc0-b4fa4d0ab84d}) of ThingClass
     </message>
     <message>
         <source>Set battery level</source>
-        <extracomment>The name of the ActionType ({3336f0c2-158b-4353-b74f-f1bb9c4e8447}) of ThingClass battery</extracomment>
+        <extracomment>The name of the ActionType ({3f1cca10-8988-4ec6-b937-0775653cde12}) of ThingClass car
+----------
+The name of the ActionType ({3336f0c2-158b-4353-b74f-f1bb9c4e8447}) of ThingClass battery</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1498,6 +1510,37 @@ The name of the ParamType (ThingClass: waterSensor, EventType: waterDetected, ID
 The name of the EventType ({b2427b85-1f62-4635-b546-1961191426ef}) of ThingClass waterSensor
 ----------
 The name of the StateType ({b2427b85-1f62-4635-b546-1961191426ef}) of ThingClass waterSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Battery level critical</source>
+        <extracomment>The name of the ParamType (ThingClass: car, EventType: batteryCritical, ID: {d33982d6-6467-4281-b448-68c1b1db088d})
+----------
+The name of the StateType ({d33982d6-6467-4281-b448-68c1b1db088d}) of ThingClass car</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Capacity</source>
+        <extracomment>The name of the ParamType (ThingClass: car, ActionType: capacity, ID: {363a2a39-61b6-4109-9cd9-aca7367d12c7})
+----------
+The name of the ParamType (ThingClass: car, EventType: capacity, ID: {363a2a39-61b6-4109-9cd9-aca7367d12c7})
+----------
+The name of the StateType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass car</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Capacity changed</source>
+        <extracomment>The name of the EventType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass car</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic electric car</source>
+        <extracomment>The name of the ThingClass ({dbe0a9ff-94ba-4a94-ae52-51da3f05c717})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set capacity</source>
+        <extracomment>The name of the ActionType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass car</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

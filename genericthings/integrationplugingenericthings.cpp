@@ -891,6 +891,15 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         }
+    } else if (thing->thingClassId() == carThingClassId) {
+        if (action.actionTypeId() == carCapacityActionTypeId) {
+            thing->setStateValue(carCapacityStateTypeId, action.paramValue(carCapacityActionCapacityParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == carBatteryLevelActionTypeId) {
+            thing->setStateValue(carBatteryLevelStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId));
+            thing->setStateValue(carBatteryCriticalStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId).toInt() < 10);
+            info->finish(Thing::ThingErrorNoError);
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
