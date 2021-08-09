@@ -65,8 +65,7 @@ void FroniusLogger::updateThingInfo(const QByteArray &data)
     QVariantMap headMap = jsonDoc.toVariant().toMap().value("Head").toMap();
     QVariantMap bodyMap = jsonDoc.toVariant().toMap().value("Body").toMap();
 
-    // print the fetched data in dataMap format to stdout
-    //qCDebug(dcFroniusSolar()) << dataMap;
+    //qCDebug(dcFronius()) << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
 
     // create LoggerInfo list Map
     QVariantMap LoggerInfoMap = bodyMap.value("LoggerInfo").toMap();

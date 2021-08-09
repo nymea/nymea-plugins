@@ -12,7 +12,7 @@
                     "id": "4fd79fed-42f1-4df9-be64-3df7b2e0bda2",
                     "name": "datalogger",
                     "displayName": "Fronius Solar Connection",
-                    "createMethods": ["user"],
+                    "createMethods": ["discovery", "user"],
                     "interfaces": ["gateway"],
                     "paramTypes": [
                         {
@@ -22,6 +22,13 @@
                             "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue": "88.117.152.99"
+                        },
+                        {
+                            "id": "2237972e-385b-4458-b5d3-1d1fb4ae8756",
+                            "name": "loggerMac",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00"
                         }
                     ],
                     "stateTypes": [
@@ -210,8 +217,8 @@
                         {
                             "id": "d6dbb879-4cbc-4db3-830e-b92ba91a13e5",
                             "name": "totalEnergyProduced",
-                            "displayName": "Energy total",
-                            "displayNameEvent": "Energy total changed",
+                            "displayName": "Total produced energy",
+                            "displayNameEvent": "Total produced energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": "0"
