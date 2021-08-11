@@ -71,7 +71,7 @@
                             "id": "d52cd791-6d92-49e4-b46b-593cb0691d46",
                             "name": "channel3",
                             "displayName": "Channel 3",
-                            "displayNameEvent": "Channel 1 value changed",
+                            "displayNameEvent": "Channel 3 value changed",
                             "type": "double",
                             "defaultValue": 0,
                             "minValue": 0,

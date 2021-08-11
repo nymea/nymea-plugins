@@ -479,6 +479,15 @@ Description: nymea.io plugin for mailnotification
  This package will install the nymea.io plugin for mailnotification
 
 
+Package: nymea-plugin-mcp3008
+Architecture: any
+Depends: ${misc:Depends},
+         nymea-plugins-translations,
+         python3-pip,
+Description: MCP3008 DAC integration plugin for nymea
+ This package will install the nymea.io plugin for using the MCP3008 DAC.
+
+
 Package: nymea-plugin-mqttclient
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1279,6 +1288,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-gpio,
          nymea-plugin-i2cdevices,
          nymea-plugin-mqttclient,
+         nymea-plugin-mcp3008,
          nymea-plugin-remotessh,
          nymea-plugin-serialportcommander,
          nymea-plugin-systemmonitor,

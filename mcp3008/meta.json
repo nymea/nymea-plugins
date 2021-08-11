@@ -1,0 +1,13 @@
+{
+    "title": "MCP3008",
+    "tagline": "Connect MCP3008 digital analog converters to nymea.",
+    "icon": "",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "SPI"
+    ],
+    "categories": [
+        "DYI"
+    ]
+}

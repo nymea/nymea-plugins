@@ -1,0 +1,140 @@
+{
+    "name": "mcp3008",
+    "displayName": "MCP3008",
+    "id": "c45ff005-b9e9-4334-babb-4c00d6b7b714",
+    "vendors": [
+        {
+            "name": "microchip",
+            "displayName": "Microchip Technology",
+            "id": "6a416628-edfc-4e15-a530-eb7c7fc00ace",
+            "thingClasses": [
+                {
+                    "id": "b22461d4-7961-492d-b2a1-f613abc8a5fb",
+                    "name": "mcp3008",
+                    "displayName": "MCP3008 SPI ADC",
+                    "createMethods": ["User"],
+                    "paramTypes": [
+                        {
+                            "id": "cf97ede3-429a-4a6c-8eeb-99d7afd2eb37",
+                            "name": "clk",
+                            "displayName": "CLK",
+                            "type": "uint",
+                            "defaultValue": 11
+                        },
+                        {
+                            "id": "2e84602a-ef28-4f8c-bd0b-233036155da3",
+                            "name": "miso",
+                            "displayName": "MISO",
+                            "type": "uint",
+                            "defaultValue": 9
+                        },
+                        {
+                            "id": "7dc0d2f1-2960-4fdc-b77b-3ab93a33fa6c",
+                            "name": "mosi",
+                            "displayName": "MOSI",
+                            "type": "uint",
+                            "defaultValue": 10
+                        },
+                        {
+                            "id": "0771e974-008e-4190-bee7-efb6163decc5",
+                            "name": "cs",
+                            "displayName": "CS",
+                            "type": "uint",
+                            "defaultValue": 8
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "1c95c1ca-8043-4096-9e0c-62d6a9bcd468",
+                            "name": "channel1",
+                            "displayName": "Channel 1",
+                            "displayNameEvent": "Channel 1 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "cf354a91-f994-47ef-aeeb-2f03e54f1d7a",
+                            "name": "channel2",
+                            "displayName": "Channel 2",
+                            "displayNameEvent": "Channel 2 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "b0beb2b3-cb44-488f-b0e8-a6f3433b6683",
+                            "name": "channel3",
+                            "displayName": "Channel 3",
+                            "displayNameEvent": "Channel 3 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "c4f1cf54-427a-4b91-aa5e-7256e1b130bf",
+                            "name": "channel4",
+                            "displayName": "Channel 4",
+                            "displayNameEvent": "Channel 4 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "593cdc76-25ec-4252-90ce-8a8da01cf328",
+                            "name": "channel5",
+                            "displayName": "Channel 5",
+                            "displayNameEvent": "Channel 5 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "0e3a1f3d-eb4d-4bd5-bfe8-c1404713039e",
+                            "name": "channel6",
+                            "displayName": "Channel 6",
+                            "displayNameEvent": "Channel 6 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "3d53239b-51ee-4097-8028-291ff063b3ca",
+                            "name": "channel7",
+                            "displayName": "Channel 7",
+                            "displayNameEvent": "Channel 7 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "c10ed6ba-0248-477d-98ad-23d7318b6468",
+                            "name": "channel8",
+                            "displayName": "Channel 8",
+                            "displayNameEvent": "Channel 8 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 3.3,
+                            "ioType": "analogInput"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

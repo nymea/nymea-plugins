@@ -1,0 +1,3 @@
+RPi.GPIO==0.7.0 \
+    --hash=sha256:7424bc6c205466764f30f666c18187a0824077daf20b295c42f08aea2cb87d3f \
+    --hash=sha256:6a4791f41cafc2ee6e4cb70e5bd31fadc66a0cfab29b38df8723a98f6f73ad5a
