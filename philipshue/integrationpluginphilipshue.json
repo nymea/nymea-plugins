@@ -752,6 +752,80 @@
                     ]
                 },
                 {
+                    "id": "e967027f-f8fc-410c-8b48-6ac4c42e2777",
+                    "name": "wallSwitch",
+                    "displayName": "Hue Wall Switch Module",
+                    "interfaces": ["button", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "71c2c485-6a09-4bcd-80e5-24cdc45d323f",
+                            "name": "modelId",
+                            "displayName": "Model ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "08606780-2251-4c15-bb7d-7506535e14ed",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "4cdab881-5d2d-4443-816a-231bbb331f22",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "62a9df8c-51b5-434f-9d5d-5fa97144076a",
+                            "name": "sensorId",
+                            "displayName": "Sensor ID",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b51071af-1290-41f1-b2eb-e84527342ade",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "b025cab6-d128-43eb-ba63-b16861d6ab10",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "7fcf84e4-5638-46ce-9a7c-85b8bd466b38",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "4623b5ff-b999-4200-ba38-89435d78fcae",
+                            "name": "pressed",
+                            "displayName": "Button pressed"
+                        }
+                    ]
+                },
+                {
                     "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
                     "name": "tap",
                     "displayName": "Hue Tap",
