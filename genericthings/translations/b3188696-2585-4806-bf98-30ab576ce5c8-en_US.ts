@@ -1006,11 +1006,6 @@ The name of the StateType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Gerneric door or window sensor</source>
-        <extracomment>The name of the ThingClass ({2d936f56-48ee-4be1-9b3e-28a335ad8085})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Set open or closed</source>
         <extracomment>The name of the ActionType ({7f5fdc2b-7916-4e90-9c24-558162304f71}) of ThingClass doorSensor</extracomment>
         <translation type="unfinished"></translation>
@@ -1541,6 +1536,11 @@ The name of the StateType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass
     <message>
         <source>Set capacity</source>
         <extracomment>The name of the ActionType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass car</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic door or window sensor</source>
+        <extracomment>The name of the ThingClass ({2d936f56-48ee-4be1-9b3e-28a335ad8085})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
