@@ -12,6 +12,7 @@ This plugin allows to interact with the Hue bridge. Each light bulb, sensor and 
 * Hue Tap Switch
 * Friends of Hue Switch (e.g. Niko, ...)
 * Hue Smart Button
+* Hue Wall Switch Module
 * Hue Motion Sensor
 * Hue Outdoor Motion Sensor
 * Hue Ambient White Bulb
