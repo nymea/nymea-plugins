@@ -755,7 +755,7 @@
                     "id": "e967027f-f8fc-410c-8b48-6ac4c42e2777",
                     "name": "wallSwitch",
                     "displayName": "Hue Wall Switch Module",
-                    "interfaces": ["button", "wirelessconnectable"],
+                    "interfaces": ["multibutton", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -821,7 +821,16 @@
                         {
                             "id": "4623b5ff-b999-4200-ba38-89435d78fcae",
                             "name": "pressed",
-                            "displayName": "Button pressed"
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "adb4ec5e-e48f-4697-a876-e56e8458987a",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["ONE", "TWO"]
+                                }
+                            ]
                         }
                     ]
                 },

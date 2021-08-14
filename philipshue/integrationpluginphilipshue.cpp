@@ -557,7 +557,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         connect(wallSwitch, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
         connect(wallSwitch, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
 
-        m_remotes.insert(smarwallSwitchtButton, thing);
+        m_remotes.insert(wallSwitch, thing);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -1259,7 +1259,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "POWER");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 1000:
+        case 1001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "POWER");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1267,7 +1267,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM UP");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 2000:
+        case 2001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM UP");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1275,7 +1275,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM DOWN");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 3000:
+        case 3001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM DOWN");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1283,7 +1283,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "HUE");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 4000:
+        case 4001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "HUE");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1292,10 +1292,10 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             return;
         }
         // codes ending in 2 (e.g. 1002) are short presses;
-        // for long presses the Dimmer Switch V2 sends 3 codes: 
+        // for long presses the Dimmer Switch V2 sends 3 codes (same behaviour as hue remote and smart button): 
         // * codes ending in 0 (e.g. 1000) indicate start of long press
-        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
-        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
+        // * codes ending in 3 (e.g. 1003) indicate end of long press
+        // * codes ending in 1 (e.g. 1001) are sent during the long press
     } else if (thing->thingClassId() == tapThingClassId) {
         switch (buttonCode) {
         case 34:
@@ -1354,7 +1354,12 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
         }
     } else if (thing->thingClassId() == wallSwitchThingClassId) {
         switch (buttonCode) {
-        case 999999: // temporary number, replace with code (codes for on and off?)
+        case 1002: // temporary number, replace with code (codes for on and off?)
+            param = Param(wallSwitchPressedEventButtonNameParamTypeId, "ONE");
+            id = wallSwitchPressedEventTypeId;
+            break;
+        case 2002: // temporary number, replace with code (codes for on and off?)
+            param = Param(wallSwitchPressedEventButtonNameParamTypeId, "TWO");
             id = wallSwitchPressedEventTypeId;
             break;
         default:
