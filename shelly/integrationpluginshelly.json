@@ -1013,9 +1013,10 @@
                         },
                         {
                             "id": "b1f5a911-76ec-42e5-ac64-17f85d82b875",
-                            "name": "multipressInterval",
+                            "name": "multipushTimeBetweenPushes",
                             "displayName": "Max time between multiple presses",
                             "type": "uint",
+                            "unit": "MilliSeconds",
                             "minValue": 200,
                             "maxValue": 2000,
                             "defaultValue": 500
@@ -1150,6 +1151,38 @@
                             "name": "password",
                             "displayName": "Password (optional)",
                             "type": "QString"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "a04fda4b-f187-477c-b7a8-b56613bf9264",
+                            "name": "longpushMinDuration",
+                            "displayName": "Minimum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 2900,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "6485685e-0097-48db-958b-43126c6fb5a6",
+                            "name": "longpushMaxDuration",
+                            "displayName": "Maximum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 200,
+                            "maxValue": 6000,
+                            "defaultValue": 3000
+                        },
+                        {
+                            "id": "52699a1b-3526-4f60-83ec-f35faa863597",
+                            "name": "multipushTimeBetweenPushes",
+                            "displayName": "Max time between multiple presses",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 500,
+                            "defaultValue": 500
                         }
                     ],
                     "stateTypes": [
