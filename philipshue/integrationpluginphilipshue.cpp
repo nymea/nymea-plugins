@@ -674,7 +674,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId|| thing->thingClassId() == wallSwitchThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId || thing->thingClassId() == wallSwitchThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
