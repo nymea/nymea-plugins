@@ -1,0 +1,3 @@
+yamahaavr/integrationpluginyamahaavr.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yamahaavr/
+yamahaavr/integrationpluginyamahaavr.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yamahaavr/
+yamahaavr/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yamahaavr/

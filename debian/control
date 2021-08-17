@@ -1080,7 +1080,7 @@ Description: nymea.io plugin to monitor the ISS position
  This package will install the nymea.io plugin for wheretheiss.at
 
 
-Package: nymea-plugin-yamaha
+Package: nymea-plugin-yamahaavr
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
@@ -1253,7 +1253,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-keba,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
-         nymea-plugin-yamaha,
+         nymea-plugin-yamahaavr,
          nymea-plugins-zigbee,
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
