@@ -413,7 +413,6 @@ void IntegrationPluginLgSmartTv::pairTvDevice(Thing *thing)
                 qCDebug(dcLgSmartTv) << "Paired TV successfully.";
                 tv->setPaired(true);
                 loadAppList(thing);
-
                 refreshTv(thing);
             }
         });
@@ -450,8 +449,12 @@ void IntegrationPluginLgSmartTv::refreshTv(Thing *thing)
     connect(reply, &QNetworkReply::finished, this, [=](){
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status != 200) {
-            tv->setReachable(false);
-            qCWarning(dcLgSmartTv) << "Refresh tv information request error:" << status << reply->errorString();
+            if (status == 401) {
+                pairTvDevice(thing);
+            } else {
+                tv->setReachable(false);
+                qCWarning(dcLgSmartTv) << "Refresh tv information request error:" << status << reply->errorString();
+            }
             return;
         }
 
