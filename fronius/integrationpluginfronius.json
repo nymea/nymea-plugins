@@ -158,7 +158,7 @@
                     "name": "inverter",
                     "displayName": "Fronius Solar Inverter",
                     "createMethods": ["auto"],
-                    "interfaces" : ["smartmeterproducer", "connectable"],
+                    "interfaces" : ["solarinverter", "connectable"],
                     "paramTypes": [
                         {
                             "id": "f2f8c2f5-dd6a-4786-b336-82fc84e5bb98",
