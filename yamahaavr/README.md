@@ -21,7 +21,7 @@ As a nice extra, a random album on a random server can be started with a simple 
 ## Requirements
 
 * nymea and the Yamaha device must be in the same local area network.
-* The package "nymea-plugin-yamaha" must be installed.
+* The package "nymea-plugin-yamahaavr" must be installed.
 
 ## More
 
