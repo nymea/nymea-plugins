@@ -21,7 +21,6 @@ def startPairing(info):
     info.oAuthUrl = authorizationUrl
     info.finish(nymea.ThingErrorNoError)
 
-
 def confirmPairing(info, username, secret):
     # The user has successfully logged in at neato. Obtain the token from the OAuth session
     token = oauthSessions[info.transactionId].fetch_token(secret)
@@ -30,7 +29,6 @@ def confirmPairing(info, username, secret):
     pluginStorage().endGroup();
     del oauthSessions[info.transactionId]
     info.finish(nymea.ThingErrorNoError)
-
 
 def setupThing(info):
     # Setup for the account
@@ -90,12 +88,11 @@ def setupThing(info):
         autoThingsAppeared(thingDescriptors)
 
         # If no poll timer is set up yet, start it now
-        logger.log("Creating polltimer")
+        logger.log("Creating polltimer @ setupThing")
         global pollTimer
         if pollTimer is None:
-            pollTimer = threading.Timer(5, pollService)
-            pollTimer.start()
-
+            pollTimer = nymea.PluginTimer(30, pollService)
+            logger.log("timer interval @ setupThing", pollTimer.interval)
         return
 
     # Setup for the robots
@@ -117,7 +114,6 @@ def setupThing(info):
         # set up polling for robot status
         info.finish(nymea.ThingErrorNoError)
         return
-
 
 def refreshRobot(thing):
     robot = thingsAndRobots[thing]
@@ -161,8 +157,8 @@ def refreshRobot(thing):
         thing.setStateValue(robotRobotStateStateTypeId, "error")
     thing.setStateValue(robotErrorMessageStateTypeId, rbtError)
 
-
 def pollService():
+    logger.log("pollTimer triggered")
     # Poll all robots we know
     for thing in myThings():
         if thing.thingClassId == robotThingClassId:
@@ -170,11 +166,8 @@ def pollService():
                 refreshRobot(thing)
             except:
                 logger.warn("Error refreshing robot state")
-    # restart the timer for next poll
     global pollTimer
-    pollTimer = threading.Timer(60, pollService)
-    pollTimer.start()
-
+    logger.log("timer interval @ pollService", pollTimer.interval)
 
 def executeAction(info):
     if info.actionTypeId == robotStartCleaningActionTypeId:
@@ -255,7 +248,6 @@ def cleanWithRobot(robotThing, mapID, boundaryID):
     logger.log("Settings: Eco:", boolEco, "Care:", boolCare, "Enable nogo:", boolNogo, "mapID:", mapID, "boundaryID:", boundaryID)
     thingsAndRobots[robotThing].start_cleaning(mode=intEco, navigation_mode=intCare, category=intNogo, boundary_id=boundaryID, map_id=mapID)
 
-
 def browseThing(browseResult):
     robotThing = browseResult.thing
     robot = thingsAndRobots[browseResult.thing]
@@ -269,7 +261,6 @@ def browseThing(browseResult):
         logger.warn("Cannot find account for robot", robotThing.name)
         browseResult.finish(nymea.ThingErrorAuthenticationFailure)
         return;
-
 
     # Top level entries -> return maps
     if browseResult.itemId == "" or browseResult.itemId == "maps":
@@ -303,7 +294,6 @@ def browseThing(browseResult):
         browseResult.finish(nymea.ThingErrorNoError)
         return
 
-
 def executeBrowserItem(info):
     logger.log("Browser item clicked:", info.itemId)
     if info.itemId.startswith("boundary-"):
@@ -320,9 +310,17 @@ def executeBrowserItem(info):
     logger.warn("Can't execute browser item:", info.itemId)
     info.finish(nymea.ThingErrorItemNotExecutable)
 
-
 def deinit():
     global pollTimer
     # If we started a poll timer, cancel it on shutdown.
     if pollTimer is not None:
-        pollTimer.cancel()
+        pollTimer = None
+
+def thingRemoved(thing):
+    global pollTimer
+    logger.log("removeThing called for", thing.name)
+    # Clean up all data related to this thing
+    logger.log("len myThings", len(myThings()))
+    if len(myThings()) == 0 and pollTimer is not None:
+        logger.log("cancelling plugintimer")
+        pollTimer = None
