@@ -5,50 +5,10 @@ import json
 import requests
 import random
 from xml.sax.saxutils import unescape
-from zeroconf import IPVersion, ServiceBrowser, ServiceInfo, Zeroconf
-from typing import Callable, List
-
-class ZeroconfDevice(object):
-    # To do: replace with nymea serviceBrowser
-    def __init__(self, name: str, ip: str, port: int, model: str, id: str) -> None:
-        self.name = name
-        self.ip = ip
-        self.port = port
-        self.model = model
-        self.id = id
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.__dict__})"
-
-    def __eq__(self, other) -> bool:
-        return self is other or self.__dict__ == other.__dict__
-
-class ZeroconfListener(object):
-    # To do: replace with nymea serviceBrowser
-    """Basic zeroconf listener."""
-
-    def __init__(self, func: Callable[[ServiceInfo], None]) -> None:
-        """Initialize zeroconf listener with function callback."""
-        self._func = func
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.__dict__})"
-
-    def __eq__(self, other) -> bool:
-        return self is other or self.__dict__ == other.__dict__
-
-    def add_service(self, zeroconf: Zeroconf, type: str, name: str) -> None:
-        """Callback function when zeroconf service is discovered."""
-        self._func(zeroconf.get_service_info(type, name))
-
-    def update_service(self, zeroconf: Zeroconf, type: str, name: str) -> None:
-        return
-
-    def remove_service(self, zeroconf: Zeroconf, type: str, name: str) -> None:
-        return
+from zeroconfbrowser import ZeroconfDevice, ZeroconfListener, discover
 
 pollTimer = None
-pollFrequency = 40
+pollFrequency = 30
 
 def discoverThings(info):
     if info.thingClassId == receiverThingClassId:
@@ -202,38 +162,6 @@ def findIps():
             discoveredIps.append(deviceInfo.ip)
     return discoveredIps
     
-def discover(service_type: str, timeout: int = 5) -> List[ZeroconfDevice]:
-    # To do: replace with nymea serviceBrowser
-    """From pyvizio: Return all discovered zeroconf services of a given service type over given timeout period."""
-    services = []
-
-    def append_service(info: ServiceInfo) -> None:
-        """Append discovered zeroconf service to service list."""
-        name = info.name[: -(len(info.type) + 1)]
-        ip = info.parsed_addresses(IPVersion.V4Only)[0]
-        port = info.port
-        model = info.properties.get(b"name", "")
-        id = info.properties.get(b"id")
-
-        # handle id decode for various discovered use cases
-        if isinstance(id, bytes):
-            try:
-                int(id, 16)
-            except Exception:
-                id = id.hex()
-        else:
-            id = None
-
-        service = ZeroconfDevice(name, ip, port, model, id)
-        services.append(service)
-
-    zeroconf = Zeroconf()
-    ServiceBrowser(zeroconf, service_type, ZeroconfListener(append_service))
-    time.sleep(timeout)
-    zeroconf.close()
-
-    return services
-
 def setupThing(info):
     if info.thing.thingClassId == receiverThingClassId:
         searchSystemId = info.thing.paramValue(receiverThingSerialParamTypeId)
@@ -278,10 +206,11 @@ def setupThing(info):
         # If no poll timer is set up yet, start it now
         logger.log("Creating pollService")
         global pollTimer
+        global pollFrequency
         if pollTimer == None:
             logger.log("Starting timer @ setupThing")
-            pollTimer = threading.Timer(30, pollService)
-            pollTimer.start()
+            pollTimer = nymea.PluginTimer(pollFrequency, pollService)
+            logger.log("timer interval @ setupThing", pollTimer.interval)
         else:
             logger.log("Timer already exists @ setupThing")
         
@@ -638,13 +567,12 @@ def pollReceiver(info):
                 zone.setStateValue(zoneConnectedStateTypeId, False)
 
 def pollService():
-    logger.log("pollService!!!")
+    logger.log("pollTimer triggered")
     global pollTimer
     global pollFrequency
-    # restart the timer for next poll
-    logger.log("Restarting timer @ pollService, with frequency", pollFrequency)
-    pollTimer = threading.Timer(pollFrequency, pollService)
-    pollTimer.start()
+    logger.log("adjusting timer interval")
+    pollTimer.interval = pollFrequency
+    logger.log("timer interval @ pollService", pollTimer.interval)
     pollFrequency = 30
     # Poll all receivers we know
     for thing in myThings():
@@ -1016,10 +944,21 @@ def playRandomAlbum(rUrl, source):
         logger.log("Source not supported for this action")
     # navigate browseTree (first item select random server, then folder "Music", ...)
     menuLayer = browseInTree(rUrl, source, browseTree)
-    # play album by selecting first line --> what if first line is not selectable? filter out non-selectable lines first?
-    if menuLayer == len(browseTree)+1 and menuLayer > 0:
-        # don't do anything unless browsing to the required menu item succeeded
-        selectLine(rUrl, source, 1)
+
+    # don't do anything unless browsing to the required menu item succeeded:
+    if menuLayer == len(browseTree)+1 and menuLayer > 0: 
+        # play album by selecting first "selectable" line (attribute = "Item")
+        browseResponse, menuLayer = browseMenuReady(rUrl, source)
+        selectable = False
+        line = 1
+        while selectable == False:
+            itemTxt, itemAttr = readLine(browseResponse, line)
+            if itemAttr == "Item":
+                selectable = True
+            else:
+                line += 1
+        logger.log("Selecting line %s with label %s" % (line, itemTxt))
+        selectLine(rUrl, source, line)
     return
 
 def browseInTree(rUrl, source, browseTree):
@@ -1037,7 +976,6 @@ def browseInTree(rUrl, source, browseTree):
     # navigate browseTree
     for i in range (0, len(browseTree)):
         if browseTree[i] == "Random":
-            #browseResponse, menuLayer = browseMenuReady(rUrl, source)
             currentLine, maxLine = getLineNbrs(browseResponse)
             selItem = random.randint(1, maxLine)
             selectLine(rUrl, source, selItem)
@@ -1391,10 +1329,11 @@ def deinit():
     global pollTimer
     # If we started a poll timer, cancel it on shutdown.
     if pollTimer is not None:
-        pollTimer.cancel()
+        pollTimer = None
 
 def thingRemoved(thing):
+    global pollTimer
     logger.log("removeThing called for", thing.name)
     # Clean up all data related to this thing
-    if pollTimer is not None:
-        pollTimer.cancel()
+    if len(myThings()) == 0 and pollTimer is not None:
+        pollTimer = None
