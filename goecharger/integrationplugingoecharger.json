@@ -54,6 +54,14 @@
                             "suggestLogging": true
                         },
                         {
+                            "id": "6cb155b1-0831-47bc-8657-17ca68716684",
+                            "name": "pluggedIn",
+                            "displayName": "Car plugged in",
+                            "displayNameEvent": "Car plugged in changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "d80e1ed8-c3ae-4b68-bf86-21b4d7b2b201",
                             "name": "access",
                             "displayName": "Access",

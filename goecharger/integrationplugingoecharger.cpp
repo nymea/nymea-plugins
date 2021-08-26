@@ -266,15 +266,19 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         switch (carState) {
         case CarStateReadyNoCar:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Ready but no vehicle connected");
+            thing->setStateValue(goeHomePluggedInStateTypeId, false);
             break;
         case CarStateCharging:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Vehicle loads");
+            thing->setStateValue(goeHomePluggedInStateTypeId, true);
             break;
         case CarStateWaitForCar:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Waiting for vehicle");
+            thing->setStateValue(goeHomePluggedInStateTypeId, false);
             break;
         case CarStateChargedCarConnected:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Charging finished and vehicle still connected");
+            thing->setStateValue(goeHomePluggedInStateTypeId, true);
             break;
         }
 
@@ -403,6 +407,7 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
             qCDebug(dcGoECharger()) << "Configured successfully MQTT server" << thing << channel->serverAddress().toString();
         }
 
+        // Configure the port
         QNetworkRequest request = buildConfigurationRequest(address, QString("mcp=%1").arg(channel->serverPort()));
         qCDebug(dcGoECharger()) << "Configure nymea mqtt server port on" << thing << request.url().toString();
         QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
@@ -432,6 +437,7 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                 qCDebug(dcGoECharger()) << "Configured successfully MQTT server" << thing << channel->serverPort();
             }
 
+            // Username
             QNetworkRequest request = buildConfigurationRequest(address, QString("mcu=%1").arg(channel->username()));
             qCDebug(dcGoECharger()) << "Configure nymea mqtt server user name on" << thing << request.url().toString();
             QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
@@ -461,6 +467,7 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                     qCDebug(dcGoECharger()) << "Configured successfully MQTT server" << thing << channel->username();
                 }
 
+                // Password
                 QNetworkRequest request = buildConfigurationRequest(address, QString("mck=%1").arg(channel->password()));
                 qCDebug(dcGoECharger()) << "Configure nymea mqtt server password on" << thing << request.url().toString();
                 QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
@@ -490,6 +497,7 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
                         qCDebug(dcGoECharger()) << "Configured successfully MQTT server" << thing << channel->password();
                     }
 
+                    // Enable MQTT
                     QNetworkRequest request = buildConfigurationRequest(address, QString("mce=1"));
                     qCDebug(dcGoECharger()) << "Enable custom mqtt server on" << thing << request.url().toString();
                     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
