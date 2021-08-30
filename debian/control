@@ -18,6 +18,9 @@ Build-depends: libboblight-dev,
                libsodium-dev,
                libudev-dev,
                libhidapi-dev,
+               python3-pip:native,
+               python3-setuptools,
+               python3-wheel:native,
 Standards-Version: 3.9.3
 
 
@@ -273,7 +276,6 @@ Package: nymea-plugin-fastcom
 Architecture: any
 Depends: ${misc:Depends},
          nymea-plugins-translations,
-         python3-pip,
 Description: nymea.io plugin for fast.com based internet speed test
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -499,7 +501,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-         python3-pip,
 Description: nymea.io plugin for neato
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -971,8 +972,6 @@ Description: nymea.io plugin for Sonos smart speakers
 Package: nymea-plugin-sunposition
 Architecture: any
 Depends: ${misc:Depends},
-         libatlas-base-dev,
-         python3-pip,
          nymea-plugins-translations,
 Description: nymea.io plugin for calculating the sun position
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
