@@ -14,7 +14,7 @@
                     "id": "b2711164-a848-4715-8ddf-33ca86f9f4cf",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "multibutton", "battery", "wirelessconnectable" ],
+                    "interfaces": [ "longpressmultibutton", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "b221cad1-ef2e-4192-8168-11d0205a43da",
@@ -88,10 +88,24 @@
                         {
                             "id": "33bb5816-8479-4995-99e2-cb0443886003",
                             "name": "pressed",
-                            "displayName": "Button pressed",
+                            "displayName": "Pressed",
                             "paramTypes": [
                                 {
                                     "id": "c086a247-838f-49c0-b1e4-2ae1ed181b55",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "1a0be168-c9cb-44be-bca3-14c389f18e9f",
+                            "name": "longPressed",
+                            "displayName": "Long pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "046877e7-8e1c-489b-ac5f-8f0242c27b68",
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",
