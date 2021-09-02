@@ -31,6 +31,8 @@
 #include "integrationpluginsma.h"
 #include "plugininfo.h"
 
+#include "network/networkdevicediscovery.h"
+
 IntegrationPluginSma::IntegrationPluginSma()
 {
 
@@ -38,36 +40,50 @@ IntegrationPluginSma::IntegrationPluginSma()
 
 void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (info->thingClassId() == sunnyWebBoxThingClassId) {
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcSma()) << "Failed to discover network devices. The network device discovery is not available.";
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discover devices in your network."));
+        return;
+    }
 
-        Discovery *discovery = new Discovery(this);
-        discovery->discoverHosts(25);
+    qCDebug(dcSma()) << "Starting network discovery...";
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        ThingDescriptors descriptors;
+        qCDebug(dcSma()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+            // Filter for sma hosts
+            if (!networkDeviceInfo.hostName().toLower().contains("sma"))
+                continue;
 
-        // clean up discovery object when this discovery info is deleted
-        connect(info, &ThingDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
-        connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
-            qCDebug(dcSma()) << "Discovery finished. Found" << hosts.count() << "devices";
-            foreach (const Host &host, hosts) {
-                if (host.hostName().contains("SMA")){
-                    ThingDescriptor descriptor(info->thingClassId(), host.hostName(), host.address() + " (" + host.macAddress() + ")");
+            QString title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
+            QString description;
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description = networkDeviceInfo.macAddress();
+            } else {
+                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+            }
 
-                    foreach (Thing *existingThing, myThings()) {
-                        if (existingThing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() == host.macAddress()) {
-                            descriptor.setThingId(existingThing->id());
-                            break;
-                        }
-                    }
-                    ParamList params;
-                    params << Param(sunnyWebBoxThingMacAddressParamTypeId, host.macAddress());
-                    params << Param(sunnyWebBoxThingHostParamTypeId, host.address());
-                    descriptor.setParams(params);
+            ThingDescriptor descriptor(sunnyWebBoxThingClassId, title, description);
 
-                    info->addThingDescriptor(descriptor);
+            // Check for reconfiguration
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() == networkDeviceInfo.macAddress()) {
+                    descriptor.setThingId(existingThing->id());
+                    break;
                 }
             }
-            info->finish(Thing::ThingErrorNoError);
-        });
-    }
+
+            ParamList params;
+            params << Param(sunnyWebBoxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
+            params << Param(sunnyWebBoxThingHostParamTypeId, networkDeviceInfo.address().toString());
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+        }
+        info->addThingDescriptors(descriptors);
+        info->finish(Thing::ThingErrorNoError);
+    });
+
 }
 
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)

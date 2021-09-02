@@ -34,7 +34,6 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "sunnywebbox.h"
-#include "discovery.h"
 
 #include <QDebug>
 

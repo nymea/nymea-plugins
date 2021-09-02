@@ -1,16 +1,11 @@
 include(../plugins.pri)
 
-QT += \
-    network \
+QT += network
 
 SOURCES += \
     integrationpluginsma.cpp \
-    sunnywebbox.cpp \
-    host.cpp \
-    discovery.cpp
+    sunnywebbox.cpp
 
 HEADERS += \
     integrationpluginsma.h \
-    sunnywebbox.h \
-    host.h \
-    discovery.h
+    sunnywebbox.h
