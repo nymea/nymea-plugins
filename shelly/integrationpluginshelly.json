@@ -1268,16 +1268,15 @@
                                 {
                                     "id": "146313a1-cfb6-4732-a1be-86ec575bcbdb",
                                     "name": "buttonName",
-                                    "displayName": "Count",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 },
                                 {
                                     "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
-                                    "name": "origin",
-                                    "displayName": "Switch",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
+                                    "name": "count",
+                                    "displayName": "Press count",
+                                    "type": "uint"
                                  }
                             ]
                         },
@@ -1289,14 +1288,7 @@
                                 {
                                     "id": "99683cf9-930e-4f10-94f2-73bb32092639",
                                     "name": "buttonName",
-                                    "displayName": "Count",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
-                                },
-                                {
-                                    "id": "866d6db6-e989-4b19-93c3-cc4aa7453c9e",
-                                    "name": "origin",
-                                    "displayName": "Switch",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 }

@@ -1029,25 +1029,26 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 qCWarning(dcShelly()) << "Failed to parse JSON from shelly:" << error.errorString() << qUtf8Printable(payload);
                 return;
             }
+
+            QString buttonName = QString::number(channel + 1);
             QString event = jsonDoc.toVariant().toMap().value("event").toString();
-            QString param = "";
-            EventTypeId eventTypeId = shellyI3LongPressedEventTypeId;
-            ParamTypeId paramTypeId = shellyI3LongPressedEventButtonNameParamTypeId;
-            ParamTypeId param2TypeId = shellyI3LongPressedEventOriginParamTypeId;
-            if (event == "L") {
-                param = "1";
+            if (event == "S") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+            } else if (event == "L") {
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
+            } else if (event == "SS") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 2));
+            } else if (event == "SSS") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 3));
             } else if (event == "SL") {
-                param = "2";
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
             } else if (event == "LS") {
-                param = "3";
-            } else { // short press
-                param = QString::number(event.length());
-                eventTypeId = shellyI3PressedEventTypeId;
-                paramTypeId = shellyI3PressedEventButtonNameParamTypeId;
-                param2TypeId = shellyI3PressedEventOriginParamTypeId;
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+            } else {
+                qCDebug(dcShelly()) << "Invalid button code from shelly I3:" << event;
             }
-            QString usedSwitch = QString::number(channel + 1);
-            thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param) << Param(param2TypeId, usedSwitch));
         }
     }
 
