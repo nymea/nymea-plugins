@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>IntegrationPluginShelly</name>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1149"/>
         <source>Unable to find the thing in the network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Gerät konnte nicht im Netzwerk gefunden werden.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1160"/>
         <source>Roller shutter mode can&apos;t be mixed with relay mode. Please configure both connected devices to control a shutter or relays.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rollos-Modus kann nicht gleichzeitig mit Relais Modus betrieben werden. Bitte wähle für beide Kanäle entweder ein Relais oder ein Rollo aus.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1165"/>
         <location filename="../integrationpluginshelly.cpp" line="1170"/>
         <source>For using a roller shutter, one channel must be set to up, the other to down.</source>
-        <translation type="unfinished"></translation>
+        <translation>Um den Rollos Modus zu verwenden muss ein Kanal für öffnen, der andere für schließen konfiguriert werden.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1182"/>
         <source>Error creating MQTT channel. Please check MQTT server settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim erstellen des MQTT Kanals. Bitte überprüfe die MQTT Servereinstellungen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1234"/>
         <source>Username and password not set correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername und Passwort sind nicht richtig.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1236"/>
         <source>Error connecting to Shelly device.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Verbinden mit dem Shelly Gerät.</translation>
     </message>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="1245"/>
         <source>Unexpected data received from Shelly device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unerwartete Daten vom Shelly Gerät empfangen.</translation>
     </message>
 </context>
 <context>
@@ -121,7 +121,7 @@ The name of the StateType ({bd77d5f6-4958-4a8a-98f5-25931333a5d3}) of ThingClass
 The name of the ParamType (ThingClass: shelly1, EventType: availableVersion, ID: {6e794011-d184-4ab2-9c3a-3b2205880cbc})
 ----------
 The name of the StateType ({6e794011-d184-4ab2-9c3a-3b2205880cbc}) of ThingClass shelly1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Firmwareversion</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="730"/>
@@ -163,7 +163,7 @@ The name of the EventType ({5f357a69-6096-4f31-9b5b-b2d5478739da}) of ThingClass
 The name of the EventType ({bd77d5f6-4958-4a8a-98f5-25931333a5d3}) of ThingClass shelly1pm
 ----------
 The name of the EventType ({6e794011-d184-4ab2-9c3a-3b2205880cbc}) of ThingClass shelly1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Firmwareversion geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="769"/>
@@ -172,13 +172,13 @@ The name of the EventType ({6e794011-d184-4ab2-9c3a-3b2205880cbc}) of ThingClass
         <extracomment>The name of the EventType ({56053726-92dc-4a80-b05e-a9a857c02bc1}) of ThingClass shellyHT
 ----------
 The name of the EventType ({18edddee-1b30-48e4-b233-1e3b68bd6ff1}) of ThingClass shellyButton1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Battierladung kritisch geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="775"/>
         <source>Battery entered critical state</source>
         <extracomment>The name of the EventType ({1d03941e-9c41-446b-b698-f8dff335bf11}) of ThingClass shellyMotion</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterieladung erreicht kritischen Zustand</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="778"/>
@@ -199,7 +199,7 @@ The name of the StateType ({15914ad5-816b-471c-996b-00160100f2bc}) of ThingClass
 The name of the ParamType (ThingClass: shellyButton1, EventType: batteryLevel, ID: {338355e5-9506-48b1-be86-757d69b34755})
 ----------
 The name of the StateType ({338355e5-9506-48b1-be86-757d69b34755}) of ThingClass shellyButton1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterieladung</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="796"/>
@@ -211,7 +211,7 @@ The name of the StateType ({338355e5-9506-48b1-be86-757d69b34755}) of ThingClass
 The name of the EventType ({15914ad5-816b-471c-996b-00160100f2bc}) of ThingClass shellyHT
 ----------
 The name of the EventType ({338355e5-9506-48b1-be86-757d69b34755}) of ThingClass shellyButton1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterieladung geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="805"/>
@@ -232,7 +232,7 @@ The name of the StateType ({56053726-92dc-4a80-b05e-a9a857c02bc1}) of ThingClass
 The name of the ParamType (ThingClass: shellyButton1, EventType: batteryCritical, ID: {18edddee-1b30-48e4-b233-1e3b68bd6ff1})
 ----------
 The name of the StateType ({18edddee-1b30-48e4-b233-1e3b68bd6ff1}) of ThingClass shellyButton1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterieladung kritisch</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="823"/>
@@ -253,7 +253,7 @@ The name of the ParamType (ThingClass: shellyRgbw2, ActionType: brightness, ID: 
 The name of the ParamType (ThingClass: shellyRgbw2, EventType: brightness, ID: {3f74eb92-d95b-48c2-8ac6-29bea9f65ce3})
 ----------
 The name of the StateType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="841"/>
@@ -262,19 +262,19 @@ The name of the StateType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClass
         <extracomment>The name of the EventType ({f41c93ac-6911-45fc-9221-7dd26bf65fd0}) of ThingClass shellyDimmer
 ----------
 The name of the EventType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="847"/>
         <source>Button type</source>
         <extracomment>The name of the ParamType (ThingClass: shellySwitch, Type: settings, ID: {ce9f1650-5e12-40f4-97de-27af86afa40b})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tastentyp</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="850"/>
         <source>Calibrate</source>
         <extracomment>The name of the ActionType ({4e2d8a7b-821e-4ee8-9f9b-f774d631845f}) of ThingClass shellyRoller</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kalibrieren</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="853"/>
@@ -301,25 +301,25 @@ The name of the ParamType (ThingClass: shellyGenericPM, Type: thing, ID: {5e7c6e
 The name of the ParamType (ThingClass: shellyGeneric, Type: thing, ID: {c08b1272-6eb2-4fed-80ad-06566a521b95})
 ----------
 The name of the ParamType (ThingClass: shellySwitch, Type: thing, ID: {be6bdd43-cbf0-4d16-b789-ccad16e23788})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kanal</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="877"/>
         <source>Channel 1 turned on or off</source>
         <extracomment>The name of the EventType ({118d572c-cc12-4037-82d8-7d8f6fb4a364}) of ThingClass shelly25</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kanal 1 an- oder ausgeschaltet</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="880"/>
         <source>Channel 2 turned on or off</source>
         <extracomment>The name of the EventType ({7952aec0-cd27-4ef9-87a6-c499564bc1d4}) of ThingClass shelly25</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kanal 2 an- oder ausgeschaltet</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="883"/>
         <source>Close</source>
         <extracomment>The name of the ActionType ({87eb0290-615e-4c98-9ec8-a21104fcf05d}) of ThingClass shellyRoller</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="886"/>
@@ -331,13 +331,13 @@ The name of the ParamType (ThingClass: shellySwitch, Type: thing, ID: {be6bdd43-
 The name of the ParamType (ThingClass: shellyRgbw2, EventType: color, ID: {6ef7c686-350d-4069-9c41-9b90b3906748})
 ----------
 The name of the StateType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="895"/>
         <source>Color changed</source>
         <extracomment>The name of the EventType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="898"/>
@@ -349,13 +349,13 @@ The name of the StateType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass
 The name of the ParamType (ThingClass: shellyRgbw2, EventType: colorTemperature, ID: {a32a457f-fdc0-46ce-9106-6f9d4f4a6b16})
 ----------
 The name of the StateType ({a32a457f-fdc0-46ce-9106-6f9d4f4a6b16}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbtemperatur</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="907"/>
         <source>Color temperature changed</source>
         <extracomment>The name of the EventType ({a32a457f-fdc0-46ce-9106-6f9d4f4a6b16}) of ThingClass shellyRgbw2</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbtemperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="910"/>
@@ -484,7 +484,7 @@ The name of the StateType ({df23a5ea-5f54-42ac-ab6b-aea8f71224f0}) of ThingClass
 The name of the ParamType (ThingClass: shelly1, EventType: connected, ID: {e5d41e05-2296-457e-97d8-98a5ac0de615})
 ----------
 The name of the StateType ({e5d41e05-2296-457e-97d8-98a5ac0de615}) of ThingClass shelly1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1036"/>
@@ -508,7 +508,7 @@ The name of the EventType ({2a333f45-2bba-4643-b973-1bb47d56306a}) of ThingClass
 The name of the EventType ({df23a5ea-5f54-42ac-ab6b-aea8f71224f0}) of ThingClass shelly1pm
 ----------
 The name of the EventType ({e5d41e05-2296-457e-97d8-98a5ac0de615}) of ThingClass shelly1</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbindung geändert</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1057"/>
@@ -517,7 +517,7 @@ The name of the EventType ({e5d41e05-2296-457e-97d8-98a5ac0de615}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: shelly25, Type: thing, ID: {dc8a02fb-baa4-40bf-9e00-684b17794287})
 ----------
 The name of the ParamType (ThingClass: shelly2, Type: thing, ID: {84e60831-0a2c-466a-bdfe-36ae6bd114e2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbundenes Gerät 1</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1063"/>
@@ -526,7 +526,7 @@ The name of the ParamType (ThingClass: shelly2, Type: thing, ID: {84e60831-0a2c-
         <extracomment>The name of the ParamType (ThingClass: shelly25, Type: thing, ID: {1e6925f8-1613-4fe4-8234-e4a4e973ef83})
 ----------
 The name of the ParamType (ThingClass: shelly2, Type: thing, ID: {0becaa77-b927-489a-ad5f-9b22513f8673})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbundenes Gerät 2</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1069"/>
@@ -562,7 +562,7 @@ The name of the EventType ({08bd7743-af98-4328-bbca-64280afc5a87}) of ThingClass
 The name of the EventType ({0c233312-7b8f-4ca3-880d-523cab9b3ccb}) of ThingClass shellySwitch
 ----------
 The name of the EventType ({b35ace90-8afb-49f1-924d-899bf1c03c3a}) of ThingClass shellyHT</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden oder getrennt</translation>
     </message>
     <message>
         <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1102"/>
