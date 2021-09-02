@@ -75,8 +75,8 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             }
 
             ParamList params;
-            params << Param(sunnyWebBoxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
             params << Param(sunnyWebBoxThingHostParamTypeId, networkDeviceInfo.address().toString());
+            params << Param(sunnyWebBoxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
             descriptor.setParams(params);
             descriptors.append(descriptor);
         }
@@ -89,25 +89,29 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qCDebug(dcSma()) << "Setup thing" << thing->name();
+    qCDebug(dcSma()) << "Setup thing" << thing << thing->params();
 
     if (thing->thingClassId() == sunnyWebBoxThingClassId) {
-        //check if a Sunny WebBox is already added with this IPv4Address
-        foreach(SunnyWebBox *sunnyWebBox, m_sunnyWebBoxes.values()) {
-            if(sunnyWebBox->hostAddress().toString() == thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()){
-                //this logger at this IPv4 address is already added
-                qCWarning(dcSma()) << "thing at " << thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString() << " already added!";
+        // Check if a Sunny WebBox is already added with this mac address
+        foreach (SunnyWebBox *sunnyWebBox, m_sunnyWebBoxes.values()) {
+            if (sunnyWebBox->macAddress() == thing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString()){
+                qCWarning(dcSma()) << "Thing with mac address" << thing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() << " already added!";
                 info->finish(Thing::ThingErrorThingInUse);
                 return;
             }
         }
+
         if (m_sunnyWebBoxes.contains(thing)) {
             qCDebug(dcSma()) << "Setup after reconfiguration, cleaning up...";
             m_sunnyWebBoxes.take(thing)->deleteLater();
         }
+
         SunnyWebBox *sunnyWebBox = new SunnyWebBox(hardwareManager()->networkManager(), QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
+        sunnyWebBox->setMacAddress(thing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString());
+
         connect(info, &ThingSetupInfo::aborted, sunnyWebBox, &SunnyWebBox::deleteLater);
         connect(sunnyWebBox, &SunnyWebBox::destroyed, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
+
         QString requestId = sunnyWebBox->getPlantOverview();
         connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, info, [=] (const QString &messageId, SunnyWebBox::Overview overview) {
             qCDebug(dcSma()) << "Received plant overview" << messageId << "Finish setup";

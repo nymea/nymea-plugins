@@ -84,12 +84,16 @@ public:
     QString getParameters(const QStringList &deviceKeys);     //Returns the parameter values of up to 5 devices
     QString setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
 
+    QHostAddress hostAddress() const;
     void setHostAddress(const QHostAddress &address);
-    QHostAddress hostAddress();
+
+    QString macAddress() const;
+    void setMacAddress(const QString &macAddress);
 
 private:
     bool m_connected = false;
     QHostAddress m_hostAddresss;
+    QString m_macAddress;
     NetworkAccessManager *m_networkManager = nullptr;
 
     QString sendMessage(const QHostAddress &address, const QString &procedure);

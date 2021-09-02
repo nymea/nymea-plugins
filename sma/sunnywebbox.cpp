@@ -121,15 +121,25 @@ QString SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString
     return sendMessage(m_hostAddresss, "SetParameter", paramsObj);
 }
 
+QHostAddress SunnyWebBox::hostAddress() const
+{
+    return m_hostAddresss;
+}
+
 void SunnyWebBox::setHostAddress(const QHostAddress &address)
 {
     qCDebug(dcSma()) << "SunnyWebBox: Setting host address to" << address.toString();
     m_hostAddresss = address;
 }
 
-QHostAddress SunnyWebBox::hostAddress()
+QString SunnyWebBox::macAddress() const
 {
-    return m_hostAddresss;
+    return m_macAddress;
+}
+
+void SunnyWebBox::setMacAddress(const QString &macAddress)
+{
+    m_macAddress = macAddress;
 }
 
 void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result)
