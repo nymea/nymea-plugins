@@ -188,7 +188,7 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
                 }
                 keba->getReport2();
                 keba->getReport3();
-                if (thing->stateValue(wallboxActivityStateTypeId).toString() == "Charging") {
+                if (thing->stateValue(wallboxActivityStateTypeId).toString() == QT_TR_NOOP("Charging")) {
                     keba->getReport1XX(100);
                 }
             }
@@ -228,22 +228,22 @@ void IntegrationPluginKeba::setDeviceState(Thing *thing, KeContact::State state)
 {
     switch (state) {
     case KeContact::StateStarting:
-        thing->setStateValue(wallboxActivityStateTypeId, "Starting");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Starting"));
         break;
     case KeContact::StateNotReady:
-        thing->setStateValue(wallboxActivityStateTypeId, "Not ready for charging");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Not ready for charging"));
         break;
     case KeContact::StateReady:
-        thing->setStateValue(wallboxActivityStateTypeId, "Ready for charging");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Ready for charging"));
         break;
     case KeContact::StateCharging:
-        thing->setStateValue(wallboxActivityStateTypeId, "Charging");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Charging"));
         break;
     case KeContact::StateError:
-        thing->setStateValue(wallboxActivityStateTypeId, "Error");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Error"));
         break;
     case KeContact::StateAuthorizationRejected:
-        thing->setStateValue(wallboxActivityStateTypeId, "Authorization rejected");
+        thing->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Authorization rejected"));
         break;
     }
 }
@@ -252,19 +252,24 @@ void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugStat
 {
     switch (plugState) {
     case KeContact::PlugStateUnplugged:
-        thing->setStateValue(wallboxPlugStateStateTypeId, "Unplugged");
+        thing->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Unplugged"));
+        thing->setStateValue(wallboxPluggedInStateTypeId, false);
         break;
     case KeContact::PlugStatePluggedOnChargingStation:
-        thing->setStateValue(wallboxPlugStateStateTypeId, "Plugged in charging station");
+        thing->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in charging station"));
+        thing->setStateValue(wallboxPluggedInStateTypeId, false);
         break;
     case KeContact::PlugStatePluggedOnChargingStationAndPluggedOnEV:
-        thing->setStateValue(wallboxPlugStateStateTypeId, "Plugged in on EV");
+        thing->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV"));
+        thing->setStateValue(wallboxPluggedInStateTypeId, true);
         break;
     case KeContact::PlugStatePluggedOnChargingStationAndPlugLocked:
-        thing->setStateValue(wallboxPlugStateStateTypeId, "Plugged in and locked");
+        thing->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in and locked"));
+        thing->setStateValue(wallboxPluggedInStateTypeId, false);
         break;
     case KeContact::PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV:
-        thing->setStateValue(wallboxPlugStateStateTypeId, "Plugged in on EV and locked");
+        thing->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV and locked"));
+        thing->setStateValue(wallboxPluggedInStateTypeId, true);
         break;
     }
 }
