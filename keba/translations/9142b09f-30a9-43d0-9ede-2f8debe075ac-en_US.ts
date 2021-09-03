@@ -8,62 +8,6 @@
         <source>Error opening network port.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="191"/>
-        <location filename="../integrationpluginkeba.cpp" line="240"/>
-        <source>Charging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="231"/>
-        <source>Starting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="234"/>
-        <source>Not ready for charging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="237"/>
-        <source>Ready for charging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="243"/>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="246"/>
-        <source>Authorization rejected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="255"/>
-        <source>Unplugged</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="259"/>
-        <source>Plugged in charging station</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="263"/>
-        <source>Plugged in on EV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="267"/>
-        <source>Plugged in and locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginkeba.cpp" line="271"/>
-        <source>Plugged in on EV and locked</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>KebaKeContact</name>
