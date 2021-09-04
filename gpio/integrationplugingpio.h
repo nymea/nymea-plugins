@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,12 +31,14 @@
 #ifndef INTEGRATIONPLUGINGPIO_H
 #define INTEGRATIONPLUGINGPIO_H
 
-#include "hardware/gpio.h"
-#include "hardware/gpiomonitor.h"
-#include "gpiodescriptor.h"
-#include "hardware/gpiomonitor.h"
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
+#include "gpiodescriptor.h"
+
+// libnymea-gpio
+#include "gpio.h"
+#include "gpiomonitor.h"
+#include "gpiobutton.h"
 
 #include <QTimer>
 
@@ -50,6 +52,7 @@ class IntegrationPluginGpio : public IntegrationPlugin
 public:
     explicit IntegrationPluginGpio();
 
+    void init() override;
     void setupThing(ThingSetupInfo *info) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void thingRemoved(Thing *thing) override;
@@ -58,22 +61,26 @@ public:
     void postSetupThing(Thing *thing) override;
 
 private:
+    QHash<ThingClassId, ParamTypeId> m_gpioParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_activeLowParamTypeIds;
+
     QHash<Gpio *, Thing *> m_gpioDevices;
     QHash<GpioMonitor *, Thing *> m_monitorDevices;
+    QHash<GpioButton *, Thing *> m_buttonDevices;
 
     QHash<int, Gpio *> m_raspberryPiGpios;
     QHash<int, GpioMonitor *> m_raspberryPiGpioMoniors;
+    QHash<int, GpioButton *> m_raspberryPiGpioButtons;
 
     QHash<int, Gpio *> m_beagleboneBlackGpios;
     QHash<int, GpioMonitor *> m_beagleboneBlackGpioMoniors;
+    QHash<int, GpioButton *> m_beagleboneBlackGpioButtons;
 
     QList<GpioDescriptor> raspberryPiGpioDescriptors();
     QList<GpioDescriptor> beagleboneBlackGpioDescriptors();
     PluginTimer *m_counterTimer = nullptr;
     QHash<ThingId, int> m_counterValues;
 
-private slots:
-    void onGpioValueChanged(const bool &value);
 };
 
 #endif // INTEGRATIONPLUGINGPIO_H

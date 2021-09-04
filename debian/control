@@ -6,6 +6,7 @@ Build-depends: libboblight-dev,
                debhelper (>= 0.0.0),
                libnymea-dev (>= 0.26~),
                libnymea-mqtt-dev,
+               libnymea-gpio-dev,
                libnymea-zigbee-dev,
                libqt5serialport5-dev,
                libqt5websockets5-dev,
@@ -365,6 +366,7 @@ Package: nymea-plugin-gpio
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         libnymea-gpio,
          nymea-plugins-translations,
 Description: nymea.io plugin for gpio
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,6 +35,33 @@
 
 IntegrationPluginGpio::IntegrationPluginGpio()
 {
+
+}
+
+void IntegrationPluginGpio::init()
+{
+    // Raspberry pi
+    m_gpioParamTypeIds.insert(gpioOutputRpiThingClassId, gpioOutputRpiThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(gpioInputRpiThingClassId, gpioInputRpiThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(counterRpiThingClassId, counterRpiThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(gpioButtonRpiThingClassId, gpioButtonRpiThingGpioParamTypeId);
+
+    // Beagle bone black
+    m_gpioParamTypeIds.insert(gpioOutputBbbThingClassId, gpioOutputBbbThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(gpioInputBbbThingClassId, gpioInputBbbThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(counterBbbThingClassId, counterBbbThingGpioParamTypeId);
+
+    // Raspberry pi
+    m_activeLowParamTypeIds.insert(gpioOutputRpiThingClassId, gpioOutputRpiThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(gpioInputRpiThingClassId, gpioInputRpiThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(counterRpiThingClassId, counterRpiThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(gpioButtonRpiThingClassId, gpioButtonRpiThingActiveLowParamTypeId);
+
+    // Beagle bone black
+    m_activeLowParamTypeIds.insert(gpioOutputBbbThingClassId, gpioOutputBbbThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(gpioInputBbbThingClassId, gpioInputBbbThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(counterBbbThingClassId, counterBbbThingActiveLowParamTypeId);
+
 }
 
 void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
@@ -51,30 +78,34 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
 
     // GPIO Switch
     if (thing->thingClassId() == gpioOutputRpiThingClassId || thing->thingClassId() == gpioOutputBbbThingClassId) {
+
         // Create and configure gpio
-        int gpioId = -1;
-        if (thing->thingClassId() == gpioOutputRpiThingClassId)
-            gpioId = thing->paramValue(gpioOutputRpiThingGpioParamTypeId).toInt();
-
-        if (thing->thingClassId() == gpioOutputBbbThingClassId)
-            gpioId = thing->paramValue(gpioOutputBbbThingGpioParamTypeId).toInt();
-
-        Gpio *gpio = new Gpio(gpioId, this);
+        Gpio *gpio = new Gpio(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
 
         if (!gpio->exportGpio()) {
             qCWarning(dcGpioController()) << "Could not export gpio for thing" << thing->name();
+            gpio->deleteLater();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Exporting GPIO failed."));
         }
 
         if (!gpio->setDirection(Gpio::DirectionOutput)) {
             qCWarning(dcGpioController()) << "Could not configure output gpio for thing" << thing->name();
+            gpio->deleteLater();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Configuring output GPIO failed."));
         }
 
+        if (!gpio->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool())) {
+            qCWarning(dcGpioController()) << "Could not configure output gpio for thing" << thing->name();
+            gpio->deleteLater();
+            //: Error setting up GPIO thing
+            return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Configuring GPIO active low failed."));
+        }
+
         if (!gpio->setValue(Gpio::ValueLow)) {
             qCWarning(dcGpioController()) << "Could not set gpio  value for thing" << thing->name();
+            gpio->deleteLater();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Setting GPIO value failed."));
         }
@@ -92,64 +123,102 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == gpioInputRpiThingClassId || thing->thingClassId() == gpioInputBbbThingClassId) {
 
-        int gpioId = -1;
-        if (thing->thingClassId() == gpioInputRpiThingClassId)
-            gpioId = thing->paramValue(gpioInputRpiThingGpioParamTypeId).toInt();
-
-        if (thing->thingClassId() == gpioInputBbbThingClassId)
-            gpioId = thing->paramValue(gpioInputBbbThingGpioParamTypeId).toInt();
-
-        GpioMonitor *monitor = new GpioMonitor(gpioId, this);
-
+        GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::valueChanged, this, &IntegrationPluginGpio::onGpioValueChanged);
+        connect(monitor, &GpioMonitor::enabledChanged, thing, [this, thing](bool enabled){
+            if (thing->thingClassId() == gpioInputRpiThingClassId) {
+                thing->setStateValue(gpioInputRpiPowerStateTypeId, enabled);
+            } else if (thing->thingClassId() == gpioInputBbbThingClassId) {
+                thing->setStateValue(gpioInputBbbPowerStateTypeId, enabled);
+            } else if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
+                if (enabled) {
+                    m_counterValues[thing->id()] += 1;
+                }
+            }
+        });
 
         m_monitorDevices.insert(monitor, thing);
 
         if (thing->thingClassId() == gpioInputRpiThingClassId)
-            m_raspberryPiGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+            m_raspberryPiGpioMoniors.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), monitor);
 
         if (thing->thingClassId() == gpioInputBbbThingClassId)
-            m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+            m_beagleboneBlackGpioMoniors.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), monitor);
 
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Counter
     if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
-
-        int gpioId = -1;
-        if (thing->thingClassId() == counterRpiThingClassId)
-            gpioId = thing->paramValue(counterRpiThingGpioParamTypeId).toInt();
-
-        if (thing->thingClassId() == counterBbbThingClassId)
-            gpioId = thing->paramValue(counterBbbThingGpioParamTypeId).toInt();
-
-        GpioMonitor *monitor = new GpioMonitor(gpioId, this);
-
+        GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::valueChanged, this, &IntegrationPluginGpio::onGpioValueChanged);
+        connect(monitor, &GpioMonitor::enabledChanged, thing, [this, thing](bool enabled){
+            if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
+                if (enabled) {
+                    m_counterValues[thing->id()] += 1;
+                }
+            }
+        });
 
         m_monitorDevices.insert(monitor, thing);
 
         if (thing->thingClassId() == counterRpiThingClassId)
-            m_raspberryPiGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+            m_raspberryPiGpioMoniors.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), monitor);
 
         if (thing->thingClassId() == counterBbbThingClassId)
-            m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+            m_beagleboneBlackGpioMoniors.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), monitor);
 
         m_counterValues.insert(thing->id(), 0);
         return info->finish(Thing::ThingErrorNoError);
     }
+
+    // Button
+    if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+        GpioButton *button = new GpioButton(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
+        if (!button->enable()) {
+            qCWarning(dcGpioController()) << "Could not enable button" << button;
+            button->deleteLater();
+            return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO button failed."));
+        }
+
+        connect(button, &GpioButton::clicked, this, [this, thing, button](){
+            qCDebug(dcGpioController()) << button << "clicked";
+            if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+                emitEvent(Event(gpioButtonRpiPressedEventTypeId, thing->id()));
+            } else if (thing->thingClassId() == gpioButtonBbbThingClassId) {
+                emitEvent(Event(gpioButtonBbbPressedEventTypeId, thing->id()));
+            }
+        });
+
+        connect(button, &GpioButton::longPressed, this, [this, thing, button](){
+            qCDebug(dcGpioController()) << button << "long pressed";
+            if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+                emitEvent(Event(gpioButtonRpiLongPressedEventTypeId, thing->id()));
+            } else if (thing->thingClassId() == gpioButtonBbbThingClassId) {
+                emitEvent(Event(gpioButtonBbbLongPressedEventTypeId, thing->id()));
+            }
+        });
+
+        m_buttonDevices.insert(button, thing);
+
+        if (thing->thingClassId() == gpioButtonRpiThingClassId)
+            m_raspberryPiGpioButtons.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), button);
+
+        if (thing->thingClassId() == gpioButtonBbbThingClassId)
+            m_beagleboneBlackGpioButtons.insert(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), button);
+    }
+
+
     return info->finish(Thing::ThingErrorNoError);
 }
 
@@ -167,7 +236,6 @@ void IntegrationPluginGpio::discoverThings(ThingDiscoveryInfo *info)
     // Check which board / gpio configuration
     const ThingClass deviceClass = supportedThings().findById(deviceClassId);
     if (deviceClass.vendorId() == raspberryPiVendorId) {
-
         // Create the list of available gpios
         QList<GpioDescriptor> gpioDescriptors = raspberryPiGpioDescriptors();
         for (int i = 0; i < gpioDescriptors.count(); i++) {
@@ -178,6 +246,9 @@ void IntegrationPluginGpio::discoverThings(ThingDiscoveryInfo *info)
                 continue;
 
             if (m_raspberryPiGpioMoniors.keys().contains(gpioDescriptor.gpio()))
+                continue;
+
+            if (m_raspberryPiGpioButtons.keys().contains(gpioDescriptor.gpio()))
                 continue;
 
             QString description;
@@ -197,11 +268,15 @@ void IntegrationPluginGpio::discoverThings(ThingDiscoveryInfo *info)
                 parameters.append(Param(gpioInputRpiThingGpioParamTypeId, gpioDescriptor.gpio()));
                 parameters.append(Param(gpioInputRpiThingPinParamTypeId, gpioDescriptor.pin()));
                 parameters.append(Param(gpioInputRpiThingDescriptionParamTypeId, gpioDescriptor.description()));
+            } else if (deviceClass.id() == gpioButtonRpiThingClassId) {
+                parameters.append(Param(gpioButtonRpiThingGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioButtonRpiThingPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioButtonRpiThingDescriptionParamTypeId, gpioDescriptor.description()));
             }
             descriptor.setParams(parameters);
 
             foreach (Thing *existingThing, myThings()) {
-                if (existingThing->paramValue(gpioOutputRpiThingGpioParamTypeId).toInt() == gpioDescriptor.gpio()) {
+                if (existingThing->paramValue(m_gpioParamTypeIds.value(deviceClass.id())).toInt() == gpioDescriptor.gpio()) {
                     descriptor.setThingId(existingThing->id());
                     break;
                 }
@@ -243,6 +318,10 @@ void IntegrationPluginGpio::discoverThings(ThingDiscoveryInfo *info)
                 parameters.append(Param(gpioInputBbbThingGpioParamTypeId, gpioDescriptor.gpio()));
                 parameters.append(Param(gpioInputBbbThingPinParamTypeId, gpioDescriptor.pin()));
                 parameters.append(Param(gpioInputBbbThingDescriptionParamTypeId, gpioDescriptor.description()));
+            } else if (deviceClass.id() == gpioButtonBbbThingClassId) {
+                parameters.append(Param(gpioButtonBbbThingGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioButtonBbbThingPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioButtonBbbThingDescriptionParamTypeId, gpioDescriptor.description()));
             }
             descriptor.setParams(parameters);
 
@@ -279,12 +358,28 @@ void IntegrationPluginGpio::thingRemoved(Thing *thing)
         m_monitorDevices.remove(monitor);
 
         if (m_raspberryPiGpioMoniors.values().contains(monitor))
-            m_raspberryPiGpios.remove(monitor->gpio()->gpioNumber());
+            m_raspberryPiGpios.remove(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt());
 
         if (m_beagleboneBlackGpioMoniors.values().contains(monitor))
-            m_beagleboneBlackGpioMoniors.remove(monitor->gpio()->gpioNumber());
+            m_beagleboneBlackGpioMoniors.remove(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt());
 
         delete monitor;
+    }
+
+    if (m_buttonDevices.values().contains(thing)) {
+        GpioButton *button = m_buttonDevices.key(thing);
+        if (!button)
+            return;
+
+        m_buttonDevices.remove(button);
+
+        if (m_raspberryPiGpioButtons.values().contains(button))
+            m_raspberryPiGpios.remove(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt());
+
+        if (m_beagleboneBlackGpioButtons.values().contains(button))
+            m_beagleboneBlackGpioButtons.remove(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt());
+
+        delete button;
     }
 
     if (m_counterValues.contains(thing->id())) {
@@ -373,12 +468,21 @@ void IntegrationPluginGpio::postSetupThing(Thing *thing)
         if (!gpio)
             return;
 
-        gpio->setValue(Gpio::ValueLow);
+        // Note: reset the pin to the last cached value
         if (thing->thingClassId() == gpioOutputRpiThingClassId) {
-            thing->setStateValue(gpioOutputRpiPowerStateTypeId, false);
+            if (thing->stateValue(gpioOutputRpiPowerStateTypeId).toBool()) {
+                gpio->setValue(Gpio::ValueHigh);
+            } else {
+                gpio->setValue(Gpio::ValueLow);
+            }
         }
+
         if (thing->thingClassId() == gpioOutputBbbThingClassId) {
-            thing->setStateValue(gpioOutputBbbPowerStateTypeId, false);
+            if (thing->stateValue(gpioOutputBbbPowerStateTypeId).toBool()) {
+                gpio->setValue(Gpio::ValueHigh);
+            } else {
+                gpio->setValue(Gpio::ValueLow);
+            }
         }
     }
 
@@ -520,23 +624,4 @@ QList<GpioDescriptor> IntegrationPluginGpio::beagleboneBlackGpioDescriptors()
     gpioDescriptors << GpioDescriptor(88, 28, "P8 - LCD_PCLK");
     gpioDescriptors << GpioDescriptor(89, 30, "P8 - LCD_AC_BIAS_E");
     return gpioDescriptors;
-}
-
-void IntegrationPluginGpio::onGpioValueChanged(const bool &value)
-{
-    GpioMonitor *monitor = static_cast<GpioMonitor *>(sender());
-
-    Thing *thing = m_monitorDevices.value(monitor);
-    if (!thing)
-        return;
-
-    if (thing->thingClassId() == gpioInputRpiThingClassId) {
-        thing->setStateValue(gpioInputRpiPowerStateTypeId, value);
-    } else if (thing->thingClassId() == gpioInputBbbThingClassId) {
-        thing->setStateValue(gpioInputBbbPowerStateTypeId, value);
-    } else if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
-        if (value) {
-            m_counterValues[thing->id()] += 1;
-        }
-    }
 }
