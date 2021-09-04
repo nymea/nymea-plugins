@@ -47,20 +47,35 @@ void IntegrationPluginGenericElements::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    // Toggle Button
-    if (action.actionTypeId() == toggleButtonStateActionTypeId) {
-        thing->setStateValue(toggleButtonStateStateTypeId, action.params().paramValue(toggleButtonStateActionStateParamTypeId).toBool());
+    // Power Button
+    if (thing->thingClassId() == powerButtonThingClassId) {
+        if (action.actionTypeId() == powerButtonPowerActionTypeId) {
+            thing->setStateValue(powerButtonPowerStateTypeId, action.params().paramValue(powerButtonPowerActionPowerParamTypeId).toBool());
+        }
     }
+
     // Button
-    if (action.actionTypeId() == buttonButtonPressActionTypeId) {
-        emit emitEvent(Event(buttonButtonPressedEventTypeId, thing->id()));
+    if (thing->thingClassId() == buttonThingClassId) {
+        if (action.actionTypeId() == buttonPressActionTypeId) {
+            emit emitEvent(Event(buttonPressedEventTypeId, thing->id()));
+        }
     }
+
+    // Trigger button
+    if (thing->thingClassId() == triggerButtonThingClassId) {
+        if (action.actionTypeId() == triggerButtonTriggerActionTypeId) {
+            emit emitEvent(Event(triggerButtonPressedEventTypeId, thing->id()));
+        }
+    }
+
     // ON/OFF Button
-    if (action.actionTypeId() == onOffButtonOnActionTypeId) {
-        emit emitEvent(Event(onOffButtonOnEventTypeId, thing->id()));
+    if (thing->thingClassId() == onOffButtonThingClassId) {
+        if (action.actionTypeId() == onOffButtonOnActionTypeId) {
+            emit emitEvent(Event(onOffButtonPressedEventTypeId, thing->id(), ParamList() << Param(onOffButtonPressedEventButtonNameParamTypeId, "On")));
+        } else if (action.actionTypeId() == onOffButtonOffActionTypeId) {
+            emit emitEvent(Event(onOffButtonPressedEventTypeId, thing->id(), ParamList() << Param(onOffButtonPressedEventButtonNameParamTypeId, "Off")));
+        }
     }
-    if (action.actionTypeId() == onOffButtonOffActionTypeId) {
-        emit emitEvent(Event(onOffButtonOffEventTypeId, thing->id()));
-    }
+
     info->finish(Thing::ThingErrorNoError);
 }

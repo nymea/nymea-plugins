@@ -10,20 +10,22 @@
             "thingClasses": [
                 {
                     "id": "c0f511f9-70f5-499b-bd70-2c0e9ddd68c4",
-                    "name": "toggleButton",
-                    "displayName": "Toggle Button",
-                    "createMethods": ["user"],
+                    "name": "powerButton",
+                    "displayName": "Power Button",
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "power" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
                             "id": "b5e90567-54aa-49bd-a78a-3c19fb38aaf5",
-                            "name": "state",
+                            "name": "power",
                             "displayName": "state",
-                            "displayNameEvent": "state changed",
-                            "displayNameAction": "Set state",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "set power",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -31,20 +33,43 @@
                     "id": "820b2f2d-0d92-48c8-8fd4-f94ce8fc4103",
                     "name": "button",
                     "displayName": "Button",
-                    "createMethods": ["user"],
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "button" ],
                     "paramTypes": [ ],
                     "actionTypes": [
                         {
                             "id": "01f38af1-b2ab-4ec3-844e-ef52f0f229a9",
-                            "name": "buttonPress",
+                            "name": "press",
                             "displayName": "press"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "effdbc2d-e467-4b0b-80a9-9dda251bfa5c",
-                            "name": "buttonPressed",
+                            "name": "pressed",
                             "displayName": "button pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "5f91923e-fc8e-48db-9de7-9a2fc36798dd",
+                    "name": "triggerButton",
+                    "displayName": "Trigger button",
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "outputtrigger", "button" ],
+                    "paramTypes": [ ],
+                    "actionTypes": [
+                        {
+                            "id": "da322b8e-2116-4565-805a-03f7726373c8",
+                            "name": "trigger",
+                            "displayName": "trigger"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "51197853-0559-42a0-a97b-6ead56ae22f6",
+                            "name": "pressed",
+                            "displayName": "triggered"
                         }
                     ]
                 },
@@ -53,29 +78,34 @@
                     "name": "onOffButton",
                     "displayName": "ON/OFF Button",
                     "createMethods": ["user"],
+                    "interfaces": [ "multibutton" ],
                     "paramTypes": [ ],
                     "actionTypes": [
                         {
                             "id": "892596d2-0863-4807-97da-469b9f7003f2",
                             "name": "on",
-                            "displayName": "press ON"
+                            "displayName": "on"
                         },
                         {
                             "id": "a8d64050-0b58-4ccf-b052-77ce2b7368ad",
                             "name": "off",
-                            "displayName": "press OFF"
+                            "displayName": "off"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "4eeba6a2-e4c7-4a2e-8360-2797d98114e6",
-                            "name": "on",
-                            "displayName": "ON pressed"
-                        },
-                        {
-                            "id": "b636c5f3-2eb0-4682-96d4-88a4aa9d2c12",
-                            "name": "off",
-                            "displayName": "OFF pressed"
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "2e6bc343-41a3-4634-b514-4512ae54afbc",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["Off", "On"]
+                                }
+                            ]
                         }
                     ]
                 }
