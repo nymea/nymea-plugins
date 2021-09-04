@@ -207,7 +207,8 @@
                             "displayNameEvent": "Temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "5bc2825c-666f-4013-9583-3a88ceebecc2",
@@ -218,7 +219,8 @@
                             "minValue": 0,
                             "unit": "Percentage",
                             "type": "double",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "048ed452-785f-4361-b7a1-f955f4a622b2",
@@ -251,7 +253,8 @@
                             "type": "uint",
                             "unit": "PartsPerMillion",
                             "suggestLogging": true,
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         }
                     ],
                     "actionTypes": [ ]
