@@ -105,12 +105,7 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Configuring GPIO active low failed."));
         }
 
-        if (!gpio->setValue(Gpio::ValueLow)) {
-            qCWarning(dcGpioController()) << "Could not set gpio  value for thing" << thing->name();
-            gpio->deleteLater();
-            //: Error setting up GPIO thing
-            return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Setting GPIO value failed."));
-        }
+        // Note: the gpio value will be set to the previouse value in post setup
 
         m_gpioDevices.insert(gpio, thing);
 
@@ -132,8 +127,6 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
             monitor->deleteLater();
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
-
-
 
         connect(monitor, &GpioMonitor::enabledChanged, thing, [this, thing](bool enabled){
             if (thing->thingClassId() == gpioInputRpiThingClassId) {
@@ -501,7 +494,7 @@ void IntegrationPluginGpio::postSetupThing(Thing *thing)
         if (!gpio)
             return;
 
-        // Note: reset the pin to the last cached value
+        // Note: restore the pin value to the last cached value
         if (thing->thingClassId() == gpioOutputRpiThingClassId) {
             if (thing->stateValue(gpioOutputRpiPowerStateTypeId).toBool()) {
                 gpio->setValue(Gpio::ValueHigh);
