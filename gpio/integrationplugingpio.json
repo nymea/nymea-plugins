@@ -142,6 +142,23 @@
                             "defaultValue": "-"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "d826f02e-7528-4ad5-ac71-f49df988114d",
+                            "name": "repeateLongPressed",
+                            "displayName": "Repeat long pressed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "46a25783-3e96-4489-a3f0-15236d938f17",
+                            "name": "longPressedTimeout",
+                            "displayName": "Long pressed timeout [ms]",
+                            "type": "uint",
+                            "minValue": 200,
+                            "defaultValue": 250
+                        }
+                    ],
                     "eventTypes": [
                         {
                             "id": "28330833-158c-4f99-9f6e-407ee8f29a4e",
@@ -342,6 +359,23 @@
                             "displayName": "Description",
                             "type": "QString",
                             "defaultValue": "-"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "292bf500-b7ab-428b-908c-2fedae295ee2",
+                            "name": "repeateLongPressed",
+                            "displayName": "Repeat long pressed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "007be75a-bfcd-4039-b8ab-9bce25421894",
+                            "name": "longPressedTimeout",
+                            "displayName": "Long pressed timeout [ms]",
+                            "type": "uint",
+                            "minValue": 200,
+                            "defaultValue": 250
                         }
                     ],
                     "eventTypes": [

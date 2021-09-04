@@ -50,6 +50,7 @@ void IntegrationPluginGpio::init()
     m_gpioParamTypeIds.insert(gpioOutputBbbThingClassId, gpioOutputBbbThingGpioParamTypeId);
     m_gpioParamTypeIds.insert(gpioInputBbbThingClassId, gpioInputBbbThingGpioParamTypeId);
     m_gpioParamTypeIds.insert(counterBbbThingClassId, counterBbbThingGpioParamTypeId);
+    m_gpioParamTypeIds.insert(gpioButtonBbbThingClassId, gpioButtonBbbThingGpioParamTypeId);
 
     // Raspberry pi
     m_activeLowParamTypeIds.insert(gpioOutputRpiThingClassId, gpioOutputRpiThingActiveLowParamTypeId);
@@ -61,6 +62,7 @@ void IntegrationPluginGpio::init()
     m_activeLowParamTypeIds.insert(gpioOutputBbbThingClassId, gpioOutputBbbThingActiveLowParamTypeId);
     m_activeLowParamTypeIds.insert(gpioInputBbbThingClassId, gpioInputBbbThingActiveLowParamTypeId);
     m_activeLowParamTypeIds.insert(counterBbbThingClassId, counterBbbThingActiveLowParamTypeId);
+    m_activeLowParamTypeIds.insert(gpioButtonBbbThingClassId, gpioButtonBbbThingActiveLowParamTypeId);
 
 }
 
@@ -122,13 +124,16 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
     }
 
     if (thing->thingClassId() == gpioInputRpiThingClassId || thing->thingClassId() == gpioInputBbbThingClassId) {
-
         GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
+        monitor->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool());
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
             //: Error setting up GPIO thing
+            monitor->deleteLater();
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
+
+
 
         connect(monitor, &GpioMonitor::enabledChanged, thing, [this, thing](bool enabled){
             if (thing->thingClassId() == gpioInputRpiThingClassId) {
@@ -156,8 +161,10 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
     // Counter
     if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
         GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
+        monitor->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool());
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
+            monitor->deleteLater();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
@@ -183,13 +190,39 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
     }
 
     // Button
-    if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+    if (thing->thingClassId() == gpioButtonRpiThingClassId || thing->thingClassId() == gpioButtonBbbThingClassId) {
         GpioButton *button = new GpioButton(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
+        button->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool());
+        if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+            button->setLongPressedTimeout(thing->setting(gpioButtonRpiSettingsLongPressedTimeoutParamTypeId).toUInt());
+            button->setRepeateLongPressed(thing->setting(gpioButtonRpiSettingsRepeateLongPressedParamTypeId).toBool());
+        } else if (thing->thingClassId() == gpioButtonBbbThingClassId) {
+            button->setLongPressedTimeout(thing->setting(gpioButtonBbbSettingsLongPressedTimeoutParamTypeId).toUInt());
+            button->setRepeateLongPressed(thing->setting(gpioButtonBbbSettingsRepeateLongPressedParamTypeId).toBool());
+        }
+
         if (!button->enable()) {
             qCWarning(dcGpioController()) << "Could not enable button" << button;
             button->deleteLater();
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO button failed."));
         }
+
+        connect(thing, &Thing::settingChanged, this, [button, thing](const ParamTypeId &paramTypeId, const QVariant &value){
+            qCDebug(dcGpioController()) << button << "settings changed" << paramTypeId.toString() << value;
+            if (thing->thingClassId() == gpioButtonRpiThingClassId) {
+                if (paramTypeId == gpioButtonRpiSettingsRepeateLongPressedParamTypeId) {
+                    button->setRepeateLongPressed(value.toBool());
+                } else if (paramTypeId == gpioButtonRpiSettingsLongPressedTimeoutParamTypeId) {
+                    button->setLongPressedTimeout(value.toUInt());
+                }
+            } else if (thing->thingClassId() == gpioButtonBbbThingClassId) {
+                if (paramTypeId == gpioButtonBbbSettingsRepeateLongPressedParamTypeId) {
+                    button->setRepeateLongPressed(value.toBool());
+                } else if (paramTypeId == gpioButtonBbbSettingsLongPressedTimeoutParamTypeId) {
+                    button->setLongPressedTimeout(value.toUInt());
+                }
+            }
+        });
 
         connect(button, &GpioButton::clicked, this, [this, thing, button](){
             qCDebug(dcGpioController()) << button << "clicked";
