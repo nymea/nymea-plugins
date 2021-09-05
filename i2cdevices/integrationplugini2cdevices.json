@@ -451,6 +451,59 @@
                     ]
                 }
             ]
+        },
+        {
+            "id": "168bdbec-56b7-4eaf-bda8-0c5846a79c07",
+            "name": "sensirion",
+            "displayName": "Sensirion",
+            "thingClasses": [
+                {
+                    "id": "0e05888f-bc77-408d-bc31-cd1cba720c2d",
+                    "name": "sht3x",
+                    "displayName": "SHT3x HT Sensor",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "temperaturesensor", "humiditysensor" ],
+                    "setupMethod": "justAdd",
+                    "paramTypes": [
+                        {
+                            "id": "e0cec363-9679-4347-8bb4-b30f9ab72ae8",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "7b83703b-210e-42ae-ab33-878bf1e358a5",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6d536826-9938-4457-901f-f4cc401edcc8",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0,
+                            "filter": "adaptive"
+                        },
+                        {
+                            "id": "6722a1f5-10c8-4bc7-b921-c10fe45aefe8",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "filter": "adaptive"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
