@@ -40,8 +40,6 @@
 #include "gpiomonitor.h"
 #include "gpiobutton.h"
 
-#include <QTimer>
-
 class IntegrationPluginGpio : public IntegrationPlugin
 {
     Q_OBJECT
@@ -53,12 +51,12 @@ public:
     explicit IntegrationPluginGpio();
 
     void init() override;
-    void setupThing(ThingSetupInfo *info) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
-    void postSetupThing(Thing *thing) override;
 
 private:
     QHash<ThingClassId, ParamTypeId> m_gpioParamTypeIds;
