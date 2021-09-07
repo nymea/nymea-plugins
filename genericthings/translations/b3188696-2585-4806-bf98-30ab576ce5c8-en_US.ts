@@ -7,9 +7,19 @@
         <source>Accuracy (decimal places)</source>
         <extracomment>The name of the ParamType (ThingClass: lightSensor, Type: settings, ID: {f800988f-1ad5-4ffb-9aa8-70ef17614966})
 ----------
+The name of the ParamType (ThingClass: gasSensor, Type: settings, ID: {1c7465b1-490d-43db-bb67-a179a6923a57})
+----------
 The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {236831a8-a455-4e38-a9cd-eabbebaa3f67})
 ----------
+The name of the ParamType (ThingClass: coSensor, Type: settings, ID: {9c8a9553-7b68-4b58-a8f1-3c6b591998c0})
+----------
 The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {021a17d8-9e5e-4dd6-835d-1a3e1ffd6b23})
+----------
+The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {d79701ac-1619-42d8-b10f-a55e8e2ab3f1})
+----------
+The name of the ParamType (ThingClass: orpSensor, Type: settings, ID: {1f218ad8-652a-4bda-987d-3e183ff040b2})
+----------
+The name of the ParamType (ThingClass: phSensor, Type: settings, ID: {bb41de73-31d0-4b21-8f80-14467120aae4})
 ----------
 The name of the ParamType (ThingClass: moistureSensor, Type: settings, ID: {3c967a68-9951-4c9a-b019-79b913e762b6})
 ----------
@@ -192,17 +202,47 @@ The name of the ParamType (ThingClass: lightSensor, EventType: input, ID: {520e5
 ----------
 The name of the StateType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
 ----------
+The name of the ParamType (ThingClass: gasSensor, ActionType: input, ID: {e3eb500a-ac00-426c-932a-dee4fd6fbcf5})
+----------
+The name of the ParamType (ThingClass: gasSensor, EventType: input, ID: {e3eb500a-ac00-426c-932a-dee4fd6fbcf5})
+----------
+The name of the StateType ({e3eb500a-ac00-426c-932a-dee4fd6fbcf5}) of ThingClass gasSensor
+----------
 The name of the ParamType (ThingClass: co2Sensor, ActionType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
 ----------
 The name of the ParamType (ThingClass: co2Sensor, EventType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
 ----------
 The name of the StateType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
 ----------
+The name of the ParamType (ThingClass: coSensor, ActionType: input, ID: {cf3ec5ec-7098-47c5-9666-b3c52eba1b1d})
+----------
+The name of the ParamType (ThingClass: coSensor, EventType: input, ID: {cf3ec5ec-7098-47c5-9666-b3c52eba1b1d})
+----------
+The name of the StateType ({cf3ec5ec-7098-47c5-9666-b3c52eba1b1d}) of ThingClass coSensor
+----------
 The name of the ParamType (ThingClass: pressureSensor, ActionType: input, ID: {c320577c-371a-442b-ac80-b692ff2064c9})
 ----------
 The name of the ParamType (ThingClass: pressureSensor, EventType: input, ID: {c320577c-371a-442b-ac80-b692ff2064c9})
 ----------
 The name of the StateType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the ParamType (ThingClass: o2Sensor, ActionType: input, ID: {7e74fca7-84d0-4f3e-9f26-4232b7b9f507})
+----------
+The name of the ParamType (ThingClass: o2Sensor, EventType: input, ID: {7e74fca7-84d0-4f3e-9f26-4232b7b9f507})
+----------
+The name of the StateType ({7e74fca7-84d0-4f3e-9f26-4232b7b9f507}) of ThingClass o2Sensor
+----------
+The name of the ParamType (ThingClass: orpSensor, ActionType: input, ID: {020ff04f-a157-4925-9c55-2b45389208fc})
+----------
+The name of the ParamType (ThingClass: orpSensor, EventType: input, ID: {020ff04f-a157-4925-9c55-2b45389208fc})
+----------
+The name of the StateType ({020ff04f-a157-4925-9c55-2b45389208fc}) of ThingClass orpSensor
+----------
+The name of the ParamType (ThingClass: phSensor, ActionType: input, ID: {614a039b-9ed9-4b62-9c74-01ba4ac42f16})
+----------
+The name of the ParamType (ThingClass: phSensor, EventType: input, ID: {614a039b-9ed9-4b62-9c74-01ba4ac42f16})
+----------
+The name of the StateType ({614a039b-9ed9-4b62-9c74-01ba4ac42f16}) of ThingClass phSensor
 ----------
 The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
 ----------
@@ -227,9 +267,19 @@ The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
         <source>Input value changed</source>
         <extracomment>The name of the EventType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
 ----------
+The name of the EventType ({e3eb500a-ac00-426c-932a-dee4fd6fbcf5}) of ThingClass gasSensor
+----------
 The name of the EventType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
 ----------
+The name of the EventType ({cf3ec5ec-7098-47c5-9666-b3c52eba1b1d}) of ThingClass coSensor
+----------
 The name of the EventType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the EventType ({7e74fca7-84d0-4f3e-9f26-4232b7b9f507}) of ThingClass o2Sensor
+----------
+The name of the EventType ({020ff04f-a157-4925-9c55-2b45389208fc}) of ThingClass orpSensor
+----------
+The name of the EventType ({614a039b-9ed9-4b62-9c74-01ba4ac42f16}) of ThingClass phSensor
 ----------
 The name of the EventType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
 ----------
@@ -395,11 +445,7 @@ The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass
     </message>
     <message>
         <source>Power</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: currentPower, ID: {5983d714-5f80-42d8-bee2-9228b6382b3b})
-----------
-The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
-----------
-The name of the ParamType (ThingClass: ventilationFlow, ActionType: power, ID: {adf9a8dd-da13-4070-a3bd-9d4be26ebcd1})
+        <extracomment>The name of the ParamType (ThingClass: ventilationFlow, ActionType: power, ID: {adf9a8dd-da13-4070-a3bd-9d4be26ebcd1})
 ----------
 The name of the ParamType (ThingClass: ventilationFlow, EventType: power, ID: {adf9a8dd-da13-4070-a3bd-9d4be26ebcd1})
 ----------
@@ -444,9 +490,7 @@ The name of the StateType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass
     </message>
     <message>
         <source>Power changed</source>
-        <extracomment>The name of the EventType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
-----------
-The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
+        <extracomment>The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
 ----------
 The name of the EventType ({8b6e4a67-6522-408b-b676-8d2f09ed2d54}) of ThingClass light
 ----------
@@ -485,9 +529,19 @@ The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClas
         <source>Set input value</source>
         <extracomment>The name of the ActionType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
 ----------
+The name of the ActionType ({e3eb500a-ac00-426c-932a-dee4fd6fbcf5}) of ThingClass gasSensor
+----------
 The name of the ActionType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
 ----------
+The name of the ActionType ({cf3ec5ec-7098-47c5-9666-b3c52eba1b1d}) of ThingClass coSensor
+----------
 The name of the ActionType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the ActionType ({7e74fca7-84d0-4f3e-9f26-4232b7b9f507}) of ThingClass o2Sensor
+----------
+The name of the ActionType ({020ff04f-a157-4925-9c55-2b45389208fc}) of ThingClass orpSensor
+----------
+The name of the ActionType ({614a039b-9ed9-4b62-9c74-01ba4ac42f16}) of ThingClass phSensor
 ----------
 The name of the ActionType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
 ----------
@@ -632,43 +686,43 @@ The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass
     </message>
     <message>
         <source>Energy</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: totalEnergyConsumed, ID: {5821edb7-e6cb-4e5a-9d0b-3375126d3367})
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, EventType: totalEnergyConsumed, ID: {5821edb7-e6cb-4e5a-9d0b-3375126d3367})
 ----------
-The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Energy changed</source>
-        <extracomment>The name of the EventType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <extracomment>The name of the EventType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Impulse/kWh</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Impulse input</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, ActionType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, ActionType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
-The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+The name of the ParamType (ThingClass: smartMeter, EventType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
-The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Impulse input changed</source>
-        <extracomment>The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <extracomment>The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Set impulse input</source>
-        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Timeframe for power calculation</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {73c9acc3-8f76-40d7-a79b-a1f08bb308d4})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, Type: settings, ID: {73c9acc3-8f76-40d7-a79b-a1f08bb308d4})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1261,6 +1315,7 @@ The name of the StateType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass
     <message>
         <source>String state changed</source>
         <extracomment>The name of the EventType ({f477e227-0d2d-4d88-a545-7dedf36266d5}) of ThingClass generic</extracomment>
+        <translation></translation>
     </message>
     <message>
         <source>Air flow rate</source>
@@ -1284,6 +1339,165 @@ The name of the StateType ({5a273bba-0bef-49fb-870a-7f2df8fc14b6}) of ThingClass
     <message>
         <source>Set air flow rate</source>
         <extracomment>The name of the ActionType ({5a273bba-0bef-49fb-870a-7f2df8fc14b6}) of ThingClass ventilationFlow</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CO level</source>
+        <extracomment>The name of the ParamType (ThingClass: coSensor, EventType: co, ID: {9eebe9d2-b34b-4847-bc25-109e2b8cab24})
+----------
+The name of the StateType ({9eebe9d2-b34b-4847-bc25-109e2b8cab24}) of ThingClass coSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CO level changed</source>
+        <extracomment>The name of the EventType ({9eebe9d2-b34b-4847-bc25-109e2b8cab24}) of ThingClass coSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current Power usage</source>
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, EventType: currentPower, ID: {5983d714-5f80-42d8-bee2-9228b6382b3b})
+----------
+The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass smartMeter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current Power usage changed</source>
+        <extracomment>The name of the EventType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass smartMeter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gas level</source>
+        <extracomment>The name of the ParamType (ThingClass: gasSensor, EventType: gas, ID: {5135648f-57b7-44b0-b9d0-c5accad09356})
+----------
+The name of the StateType ({5135648f-57b7-44b0-b9d0-c5accad09356}) of ThingClass gasSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gas level changed</source>
+        <extracomment>The name of the EventType ({5135648f-57b7-44b0-b9d0-c5accad09356}) of ThingClass gasSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic CO sensor</source>
+        <extracomment>The name of the ThingClass ({262a29b2-b5df-4ee2-822c-e672f50d97b6})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic O2 sensor</source>
+        <extracomment>The name of the ThingClass ({a8cf20ec-132b-4f6f-b5ec-73dc2f873b43})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic ORP sensor</source>
+        <extracomment>The name of the ThingClass ({3edeec39-ab9d-4697-90cc-0bba089384cf})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic flammable gas sensor</source>
+        <extracomment>The name of the ThingClass ({25c6725f-5c15-485b-9ec4-cb0e11ab6b32})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gerneric water sensor</source>
+        <extracomment>The name of the ThingClass ({09b9cb86-f551-4efe-9a7d-2f7624e9510f})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum CO</source>
+        <extracomment>The name of the ParamType (ThingClass: coSensor, Type: settings, ID: {e9def195-1b67-4a1b-8030-cbbc6209d52e})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum input ORP value</source>
+        <extracomment>The name of the ParamType (ThingClass: orpSensor, Type: settings, ID: {bd0774c9-1b89-49ce-b0f8-66ff26ca10db})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum input value</source>
+        <extracomment>The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {198847f6-a188-42b0-9e0b-15587eaabbed})
+----------
+The name of the ParamType (ThingClass: phSensor, Type: settings, ID: {a8889e45-59e5-4cc4-b228-611f8f19f531})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum value</source>
+        <extracomment>The name of the ParamType (ThingClass: gasSensor, Type: settings, ID: {51f4a830-3ef9-4fa2-b36b-5976f724f8a1})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum CO</source>
+        <extracomment>The name of the ParamType (ThingClass: coSensor, Type: settings, ID: {e850b044-fd70-446c-a943-3c88407425f5})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum input value</source>
+        <extracomment>The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {58e84041-d451-44a2-972e-13a79b449b58})
+----------
+The name of the ParamType (ThingClass: orpSensor, Type: settings, ID: {396bf3f9-a3fc-44c3-90f8-b316670116a7})
+----------
+The name of the ParamType (ThingClass: phSensor, Type: settings, ID: {a8ff2e16-e06c-4b1e-839a-a06691a12d64})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum value</source>
+        <extracomment>The name of the ParamType (ThingClass: gasSensor, Type: settings, ID: {480945ea-6262-408d-b799-cbff905a40db})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>O2 saturation</source>
+        <extracomment>The name of the ParamType (ThingClass: o2Sensor, EventType: o2saturation, ID: {a3ff7641-87d9-4b07-b8e5-e6aa92b90088})
+----------
+The name of the StateType ({a3ff7641-87d9-4b07-b8e5-e6aa92b90088}) of ThingClass o2Sensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>O2 saturation changed</source>
+        <extracomment>The name of the EventType ({a3ff7641-87d9-4b07-b8e5-e6aa92b90088}) of ThingClass o2Sensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ORP</source>
+        <extracomment>The name of the ParamType (ThingClass: orpSensor, EventType: orp, ID: {e5ed3535-2e5d-412e-85f8-782cbccd7731})
+----------
+The name of the StateType ({e5ed3535-2e5d-412e-85f8-782cbccd7731}) of ThingClass orpSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ORP changed</source>
+        <extracomment>The name of the EventType ({e5ed3535-2e5d-412e-85f8-782cbccd7731}) of ThingClass orpSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PH</source>
+        <extracomment>The name of the ParamType (ThingClass: phSensor, EventType: ph, ID: {743514b1-8018-4525-b87a-c5f414146ff2})
+----------
+The name of the StateType ({743514b1-8018-4525-b87a-c5f414146ff2}) of ThingClass phSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PH changed</source>
+        <extracomment>The name of the EventType ({743514b1-8018-4525-b87a-c5f414146ff2}) of ThingClass phSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PH sensor</source>
+        <extracomment>The name of the ThingClass ({e2934fa1-59c3-4de8-82f2-66181136085c})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set water detected</source>
+        <extracomment>The name of the ActionType ({b2427b85-1f62-4635-b546-1961191426ef}) of ThingClass waterSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water detected</source>
+        <extracomment>The name of the ParamType (ThingClass: waterSensor, ActionType: waterDetected, ID: {b2427b85-1f62-4635-b546-1961191426ef})
+----------
+The name of the ParamType (ThingClass: waterSensor, EventType: waterDetected, ID: {b2427b85-1f62-4635-b546-1961191426ef})
+----------
+The name of the EventType ({b2427b85-1f62-4635-b546-1961191426ef}) of ThingClass waterSensor
+----------
+The name of the StateType ({b2427b85-1f62-4635-b546-1961191426ef}) of ThingClass waterSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
