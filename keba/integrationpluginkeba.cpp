@@ -55,7 +55,7 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
             ThingDescriptors descriptors;
             qCDebug(dcKebaKeContact()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
             foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-                if (!networkDeviceInfo.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
+                if (!networkDeviceInfo.macAddressManufacturer().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
                     continue;
 
                 qCDebug(dcKebaKeContact()) << "     - Keba Wallbox" << networkDeviceInfo;
