@@ -1096,6 +1096,22 @@ Description: nymea.io plugin to monitor the ISS position
  This package will install the nymea.io plugin for wheretheiss.at
 
 
+Package: nymea-plugin-yamahaavr
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+         python3-pip,
+Description: nymea.io plugin for Yamaha receivers
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for (non-Musiccast) Yamaha AV receivers.
+
+
 Package: nymea-plugin-zigbee-develco
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1254,6 +1270,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-keba,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
+         nymea-plugin-yamahaavr,
          nymea-plugins-zigbee,
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
