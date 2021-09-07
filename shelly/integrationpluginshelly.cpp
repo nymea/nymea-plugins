@@ -320,6 +320,8 @@ static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
     {shellyLightPMPowerActionTypeId, shellyLightPMThingClassId},
     {shellySocketPMPowerActionTypeId, shellySocketPMThingClassId},
     {shellyEm3PowerActionTypeId, shellyEm3ThingClassId},
+    {shelly25Channel1ActionTypeId, shelly25ThingClassId},
+    {shelly25Channel2ActionTypeId, shelly25ThingClassId}
 };
 
 static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
@@ -334,6 +336,8 @@ static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
     {shellyLightPMPowerActionTypeId, shellyLightPMPowerActionPowerParamTypeId},
     {shellySocketPMPowerActionTypeId, shellySocketPMPowerActionPowerParamTypeId},
     {shellyEm3PowerActionTypeId, shellyEm3PowerActionPowerParamTypeId},
+    {shelly25Channel1ActionTypeId, shelly25Channel1ActionChannel1ParamTypeId},
+    {shelly25Channel2ActionTypeId, shelly25Channel2ActionChannel2ParamTypeId}
 };
 
 static QHash<ActionTypeId, ThingClassId> colorPowerActionTypesMap = {
@@ -548,8 +552,14 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
         QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         int relay = 1;
+        QHash<ActionTypeId, int> actionChannelMap = {
+            {shelly25Channel1ActionTypeId, 1},
+            {shelly25Channel2ActionTypeId, 2}
+        };
         if (channelParamTypeMap.contains(thing->thingClassId())) {
             relay = thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt();
+        } else if (actionChannelMap.contains(action.actionTypeId())) {
+            relay = actionChannelMap.value(action.actionTypeId());
         }
         ParamTypeId powerParamTypeId = powerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(powerParamTypeId).value().toBool();
@@ -822,6 +832,15 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         if (powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
         }
+        // If the shelly main thing has multiple channels (e.g. Shelly 2.5)
+        if (thing->thingClassId() == shelly25ThingClassId) {
+            QHash<int, StateTypeId> powerChannelStateTypesMap = {
+                {0, shelly25Channel1StateTypeId},
+                {1, shelly25Channel2StateTypeId}
+            };
+            thing->setStateValue(powerChannelStateTypesMap.value(channel), on);
+        }
+
         // And switch all childs of this shelly too
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
             if (powerStateTypeMap.contains(child->thingClassId())) {
@@ -831,6 +850,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 }
             }
         }
+
     }
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/power");
@@ -1156,12 +1176,13 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     }
 
     MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(shellyId, QHostAddress(address), {"shellies"});
-    m_mqttChannels.insert(info->thing(), channel);
 
     if (!channel) {
         qCWarning(dcShelly()) << "Failed to create MQTT channel.";
         return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));
     }
+
+    m_mqttChannels.insert(info->thing(), channel);
     connect(channel, &MqttChannel::clientConnected, this, &IntegrationPluginShelly::onClientConnected);
     connect(channel, &MqttChannel::clientDisconnected, this, &IntegrationPluginShelly::onClientDisconnected);
     connect(channel, &MqttChannel::publishReceived, this, &IntegrationPluginShelly::onPublishReceived);
