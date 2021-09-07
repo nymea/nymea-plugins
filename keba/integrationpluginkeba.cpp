@@ -267,6 +267,12 @@ void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugStat
         thing->setStateValue(wallboxPlugStateStateTypeId, "Plugged in on EV and locked");
         break;
     }
+
+    if (plugState >= 5) {
+        thing->setStateValue(wallboxPluggedInStateTypeId, true);
+    } else {
+        thing->setStateValue(wallboxPluggedInStateTypeId, false);
+    }
 }
 
 void IntegrationPluginKeba::searchNetworkDevices()

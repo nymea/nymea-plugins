@@ -119,6 +119,14 @@
                             "defaultValue": "-"
                         },
                         {
+                            "id": "6c227717-f420-4dcd-bd52-49973715603b",
+                            "name": "pluggedIn",
+                            "displayName": "Car plugged in",
+                            "displayNameEvent": "Car plugged in changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "a29c1748-fe97-4830-a56e-e1cc4e618385",
                             "name": "current",
                             "displayName": "Current",
