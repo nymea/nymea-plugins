@@ -40,6 +40,7 @@ PLUGIN_DIRS = \
     netatmo             \
     networkdetector     \
     nuki                \
+    mcp3008             \
     onewire             \
     openuv              \ 
     openweathermap      \

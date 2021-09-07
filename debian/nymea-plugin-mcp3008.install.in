@@ -1,0 +1,3 @@
+mcp3008/integrationpluginmcp3008.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/mcp3008/
+mcp3008/integrationpluginmcp3008.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/mcp3008/
+mcp3008/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/mcp3008/
