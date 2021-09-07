@@ -1774,6 +1774,47 @@
                             "defaultValue": false
                         }
                     ]
+                },
+                {
+                    "id": "dbe0a9ff-94ba-4a94-ae52-51da3f05c717",
+                    "name": "car",
+                    "displayName": "Generic electric car",
+                    "createMethods": ["user"],
+                    "interfaces": ["electricvehicle"],
+                    "stateTypes": [
+                        {
+                            "id": "363a2a39-61b6-4109-9cd9-aca7367d12c7",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "displayNameEvent": "Capacity changed",
+                            "displayNameAction": "Set capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 50,
+                            "writable": true
+                        },
+                        {
+                            "id": "d33982d6-6467-4281-b448-68c1b1db088d",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery entered or left critical state",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3f1cca10-8988-4ec6-b937-0775653cde12",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "displayNameAction": "Set battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "writable": true,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        }
+                    ]
                 }
             ]
         }
