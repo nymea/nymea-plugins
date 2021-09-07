@@ -516,6 +516,21 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Friends of Hue switch
+    if (thing->thingClassId() == fohThingClassId) {
+        HueRemote *hueFoh = new HueRemote(bridge, this);
+        hueFoh->setName(thing->name());
+        hueFoh->setId(thing->paramValue(fohThingSensorIdParamTypeId).toInt());
+        hueFoh->setModelId(thing->paramValue(fohThingModelIdParamTypeId).toString());
+        hueFoh->setUuid(thing->paramValue(fohThingUuidParamTypeId).toString());
+
+        connect(hueFoh, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
+        connect(hueFoh, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(hueFoh, thing);
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
     // Hue smart button
     if (thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *smartButton = new HueRemote(bridge, this);
@@ -528,6 +543,21 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         connect(smartButton, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
 
         m_remotes.insert(smartButton, thing);
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
+    // Hue Wall Switch module
+    if (thing->thingClassId() == wallSwitchThingClassId) {
+        HueRemote *wallSwitch = new HueRemote(bridge, this);
+        wallSwitch->setName(thing->name());
+        wallSwitch->setId(thing->paramValue(wallSwitchThingSensorIdParamTypeId).toInt());
+        wallSwitch->setModelId(thing->paramValue(wallSwitchThingModelIdParamTypeId).toString());
+        wallSwitch->setUuid(thing->paramValue(wallSwitchThingUuidParamTypeId).toString());
+
+        connect(wallSwitch, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
+        connect(wallSwitch, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(wallSwitch, thing);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -644,7 +674,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == smartButtonThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId|| thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId || thing->thingClassId() == wallSwitchThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
@@ -1160,10 +1190,16 @@ void IntegrationPluginPhilipsHue::remoteStateChanged()
         thing->setStateValue(dimmerSwitch2BatteryCriticalStateTypeId, remote->battery() < 5);
     } else if (thing->thingClassId() == tapThingClassId) {
         thing->setStateValue(tapConnectedStateTypeId, remote->reachable());
+    } else if (thing->thingClassId() == fohThingClassId) {
+        thing->setStateValue(fohConnectedStateTypeId, remote->reachable());
     } else if (thing->thingClassId() == smartButtonThingClassId) {
         thing->setStateValue(smartButtonConnectedStateTypeId, remote->reachable());
         thing->setStateValue(smartButtonBatteryLevelStateTypeId, remote->battery());
         thing->setStateValue(smartButtonBatteryCriticalStateTypeId, remote->battery() < 5);
+    } else if (thing->thingClassId() == wallSwitchThingClassId) {
+        thing->setStateValue(wallSwitchConnectedStateTypeId, remote->reachable());
+        thing->setStateValue(wallSwitchBatteryLevelStateTypeId, remote->battery());
+        thing->setStateValue(wallSwitchBatteryCriticalStateTypeId, remote->battery() < 5);
     }
 }
 
@@ -1223,7 +1259,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "POWER");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 1000:
+        case 1001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "POWER");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1231,7 +1267,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM UP");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 2000:
+        case 2001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM UP");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1239,7 +1275,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "DIM DOWN");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 3000:
+        case 3001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "DIM DOWN");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1247,7 +1283,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(dimmerSwitch2PressedEventButtonNameParamTypeId, "HUE");
             id = dimmerSwitch2PressedEventTypeId;
             break;
-        case 4000:
+        case 4001:
             param = Param(dimmerSwitch2LongPressedEventButtonNameParamTypeId, "HUE");
             id = dimmerSwitch2LongPressedEventTypeId;
             break;
@@ -1256,10 +1292,10 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             return;
         }
         // codes ending in 2 (e.g. 1002) are short presses;
-        // for long presses the Dimmer Switch V2 sends 3 codes: 
+        // for long presses the Dimmer Switch V2 sends 3 codes (same behaviour as hue remote and smart button): 
         // * codes ending in 0 (e.g. 1000) indicate start of long press
-        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
-        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
+        // * codes ending in 3 (e.g. 1003) indicate end of long press
+        // * codes ending in 1 (e.g. 1001) are sent during the long press
     } else if (thing->thingClassId() == tapThingClassId) {
         switch (buttonCode) {
         case 34:
@@ -1282,6 +1318,28 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Tap:" << buttonCode;
             return;
         }
+    } else if (thing->thingClassId() == fohThingClassId) {
+        switch (buttonCode) {
+        case 20:
+            param = Param(fohPressedEventButtonNameParamTypeId, "UPPER LEFT");
+            id = fohPressedEventTypeId;
+            break;
+        case 21:
+            param = Param(fohPressedEventButtonNameParamTypeId, "LOWER LEFT");
+            id = fohPressedEventTypeId;
+            break;
+        case 23:
+            param = Param(fohPressedEventButtonNameParamTypeId, "UPPER RIGHT");
+            id = fohPressedEventTypeId;
+            break;
+        case 22:
+            param = Param(fohPressedEventButtonNameParamTypeId, "LOWER RIGHT");
+            id = fohPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Received unhandled button code from Friends of Hue switch:" << buttonCode;
+            return;
+        }
     } else if (thing->thingClassId() == smartButtonThingClassId) {
         switch (buttonCode) {
         case 1002:
@@ -1292,6 +1350,20 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             break;
         default:
             qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Smart Button:" << buttonCode;
+            return;
+        }
+    } else if (thing->thingClassId() == wallSwitchThingClassId) {
+        switch (buttonCode) {
+        case 1002: // temporary number, replace with code (codes for on and off?)
+            param = Param(wallSwitchPressedEventButtonNameParamTypeId, "ONE");
+            id = wallSwitchPressedEventTypeId;
+            break;
+        case 2002: // temporary number, replace with code (codes for on and off?)
+            param = Param(wallSwitchPressedEventButtonNameParamTypeId, "TWO");
+            id = wallSwitchPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Wall Switch Module:" << buttonCode;
             return;
         }
     }
@@ -1647,6 +1719,30 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             descriptor.setParams(params);
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new smart button" << sensorMap.value("name").toString() << model;
+
+            // Wall Switch Module
+        } else if (model == "RDM001") {
+            ThingDescriptor descriptor(wallSwitchThingClassId, sensorMap.value("name").toString(), "Philips Hue Wall Switch Module", thing->id());
+            ParamList params;
+            params.append(Param(wallSwitchThingModelIdParamTypeId, model));
+            params.append(Param(wallSwitchThingTypeParamTypeId, sensorMap.value("type").toString()));
+            params.append(Param(wallSwitchThingUuidParamTypeId, uuid));
+            params.append(Param(wallSwitchThingSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoThingsAppeared({descriptor});
+            qCDebug(dcPhilipsHue) << "Found new wall switch module" << sensorMap.value("name").toString() << model;
+
+            // Friends of Hue switch
+        } else if (model == "FOHSWITCH") {
+            ThingDescriptor descriptor(fohThingClassId, sensorMap.value("name").toString(), "Friends of Hue Switch", thing->id());
+            ParamList params;
+            params.append(Param(fohThingModelIdParamTypeId, model));
+            params.append(Param(fohThingTypeParamTypeId, sensorMap.value("type").toString()));
+            params.append(Param(fohThingUuidParamTypeId, uuid));
+            params.append(Param(fohThingSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoThingsAppeared({descriptor});
+            qCDebug(dcPhilipsHue) << "Found new friends of hue switch" << sensorMap.value("name").toString() << model;
 
             // Hue Tap
         } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
@@ -2015,8 +2111,12 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                         m_remotes.value(remote)->setStateValue(dimmerSwitch2ConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == tapThingClassId) {
                         m_remotes.value(remote)->setStateValue(tapConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->thingClassId() == fohThingClassId) {
+                        m_remotes.value(remote)->setStateValue(fohConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == smartButtonThingClassId) {
                         m_remotes.value(remote)->setStateValue(smartButtonConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->thingClassId() == wallSwitchThingClassId) {
+                        m_remotes.value(remote)->setStateValue(wallSwitchConnectedStateTypeId, false);
                     }
                 }
             }
@@ -2097,9 +2197,23 @@ bool IntegrationPluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
             }
         }
 
+        // Friends of Hue
+        if (thing->thingClassId() == fohThingClassId) {
+            if (thing->paramValue(fohThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
         // Hue smart button
         if (thing->thingClassId() == smartButtonThingClassId) {
             if (thing->paramValue(smartButtonThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
+        // Hue wall switch module
+        if (thing->thingClassId() == wallSwitchThingClassId) {
+            if (thing->paramValue(wallSwitchThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }

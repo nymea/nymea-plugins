@@ -10,14 +10,16 @@ This plugin allows to interact with the Hue bridge. Each light bulb, sensor and 
     * No internet or cloud connection required
 * Hue Dimmer switch V1 and V2
 * Hue Tap Switch
+* Friends of Hue Switch (e.g. Niko, ...)
 * Hue Smart Button
+* Hue Wall Switch Module
 * Hue Motion Sensor
 * Hue Outdoor Motion Sensor
 * Hue Ambient White Bulb
 * Hue Color Bulb
 * Hue Smart plug
 * Any other Bulb that can be connected and controlled by the Hue App
-* In-wall dimmers/switches that can be connected and controlled by the Hue App.
+* In-wall dimmers/switches that can be connected and controlled by the Hue App
 
 ## Requirements
 
