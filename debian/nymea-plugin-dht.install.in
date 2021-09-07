@@ -1,0 +1,3 @@
+dht/integrationplugindht.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/dht/
+dht/integrationplugindht.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/dht/
+dht/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/dht/
