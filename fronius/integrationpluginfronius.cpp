@@ -32,6 +32,7 @@
 #include "integrationpluginfronius.h"
 #include "plugintimer.h"
 #include "network/networkaccessmanager.h"
+#include "network/networkdevicediscovery.h"
 
 #include <QUrl>
 #include <QUrlQuery>
@@ -44,6 +45,61 @@
 IntegrationPluginFronius::IntegrationPluginFronius(QObject *parent): IntegrationPlugin(parent)
 {
 
+}
+
+void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
+{
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcFronius()) << "Failed to discover network devices. The network device discovery is not available.";
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discovery devices in your network."));
+        return;
+    }
+
+    qCDebug(dcFronius()) << "Starting network discovery...";
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        ThingDescriptors descriptors;
+        qCDebug(dcFronius()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+            qCDebug(dcFronius()) << networkDeviceInfo;
+            if (networkDeviceInfo.macAddress().isNull())
+                continue;
+
+            // Hostname or MAC manufacturer must include Fronius
+            if (!(networkDeviceInfo.macAddressManufacturer().toLower().contains("fronius") || networkDeviceInfo.hostName().toLower().contains("fronius")))
+                continue;
+
+            QString title;
+            if (networkDeviceInfo.hostName().isEmpty()) {
+                title += networkDeviceInfo.address().toString();
+            } else {
+                title += networkDeviceInfo.address().toString() + " (" + networkDeviceInfo.hostName() + ")";
+            }
+
+            QString description;
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description = networkDeviceInfo.macAddress();
+            } else {
+                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+            }
+
+            ThingDescriptor descriptor(dataloggerThingClassId, title, description);
+
+            // Check if we already have set up this device
+            Things existingThings = myThings().filterByParam(dataloggerThingLoggerMacParamTypeId, networkDeviceInfo.macAddress());
+            if (existingThings.count() == 1) {
+                qCDebug(dcFronius()) << "This thing already exists in the system." << existingThings.first() << networkDeviceInfo;
+                descriptor.setThingId(existingThings.first()->id());
+            }
+
+            ParamList params;
+            params << Param(dataloggerThingLoggerHostParamTypeId, networkDeviceInfo.address().toString());
+            params << Param(dataloggerThingLoggerMacParamTypeId, networkDeviceInfo.macAddress());
+            descriptor.setParams(params);
+            info->addThingDescriptor(descriptor);
+        }
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
@@ -74,11 +130,9 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [this, info, thing, reply] {
-
             QByteArray data = reply->readAll();
-
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString() << reply->url();
+                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->url();
                 info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Device not reachable"));
                 return;
             }
@@ -87,13 +141,22 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString() << data;
+                qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString() << data;
                 info->finish(Thing::ThingErrorHardwareFailure, tr("Please try again"));
                 return;
             }
 
+            QVariantMap versionResponseMap = jsonDoc.toVariant().toMap();
+
+            // Knwon version with broken JSON API
+            if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
+                qCWarning(dcFronius()) << "The Fronius data logger has a version which is known to have a broken JSON API firmware.";
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
+                return;
+            }
+
             FroniusLogger *newLogger = new FroniusLogger(thing, this);
-            newLogger->setBaseUrl(jsonDoc.toVariant().toMap().value("BaseURL").toString());
+            newLogger->setBaseUrl(versionResponseMap.value("BaseURL").toString());
             newLogger->setHostAddress(thing->paramValue(dataloggerThingLoggerHostParamTypeId).toString());
             m_froniusLoggers.insert(newLogger, thing);
 
@@ -211,6 +274,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     qCDebug(dcFronius()) << "Update thing values for" << thing->name();
 
     if (thing->thingClassId() == inverterThingClassId) {
+        qCDebug(dcFronius()) << "Update inverter" << m_froniusInverters.key(thing)->updateUrl();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
@@ -237,6 +301,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
             }
         });
     } else if (thing->thingClassId() == dataloggerThingClassId) {
+        qCDebug(dcFronius()) << "Update logger" << m_froniusLoggers.key(thing)->updateUrl();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusLoggers.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
@@ -252,6 +317,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
 
     } else if (thing->thingClassId() == meterThingClassId) {
+        qCDebug(dcFronius()) << "Update meter" << m_froniusMeters.key(thing)->updateUrl();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusMeters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
@@ -266,6 +332,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
 
     } else if (thing->thingClassId() == storageThingClassId) {
+        qCDebug(dcFronius()) << "Update storage" << m_froniusStorages.key(thing)->updateUrl();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
@@ -306,7 +373,7 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
     url.setPath(logger->baseUrl() + "GetActiveDeviceInfo.cgi");
     url.setQuery(query);
 
-    qCDebug(dcFronius()) << "Search Things at address" << url.toString();
+    qCDebug(dcFronius()) << "Searching new things at address" << url.toString();
     QNetworkRequest request = QNetworkRequest(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
 
@@ -443,7 +510,7 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
             QByteArray data = reply->readAll();
 
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
+                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString();
                 info->finish(Thing::ThingErrorNoError);
                 return;
             }
@@ -452,7 +519,7 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
+                qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
                 info->finish(Thing::ThingErrorHardwareFailure, tr("Please try again"));
                 return;
             }
@@ -484,7 +551,7 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
             QByteArray data = reply->readAll();
 
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
+                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString();
                 info->finish(Thing::ThingErrorHardwareNotAvailable, "Device not reachable");
                 return;
             }
@@ -493,7 +560,7 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
+                qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
                 info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
                 return;
             }

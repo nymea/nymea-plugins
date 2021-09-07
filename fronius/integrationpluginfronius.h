@@ -50,6 +50,7 @@ class IntegrationPluginFronius : public IntegrationPlugin
 public:
     explicit IntegrationPluginFronius(QObject *parent = nullptr);
 
+    void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *thing) override;
     void postSetupThing(Thing* thing) override;
     void executeAction(ThingActionInfo *info) override;
