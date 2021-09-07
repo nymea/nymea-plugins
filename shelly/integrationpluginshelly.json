@@ -1013,9 +1013,10 @@
                         },
                         {
                             "id": "b1f5a911-76ec-42e5-ac64-17f85d82b875",
-                            "name": "multipressInterval",
+                            "name": "multipushTimeBetweenPushes",
                             "displayName": "Max time between multiple presses",
                             "type": "uint",
+                            "unit": "MilliSeconds",
                             "minValue": 200,
                             "maxValue": 2000,
                             "defaultValue": 500
@@ -1152,6 +1153,38 @@
                             "type": "QString"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "a04fda4b-f187-477c-b7a8-b56613bf9264",
+                            "name": "longpushMinDuration",
+                            "displayName": "Minimum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 2900,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "6485685e-0097-48db-958b-43126c6fb5a6",
+                            "name": "longpushMaxDuration",
+                            "displayName": "Maximum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 200,
+                            "maxValue": 6000,
+                            "defaultValue": 3000
+                        },
+                        {
+                            "id": "52699a1b-3526-4f60-83ec-f35faa863597",
+                            "name": "multipushTimeBetweenPushes",
+                            "displayName": "Max time between multiple presses",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 500,
+                            "defaultValue": 500
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "9b17b10d-07ee-4a3d-813f-ef37e79e7241",
@@ -1235,16 +1268,15 @@
                                 {
                                     "id": "146313a1-cfb6-4732-a1be-86ec575bcbdb",
                                     "name": "buttonName",
-                                    "displayName": "Count",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 },
                                 {
                                     "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
-                                    "name": "origin",
-                                    "displayName": "Switch",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
+                                    "name": "count",
+                                    "displayName": "Press count",
+                                    "type": "uint"
                                  }
                             ]
                         },
@@ -1256,14 +1288,7 @@
                                 {
                                     "id": "99683cf9-930e-4f10-94f2-73bb32092639",
                                     "name": "buttonName",
-                                    "displayName": "Count",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
-                                },
-                                {
-                                    "id": "866d6db6-e989-4b19-93c3-cc4aa7453c9e",
-                                    "name": "origin",
-                                    "displayName": "Switch",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 }
