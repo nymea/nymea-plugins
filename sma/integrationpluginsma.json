@@ -1,0 +1,93 @@
+{
+    "id": "b8442bbf-9d3f-4aa2-9443-b3a31ae09bac",
+    "name": "sma",
+    "displayName": "SMA",
+    "vendors": [
+        {
+            "id": "16d5a4a3-36d5-46c0-b7dd-df166ddf5981",
+            "name": "Sma",
+            "displayName": "SMA",
+            "thingClasses": [
+                {
+                    "id": "49304127-ce9b-45dd-8511-05030a4ac003",
+                    "name": "sunnyWebBox",
+                    "displayName": "Sunny WebBox",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["smartmeterproducer"],
+                    "paramTypes": [
+                        {
+                            "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.168"
+                        },
+                        {
+                            "id": "03f32361-4e13-4597-a346-af8d16a986b3",
+                            "name": "macAddress",
+                            "displayName": "hardware address",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c05e6a1a-252c-4f2b-8b31-09cf113d01c1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ff4ff872-2f0f-4ca4-9fe2-220eeaf16cc2",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "16f34c5c-8dbb-4dcc-9faa-4b782d57226c",
+                            "name": "dayEnergyProduced",
+                            "displayName": "Day energy produced",
+                            "displayNameEvent": "Day energy produced changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0bb4e227-7e38-49ca-9b32-ce4621c9305b",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "displayNameEvent": "Total energy produced changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1974550b-6059-4b0e-83f4-70177e20dac3",
+                            "name": "mode",
+                            "displayName": "Mode",
+                            "displayNameEvent": "Mode changed",
+                            "type": "QString",
+                            "defaultValue": "MPP"
+                        },
+                        {
+                            "id": "4e64f9ca-7e5a-4897-8035-6f2ae88fde89",
+                            "name": "error",
+                            "displayName": "Error",
+                            "displayNameEvent": "Error changed",
+                            "type": "QString",
+                            "defaultValue": "None"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
