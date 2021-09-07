@@ -1,6 +1,50 @@
-nymea-plugins (0.29.0) UNRELEASED; urgency=medium
+nymea-plugins (0.29.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Fri, 09 Jul 2021 13:39:09 +0200
+  [ Bernhard Trinnes ]
+  * New PlugIn: SMA
+
+  [ Michael Zanetti ]
+  * Bump version to 0.29.0
+  * GenericThings: Added O2, PH, ORP, CO and flammable gas generic
+    sensors
+
+  [ Jenkins ]
+  * Philips Hue: Add support for on/off light
+  * Philips hue: Add dimmer switch v2
+  * Philips Hue - add support for Friends of Hue switch and Wall switch
+    module
+  * New plugin: Yamaha network receiver
+
+  [ Michael Zanetti ]
+  * New plugin: DHT11/DHT22/AM2302
+  * TP-Link: Fix smart meter interfaces
+  * Shelly: Add second switch for the Shelly 1L
+  * Shelly: Add generic IO states for shelly 2.5
+
+  [ Simon Stürz ]
+  * Fronius: Add network discovery and broken API version check
+
+  [ Michael Zanetti ]
+  * Generic Things: Add a generic electric car thing
+  * New Plugin: MCP3008 SPI DAC
+  * GenericThings: Fix typo in Generic door/window sensor
+  * Shelly: Add support for settings for the Shelly I3
+
+  [ Simon Stürz ]
+  * Add plugedIn interface state for goE-Charger
+
+  [ Jenkins ]
+  * Neato Botvac: Use nymea plugintimer
+
+  [ Simon Stürz ]
+  * Keba: Add plugged in interface state and translate different states
+  * GenericElements: Make use of interfaces in generic elements and add
+    trigger button
+  * ZigbeeDevelco: Use adaptive filter for sensor values
+  * Keba: Filter discovered devices by mac address vendor and not by
+    hostname
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 07 Sep 2021 17:36:18 +0200
 
 nymea-plugins (0.28.1) xenial; urgency=medium
 
