@@ -62,7 +62,7 @@
                     "name": "kasaPlug110",
                     "displayName": "Kasa Smart Wi-Fi Plug With Energy Monitoring (HS110)",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "powersocket", "smartmeter", "wirelessconnectable" ],
+                    "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "de3238f7-fe94-440d-b212-61cd4e221b50",
@@ -178,7 +178,7 @@
                     "name": "kasaPowerStrip300",
                     "displayName": "Kasa Smart Wi-Fi Power Strip (HS300)",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "gateway", "smartmeter", "wirelessconnectable" ],
+                    "interfaces": [ "gateway", "smartmeterconsumer", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "62b38ddf-f6d7-44e1-955f-f04b375d960d",
