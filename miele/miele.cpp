@@ -35,6 +35,7 @@
 #include <QNetworkRequest>
 #include <QUrl>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QUrlQuery>
 #include <QMetaEnum>
 
@@ -93,6 +94,10 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         return;
     }
 
+    //delete me
+    qCDebug(dcMiele()) << "Refresh token is not empty: " << refreshToken;
+    qCDebug(dcMiele()) << "Client: " << m_clientId << "  secret: " << m_clientSecret;
+
     QUrl url(m_tokenUrl);
     QUrlQuery query;
     query.clear();
@@ -106,7 +111,7 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 
     QNetworkReply *reply = m_networkManager->post(request, query.toString().toUtf8());
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+    connect(reply, &QNetworkReply::finished, this, [this, reply, refreshToken](){
 
         QByteArray rawData = reply->readAll();
         if (!checkStatusCode(reply, rawData)) {
@@ -114,12 +119,15 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         }
         QJsonDocument data = QJsonDocument::fromJson(rawData);
 
-        if(!data.toVariant().toMap().contains("access_token")) {
+        if(!data.toVariant().toMap().contains("access_token") || !data.toVariant().toMap().contains("refresh_token")) {
             setAuthenticated(false);
             return;
         }
         m_accessToken = data.toVariant().toMap().value("access_token").toByteArray();
         emit receivedAccessToken(m_accessToken);
+
+        m_refreshToken = data.toVariant().toMap().value("refresh_token").toByteArray();
+        emit receivedRefreshToken(m_refreshToken);
 
         if (data.toVariant().toMap().contains("expires_in")) {
             int expireTime = data.toVariant().toMap().value("expires_in").toInt();
@@ -145,7 +153,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
     query.clear();
     query.addQueryItem("client_id", m_clientId);
     query.addQueryItem("client_secret", m_clientSecret);
-    //query.addQueryItem("vg", "de-DE");
+    query.addQueryItem("vg", "de-DE");
     query.addQueryItem("redirect_uri", m_redirectUri);
     query.addQueryItem("grant_type", "authorization_code");
     query.addQueryItem("code", authorizationCode);
@@ -169,7 +177,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
         }
         m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
         receivedAccessToken(m_accessToken);
-        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
+        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();        
         receivedRefreshToken(m_refreshToken);
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
@@ -180,7 +188,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
                 qCWarning(dcMiele()) << "Expire time too short";
                 return;
             }
-            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));
+            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));            
         }
     });
 }
@@ -207,8 +215,7 @@ void Miele::getDevices()
         if (!checkStatusCode(reply, rawData)) {
             return;
         }
-        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
-        qCDebug(dcMiele()) << "Get devices" << map;
+        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();       
         if (map.contains("data")) {
             QVariantMap dataMap = map.value("data").toMap();
             qCDebug(dcMiele()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
@@ -218,11 +225,48 @@ void Miele::getDevices()
     });
 }
 
+void Miele::getDevicesShort()
+{
+    qCDebug(dcMiele()) << "Get devices short";
+    QUrl url = m_apiUrl;
+    url.setPath("/v1/short/devices");
+    url.setQuery("language=en");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("accept", "application/json; charset=utf-8");
+
+    qCDebug(dcMiele()) << "Sending GET request" << request.url() << request.rawHeader("Authorization");
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+
+        QByteArray rawData = reply->readAll();
+        if (!checkStatusCode(reply, rawData)) {
+            return;
+        }
+
+        QVariantList devices = QJsonDocument::fromJson(rawData).toVariant().toList();
+        QList<DeviceShort> foundDevices;
+        foreach (QVariant device, devices) {
+            QVariantMap deviceObj = device.toMap();
+            qCDebug(dcMiele()) << "Got device: " << deviceObj;
+            DeviceShort ds;
+            ds.fabNumber = deviceObj["fabNumber"].toString();
+            ds.name = deviceObj["deviceName"].toString();
+            ds.state = deviceObj["state"].toString();
+            ds.type = deviceObj["type"].toString();
+            foundDevices.append(ds);
+        }
+        emit devicesFound(foundDevices);
+    });
+}
+
 void Miele::getDevice(const QString &deviceId)
 {
     qCDebug(dcMiele()) << "Get device" << deviceId;
     QUrl url = m_apiUrl;
-    url.setPath("/v1/devices/"+deviceId);
+    url.setPath("/v1/devices/" + deviceId);
     url.setQuery("language=en");
 
     QNetworkRequest request(url);
@@ -238,7 +282,31 @@ void Miele::getDevice(const QString &deviceId)
             return;
         }
         QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
-        qCDebug(dcMiele()) << "Get device" << map;
+        qCDebug(dcMiele()) << "Got device: " << map;
+    });
+}
+
+void Miele::getDeviceState(const QString &deviceId) {
+    qCDebug(dcMiele()) << "Get device state for: " << deviceId;
+    QUrl url = m_apiUrl;
+    url.setPath("/v1/devices/" + deviceId + "/state");
+    url.setQuery("language=en");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("accept", "application/json; charset=utf-8");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, deviceId]{
+
+        QByteArray rawData = reply->readAll();
+        if (!checkStatusCode(reply, rawData)) {
+            return;
+        }
+        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
+        qCDebug(dcMiele()) << "Got device state for: " << deviceId;
+        emit deviceStateReceived(deviceId, map);
     });
 }
 
@@ -298,11 +366,14 @@ QUuid Miele::setTargetTemperature(const QString &deviceId, int zone, int targetT
 {
     QJsonDocument doc;
     QJsonObject object;
+
     QJsonObject temperatureObj;
     temperatureObj.insert("zone", zone);
     temperatureObj.insert("value", targetTemperature);
-    object.insert("targetTemperature", temperatureObj);
-    doc.setObject(object);
+    QJsonArray tempZones;
+    tempZones.push_front(temperatureObj);
+    object.insert("targetTemperature", tempZones);
+    doc.setObject(object);    
     return putAction(deviceId, doc);
 }
 
@@ -491,6 +562,7 @@ bool Miele::checkStatusCode(QNetworkReply *reply, const QByteArray &rawData)
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcMiele()) << "Received invalide JSON object" << rawData;
         qCWarning(dcMiele()) << "Status" << status;
+        qCWarning(dcMiele()) << "Error" << error.errorString();
         setAuthenticated(false);
         return false;
     }

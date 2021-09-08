@@ -67,13 +67,18 @@ private:
     QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
+	QHash<QString, ThingClassId> m_mieleDeviceTypeLabelToThingClassId;
 
     Miele *createMieleConnection();
+	void setThingState(Thing *thing, const QVariantMap &state);
 
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
     void onRequestExecuted(QUuid requestId, bool success);
+
+	void onDevicesFound(QList<Miele::DeviceShort> devices);
+	void onDeviceStateReceived(const QString &deviceId, const QVariantMap &deviceState);
 };
 
 #endif // INTEGRATIONPLUGINMIELE_H

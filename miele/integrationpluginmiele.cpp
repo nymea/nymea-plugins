@@ -30,6 +30,7 @@
 
 #include "integrationpluginmiele.h"
 #include "plugininfo.h"
+#include <cmath>
 
 #include <QJsonDocument>
 #include <QUrl>
@@ -56,6 +57,14 @@ IntegrationPluginMiele::IntegrationPluginMiele()
     m_connectedStateTypeIds.insert(cookTopThingClassId, cookTopConnectedStateTypeId);
     m_connectedStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotConnectedStateTypeId);
     m_connectedStateTypeIds.insert(hoodThingClassId, hoodConnectedStateTypeId);
+
+    m_mieleDeviceTypeLabelToThingClassId.insert("oven", ovenThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("washing machine", washerThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("dish washer", dishwasherThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("coffee system", coffeeMakerThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("tumber dryer", dryerThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("refrigerator", fridgeThingClassId);
+
 }
 
 void IntegrationPluginMiele::startPairing(ThingPairingInfo *info)
@@ -148,7 +157,15 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
                 m_mieleConnections.insert(info->thing(), miele);
                info->finish(Thing::ThingErrorNoError);
             });
+            connect(miele, &Miele::receivedRefreshToken, info, [info, thing, this](const QByteArray &refreshToken){
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("refresh_token", refreshToken);
+                pluginStorage()->endGroup();
+                info->finish(Thing::ThingErrorNoError);
+            });
             connect(info, &ThingSetupInfo::aborted, miele, &Miele::deleteLater);
+            connect(miele, &Miele::devicesFound, this, &IntegrationPluginMiele::onDevicesFound);
+            connect(miele, &Miele::deviceStateReceived, this, &IntegrationPluginMiele::onDeviceStateReceived);
         }
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
@@ -172,7 +189,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
     qCDebug(dcMiele()) << "Post setup thing" << thing->name();
     if (!m_pluginTimer15min) {
         qCDebug(dcMiele()) << "Registering plugin timer";
-        m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60*15);
+        m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60 * 1);
         connect(m_pluginTimer15min, &PluginTimer::timeout, this, [this]() {
             qCDebug(dcMiele()) << "Plugin timer triggered";
             Q_FOREACH (Thing *thing, myThings().filterByThingClassId(mieleAccountThingClassId)) {
@@ -181,10 +198,10 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
                     qWarning(dcMiele()) << "No Miele account found for" << thing->name();
                     continue;
                 }
-                miele->getDevices();
+                miele->getDevicesShort();
                 Q_FOREACH (Thing *childThing, myThings().filterByParentId(thing->id())) {
-                    QString deviceId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
-                    miele->getDevice(deviceId);
+                    QString deviceId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();                    
+                    miele->getDeviceState(deviceId);
                 }
             }
         });
@@ -192,7 +209,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
 
     if (thing->thingClassId() == mieleAccountThingClassId) {
         Miele *miele = m_mieleConnections.value(thing);
-        miele->getDevices();
+        miele->getDevicesShort();
         //miele->connectEventStream();
         thing->setStateValue(mieleAccountConnectedStateTypeId, true);
         thing->setStateValue(mieleAccountLoggedInStateTypeId, true);
@@ -206,7 +223,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
         if (!miele) {
             qCWarning(dcMiele()) << "Could not find HomeConnect connection for thing" << thing->name();
         } else {
-            miele->getDevice(deviceId);
+            miele->getDeviceState(deviceId);
         }
     } else {
         Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -221,10 +238,17 @@ void IntegrationPluginMiele::executeAction(ThingActionInfo *info)
     if (!miele) {
         return info->finish(Thing::ThingErrorHardwareNotAvailable);
     }
-    QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    QString deviceId = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
 
-    if (thing->thingClassId() == ovenThingClassId) {
-
+    if (thing->thingClassId() == fridgeThingClassId) {
+        if (action.actionTypeId() == fridgeTargetTemperatureActionTypeId) {
+            double targetTemp = action.param(fridgeTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
+            int iTargetTemp = floor(targetTemp);
+            qCDebug(dcMiele()) << "Setting fridge temp: " << iTargetTemp;
+            miele->setTargetTemperature(deviceId, 1, iTargetTemp);
+            info->finish(Thing::ThingErrorNoError);
+            thing->setStateValue(fridgeTargetTemperatureStateTypeId, iTargetTemp);
+        }
     } else if (thing->thingClassId() == ovenThingClassId) {
 
     } else {
@@ -327,4 +351,86 @@ void IntegrationPluginMiele::onRequestExecuted(QUuid requestId, bool success)
     }
 }
 
+void IntegrationPluginMiele::onDevicesFound(QList<Miele::DeviceShort> devices)
+{
+    qCDebug(dcMiele()) << "Found " << devices.size() << " devices";
+    Miele *miele = static_cast<Miele*>(sender());
 
+    if(m_mieleConnections.values().contains(miele)) {
+        Thing *parentDevice = myThings().findById(m_mieleConnections.key(miele)->id());
+        qCDebug(dcMiele()) << devices.size() << " devices received for prent: " << parentDevice->id();
+
+        ThingDescriptors descriptors;
+        foreach(Miele::DeviceShort ds, devices) {
+            qCDebug(dcMiele()) << "Setting up device: " << ds.type << " " << ds.name << " " << ds.state;
+            if (!m_mieleDeviceTypeLabelToThingClassId.contains(ds.type.toLower())) {
+                qCDebug(dcMiele()) << "Device type [" << ds.type << "] is not supported!";
+                continue;
+            }
+            ThingClassId deviceClassId = m_mieleDeviceTypeLabelToThingClassId.value(ds.type.toLower());
+            ThingDescriptor descriptor(deviceClassId, ds.name, "Appliance type: " + ds.type, parentDevice->id());
+            ParamList params;
+            params.append(Param(m_idParamTypeIds.value(deviceClassId), ds.fabNumber));
+            if (myThings().findByParams(params)) {
+                continue;
+            }
+            descriptor.setParams(params);
+            descriptors.append(descriptor);
+        }
+        emit autoThingsAppeared(descriptors);
+
+    } else {
+        // TODO: improve debug message
+        qCWarning(dcMiele()) << "Miele connection not linked to a thingId";
+    }
+}
+
+
+void IntegrationPluginMiele::onDeviceStateReceived(const QString &deviceId, const QVariantMap &deviceState)
+{
+    Miele *miele = static_cast<Miele*>(sender());
+    if (!m_mieleConnections.values().contains(miele)) {
+        qCWarning(dcMiele()) << "Can't find Miele connection!";
+        return;
+    }
+
+    Thing *parentDevice = myThings().findById(m_mieleConnections.key(miele)->id());
+    if (!parentDevice) {
+        qCWarning(dcMiele()) << "Can't find parent thing!";
+        return;
+    }
+
+    foreach(Thing *thing, myThings().filterByParentId(parentDevice->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == deviceId) {
+            qCDebug(dcMiele()) << "Received state for: " << thing->name();
+            setThingState(thing, deviceState);
+            break;
+        }
+    }
+
+}
+
+void IntegrationPluginMiele::setThingState(Thing *thing, const QVariantMap &state)
+{
+    qCDebug(dcMiele()) << "Setting device state: " << thing->name();
+    if (thing->thingClassId() == fridgeThingClassId) {
+        qCDebug(dcMiele()) << "Setting state for fridge!";
+
+        bool connected = state.value("status").toMap().value("value_raw").toInt() == Miele::StatusNotConnected
+                       ? false
+                       : true;
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), connected);
+
+        // Fridges should have only one temperature zone
+        QVariant fridgeTempZone = state.value("temperature").toList().first();
+        double fridgeTemp = fridgeTempZone.toMap().value("value_raw").toDouble();
+        thing->setStateValue(fridgeTemperatureStateTypeId, fridgeTemp / 100);
+
+        QVariant fridgeTargetTempZone = state.value("targetTemperature").toList().first();
+        double fridgeTargetTemp = fridgeTargetTempZone.toMap().value("value_raw").toDouble();
+        thing->setStateValue(fridgeTargetTemperatureStateTypeId, fridgeTargetTemp / 100);
+
+    } else {
+        qCWarning(dcMiele()) << "Device " << thing->name() << " is not yet supported!";
+    }
+}

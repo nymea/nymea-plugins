@@ -178,7 +178,7 @@
                     "id": "a03e17fd-8da8-4977-8ac3-c058ada9f547",
                     "name": "fridge",
                     "displayName": "Fridge Freezer",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["thermostat", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -198,6 +198,42 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },                        
+                        {
+                            "id": "ef656321-e2c8-4339-be18-aa3cdb53dea6",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": 0,
+                            "type": "double",
+                            "minValue": "0",
+                            "maxValue": "10",
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "ebac99f4-cb89-4813-9b21-a9c6bf5209d5",
+                            "name": "targetTemperature",
+                            "displayName": "Temperature Setting",
+                            "displayNameEvent": "Temperature setting changed",
+                            "displayNameAction": "Set target temperature",
+                            "defaultValue": 0,
+                            "type": "double",
+                            "minValue": "0",
+                            "maxValue": "10",
+                            "unit": "DegreeCelsius",
+                            "writable": true,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "60a46368-febc-4cff-bbfb-99064dbb93a9",
+                            "name": "power",
+                            "displayName": "On/off",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
                         }
                     ]
                 },

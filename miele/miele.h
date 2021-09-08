@@ -90,6 +90,14 @@ public:
         StatusNotConnected = 255
     };
 
+    struct DeviceShort {
+        QString details;
+        QString name;
+        QString fabNumber;
+        QString state;
+        QString type;
+    };
+
     Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, const QString &language = "en", QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
@@ -101,7 +109,9 @@ public:
 
     // INFORMATION
     void getDevices();
+    void getDevicesShort();
     void getDevice(const QString &deviceId);
+    void getDeviceState(const QString &deviceId);
 
     // ACTION
     void getActions(const QString &deviceId); //The GET action is used to request a device to send the currently supported actions
@@ -150,6 +160,8 @@ signals:
     void receivedRefreshToken(const QByteArray &refreshToken);
     void receivedAccessToken(const QByteArray &accessToken);
     void commandExecuted(const QUuid &commandId, bool success);
+    void devicesFound(QList<DeviceShort> devices);
+    void deviceStateReceived(const QString &deviceId, const QVariantMap &deviceState);
 
 private slots:
     void onRefreshTimeout();
