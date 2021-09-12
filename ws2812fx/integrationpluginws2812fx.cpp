@@ -70,6 +70,10 @@ void IntegrationPluginWs2812fx::init()
             return;
         }
         NymeaLightTcpInterface *lightInterface = qobject_cast<NymeaLightTcpInterface *>(m_lights.value(thing)->parent());
+        if (!lightInterface) {
+            qCWarning(dcWs2812fx()) << "Invalid NymeaLightInterface pointer for" << thing;
+            return;
+        }
         lightInterface->setAddress(entry.hostAddress());
     });
 }
@@ -106,8 +110,8 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
                 return;
             }
 
-            NymeaLightTcpInterface *lightInterface = new NymeaLightTcpInterface(QHostAddress(interface));
-            light = new NymeaLight(lightInterface, this);
+            NymeaLightTcpInterface *lightInterface = new NymeaLightTcpInterface(QHostAddress(interface), thing);
+            light = new NymeaLight(lightInterface, lightInterface);
             lightInterface->setParent(light);
         }
 
