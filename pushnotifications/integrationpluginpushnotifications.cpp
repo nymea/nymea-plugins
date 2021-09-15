@@ -119,13 +119,22 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
 
     QString token = thing->paramValue(pushNotificationsThingTokenParamTypeId).toString();
     QString pushService = thing->paramValue(pushNotificationsThingServiceParamTypeId).toString();
-
     QString title = action.param(pushNotificationsNotifyActionTitleParamTypeId).value().toString();
     QString body = action.param(pushNotificationsNotifyActionBodyParamTypeId).value().toString();
+    QString data = action.paramValue(pushNotificationsNotifyActionDataParamTypeId).toString();
 
     if (pushService != "None" && token.isEmpty()) {
         return info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Push notifications need to be reconfigured."));
     }
+
+    QVariantMap nymeaData;
+    // FIXME: This is quite ugly but there isn't an API that allows to retrieve the server UUID yet
+    NymeaSettings settings(NymeaSettings::SettingsRoleGlobal);
+    settings.beginGroup("nymead");
+    QUuid serverUuid = settings.value("uuid").toUuid();
+    settings.endGroup();
+    nymeaData.insert("serverUuid", serverUuid);
+    nymeaData.insert("data", data);
 
     QNetworkRequest request;
     QVariantMap payload;
@@ -147,6 +156,8 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
         QVariantMap notification;
         notification.insert("title", title);
         notification.insert("body", body);
+        notification.insert("nymeaData", nymeaData);
+
 
         if (pushService == "FB-GCM") {
 
@@ -189,6 +200,7 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
         notification.insert("card", card);
         notification.insert("vibrate", true);
         notification.insert("sound", true);
+        notification.insert("nymeaData", nymeaData);
 
         QVariantMap data;
         data.insert("notification", notification);

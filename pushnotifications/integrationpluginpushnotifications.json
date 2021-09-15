@@ -26,7 +26,7 @@
                         {
                             "id": "12ec06b2-44e7-486a-9169-31c684b91c8f",
                             "name": "token",
-                            "displayName": "access token",
+                            "displayName": "Access token",
                             "type": "QString"
                         },
                         {
@@ -40,12 +40,12 @@
                         {
                             "id": "ed9a0196-6c24-4e05-9cbc-c6834de38005",
                             "name": "notify",
-                            "displayName": "notify",
+                            "displayName": "Send notification",
                             "paramTypes": [
                                 {
                                     "id": "3b5e195c-9f96-4f2f-a654-f17ed77c02ee",
                                     "name": "title",
-                                    "displayName": "title",
+                                    "displayName": "Title",
                                     "type": "QString",
                                     "inputType": "TextLine",
                                     "defaultValue": ""
@@ -53,9 +53,16 @@
                                 {
                                     "id": "074c4c7c-037f-45ac-ab2f-f7aea3f84bde",
                                     "name": "body",
-                                    "displayName": "body",
+                                    "displayName": "Body",
                                     "type": "QString",
                                     "inputType": "TextArea",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "ca36a33f-a7f2-4f59-8767-3522ecaaf8fb",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString",
                                     "defaultValue": ""
                                 }
                             ]
