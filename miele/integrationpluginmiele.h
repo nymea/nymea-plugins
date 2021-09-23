@@ -79,6 +79,7 @@ private slots:
 
 	void onDevicesFound(QList<Miele::DeviceShort> devices);
 	void onDeviceStateReceived(const QString &deviceId, const QVariantMap &deviceState);
+    void onDeviceNotFound(const QString &deviceId);
 };
 
 #endif // INTEGRATIONPLUGINMIELE_H

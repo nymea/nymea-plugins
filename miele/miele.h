@@ -122,9 +122,10 @@ public:
     QUuid setLight(const QString &deviceId, bool power);
     QUuid setTargetTemperature(const QString &deviceId, int zone, int targetTemperature);
     QUuid setColors(const QString &deviceId, Color color);
+    QUuid setColorsStr(const QString &deviceId, const QString &color);
     QUuid setModes(const QString &deviceId, Mode mode);
     QUuid setVentilationStep(const QString &deviceId, int step);
-    QUuid setStartTime(const QString &deviceId, int seconds);
+    QUuid setStartTime(const QString &deviceId, int seconds);    
 
     // EVENTS
     void getAllEvents();
@@ -162,6 +163,7 @@ signals:
     void commandExecuted(const QUuid &commandId, bool success);
     void devicesFound(QList<DeviceShort> devices);
     void deviceStateReceived(const QString &deviceId, const QVariantMap &deviceState);
+    void deviceNotFound(const QString &deviceId);
 
 private slots:
     void onRefreshTimeout();

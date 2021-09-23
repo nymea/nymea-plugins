@@ -92,11 +92,7 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         qCWarning(dcMiele()) << "No refresh token given!";
         setAuthenticated(false);
         return;
-    }
-
-    //delete me
-    qCDebug(dcMiele()) << "Refresh token is not empty: " << refreshToken;
-    qCDebug(dcMiele()) << "Client: " << m_clientId << "  secret: " << m_clientSecret;
+    }    
 
     QUrl url(m_tokenUrl);
     QUrlQuery query;
@@ -302,6 +298,10 @@ void Miele::getDeviceState(const QString &deviceId) {
 
         QByteArray rawData = reply->readAll();
         if (!checkStatusCode(reply, rawData)) {
+            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            if (status == 404) {
+                emit deviceNotFound(deviceId);
+            }
             return;
         }
         QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
@@ -383,6 +383,15 @@ QUuid Miele::setColors(const QString &deviceId, Miele::Color color)
     QJsonObject object;
     QString colorString = QMetaEnum::fromType<Miele::Color>().valueToKey(color);
     object.insert("color", colorString.remove("Color").toLower());
+    doc.setObject(object);
+    return putAction(deviceId, doc);
+}
+
+QUuid Miele::setColorsStr(const QString &deviceId, const QString &color)
+{
+    QJsonDocument doc;
+    QJsonObject object;
+    object.insert("colors", color.toLower());
     doc.setObject(object);
     return putAction(deviceId, doc);
 }

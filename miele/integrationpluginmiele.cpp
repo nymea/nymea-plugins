@@ -64,6 +64,7 @@ IntegrationPluginMiele::IntegrationPluginMiele()
     m_mieleDeviceTypeLabelToThingClassId.insert("coffee system", coffeeMakerThingClassId);
     m_mieleDeviceTypeLabelToThingClassId.insert("tumber dryer", dryerThingClassId);
     m_mieleDeviceTypeLabelToThingClassId.insert("refrigerator", fridgeThingClassId);
+    m_mieleDeviceTypeLabelToThingClassId.insert("hood", hoodThingClassId);
 
 }
 
@@ -88,7 +89,9 @@ void IntegrationPluginMiele::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginMiele::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-    Q_UNUSED(username);
+    //Q_UNUSED(username);
+
+    qCDebug(dcMiele()) << "\n\n Confirm pairing for username: [" << username << "]";
 
     if (info->thingClassId() == mieleAccountThingClassId) {
         qCDebug(dcMiele()) << "Confirm pairing Miele account";
@@ -166,6 +169,7 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
             connect(info, &ThingSetupInfo::aborted, miele, &Miele::deleteLater);
             connect(miele, &Miele::devicesFound, this, &IntegrationPluginMiele::onDevicesFound);
             connect(miele, &Miele::deviceStateReceived, this, &IntegrationPluginMiele::onDeviceStateReceived);
+            connect(miele, &Miele::deviceNotFound, this, &IntegrationPluginMiele::onDeviceNotFound);
         }
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
@@ -212,8 +216,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
         miele->getDevicesShort();
         //miele->connectEventStream();
         thing->setStateValue(mieleAccountConnectedStateTypeId, true);
-        thing->setStateValue(mieleAccountLoggedInStateTypeId, true);
-        //TBD Set user name
+        thing->setStateValue(mieleAccountLoggedInStateTypeId, true);        
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)
@@ -245,10 +248,58 @@ void IntegrationPluginMiele::executeAction(ThingActionInfo *info)
             double targetTemp = action.param(fridgeTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
             int iTargetTemp = floor(targetTemp);
             qCDebug(dcMiele()) << "Setting fridge temp: " << iTargetTemp;
-            miele->setTargetTemperature(deviceId, 1, iTargetTemp);
+            QUuid requestId = miele->setTargetTemperature(deviceId, 1, iTargetTemp);
             info->finish(Thing::ThingErrorNoError);
             thing->setStateValue(fridgeTargetTemperatureStateTypeId, iTargetTemp);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == fridgeStartSuperCoolingActionTypeId) {
+            QUuid requestId = miele->processAction(deviceId, Miele::ProcessActionsStartSupercooling);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+            // don't set state, it should come as event once it successfully started on the actual device
+            //thing->setStateValue(fridgePowerStateTypeId, !currentSuperCoolingState);
+        } else if (action.actionTypeId() == fridgeStopSuperCoolingActionTypeId) {
+            QUuid requestId = miele->processAction(deviceId, Miele::ProcessActionsStopSupercooling);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
         }
+    } else if (thing->thingClassId() == hoodThingClassId) {
+        if (action.actionTypeId() == hoodStopHoodActionTypeId) {
+            // TODO: should check if current state of the hood allows the Stop action
+            QUuid requestId = miele->processAction(deviceId, Miele::ProcessActionsStop);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == hoodVentilationStepActionTypeId) {
+            int ventStep = action.param(hoodVentilationStepActionVentilationStepParamTypeId).value().toInt();
+            QUuid requestId = miele->setVentilationStep(deviceId, ventStep);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == hoodLightColorActionTypeId) {
+            QString color = action.param(hoodLightColorActionLightColorParamTypeId).value().toString();
+            QUuid requestId = miele->setColorsStr(deviceId, color);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == hoodLightActionTypeId) {
+            bool power = action.param(hoodLightActionLightParamTypeId).value().toBool();
+            QUuid requestId = miele->setLight(deviceId, power);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        }
+
     } else if (thing->thingClassId() == ovenThingClassId) {
 
     } else {
@@ -358,7 +409,7 @@ void IntegrationPluginMiele::onDevicesFound(QList<Miele::DeviceShort> devices)
 
     if(m_mieleConnections.values().contains(miele)) {
         Thing *parentDevice = myThings().findById(m_mieleConnections.key(miele)->id());
-        qCDebug(dcMiele()) << devices.size() << " devices received for prent: " << parentDevice->id();
+        qCDebug(dcMiele()) << devices.size() << " devices received for parent: " << parentDevice->id();
 
         ThingDescriptors descriptors;
         foreach(Miele::DeviceShort ds, devices) {
@@ -420,6 +471,7 @@ void IntegrationPluginMiele::setThingState(Thing *thing, const QVariantMap &stat
                        ? false
                        : true;
         thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), connected);
+        thing->setStateValue(fridgeOperationStateStateTypeId, state.value("status").toMap().value("value_localized").toString());
 
         // Fridges should have only one temperature zone
         QVariant fridgeTempZone = state.value("temperature").toList().first();
@@ -430,7 +482,60 @@ void IntegrationPluginMiele::setThingState(Thing *thing, const QVariantMap &stat
         double fridgeTargetTemp = fridgeTargetTempZone.toMap().value("value_raw").toDouble();
         thing->setStateValue(fridgeTargetTemperatureStateTypeId, fridgeTargetTemp / 100);
 
+        thing->setStateValue(fridgeSignalDoorStateTypeId, state.value("signalDoor").toBool());
+        thing->setStateValue(fridgeSignalInfoStateTypeId, state.value("signalInfo").toBool());
+        thing->setStateValue(fridgeSignalFailureStateTypeId, state.value("signalFailure").toBool());
+
+        QVariantMap remoteEnabledModes = state.value("remoteEnable").toMap();
+        thing->setStateValue(fridgeFullRemoteControlStateTypeId, remoteEnabledModes.value("fullRemoteControl").toBool());
+        thing->setStateValue(fridgeSmartGridStateTypeId, remoteEnabledModes.value("smartGrid").toBool());
+        thing->setStateValue(fridgeMobileStartStateTypeId, remoteEnabledModes.value("mobileStart").toBool());
+
+    } else if (thing->thingClassId() == hoodThingClassId) {
+        qCDebug(dcMiele()) << "Setting state for hood!";
+
+        int status = state.value("status").toMap().value("value_raw").toInt();
+        bool connected = (status == Miele::StatusNotConnected) ? false : true;
+        bool poweredOn = (status == Miele::StatusOff) ? false : true;
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), connected);
+        thing->setStateValue(hoodPowerStateTypeId, poweredOn);
+        thing->setStateValue(hoodOperationStateStateTypeId, state.value("status").toMap().value("value_localized").toString());
+
+        thing->setStateValue(hoodSignalInfoStateTypeId, state.value("signalInfo").toBool());
+        thing->setStateValue(hoodSignalFailureStateTypeId, state.value("signalFailure").toBool());
+        thing->setStateValue(hoodLightStateTypeId, state.value("light").toInt() != 0 ? true : false);
+
+        QVariantMap remoteEnabledModes = state.value("remoteEnable").toMap();
+        thing->setStateValue(hoodFullRemoteControlStateTypeId, remoteEnabledModes.value("fullRemoteControl").toBool());
+        thing->setStateValue(hoodSmartGridStateTypeId, remoteEnabledModes.value("smartGrid").toBool());
+        thing->setStateValue(hoodMobileStartStateTypeId, remoteEnabledModes.value("mobileStart").toBool());
+
+        int ventilationStep = state.value("ventilationStep").toMap().value("value_raw").toInt();
+        thing->setStateValue(hoodVentilationStepStateTypeId, ventilationStep);
     } else {
         qCWarning(dcMiele()) << "Device " << thing->name() << " is not yet supported!";
+    }
+}
+
+void IntegrationPluginMiele::onDeviceNotFound(const QString &deviceId)
+{
+    Miele *miele = static_cast<Miele*>(sender());
+    if (!m_mieleConnections.values().contains(miele)) {
+        qCWarning(dcMiele()) << "Can't find Miele connection!";
+        return;
+    }
+
+    Thing *parentDevice = myThings().findById(m_mieleConnections.key(miele)->id());
+    if (!parentDevice) {
+        qCWarning(dcMiele()) << "Can't find parent thing!";
+        return;
+    }
+
+    foreach(Thing *thing, myThings().filterByParentId(parentDevice->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == deviceId) {
+            qCDebug(dcMiele()) << "Device not found anymore: " << thing->name();
+            emit autoThingDisappeared(thing->id());
+            break;
+        }
     }
 }

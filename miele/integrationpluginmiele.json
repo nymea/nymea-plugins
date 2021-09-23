@@ -51,14 +51,6 @@
                             "displayNameEvent": "Logged in changed",
                             "defaultValue": true,
                             "type": "bool"
-                        },
-                        {
-                            "id": "a5b85688-d319-4f61-8907-7da8a2b16d64",
-                            "name": "userDisplayName",
-                            "displayName": "User name",
-                            "displayNameEvent": "User name changed",
-                            "defaultValue": "",
-                            "type": "QString"
                         }
                     ]
                 },
@@ -198,6 +190,38 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "2f2039bb-b0af-4272-a8ba-558589f49299",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Not Connected",
+                            "type": "QString"                            
+                        },
+                        {
+                            "id": "bafefd33-cfdb-4715-a1c1-fb3d4215f84c",
+                            "name": "fullRemoteControl",
+                            "displayName": "Full remote control",
+                            "displayNameEvent": "Full remote control changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "89081d4a-5e46-4569-b0f9-52347491a013",
+                            "name": "smartGrid",
+                            "displayName": "Smart grid enabled",
+                            "displayNameEvent": "Smart grid enabled changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a878082e-a530-439a-9d71-dfe430fb4988",
+                            "name": "mobileStart",
+                            "displayName": "Mobile start enabled",
+                            "displayNameEvent": "Mobile start enabled changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },                        
                         {
                             "id": "ef656321-e2c8-4339-be18-aa3cdb53dea6",
@@ -225,15 +249,40 @@
                             "ioType": "analogInput"
                         },
                         {
-                            "id": "60a46368-febc-4cff-bbfb-99064dbb93a9",
-                            "name": "power",
-                            "displayName": "On/off",
-                            "displayNameEvent": "Turned on/off",
-                            "displayNameAction": "Turn on/off",
-                            "type": "bool",
+                            "id": "6954a425-e02e-4930-b073-1cc70805305a",
+                            "name": "signalDoor",
+                            "displayName": "Door open",
+                            "displayNameEvent": "Door open changed",
                             "defaultValue": false,
-                            "writable": true,
-                            "ioType": "digitalInput"
+                            "type": "bool"
+                        },
+                        {
+                            "id": "0469a4b9-ec7d-444c-9aa3-410518ec41ef",
+                            "name": "signalInfo",
+                            "displayName": "Unread notification",
+                            "displayNameEvent": "Unread notification changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "cbc573bd-ad3f-4d58-a796-b81bea14622d",
+                            "name": "signalFailure",
+                            "displayName": "Failure notification",
+                            "displayNameEvent": "Failure notification changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "0b206df2-47aa-4f8a-9c14-ff483c539826",
+                            "name": "startSuperCooling",
+                            "displayName": "Start SuperCooling"
+                        },
+                        {
+                            "id": "293568c2-5f8c-42f9-b150-769e181a8cbd",
+                            "name": "stopSuperCooling",
+                            "displayName": "Stop SuperCooling"
                         }
                     ]
                 },
@@ -296,7 +345,7 @@
                     "id": "707e46a5-9ca0-4375-8249-2de19ec669ec",
                     "name": "hood",
                     "displayName": "Hood",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["power", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -316,6 +365,115 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "2d5c88b4-34fd-4f15-b731-332dc905ef27",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Powered on/off",
+                            "displayNameAction": "Power on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "db566fc5-383f-4726-a730-9dadac76e2d0",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Not Connected",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "d64b646c-8405-4384-8aa3-02e288dc0603",
+                            "name": "signalInfo",
+                            "displayName": "Unread notification",
+                            "displayNameEvent": "Unread notification changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "8da242c3-117c-4cb7-91f9-2bd34835e427",
+                            "name": "signalFailure",
+                            "displayName": "Failure notification",
+                            "displayNameEvent": "Failure notification changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "dd97c6dd-94fd-4dd3-b2ce-812c40e6247b",
+                            "name": "fullRemoteControl",
+                            "displayName": "Full remote control",
+                            "displayNameEvent": "Full remote control changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "0b1a6594-fda6-4c48-a898-7b54b30538f7",
+                            "name": "smartGrid",
+                            "displayName": "Smart grid enabled",
+                            "displayNameEvent": "Smart grid enabled changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "363d5770-6f11-41c8-981c-9f1d49278b3c",
+                            "name": "mobileStart",
+                            "displayName": "Mobile start enabled",
+                            "displayNameEvent": "Mobile start enabled changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ae7044b9-3a46-4c98-bd02-2abded425c35",
+                            "name": "ventilationStep",
+                            "displayName": "Ventilation step",
+                            "displayNameEvent": "Ventilation step changed",
+                            "displayNameAction": "Set ventilation step",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "possibleValues": [
+                                0, 1, 2, 3, 4
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "29d4fb9f-0ad3-4911-89c1-68789d58e00c",
+                            "name": "light",
+                            "displayName": "Light",
+                            "displayNameEvent": "Light on/off changed",
+                            "displayNameAction": "Set light on/off",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "writable": true
+                        },
+                        {
+                            "id": "d5953bee-eb5a-4c3d-a7a4-3f24562f585d",
+                            "name": "lightColor",
+                            "displayName": "Light color",
+                            "displayNameEvent": "Light color changed",
+                            "displayNameAction": "Set light color",
+                            "defaultValue": "white",
+                            "type": "QString",
+                            "writable": true,
+                            "possibleValues": [
+                                "white",
+                                "blue",
+                                "red",
+                                "yellow",
+                                "orange",
+                                "green",
+                                "pink",
+                                "purple",
+                                "turquoise"
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "0aae84bb-5502-437c-b821-46ef26209e09",
+                            "name": "stopHood",
+                            "displayName": "Stop"
                         }
                     ]
                 },
