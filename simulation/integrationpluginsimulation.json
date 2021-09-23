@@ -229,6 +229,24 @@
                             "minValue": 6,
                             "maxValue": 80,
                             "writable": true
+                        },
+                        {
+                            "id": "2f9b8aa3-69e3-4bb7-9c1c-287d3e805a72",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f9797577-376a-4a94-a785-abf64c14d88a",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
                         }
                     ]
                 },
