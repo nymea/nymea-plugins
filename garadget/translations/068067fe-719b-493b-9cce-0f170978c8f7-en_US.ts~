@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1">
+<context>
+    <name>IntegrationPluginGaradget</name>
+    <message>
+        <source>The given IP address is not valid.</source>
+        <extracomment>Error setting up thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error creating MQTT channel. Please check MQTT server settings.</source>
+        <extracomment>Error setting up thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not connect to Garadget device.</source>
+        <extracomment>Error setting up thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Garadget</name>
+    <message>
+        <source>Sonoff-Garadget</source>
+        <extracomment>The name of the plugin Garadget ({476781af-ad41-423b-b9bb-f308f2aff339})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Single switch (Sonoff Basic, RF, Touch...)</source>
+        <extracomment>The name of the ThingClass ({e808b8ae-7608-41ce-8444-892f0648a4d3})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP address</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_basic, Type: thing, ID: {54a11a17-fc37-4316-891f-001c55e38220})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected device</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_basic, Type: thing, ID: {f2a79266-1b69-4c50-8397-9533dd2f30cb})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected changed</source>
+        <extracomment>The name of the EventType ({a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_basic, EventType: connected, ID: {a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2})
+----------
+The name of the StateType ({a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+
+    <message>
+        <source>Power changed</source>
+        <extracomment>The name of the EventType ({481a7cf8-418b-4774-8fd4-32693ab52299}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_basic, ActionType: power, ID: {481a7cf8-418b-4774-8fd4-32693ab52299})
+----------
+The name of the ParamType (ThingClass: sonoff_basic, EventType: power, ID: {481a7cf8-418b-4774-8fd4-32693ab52299})
+----------
+The name of the StateType ({481a7cf8-418b-4774-8fd4-32693ab52299}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+
+    <message>
+        <source>Garadget</source>
+        <extracomment>The name of the vendor ({22d59bee-79cc-4dea-b742-30ac6bdcf2c9})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal strength</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_basic, EventType: signalStrength, ID: {e276e6ca-4cb5-46d2-9a78-31f92d78ac70})
+----------
+The name of the StateType ({e276e6ca-4cb5-46d2-9a78-31f92d78ac70}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal strength changed</source>
+        <extracomment>The name of the EventType ({e276e6ca-4cb5-46d2-9a78-31f92d78ac70}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+
+</context>
+</TS>

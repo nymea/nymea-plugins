@@ -1,0 +1,78 @@
+{
+    "name": "Garadget",
+    "displayName": "Sonoff-Garadget",
+    "id": "476781af-ad41-423b-b9bb-f308f2aff339",
+    "vendors": [
+        {
+            "name": "Garadget",
+            "displayName": "Garadget",
+            "id": "22d59bee-79cc-4dea-b742-30ac6bdcf2c9",
+            "thingClasses": [
+                {
+                    "name": "sonoff_basic",
+                    "displayName": "Garadget",
+                    "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": [   ],
+                    "paramTypes": [
+                        {
+                            "id": "54a11a17-fc37-4316-891f-001c55e38220",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        }
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "e276e6ca-4cb5-46d2-9a78-31f92d78ac70",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "481a7cf8-418b-4774-8fd4-32693ab52299",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+
+                        }
+
+
+                    ],
+                    "actionTypes": [
+
+                     ],
+                    "eventTypes": [
+
+                    ]
+                }
+
+
+            ]
+        }
+    ]
+}
+
+
+
