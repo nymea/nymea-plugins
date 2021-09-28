@@ -423,24 +423,39 @@ QUuid Miele::setStartTime(const QString &deviceId, int seconds)
     return putAction(deviceId, doc);
 }
 
-void Miele::getAllEvents()
+void Miele::connectEventStream()
 {
     QUrl url = m_apiUrl;
     url.setPath("/v1/devices/all/events");
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", "Bearer "+m_accessToken);
-    request.setRawHeader("accept", "*/*");
+    request.setRawHeader("accept", "text/event-stream");
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, [reply, this] {
         reply->deleteLater();
-        QTimer::singleShot(5000, this, [this] {getAllEvents();}); //try to reconnect every 5 seconds
+        QTimer::singleShot(5000, this, [this] {connectEventStream();}); //try to reconnect every 5 seconds
     });
     connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
 
         while (reply->canReadLine()) {
-
+            QByteArray rawData = reply->readAll();
+            qCDebug(dcMiele()) << "Raw events data: " << rawData;
+            QJsonDocument data = QJsonDocument::fromJson(rawData);
+            qCDebug(dcMiele()) << "Got events data: " << data.toJson();
+            QVariantMap eventsData = data.toVariant().toMap();
+            foreach (QVariant eventEntry, eventsData.values()) {
+                QVariantMap eventEntryMap = eventEntry.toMap();
+                if (!eventEntryMap.contains("ident")) {
+                    qCWarning(dcMiele()) << "Got event but no device ident available";
+                    return;
+                }
+                QVariantMap deviceIdent = eventEntryMap.value("ident").toMap().value("deviceIdentLabel").toMap();
+                QString deviceId = deviceIdent.value("fabNumber").toString();
+                QVariantMap state = eventEntryMap.value("state").toMap();
+                emit deviceStateReceived(deviceId, state);
+            }
         }
     });
 }

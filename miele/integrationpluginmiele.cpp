@@ -204,7 +204,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
                 }
                 miele->getDevicesShort();
                 Q_FOREACH (Thing *childThing, myThings().filterByParentId(thing->id())) {
-                    QString deviceId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();                    
+                    QString deviceId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
                     miele->getDeviceState(deviceId);
                 }
             }
@@ -214,9 +214,9 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
     if (thing->thingClassId() == mieleAccountThingClassId) {
         Miele *miele = m_mieleConnections.value(thing);
         miele->getDevicesShort();
-        //miele->connectEventStream();
+        miele->connectEventStream();
         thing->setStateValue(mieleAccountConnectedStateTypeId, true);
-        thing->setStateValue(mieleAccountLoggedInStateTypeId, true);        
+        thing->setStateValue(mieleAccountLoggedInStateTypeId, true);
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)

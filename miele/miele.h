@@ -128,7 +128,7 @@ public:
     QUuid setStartTime(const QString &deviceId, int seconds);    
 
     // EVENTS
-    void getAllEvents();
+    void connectEventStream();
 private:
     QString m_language;
     QByteArray m_clientId;
