@@ -100,9 +100,20 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qCDebug(dcKebaKeContact()) << "Setting up" << thing->name() << thing->params();
-
     if (thing->thingClassId() == wallboxThingClassId) {
+
+        // Handle reconfigure
+        if (myThings().contains(thing)) {
+            qCDebug(dcKebaKeContact()) << "Reconfigure" << thing->name() << thing->params();
+            KeContact *keba = m_kebaDevices.take(thing->id());
+            if (keba) {
+                delete keba;
+                // Now continue with the normal setup
+            }
+        }
+
+        qCDebug(dcKebaKeContact()) << "Setting up" << thing->name() << thing->params();
+
         if (!m_kebaDataLayer){
             qCDebug(dcKebaKeContact()) << "Creating new Keba data layer...";
             m_kebaDataLayer= new KeContactDataLayer(this);
