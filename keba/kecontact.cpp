@@ -540,11 +540,11 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 qCDebug(dcKeba()) << "Report" << id << "received";
                 report.sessionId = data.value("Session ID").toInt();
                 report.currHW = data.value("Curr HW").toInt();
-                report.startTime = data.value("E Start   ").toInt()/10000.00;
-                report.presentEnergy = data.value("E Pres    ").toInt()/10000.00;
+                report.startEnergy = data.value("E start").toInt() / 10000.00;
+                report.presentEnergy = data.value("E pres").toInt() / 10000.00;
                 report.startTime = data.value("started[s]").toInt();
-                report.endTime = data.value("ended[s]  ").toInt();
-                report.stopReason = data.value("reason ").toInt();
+                report.endTime = data.value("ended[s]").toInt();
+                report.stopReason = data.value("reason").toInt();
                 report.rfidTag = data.value("RFID tag").toByteArray();
                 report.rfidClass = data.value("RFID class").toByteArray();
                 report.serialNumber = data.value("Serial").toString();

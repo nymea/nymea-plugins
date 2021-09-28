@@ -483,7 +483,7 @@ void IntegrationPluginKeba::onReport1XXReceived(int reportNumber, const KeContac
     qCDebug(dcKeba()) << "     - Curr HW" << report.currHW;
     qCDebug(dcKeba()) << "     - Energy start" << report.startEnergy;
     qCDebug(dcKeba()) << "     - Energy present" << report.presentEnergy;
-    qCDebug(dcKeba()) << "     - Start time" << report.startTime;
+    qCDebug(dcKeba()) << "     - Start time" << report.startTime << QDateTime::fromMSecsSinceEpoch(report.startTime * 1000).toString();
     qCDebug(dcKeba()) << "     - End time" << report.endTime;
     qCDebug(dcKeba()) << "     - Stop reason" << report.stopReason;
     qCDebug(dcKeba()) << "     - RFID Tag" << report.rfidTag;
