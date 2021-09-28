@@ -55,7 +55,7 @@ KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer,
 
 KeContact::~KeContact()
 {
-    qCDebug(dcKebaKeContact()) << "Deleting KeContact connection for address" << m_address;
+    qCDebug(dcKebaKeContact()) << "Deleting KeContact connection for address" << m_address.toString();
 }
 
 QHostAddress KeContact::address() const
@@ -133,7 +133,7 @@ void KeContact::sendCommand(const QByteArray &command)
         // Add command to queue
         m_commandList.append(command);
     } else {
-        qCDebug(dcKebaKeContact()) << "Writing datagram" << command << m_address;
+        qCDebug(dcKebaKeContact()) << "Writing datagram to" << m_address.toString() << command;
         m_dataLayer->write(m_address, command);
         m_requestTimeoutTimer->start(5000);
         m_deviceBlocked = true;
@@ -151,7 +151,7 @@ void KeContact::handleNextCommandInQueue()
     qCDebug(dcKebaKeContact()) << "Handle Command Queue - Pending commands" << m_commandList.length() << "Pending requestIds" << m_pendingRequests.length();
     if (!m_commandList.isEmpty()) {
         QByteArray command = m_commandList.takeFirst();
-        qCDebug(dcKebaKeContact()) << "Writing datagram" << command << m_address;
+        qCDebug(dcKebaKeContact()) << "Writing datagram to" << m_address.toString() << command;
         m_dataLayer->write( m_address, command);
         m_requestTimeoutTimer->start(5000);
     }

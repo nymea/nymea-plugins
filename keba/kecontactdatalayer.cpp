@@ -80,7 +80,7 @@ void KeContactDataLayer::readPendingDatagrams()
     while (socket->hasPendingDatagrams()) {
         datagram.resize(socket->pendingDatagramSize());
         socket->readDatagram(datagram.data(), datagram.size(), &senderAddress, &senderPort);
-        qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Data received from" << senderAddress << datagram ;
+        qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Data received from" << senderAddress.toString() << datagram ;
         emit datagramReceived(senderAddress, datagram);
     }
 }
