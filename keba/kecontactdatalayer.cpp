@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -47,11 +47,21 @@ KeContactDataLayer::~KeContactDataLayer()
 
 bool KeContactDataLayer::init()
 {
+    m_udpSocket->close();
+    m_initialized = false;
+
     if (!m_udpSocket->bind(QHostAddress::AnyIPv4, m_port, QAbstractSocket::ShareAddress)) {
         qCWarning(dcKebaKeContact()) << "KeContactDataLayer: Cannot bind to port" << m_port;
         return false;
     }
+
+    m_initialized = true;
     return true;
+}
+
+bool KeContactDataLayer::initialized() const
+{
+    return m_initialized;
 }
 
 void KeContactDataLayer::write(const QHostAddress &address, const QByteArray &data)
@@ -68,10 +78,9 @@ void KeContactDataLayer::readPendingDatagrams()
     quint16 senderPort;
 
     while (socket->hasPendingDatagrams()) {
-
         datagram.resize(socket->pendingDatagramSize());
         socket->readDatagram(datagram.data(), datagram.size(), &senderAddress, &senderPort);
-        qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Data received" << datagram << senderAddress;
+        qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Data received from" << senderAddress << datagram ;
         emit datagramReceived(senderAddress, datagram);
     }
 }

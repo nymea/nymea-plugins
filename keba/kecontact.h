@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -44,10 +44,6 @@ class KeContact : public QObject
 {
     Q_OBJECT
 public:
-    explicit KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer, QObject *parent = nullptr);
-    ~KeContact();
-    bool init();
-
     enum State {
         StateStarting = 0,
         StateNotReady,
@@ -136,10 +132,14 @@ public:
         int seconds;            // current time when the report was generated
     };
 
-    QHostAddress address();
+
+    explicit KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer, QObject *parent = nullptr);
+    ~KeContact();
+
+    QHostAddress address() const;
     void setAddress(const QHostAddress &address);
 
-    bool reachable();
+    bool reachable() const;
 
     QUuid start(const QByteArray &rfidToken, const QByteArray &rfidClassifier);     // Command “start”
     QUuid stop(const QByteArray &rfidToken);                // Command “stop”
@@ -161,7 +161,7 @@ public:
     QUuid setOutputX2(bool state);                       // Command “output”
 
 private:
-    KeContactDataLayer *m_dataLayer;
+    KeContactDataLayer *m_dataLayer = nullptr;
     bool m_reachable = false;
 
     QHostAddress m_address;
@@ -169,13 +169,15 @@ private:
     bool m_deviceBlocked = false;
 
     QTimer *m_requestTimeoutTimer = nullptr;
-    int m_serialNumber;
+    int m_serialNumber = 0;
     QList<QUuid> m_pendingRequests;
 
     void getReport(int reportNumber);
     void sendCommand(const QByteArray &command, const QUuid &requestId);
     void sendCommand(const QByteArray &command);
     void handleNextCommandInQueue();
+
+    void setReachable(bool reachable);
 
 signals:
     void reachableChanged(bool status);
@@ -189,6 +191,7 @@ signals:
 
 private slots:
     void onReceivedDatagram(const QHostAddress &address, const QByteArray &datagram);
+
 };
 #endif // KECONTACT_H
 
