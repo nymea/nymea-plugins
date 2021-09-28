@@ -428,7 +428,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
 
-        thing->setStateValue(wallboxUptimeStateTypeId, reportTwo.seconds/60);
+        thing->setStateValue(wallboxUptimeStateTypeId, reportTwo.seconds / 60);
     } else {
         qCWarning(dcKebaKeContact()) << "Received report but the serial number didn't match";
     }

@@ -37,8 +37,31 @@
 #include <QByteArray>
 #include <QUdpSocket>
 #include <QUuid>
+#include <QQueue>
 
 #include "kecontactdatalayer.h"
+
+class KeContactRequest
+{
+public:
+    KeContactRequest() = default;
+    KeContactRequest(const QUuid &requestId, const QByteArray &command) : m_requestId(requestId), m_command(command) { }
+
+    QUuid requestId() const { return m_requestId; }
+    QByteArray command() const { return m_command; }
+
+    uint delayUntilNextCommand() const { return m_delayUntilNextCommand; }
+    void setDelayUntilNextCommand(uint delayUntilNextCommand) { m_delayUntilNextCommand = delayUntilNextCommand; }
+
+    bool isValid() { return !m_requestId.isNull() && !m_command.isEmpty(); }
+
+private:
+    QUuid m_requestId;
+    QByteArray m_command;
+    uint m_delayUntilNextCommand = 200;
+};
+
+
 
 class KeContact : public QObject
 {
@@ -132,7 +155,6 @@ public:
         int seconds;            // current time when the report was generated
     };
 
-
     explicit KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer, QObject *parent = nullptr);
     ~KeContact();
 
@@ -145,7 +167,7 @@ public:
     QUuid stop(const QByteArray &rfidToken);                // Command “stop”
 
     QUuid enableOutput(bool state);                         // Command “ena”
-    QUuid setMaxAmpere(int milliAmpere);                    // Command “curr”
+    QUuid setMaxAmpere(int milliAmpere);                    // Command "currtime"
     QUuid unlockCharger();                                  // Command “unlock"
     QUuid displayMessage(const QByteArray &message);        // Command “display”
     QUuid chargeWithEnergyLimit(double energy);             // Command “setenergy”
@@ -165,18 +187,18 @@ private:
     bool m_reachable = false;
 
     QHostAddress m_address;
-    QByteArrayList m_commandList;
-    bool m_deviceBlocked = false;
 
     QTimer *m_requestTimeoutTimer = nullptr;
+    QTimer *m_pauseTimer = nullptr;
     int m_serialNumber = 0;
-    QList<QUuid> m_pendingRequests;
+
+    KeContactRequest m_currentRequest;
+    QQueue<KeContactRequest> m_requestQueue;
 
     void getReport(int reportNumber);
-    void sendCommand(const QByteArray &command, const QUuid &requestId);
-    void sendCommand(const QByteArray &command);
-    void handleNextCommandInQueue();
 
+    void sendCommand(const QByteArray &command);
+    void sendNextCommand();
     void setReachable(bool reachable);
 
 signals:
