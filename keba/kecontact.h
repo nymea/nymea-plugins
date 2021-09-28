@@ -168,6 +168,7 @@ public:
 
     QUuid enableOutput(bool state);                         // Command “ena”
     QUuid setMaxAmpere(int milliAmpere);                    // Command "currtime"
+    QUuid setMaxAmpereGeneral(int milliAmpere);             // Command "curr"
     QUuid unlockCharger();                                  // Command “unlock"
     QUuid displayMessage(const QByteArray &message);        // Command “display”
     QUuid chargeWithEnergyLimit(double energy);             // Command “setenergy”

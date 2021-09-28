@@ -33,7 +33,7 @@
 
 KeContactDataLayer::KeContactDataLayer(QObject *parent) : QObject(parent)
 {
-    qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Creating UDP socket";
+    qCDebug(dcKeba()) << "KeContactDataLayer: Creating UDP socket";
     m_udpSocket = new QUdpSocket(this);
     connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContactDataLayer::readPendingDatagrams);
     connect(m_udpSocket, &QUdpSocket::stateChanged, this, &KeContactDataLayer::onSocketStateChanged);
@@ -42,7 +42,7 @@ KeContactDataLayer::KeContactDataLayer(QObject *parent) : QObject(parent)
 
 KeContactDataLayer::~KeContactDataLayer()
 {
-    qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Deleting UDP socket";
+    qCDebug(dcKeba()) << "KeContactDataLayer: Deleting UDP socket";
 }
 
 bool KeContactDataLayer::init()
@@ -51,7 +51,7 @@ bool KeContactDataLayer::init()
     m_initialized = false;
 
     if (!m_udpSocket->bind(QHostAddress::AnyIPv4, m_port, QAbstractSocket::ShareAddress)) {
-        qCWarning(dcKebaKeContact()) << "KeContactDataLayer: Cannot bind to port" << m_port;
+        qCWarning(dcKeba()) << "KeContactDataLayer: Cannot bind to port" << m_port;
         return false;
     }
 
@@ -80,17 +80,17 @@ void KeContactDataLayer::readPendingDatagrams()
     while (socket->hasPendingDatagrams()) {
         datagram.resize(socket->pendingDatagramSize());
         socket->readDatagram(datagram.data(), datagram.size(), &senderAddress, &senderPort);
-        qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Data received from" << senderAddress.toString() << datagram ;
+        qCDebug(dcKeba()) << "KeContactDataLayer: Data received from" << senderAddress.toString() << datagram ;
         emit datagramReceived(senderAddress, datagram);
     }
 }
 
 void KeContactDataLayer::onSocketError(QAbstractSocket::SocketError error)
 {
-    qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Socket error" << error;
+    qCDebug(dcKeba()) << "KeContactDataLayer: Socket error" << error;
 }
 
 void KeContactDataLayer::onSocketStateChanged(QAbstractSocket::SocketState socketState)
 {
-    qCDebug(dcKebaKeContact()) << "KeContactDataLayer: Socket state changed" << socketState;
+    qCDebug(dcKeba()) << "KeContactDataLayer: Socket state changed" << socketState;
 }

@@ -1,6 +1,6 @@
 {
     "displayName": "Keba KeContact",
-    "name": "KebaKeContact",
+    "name": "Keba",
     "id": "9142b09f-30a9-43d0-9ede-2f8debe075ac",
     "vendors": [
         {
@@ -141,6 +141,19 @@
                             "displayName": "Maximal charging current",
                             "displayNameEvent": "Maximal charging current changed",
                             "displayNameAction": "Set maximal charging current",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.0,
+                            "minValue": 6.0,
+                            "maxValue": 32.0,
+                            "writable": true
+                        },
+                        {
+                            "id": "da0cfb97-0b27-4d8f-bdf7-45b1ca727038",
+                            "name": "maxChargingCurrentGeneral",
+                            "displayName": "Maximal general charging current",
+                            "displayNameEvent": "Maximal general charging current changed",
+                            "displayNameAction": "Set maximal general charging current",
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 6.0,

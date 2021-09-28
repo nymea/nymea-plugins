@@ -38,7 +38,7 @@ KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer,
     m_dataLayer(dataLayer),
     m_address(address)
 {
-    qCDebug(dcKebaKeContact()) << "Creating KeContact connection for address" << m_address;
+    qCDebug(dcKeba()) << "Creating KeContact connection for address" << m_address;
     m_requestTimeoutTimer = new QTimer(this);
     m_requestTimeoutTimer->setSingleShot(true);
     connect(m_requestTimeoutTimer, &QTimer::timeout, this, [this]() {
@@ -47,7 +47,7 @@ KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer,
 
         if (m_currentRequest.isValid()) {
             // Schedule pause timer to send next request
-            qCWarning(dcKebaKeContact()) << "Command timeouted" << m_currentRequest.command();
+            qCWarning(dcKeba()) << "Command timeouted" << m_currentRequest.command();
             emit commandExecuted(m_currentRequest.requestId(), false);
         }
 
@@ -67,7 +67,7 @@ KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer,
 
 KeContact::~KeContact()
 {
-    qCDebug(dcKebaKeContact()) << "Deleting KeContact connection for address" << m_address.toString();
+    qCDebug(dcKeba()) << "Deleting KeContact connection for address" << m_address.toString();
 }
 
 QHostAddress KeContact::address() const
@@ -78,14 +78,14 @@ QHostAddress KeContact::address() const
 QUuid KeContact::start(const QByteArray &rfidToken, const QByteArray &rfidClassifier)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
 
     QByteArray datagram = "start " + rfidToken + " " + rfidClassifier;
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Start: Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Start: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -94,14 +94,14 @@ QUuid KeContact::start(const QByteArray &rfidToken, const QByteArray &rfidClassi
 QUuid KeContact::stop(const QByteArray &rfidToken)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
 
     QByteArray datagram = "stop " + rfidToken;
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Stop: Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Stop: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -112,7 +112,7 @@ void KeContact::setAddress(const QHostAddress &address)
     if (m_address == address)
         return;
 
-    qCDebug(dcKebaKeContact()) << "Updating Keba connection address from" << m_address.toString() << "to" << address.toString();
+    qCDebug(dcKeba()) << "Updating Keba connection address from" << m_address.toString() << "to" << address.toString();
     m_address = address;
 }
 
@@ -124,12 +124,12 @@ bool KeContact::reachable() const
 void KeContact::sendCommand(const QByteArray &command)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return;
     }
 
-    qCDebug(dcKebaKeContact()) << "--> Writing datagram to" << m_address.toString() << command;
+    qCDebug(dcKeba()) << "--> Writing datagram to" << m_address.toString() << command;
     m_dataLayer->write(m_address, command);
     m_requestTimeoutTimer->start(5000);
 }
@@ -154,9 +154,9 @@ void KeContact::setReachable(bool reachable)
         return;
 
     if (reachable) {
-        qCDebug(dcKebaKeContact()) << "The keba wallbox on" << m_address.toString() << "is now reachable again.";
+        qCDebug(dcKeba()) << "The keba wallbox on" << m_address.toString() << "is now reachable again.";
     } else {
-        qCWarning(dcKebaKeContact()) << "The keba wallbox on" << m_address.toString() << "is not reachable any more.";
+        qCWarning(dcKeba()) << "The keba wallbox on" << m_address.toString() << "is not reachable any more.";
     }
 
     m_reachable = reachable;
@@ -166,7 +166,7 @@ void KeContact::setReachable(bool reachable)
 QUuid KeContact::enableOutput(bool state)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -181,7 +181,7 @@ QUuid KeContact::enableOutput(bool state)
 
     KeContactRequest request(QUuid::createUuid(), datagram);
     request.setDelayUntilNextCommand(2000);
-    qCDebug(dcKebaKeContact()) << "Enable output: Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Enable output: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -190,22 +190,48 @@ QUuid KeContact::enableOutput(bool state)
 QUuid KeContact::setMaxAmpere(int milliAmpere)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
 
     if (milliAmpere < 6000 || milliAmpere > 63000) {
-        qCWarning(dcKebaKeContact()) << "KeContact: Set max ampere, mA out of range [6000, 63000]" << milliAmpere;
+        qCWarning(dcKeba()) << "KeContact: Set max ampere, currtime mA out of range [6000, 63000]" << milliAmpere;
         return QUuid();
     }
 
     // Print information that we are executing now the update action
-    qCDebug(dcKebaKeContact()) << "Update max current to : " << milliAmpere;
-    QString commandLine = QString("currtime %1 0").arg(milliAmpere);
+    qCDebug(dcKeba()) << "Update max current to : " << milliAmpere;
+    QString commandLine = QString("currtime %1 1").arg(milliAmpere);
     QByteArray datagram = commandLine.toUtf8();
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Set max charging amps: Datagram:" << datagram;
+    request.setDelayUntilNextCommand(1200);
+    qCDebug(dcKeba()) << "Set max charging amps: Datagram:" << datagram;
+    m_requestQueue.enqueue(request);
+    sendNextCommand();
+    return request.requestId();
+}
+
+QUuid KeContact::setMaxAmpereGeneral(int milliAmpere)
+{
+    if (!m_dataLayer) {
+        qCWarning(dcKeba()) << "UDP socket not initialized";
+        setReachable(false);
+        return QUuid();
+    }
+
+    if (milliAmpere < 6000 || milliAmpere > 63000) {
+        qCWarning(dcKeba()) << "KeContact: Set max ampere curr, mA out of range [6000, 63000]" << milliAmpere;
+        return QUuid();
+    }
+
+    // Print information that we are executing now the update action
+    qCDebug(dcKeba()) << "Update general max current to: " << milliAmpere;
+    QString commandLine = QString("curr %1").arg(milliAmpere);
+    QByteArray datagram = commandLine.toUtf8();
+    KeContactRequest request(QUuid::createUuid(), datagram);
+    request.setDelayUntilNextCommand(1200);
+    qCDebug(dcKeba()) << "Set max  general charging amps: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -214,7 +240,7 @@ QUuid KeContact::setMaxAmpere(int milliAmpere)
 QUuid KeContact::displayMessage(const QByteArray &message)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -225,7 +251,7 @@ QUuid KeContact::displayMessage(const QByteArray &message)
     , == comma
     */
 
-    qCDebug(dcKebaKeContact()) << "Set display message: " << message;
+    qCDebug(dcKeba()) << "Set display message: " << message;
     QByteArray datagram;
     QByteArray modifiedMessage = message;
     modifiedMessage.replace(" ", "$");
@@ -234,7 +260,7 @@ QUuid KeContact::displayMessage(const QByteArray &message)
     }
     datagram.append("display 0 0 0 0 " + modifiedMessage);
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Display message: Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Display message: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -243,7 +269,7 @@ QUuid KeContact::displayMessage(const QByteArray &message)
 QUuid KeContact::chargeWithEnergyLimit(double energy)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -251,7 +277,7 @@ QUuid KeContact::chargeWithEnergyLimit(double energy)
     QByteArray datagram;
     datagram.append("setenergy " + QVariant(static_cast<int>(energy*10000)).toByteArray());
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Charge with energy limit: Datagram: " << datagram;
+    qCDebug(dcKeba()) << "Charge with energy limit: Datagram: " << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -260,7 +286,7 @@ QUuid KeContact::chargeWithEnergyLimit(double energy)
 QUuid KeContact::setFailsafe(int timeout, int current, bool save)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -271,7 +297,7 @@ QUuid KeContact::setFailsafe(int timeout, int current, bool save)
     data.append(" "+QVariant(current).toByteArray());
     data.append((save ? " 1":" 0"));
     KeContactRequest request(QUuid::createUuid(), data);
-    qCDebug(dcKebaKeContact()) << "Set failsafe mode: Datagram: " << data;
+    qCDebug(dcKeba()) << "Set failsafe mode: Datagram: " << data;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -282,7 +308,7 @@ void KeContact::getDeviceInformation()
     QByteArray data;
     data.append("i");
     KeContactRequest request(QUuid::createUuid(), data);
-    qCDebug(dcKebaKeContact()) << "Get device information: Datagram: " << data;
+    qCDebug(dcKeba()) << "Get device information: Datagram: " << data;
     m_requestQueue.enqueue(request);
     sendNextCommand();
 }
@@ -310,7 +336,7 @@ void KeContact::getReport1XX(int reportNumber)
 QUuid KeContact::setOutputX2(bool state)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -320,7 +346,7 @@ QUuid KeContact::setOutputX2(bool state)
     datagram.append("output " + QVariant((state ? 1 : 0)).toByteArray());
 
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Set Output X2, state:" << state << "Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Set Output X2, state:" << state << "Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -329,7 +355,7 @@ QUuid KeContact::setOutputX2(bool state)
 void KeContact::getReport(int reportNumber)
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return;
     }
@@ -338,7 +364,7 @@ void KeContact::getReport(int reportNumber)
     datagram.append("report " + QVariant(reportNumber).toByteArray());
 
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Get report" << reportNumber << "Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Get report" << reportNumber << "Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
 }
@@ -346,7 +372,7 @@ void KeContact::getReport(int reportNumber)
 QUuid KeContact::unlockCharger()
 {
     if (!m_dataLayer) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+        qCWarning(dcKeba()) << "UDP socket not initialized";
         setReachable(false);
         return QUuid();
     }
@@ -355,7 +381,7 @@ QUuid KeContact::unlockCharger()
     datagram.append("unlock");
 
     KeContactRequest request(QUuid::createUuid(), datagram);
-    qCDebug(dcKebaKeContact()) << "Unlock charger: Datagram:" << datagram;
+    qCDebug(dcKeba()) << "Unlock charger: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -368,6 +394,8 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
         return;
     }
 
+    qCDebug(dcKeba()) << "<--" << qUtf8Printable(datagram);
+
     if (datagram.contains("TCH-OK")){
         // We received valid data from the address over the data link, so the wallbox must be reachable
         setReachable(true);
@@ -377,10 +405,10 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
 
         if (m_currentRequest.isValid()) {
             if (datagram.contains("done")) {
-                qCDebug(dcKebaKeContact()) << "Command" << m_currentRequest.command() << "finished successfully";
+                qCDebug(dcKeba()) << "Command" << m_currentRequest.command() << "finished successfully";
                 emit commandExecuted(m_currentRequest.requestId(), true);
             } else {
-                qCWarning(dcKebaKeContact()) << "Command" << m_currentRequest.command() << "finished with error" << datagram;
+                qCWarning(dcKeba()) << "Command" << m_currentRequest.command() << "finished with error" << datagram;
                 emit commandExecuted(m_currentRequest.requestId(), false);
             }
 
@@ -389,7 +417,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
             m_currentRequest = KeContactRequest();
         } else {
             //Probably the response has taken too long and the requestId has been already removed
-            qCWarning(dcKebaKeContact()) << "Received command OK response without pending request." << datagram;
+            qCWarning(dcKeba()) << "Received command OK response without pending request." << datagram;
         }
     } else if (datagram.left(8).contains("Firmware")){
         // We received valid data from the address over the data link, so the wallbox must be reachable
@@ -403,7 +431,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
             m_currentRequest = KeContactRequest();
         }
 
-        qCDebug(dcKebaKeContact()) << "Firmware information received";
+        qCDebug(dcKeba()) << "Firmware information received";
         QByteArrayList firmware = datagram.split(':');
         if (firmware.length() >= 2) {
             emit deviceInformationReceived(firmware[1]);
@@ -421,7 +449,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(datagram, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcKebaKeContact()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
+            qCWarning(dcKeba()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
             return;
         }
 
@@ -434,7 +462,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportOne reportOne;
-                qCDebug(dcKebaKeContact()) << "Report 1 received";
+                qCDebug(dcKeba()) << "Report 1 received";
                 reportOne.product      = data.value("Product").toString();
                 reportOne.firmware     = data.value("Firmware").toString();
                 reportOne.serialNumber = data.value("Serial").toString();
@@ -459,7 +487,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportTwo reportTwo;
-                qCDebug(dcKebaKeContact()) << "Report 2 received";
+                qCDebug(dcKeba()) << "Report 2 received";
                 int state = data.value("State").toInt();
                 reportTwo.state = State(state);
                 reportTwo.error1 = data.value("Error1").toInt();
@@ -471,6 +499,8 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 reportTwo.maxCurrentPercentage = data.value("Max curr %").toInt() / 10.00;
                 reportTwo.currentHardwareLimitation = data.value("Curr HW").toInt() / 1000.00;
                 reportTwo.currentUser = data.value("Curr user").toInt() / 1000.00;
+                reportTwo.currTimer = data.value("Curr timer").toInt() / 1000.00;
+                reportTwo.timeoutCt = data.value("Tmo CT").toInt();
                 reportTwo.currentFailsafe = data.value("Curr FS").toInt() / 1000.00;
                 reportTwo.timeoutFailsafe = data.value("Tmo FS").toInt();
                 reportTwo.setEnergy = data.value("Setenergy").toInt() / 10000.00;
@@ -488,7 +518,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportThree reportThree;
-                qCDebug(dcKebaKeContact()) << "Report 3 received";
+                qCDebug(dcKeba()) << "Report 3 received";
                 reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
                 reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
                 reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
@@ -507,7 +537,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 Report1XX report;
-                qCDebug(dcKebaKeContact()) << "Report" << id << "received";
+                qCDebug(dcKeba()) << "Report" << id << "received";
                 report.sessionId = data.value("Session ID").toInt();
                 report.currHW = data.value("Curr HW").toInt();
                 report.startTime = data.value("E Start   ").toInt()/10000.00;
