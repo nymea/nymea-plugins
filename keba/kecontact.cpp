@@ -202,7 +202,7 @@ QUuid KeContact::setMaxAmpere(int milliAmpere)
 
     // Print information that we are executing now the update action
     qCDebug(dcKeba()) << "Update max current to : " << milliAmpere;
-    QString commandLine = QString("currtime %1 1").arg(milliAmpere);
+    QString commandLine = QString("currtime %1 0").arg(milliAmpere);
     QByteArray datagram = commandLine.toUtf8();
     KeContactRequest request(QUuid::createUuid(), datagram);
     request.setDelayUntilNextCommand(1200);
