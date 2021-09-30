@@ -104,9 +104,9 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
         // Handle reconfigure
         if (myThings().contains(thing)) {
-            qCDebug(dcKeba()) << "Reconfigure" << thing->name() << thing->params();
             KeContact *keba = m_kebaDevices.take(thing->id());
             if (keba) {
+                qCDebug(dcKeba()) << "Reconfigure" << thing->name() << thing->params();
                 delete keba;
                 // Now continue with the normal setup
             }
@@ -353,7 +353,7 @@ void IntegrationPluginKeba::onConnectionChanged(bool status)
     KeContact *keba = static_cast<KeContact *>(sender());
     Thing *thing = myThings().findById(m_kebaDevices.key(keba));
     if (!thing) {
-        qCWarning(dcKeba()) << "On connection changed: missing device object";
+        qCDebug(dcKeba()) << "Received connected changed but the thing seems not to be setup yet.";
         return;
     }
 
