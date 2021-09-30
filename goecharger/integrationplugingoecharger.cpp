@@ -130,12 +130,15 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             QVariantMap statusMap = jsonDoc.toVariant().toMap();
             if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
                 // Verify mqtt client and set it up
+                qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
                 QHostAddress address = QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString());
                 setupMqttChannel(info, address, statusMap);
             } else {
                 // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
                 info->finish(Thing::ThingErrorNoError);
+                qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
                 update(thing, statusMap);
+                thing->setStateValue(goeHomeConnectedStateTypeId, true);
             }
         });
         return;
@@ -148,11 +151,12 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == goeHomeThingClassId) {
         // Set up refresh timer if needed and if we are not using mqtt
-        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
             if (!m_refreshTimer) {
                 m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(4);
                 connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
                 m_refreshTimer->start();
+                qCDebug(dcGoECharger()) << "Enable HTTP refresh timer...";
             }
         }
     }
@@ -667,7 +671,7 @@ void IntegrationPluginGoECharger::refreshHttp()
         if (thing->thingClassId() != goeHomeThingClassId)
             continue;
 
-        // Poll thing which is not using mqtt
+        // Poll thing which if not using mqtt
         if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
             qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing;
             QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
