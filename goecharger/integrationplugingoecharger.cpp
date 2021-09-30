@@ -327,12 +327,18 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         }
 
         QVariantList temperatureSensorList = statusMap.value("tma").toList();
-        if (temperatureSensorList.count() == 4) {
+        if (temperatureSensorList.count() >= 1)
             thing->setStateValue(goeHomeTemperatureSensor1StateTypeId, temperatureSensorList.at(0).toDouble());
+
+        if (temperatureSensorList.count() >= 2)
             thing->setStateValue(goeHomeTemperatureSensor2StateTypeId, temperatureSensorList.at(1).toDouble());
+
+        if (temperatureSensorList.count() >= 3)
             thing->setStateValue(goeHomeTemperatureSensor3StateTypeId, temperatureSensorList.at(2).toDouble());
+
+        if (temperatureSensorList.count() >= 4)
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
-        }
+
 
         thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
         thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
@@ -352,18 +358,66 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
 
         // Parse nrg array
         QVariantList measurementList = statusMap.value("nrg").toList();
-        if (measurementList.count() == 16) {
+        if (measurementList.count() >= 1)
             thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, measurementList.at(0).toUInt());
+
+        if (measurementList.count() >= 2)
             thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, measurementList.at(1).toUInt());
+
+        if (measurementList.count() >= 3)
             thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, measurementList.at(2).toUInt());
 
+        if (measurementList.count() >= 5)
             thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, measurementList.at(4).toUInt() / 10.0);
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, measurementList.at(5).toUInt() / 10.0);
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, measurementList.at(6).toUInt() / 10.0);
+        else {
+            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
 
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 6) {
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, measurementList.at(5).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 7) {
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, measurementList.at(6).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 8) {
             thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, measurementList.at(7).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 9) {
             thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, measurementList.at(8).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+        if (measurementList.count() >= 10) {
             thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, measurementList.at(9).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
         }
     }
 }
@@ -605,7 +659,11 @@ void IntegrationPluginGoECharger::refreshHttp()
 {
     // Update all things which don't use mqtt
     foreach (Thing *thing, myThings()) {
-        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+        if (thing->thingClassId() != goeHomeThingClassId)
+            continue;
+
+        // Poll thing which is not using mqtt
+        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
             qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing;
             QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
