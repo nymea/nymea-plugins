@@ -340,7 +340,6 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         if (temperatureSensorList.count() >= 4)
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
 
-
         thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
         thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
@@ -351,11 +350,16 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
         thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
         thing->setStateValue(goeHomeSerialNumberStateTypeId, statusMap.value("sse").toString());
-
-        // TODO: set min max for charging current according to these states
-        thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, statusMap.value("ama").toUInt());
         thing->setStateValue(goeHomeAdapterConnectedStateTypeId, (statusMap.value("adi").toUInt() == 0 ? false : true));
-        thing->setStateValue(goeHomeCableType2AmpereStateTypeId, statusMap.value("cbl").toUInt());
+
+        uint amaLimit = statusMap.value("ama").toUInt();
+        uint cableLimit = statusMap.value("cbl").toUInt();
+
+        // Set the limit for the max charging amps
+        thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+
+        thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, amaLimit);
+        thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
 
         // Parse nrg array
         QVariantList measurementList = statusMap.value("nrg").toList();
