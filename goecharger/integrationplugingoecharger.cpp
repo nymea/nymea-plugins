@@ -205,7 +205,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
         // Set the allow value
-        QString configuration = QString("amx=%1").arg(maxChargingCurrent);
+        QString configuration = QString("amp=%1").arg(maxChargingCurrent);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeAbsoluteMaxAmpereActionTypeId) {
@@ -346,7 +346,7 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
-        thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("amx").toUInt());
+        thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("amp").toUInt());
         thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
         thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
         thing->setStateValue(goeHomeSerialNumberStateTypeId, statusMap.value("sse").toString());
