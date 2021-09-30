@@ -81,19 +81,23 @@ public:
 
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, MqttChannel *> m_channels;
 
     void update(Thing *thing, const QVariantMap &statusMap);
+    QNetworkRequest buildStatusRequest(Thing *thing);
     QNetworkRequest buildConfigurationRequest(const QHostAddress &address, const QString &configuration);
     void sendActionRequest(Thing *thing, ThingActionInfo *info, const QString &configuration);
     void setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
 
-
 private slots:
+    void refreshHttp();
+
     void onClientConnected(MqttChannel* channel);
     void onClientDisconnected(MqttChannel* channel);
     void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
