@@ -211,6 +211,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
     } else if (action.actionTypeId() == goeHomeAbsoluteMaxAmpereActionTypeId) {
         uint maxAmpere = action.paramValue(goeHomeAbsoluteMaxAmpereActionAbsoluteMaxAmpereParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting absolute maximal charging amperes to" << maxAmpere << "A";
+        // TODO: use amx if available
         // Set the allow value
         QString configuration = QString("ama=%1").arg(maxAmpere);
         sendActionRequest(thing, info, configuration);
