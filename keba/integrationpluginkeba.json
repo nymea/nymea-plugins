@@ -1,6 +1,6 @@
 {
     "displayName": "Keba KeContact",
-    "name": "KebaKeContact",
+    "name": "Keba",
     "id": "9142b09f-30a9-43d0-9ede-2f8debe075ac",
     "vendors": [
         {
@@ -92,7 +92,8 @@
                             "displayNameAction": "Set charging enabled",
                             "type": "bool",
                             "writable": true,
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "suggestLogging": true
                         },
                         {
                             "id": "e5631593-f486-47cb-9951-b7597d0b769b",
@@ -133,7 +134,8 @@
                             "displayNameEvent": "Current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "suggestLogging": true
                         },
                         {
                             "id": "593656f0-babf-4308-8767-68f34e10fb15",
@@ -143,10 +145,25 @@
                             "displayNameAction": "Set maximal charging current",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 6.00,
-                            "minValue": 6.00,
-                            "maxValue": 63.00,
-                            "writable": true
+                            "defaultValue": 6.0,
+                            "minValue": 6.0,
+                            "maxValue": 32.0,
+                            "writable": true,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "da0cfb97-0b27-4d8f-bdf7-45b1ca727038",
+                            "name": "maxChargingCurrentGeneral",
+                            "displayName": "Maximal general charging current",
+                            "displayNameEvent": "Maximal general charging current changed",
+                            "displayNameAction": "Set maximal general charging current",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.0,
+                            "minValue": 6.0,
+                            "maxValue": 32.0,
+                            "writable": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "3c7b83a0-0e42-47bf-9788-dde6aab5ceea",
@@ -157,16 +174,8 @@
                             "unit": "Percentage",
                             "defaultValue": 100,
                             "minValue": 0,
-                            "maxValue": 100
-                        },
-                        {
-                            "id": "08bb9872-8d63-49b0-a8ce-7a449341f13b",
-                            "name": "maxPossibleChargingCurrent",
-                            "displayName": "Maximum possible charging current",
-                            "displayNameEvent": "Maximum possible charging current changed",
-                            "type": "double",
-                            "unit": "Ampere",
-                            "defaultValue": 6.00
+                            "maxValue": 100,
+                            "suggestLogging": true
                         },
                         {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
@@ -202,7 +211,8 @@
                             "displayNameEvent": "Current phase 1 changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "suggestLogging": true
                         },
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
@@ -211,7 +221,8 @@
                             "displayNameEvent": "Current phase 2 changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "suggestLogging": true
                         },
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
@@ -220,7 +231,8 @@
                             "displayNameEvent": "Current phase 3 changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "suggestLogging": true
                         },
                         {
                             "id": "7af9e93b-099d-4d9d-a480-9c0f66aecd8b",
@@ -229,7 +241,8 @@
                             "displayNameEvent": "Power consumtion changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "suggestLogging": true
                         },
                         {
                             "id": "889c3c9a-96b4-4408-bd9a-d79e36ed9296",
@@ -264,7 +277,8 @@
                             "displayNameEvent": "Session energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "41e179b3-29a2-43ec-b537-023a527081e8",
@@ -273,7 +287,8 @@
                             "displayNameEvent": "Total energy consumption changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         },
                         {
                             "id": "96b2d176-6460-4109-8824-3af4679c6573",
