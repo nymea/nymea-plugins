@@ -451,6 +451,57 @@
                     ]
                 }
             ]
+        },
+        {
+            "id": "a17363f3-4e2a-4bfa-a937-bd7ef894b9d8",
+            "name": "pca9685",
+            "displayName": "PCA9685",
+            "thingClasses": [
+                {
+                    "id": "ef5e814e-9078-4e46-8528-685f72239278",
+                    "name": "pca9685",
+                    "displayName": "PCA9685",
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "9a8341a4-4d18-4832-a22b-9026136a6be5",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "7e26abbb-b5c9-4761-85f1-f86eb7a86312",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8ae3dada-efcc-446f-bb37-8554c32324dc",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a4a2de25-c0a9-43f3-8b86-d9f9cfd64b8d",
+                            "name": "frequency",
+                            "displayName": "Frequency",
+                            "displayNameEvent": "Frequency changed",
+                            "displayNameAction": "Set frequency",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 1000,
+                            "writable": true,
+                            "defaultValue": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
