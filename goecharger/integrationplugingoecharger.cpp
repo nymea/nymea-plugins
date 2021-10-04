@@ -360,7 +360,8 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         uint cableLimit = statusMap.value("cbl").toUInt();
 
         // Set the limit for the max charging amps
-        thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+        // FIXME: set the max value for the state to limit
+        //thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
 
         thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, amaLimit);
         thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
