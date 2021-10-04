@@ -426,8 +426,9 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
 
         // Set the state limits according to the hardware limits
-        thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
-        thing->setStateMaxValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentHardwareLimitation);
+        // FIXME: enable limits once landed
+        //thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
+        //thing->setStateMaxValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentHardwareLimitation);
 
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
