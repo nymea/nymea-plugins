@@ -33,6 +33,7 @@
 
 #include "pi16adcchannel.h"
 #include "ads1115channel.h"
+#include "pca9685.h"
 
 #include <hardware/i2c/i2cmanager.h>
 
@@ -122,6 +123,17 @@ void IntegrationPluginI2CDevices::discoverThings(ThingDiscoveryInfo *info)
     info->finish(Thing::ThingErrorNoError);
 }
 
+void IntegrationPluginI2CDevices::executeAction(ThingActionInfo *info)
+{
+    if (info->thing()->thingClassId() == pca9685ThingClassId) {
+        I2CDevice *pca = m_i2cDevices.key(info->thing());
+        if (info->action().actionTypeId() == pca9685FrequencyActionTypeId) {
+            QByteArray command = "FREQ:" + info->action().paramValue(pca9685FrequencyActionFrequencyParamTypeId).toByteArray();
+            hardwareManager()->i2cManager()->writeData(pca, command);
+        }
+    }
+}
+
 void IntegrationPluginI2CDevices::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == pi16ADCThingClassId) {
@@ -199,6 +211,16 @@ void IntegrationPluginI2CDevices::setupThing(ThingSetupInfo *info)
             m_i2cDevices.insert(ads1115, thing);
         }
         info->finish(Thing::ThingErrorNoError);
+    }
+
+    if (info->thing()->thingClassId() == pca9685ThingClassId) {
+        QString i2cPortName = info->thing()->paramValue(ads1115ThingI2cPortParamTypeId).toString();
+        int i2cAddress = info->thing()->paramValue(ads1115ThingI2cAddressParamTypeId).toInt();
+        Pca9685 *pca = new Pca9685(i2cPortName, i2cAddress, this);
+        hardwareManager()->i2cManager()->writeData(pca, "init");
+        m_i2cDevices.insert(pca, info->thing());
+        info->finish(Thing::ThingErrorNoError);
+        return;
     }
 }
 
