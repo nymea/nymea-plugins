@@ -2,7 +2,7 @@
 
 This plugin allows to control GPIOs on different boards.
 
-## Raspberry Pi 2/3
+## Raspberry Pi
 
 ![Raspberry Pi GPIO](https://raw.githubusercontent.com/guh/nymea-plugins/master/gpio/docs/images/Raspberry-Pi-2-GPIO.png "Raspberry Pi GPIO")
 

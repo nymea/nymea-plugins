@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationplugingpio)
+PKGCONFIG += nymea-gpio
 
 SOURCES += \
     integrationplugingpio.cpp \

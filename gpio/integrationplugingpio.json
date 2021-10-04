@@ -2,19 +2,9 @@
     "displayName": "Gpio Controller",
     "name": "GpioController",
     "id": "127ead55-996a-44ac-ba82-fc3c634e018a",
-    "paramTypes": [
-    {
-            "id": "bfb31f88-b481-49e1-9a0a-41b156b64efe",
-            "name": "longPressTime",
-            "displayName": "Long press time",
-            "type": "int",
-            "unit": "Seconds",
-            "defaultValue": 2
-        }
-    ],
     "vendors": [
         {
-            "displayName": "Raspberry Pi 2/3",
+            "displayName": "Raspberry Pi",
             "name": "raspberryPi",
             "id": "f0d00b66-bbd8-4a07-8591-ea48a61b229e",
             "thingClasses": [
@@ -40,6 +30,13 @@
                             "defaultValue": -1
                         },
                         {
+                            "id": "4dfddecc-d41c-4b31-bf4a-04297097bd5c",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "504798eb-1faa-4703-a57a-2778e4bf9a67",
                             "name": "description",
                             "displayName": "Description",
@@ -57,7 +54,8 @@
                             "writable": true,
                             "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
-                            "ioType": "digitalOutput"
+                            "ioType": "digitalOutput",
+                            "cached": true
                         }
                     ]
                 },
@@ -82,6 +80,13 @@
                             "defaultValue": -1
                         },
                         {
+                            "id": "d877b7cd-0440-4f49-a6d6-5c679d9f3cc3",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "720bb37e-56e6-419e-878e-8c80aaf7ce32",
                             "name": "description",
                             "displayName": "Description",
@@ -98,6 +103,72 @@
                             "defaultValue": false,
                             "displayNameEvent": "Powered changed",
                             "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "1abd4dad-0757-4160-8df1-75c45bd61e6e",
+                    "displayName": "GPIO Button",
+                    "name": "gpioButtonRpi",
+                    "createMethods": [ "discovery" ],
+                    "interfaces": [ "longpressbutton" ],
+                    "paramTypes": [
+                        {
+                            "id": "234538be-710d-4a0b-9cb9-ac57b47ab14d",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "90735212-d518-43c0-8fe9-aaa5362a512d",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "ad7b1641-bc7a-46d3-b029-d2f7628eb790",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5ea2fbf9-fd20-4bd7-b0ed-08f72f18157f",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "d826f02e-7528-4ad5-ac71-f49df988114d",
+                            "name": "repeateLongPressed",
+                            "displayName": "Repeat long pressed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "46a25783-3e96-4489-a3f0-15236d938f17",
+                            "name": "longPressedTimeout",
+                            "displayName": "Long pressed timeout [ms]",
+                            "type": "uint",
+                            "minValue": 200,
+                            "defaultValue": 250
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "28330833-158c-4f99-9f6e-407ee8f29a4e",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        },
+                        {
+                            "id": "5ad39e3d-b155-4091-a7ef-d843c00d75aa",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
                         }
                     ]
                 },
@@ -121,6 +192,13 @@
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
+                        },
+                        {
+                            "id": "2b57c0ed-a7e5-4198-a82a-75c2cf3ca710",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "f7b82516-ed2c-4d73-86fa-957b8b6737e4",
@@ -171,6 +249,13 @@
                             "defaultValue": -1
                         },
                         {
+                            "id": "c7114a64-b9de-4d51-a58d-9d5c604a6f32",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "760aa4ed-d933-4188-aec8-16285d763aa5",
                             "name": "description",
                             "displayName": "Description",
@@ -188,7 +273,8 @@
                             "writable": true,
                             "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
-                            "ioType": "digitalOutput"
+                            "ioType": "digitalOutput",
+                            "cached": true
                         }
                     ]
                 },
@@ -213,6 +299,13 @@
                             "defaultValue": -1
                         },
                         {
+                            "id": "7b4b7c74-ed0d-4add-8e10-1a356a76c0e7",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "da746cde-2380-4ee5-bf2c-017249fcdeef",
                             "name": "description",
                             "displayName": "Description",
@@ -229,6 +322,72 @@
                             "defaultValue": false,
                             "displayNameEvent": "Power changed",
                             "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "4a4b79b9-7e43-4fd7-840f-31108bef0ee2",
+                    "displayName": "GPIO Button",
+                    "name": "gpioButtonBbb",
+                    "createMethods": [ "discovery" ],
+                    "interfaces": [ "longpressbutton" ],
+                    "paramTypes": [
+                        {
+                            "id": "7a5ad4d6-2aa3-496f-9fb9-ae46eb8b4376",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "4c24d8f5-8b87-457f-a64b-aa52f7f81dc0",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "bd3fefb3-1204-41ed-8452-1b9d11f265a0",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fc7850b7-3b9c-4df9-8153-40f3582213ea",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "292bf500-b7ab-428b-908c-2fedae295ee2",
+                            "name": "repeateLongPressed",
+                            "displayName": "Repeat long pressed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "007be75a-bfcd-4039-b8ab-9bce25421894",
+                            "name": "longPressedTimeout",
+                            "displayName": "Long pressed timeout [ms]",
+                            "type": "uint",
+                            "minValue": 200,
+                            "defaultValue": 250
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "d02b16a8-a242-41f5-b4e0-d3209849f25e",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        },
+                        {
+                            "id": "11ffeeed-23fe-4cd7-bf15-c95c7250448c",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
                         }
                     ]
                 },
@@ -252,6 +411,13 @@
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
+                        },
+                        {
+                            "id": "8745fbd1-d904-4551-93f4-0f923fcee9b5",
+                            "name": "activeLow",
+                            "displayName": "Active low",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "cba6a527-9f5c-4c05-8602-60e0c920fd26",
