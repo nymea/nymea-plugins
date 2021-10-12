@@ -74,8 +74,8 @@ private:
 
     void thermostatCheckPowerOutputState(Thing *thing);
 
-    int sgReadyOperatingMode(bool relay1, bool relay2);
-    QString sgReadyOperatingModeDescription(int operatingMode);
+    QString sgReadyOperatingMode(bool relay1, bool relay2);
+    QString sgReadyOperatingModeDescription(const QString &operatingModeString);
 };
 
 #endif // INTEGRATIONPLUGINGENERICTHINGS_H

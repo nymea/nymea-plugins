@@ -1594,7 +1594,7 @@
                     "name": "sgReady",
                     "displayName": "SG-Ready",
                     "createMethods": ["user"],
-                    "interfaces": [],
+                    "interfaces": [ "smartgridheatpump" ],
                     "settingsTypes": [
                     ],
                     "stateTypes": [
@@ -1616,21 +1616,27 @@
                             "displayNameEvent": "Relay 2 changed",
                             "displayNameAction": "Set relay 2",
                             "type": "bool",
-                            "defaultValue": false,
+                            "defaultValue": true,
                             "ioType": "digitalInput",
                             "writable": true
                         },
                         {
-                            "id": "85667640-d719-4be4-a5fa-e41193eea162",
-                            "name": "operatingMode",
-                            "displayName": "Operating mode",
-                            "displayNameAction": "Set operating mode",
-                            "displayNameEvent": "Operating mode changed",
-                            "type": "int",
-                            "minValue": 1,
-                            "maxValue": 4,
+                            "id": "1e694bc2-12e1-4e1d-a0ec-70af2c7b16ab",
+                            "name": "sgReadyMode",
+                            "displayName": "Smart grid mode",
+                            "displayNameEvent": "Smart grid mode changed",
+                            "displayNameAction": "Set smart grid mode",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Off",
+                                "Low",
+                                "Standard",
+                                "High"
+                            ],
+                            "defaultValue": "Standard",
                             "writable": true,
-                            "defaultValue": 2
+                            "cached": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "b421d098-f6e9-40e2-b536-58acdb3a49fe",
@@ -1813,6 +1819,28 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        }
+                    ]
+                },
+                {
+                    "id": "9fdb33bb-8e38-4108-8234-3b1d07bbc801",
+                    "name": "simpleHeatPump",
+                    "displayName": "Generic simple heat pump",
+                    "createMethods": ["user"],
+                    "interfaces": ["simpleheatpump"],
+                    "stateTypes": [
+                        {
+                            "id": "ac2ac0f9-058c-4586-8871-2d9dbc6e1758",
+                            "name": "boost",
+                            "displayName": "Boost production enabled",
+                            "displayNameEvent": "Boost production changed",
+                            "displayNameAction": "Boost production",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "cached": true,
+                            "ioType": "digitalInput",
+                            "suggestLogging": true
                         }
                     ]
                 }

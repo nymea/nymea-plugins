@@ -254,9 +254,9 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
     } else if (thing->thingClassId() == sgReadyThingClassId) {
         bool relay1 = thing->stateValue(sgReadyRelay1StateTypeId).toBool();
         bool relay2 = thing->stateValue(sgReadyRelay2StateTypeId).toBool();
-        int operatingMode = sgReadyOperatingMode(relay1, relay2);
-        thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
-        thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+        QString operatingModeString = sgReadyOperatingMode(relay1, relay2);
+        thing->setStateValue(sgReadySgReadyModeStateTypeId, operatingModeString);
+        thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingModeString));
     } else if  (thing->thingClassId() == batteryThingClassId) {
         connect(thing, &Thing::settingChanged, [thing](const ParamTypeId &settingTypeId, const QVariant &value){
             if (settingTypeId == batterySettingsCriticalLevelParamTypeId) {
@@ -815,34 +815,34 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
     } else if (thing->thingClassId() == sgReadyThingClassId) {
         if (action.actionTypeId() == sgReadyRelay1ActionTypeId) {
             thing->setStateValue(sgReadyRelay1StateTypeId, action.param(sgReadyRelay1ActionRelay1ParamTypeId).value());
-            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
-            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            QString operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadySgReadyModeStateTypeId, operatingMode);
             thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
             info->finish(Thing::ThingErrorNoError);
             return;
         }
         if (action.actionTypeId() == sgReadyRelay2ActionTypeId) {
             thing->setStateValue(sgReadyRelay2StateTypeId, action.param(sgReadyRelay2ActionRelay2ParamTypeId).value());
-            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
-            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            QString operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadySgReadyModeStateTypeId, operatingMode);
             thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-        if (action.actionTypeId() == sgReadyOperatingModeActionTypeId) {
-            int operatingMode = action.param(sgReadyOperatingModeActionOperatingModeParamTypeId).value().toInt();
-            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+        if (action.actionTypeId() == sgReadySgReadyModeActionTypeId) {
+            QString operatingMode = action.paramValue(sgReadySgReadyModeActionSgReadyModeParamTypeId).toString();
+            thing->setStateValue(sgReadySgReadyModeStateTypeId, operatingMode);
             thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
-            if (operatingMode == 1) {
+            if (operatingMode == "Off") {
                 thing->setStateValue(sgReadyRelay1StateTypeId, true);
                 thing->setStateValue(sgReadyRelay2StateTypeId, false);
-            } else if (operatingMode == 2) {
+            } else if (operatingMode == "Low") {
                 thing->setStateValue(sgReadyRelay1StateTypeId, false);
                 thing->setStateValue(sgReadyRelay2StateTypeId, false);
-            } else if (operatingMode == 3) {
+            } else if (operatingMode == "Standard") {
                 thing->setStateValue(sgReadyRelay1StateTypeId, false);
                 thing->setStateValue(sgReadyRelay2StateTypeId, true);
-            } else if (operatingMode == 4) {
+            } else if (operatingMode == "High") {
                 thing->setStateValue(sgReadyRelay1StateTypeId, true);
                 thing->setStateValue(sgReadyRelay2StateTypeId, true);
             }
@@ -898,6 +898,11 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else if (action.actionTypeId() == carBatteryLevelActionTypeId) {
             thing->setStateValue(carBatteryLevelStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId));
             thing->setStateValue(carBatteryCriticalStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId).toInt() < 10);
+            info->finish(Thing::ThingErrorNoError);
+        }
+    } else if (thing->thingClassId() == simpleHeatPumpThingClassId) {
+        if (action.actionTypeId() == simpleHeatPumpBoostActionTypeId) {
+            thing->setStateValue(simpleHeatPumpBoostStateTypeId, action.paramValue(simpleHeatPumpBoostActionBoostParamTypeId).toBool());
             info->finish(Thing::ThingErrorNoError);
         }
     } else {
@@ -1072,21 +1077,21 @@ void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thin
     }
 }
 
-QString IntegrationPluginGenericThings::sgReadyOperatingModeDescription(int operatingMode)
+QString IntegrationPluginGenericThings::sgReadyOperatingModeDescription(const QString &operatingModeString)
 {
-    if (operatingMode == 1) {
+    if (operatingModeString == "Off") {
         return "Stop heating.";
-    } else if (operatingMode == 2) {
+    } else if (operatingModeString == "Low") {
         return "Normal mode, with partial heat storage filling.";
-    } else if (operatingMode == 3) {
+    } else if (operatingModeString == "Standard") {
         return "Increased room and heat storage temperature.";
-    } else if (operatingMode == 4) {
+    } else if (operatingModeString == "High") {
         return "Start heating.";
     }
-    return QString("Unknown operating mode %1").arg(operatingMode);
+    return QString("Unknown operating mode %1").arg(operatingModeString);
 }
 
-int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay2)
+QString IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay2)
 {
     if (relay1 && !relay2) {
         /*
@@ -1094,14 +1099,14 @@ int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay
           * This operating state is downward compatible with the often fixed times
           * activated EVU lock and includes a maximum of 2 hours of "hard" lock time.
         */
-        return 1;
+        return "Off";
     } else if (!relay1 && !relay2) {
         /*
          * Operating state 2 (Relay state: 0: 0):
          * In this circuit, the heat pump runs in energy-efficient normal mode
          * with partial heat storage filling for the maximum two-hour EVU lock.
         */
-        return 2;
+        return "Low";
     } else if (!relay1 && relay2) {
         /*
          * Operating state 3 (Relay state: 0: 1):
@@ -1109,7 +1114,7 @@ int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay
          * Operation for space heating and hot water preparation. It's not one
          * definitive start-up command, but a switch-on recommendation according to the current increase.
         */
-        return 3;
+        return "Standard";
     } else {
         /*
          * Operating state 4 (Relay state 1: 1):
@@ -1118,6 +1123,6 @@ int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay
          * Variant 1: The heat pump (compressor) is actively switched on.
          * Variant 2: The heat pump (compressor and electrical auxiliary heating) is actively switched on, optional: higher temperature in the heat storage
         */
-        return 4;
+        return "High";
     }
 }
