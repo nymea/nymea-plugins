@@ -251,6 +251,19 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 thermostatCheckPowerOutputState(thing);
             }
         });
+    } else if (thing->thingClassId() == waterLevelSensorThingClassId) {
+        connect(thing, &Thing::settingChanged, thing, [ thing](const ParamTypeId &settingTypeId, const QVariant &value){
+            if (settingTypeId == waterLevelSensorSettingsCapacityParamTypeId) {
+                double capacity = value.toDouble();
+                double input = thing->stateValue(waterLevelSensorInputStateTypeId).toDouble();
+                double minInputValue = thing->setting(waterLevelSensorSettingsMinInputValueParamTypeId).toDouble();
+                double maxInputValue = thing->setting(waterLevelSensorSettingsMaxInputValueParamTypeId).toDouble();
+                double normalizedInput = (input - minInputValue) / (maxInputValue - minInputValue);
+                double waterLevel = normalizedInput * capacity;
+                thing->setStateMaxValue(waterLevelSensorWaterLevelStateTypeId, capacity);
+                thing->setStateValue(waterLevelSensorWaterLevelStateTypeId, waterLevel);
+            }
+        });
     } else if (thing->thingClassId() == sgReadyThingClassId) {
         bool relay1 = thing->stateValue(sgReadyRelay1StateTypeId).toBool();
         bool relay2 = thing->stateValue(sgReadyRelay2StateTypeId).toBool();
@@ -863,6 +876,18 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             bool waterDetected = action.paramValue(waterSensorWaterDetectedActionWaterDetectedParamTypeId).toBool();
             qCDebug(dcGenericThings()).nospace() << "Water sensor is " << (waterDetected ? "" : "not") << "detecting water";
             thing->setStateValue(waterSensorWaterDetectedStateTypeId, waterDetected);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    } else if (thing->thingClassId() == waterLevelSensorThingClassId) {
+        if (action.actionTypeId() == waterLevelSensorInputActionTypeId) {
+            double capacity = thing->setting(waterLevelSensorSettingsCapacityParamTypeId).toDouble();
+            double input = action.paramValue(waterLevelSensorInputActionInputParamTypeId).toDouble();
+            double minInputValue = thing->setting(waterLevelSensorSettingsMinInputValueParamTypeId).toDouble();
+            double maxInputValue = thing->setting(waterLevelSensorSettingsMaxInputValueParamTypeId).toDouble();
+            double normalizedInput = (input - minInputValue) / (maxInputValue - minInputValue);
+            double waterLevel = normalizedInput * capacity;
+            thing->setStateValue(waterLevelSensorWaterLevelStateTypeId, waterLevel);
             info->finish(Thing::ThingErrorNoError);
             return;
         }
