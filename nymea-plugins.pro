@@ -54,6 +54,7 @@ PLUGIN_DIRS = \
     reversessh          \
     senic               \
     serialportcommander \
+    sgready             \
     simulation          \
     sma                 \
     somfytahoma         \

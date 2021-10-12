@@ -1,0 +1,13 @@
+{
+    "title": "SG-Ready",
+    "tagline": "Control heat pumps offering the SG-Ready interface using GPIOs.",
+    "icon": "smart-grid-logo.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+    ],
+    "categories": [
+        "heating"
+    ]
+}
+

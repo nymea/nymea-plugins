@@ -1,0 +1,77 @@
+{
+    "name": "SgReady",
+    "displayName": "SG-Ready",
+    "id": "7923e2f3-b2f7-445d-ab14-033000485bd8",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "5a5f3aca-a958-4bca-b8fc-1168fe3371ec",
+                    "name": "sgReadyInterface",
+                    "displayName": "SG Ready interface",
+                    "createMethods": ["user"],
+                    "interfaces": [ "smartgridheatpump" ],
+                    "settingsTypes": [
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "8de25aef-d868-4410-abd3-3bec9c46aba3",
+                            "name": "gpioNumber1",
+                            "displayName": "GPIO number 1",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "113ba124-a392-4bc3-861a-f7feaab82fc4",
+                            "name": "gpioNumber2",
+                            "displayName": "GPIO number 2",
+                            "type": "int",
+                            "defaultValue": -1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "91008e09-2702-4bd5-942e-398513ae3d15",
+                            "name": "sgReadyMode",
+                            "displayName": "Smart grid mode",
+                            "displayNameEvent": "Smart grid mode changed",
+                            "displayNameAction": "Set smart grid mode",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Off",
+                                "Low",
+                                "Standard",
+                                "High"
+                            ],
+                            "writable": true,
+                            "defaultValue": "Standard",
+                            "cached": true,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "d2c83778-693f-4146-a656-a8ed901c1a7f",
+                            "name": "gpio1State",
+                            "displayName": "Relay 1 enabled",
+                            "displayNameEvent": "Relay 1 enabled changed",
+                            "type": "bool",
+                            "cached": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "15608d58-b1d4-4696-ac1a-62aec5ec44ab",
+                            "name": "gpio2State",
+                            "displayName": "Relay 2 enabled",
+                            "displayNameEvent": "Relay 2 enabled changed",
+                            "type": "bool",
+                            "cached": true,
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
