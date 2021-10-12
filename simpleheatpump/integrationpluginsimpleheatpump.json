@@ -1,0 +1,47 @@
+{
+    "name": "SimpleHeatPump",
+    "displayName": "Simple heat pump",
+    "id": "6e99e657-7fd6-4c5f-b321-62656c00e1d6",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "bc553762-c842-422e-888f-6824aad099fb",
+                    "name": "simpleHeatPumpInterface",
+                    "displayName": "Simple heat pump interface",
+                    "createMethods": ["user"],
+                    "interfaces": [ "simpleheatpump" ],
+                    "settingsTypes": [
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "b97d03d9-35ce-445d-903e-b1e3857006ce",
+                            "name": "gpioNumber",
+                            "displayName": "GPIO number",
+                            "type": "int",
+                            "defaultValue": -1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f8bccedf-5eb2-49a0-b892-c398dbd6a18d",
+                            "name": "boost",
+                            "displayName": "Boost production enabled",
+                            "displayNameEvent": "Boost production changed",
+                            "displayNameAction": "Boost production",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "cached": true,
+                            "ioType": "digitalOutput",
+                            "suggestLogging": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

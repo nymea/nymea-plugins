@@ -1,0 +1,12 @@
+{
+    "title": "Simple heat pump",
+    "tagline": "Control heat pumps offering a simple relay interface for boosting the energy consumption when cheap or self produced energy is available.",
+    "icon": "",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+    ],
+    "categories": [
+        "heating"
+    ]
+}
