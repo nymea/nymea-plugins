@@ -436,6 +436,107 @@
                             "defaultValue": 0
                         }
                     ]
+                },
+                {
+                    "id": "500a8b65-ad34-4bf0-a35d-c167510999f2",
+                    "name": "motionSensor",
+                    "displayName": "Motion sensor",
+                    "interfaces": ["presencesensor"],
+                    "paramTypes": [
+                        {
+                            "id": "e1048378-8d3d-40ae-a2d4-070e291b9db8",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "85e46994-e9d6-4c20-99e4-feb609ef25b1",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "22a362b6-3cbe-421a-a20d-0f491a4150cf",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "27a158b8-5a29-4d80-8661-4027652c55c7",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "63910764-55d4-4b67-a1d7-a568c269abd9",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "73523dee-93c1-4143-abff-7685b2d1bb1c",
+                            "name": "isPresent",
+                            "displayName": "Presence detected",
+                            "displayNameEvent": "Presence detected changed",
+                            "type": "bool",
+                            "defaultValue": "false",
+                            "cached": false
+                        },
+                        {
+                            "id": "c9c0343a-e396-4a21-ab7f-5f3d88cc55c5",
+                            "name": "tampered",
+                            "displayName": "Tampered",
+                            "displayNameEvent": "Tampered changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4ed91f61-298f-411a-a1b8-403d77eecf34",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ca81d872-dcf0-430d-8b00-98e6e4e4ccf4",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5d12e9da-2f5c-4d40-a20a-b5d378fd0387",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "5062aac1-aa2d-4a35-9435-482ff45a4d02",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        }
+                    ]
                 }
             ]
         }
