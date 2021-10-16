@@ -1,0 +1,216 @@
+{
+    "displayName": "nymea owlet",
+    "name": "owlet",
+    "id": "699a5b6d-d90f-4554-a8de-9205768a4a98",
+    "vendors": [
+        {
+            "displayName": "nymea GmbH",
+            "name": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "5a079c4e-9309-4d98-9ff1-9beeda210958",
+                    "displayName": "Digital GPIO output on owlet",
+                    "name": "digitalOutput",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["power"],
+                    "paramTypes": [
+                        {
+                            "id": "de8cda8f-b8f1-425d-ae16-fd0f5a885ca4",
+                            "name": "owletId",
+                            "displayName": "Owlet ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "31dbcdea-04f3-4a0c-b131-7eda8a92c602",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "dd97a6b1-e98e-4a60-b16a-b27240b91439",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "ioType": "digitalOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "673512a3-75d8-44a6-9930-198c9f1a1f03",
+                    "displayName": "Digital GPIO Input on owlet",
+                    "name": "digitalInput",
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "dd7eca3f-13f6-4320-aaaa-b0be8fbfeebf",
+                            "name": "owletId",
+                            "displayName": "Owlet ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "f6b60a4b-e7a2-4328-884d-818b0e2a361e",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "df1fbd9f-10b1-4788-a00e-de3f3f411cc6",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Powered changed",
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "76f4ef8e-8e17-4528-a667-3d3f5afdd6a7",
+                    "name": "ws2812",
+                    "displayName": "WS2812 on owlet",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["colorlight", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "8c00f42b-5d34-4595-8ae9-6f48056a8be0",
+                            "name": "owletId",
+                            "displayName": "Owlet ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d674ee68-7f24-4dec-a75a-647a083d3580",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "6c6df8eb-cdf1-424c-b29d-60f7dd19ae41",
+                            "name": "ledCount",
+                            "displayName": "LED count",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "69c7f0e5-fdc4-4f9f-a117-90f165af3178",
+                            "name": "ledMode",
+                            "displayName": "LED color mode",
+                            "type": "QString",
+                            "allowedValues": [
+                                "RGB",
+                                "RBG",
+                                "GRB",
+                                "GBR",
+                                "BRG",
+                                "BGR",
+                                "WRGB",
+                                "WRBG",
+                                "WGRB",
+                                "WGBR",
+                                "WBRG",
+                                "WBRG",
+                                "RWGB",
+                                "RWBG",
+                                "RGWB",
+                                "RGBW",
+                                "RBWG",
+                                "RBGW",
+                                "GWRB",
+                                "GWBR",
+                                "GRWB",
+                                "GRBW",
+                                "GBWR",
+                                "GBRW",
+                                "BWRG",
+                                "BWGR",
+                                "BRWG",
+                                "BRGW",
+                                "BGWR",
+                                "BGRW"
+                            ],
+                            "defaultValue": "RGB"
+                        },
+                        {
+                            "id": "c4d99f98-1b46-4b38-bdd4-4bd5559dbb6f",
+                            "name": "ledClock",
+                            "displayName": "LED clock speed",
+                            "type": "QString",
+                            "allowedValues": ["400kHz", "800kHz"],
+                            "defaultValue": "800kHz"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0dbdd49b-578d-4404-87d2-b5a921df6aa6",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "58a8b3ca-720c-458e-b045-b99b5aadabd7",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b56a9368-db2a-4ee6-99de-9ee8e1ffebd3",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "684c9118-20f3-41a0-928e-b7290d40166d",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "white",
+                            "writable": true
+                        },
+                        {
+                            "id": "f92ea731-a86e-49b5-955b-9c245c7f874f",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 50,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
