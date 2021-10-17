@@ -207,6 +207,16 @@
                             "maxValue": 100,
                             "defaultValue": 50,
                             "writable": true
+                        },
+                        {
+                            "id": "cb90f7bf-bcb0-42e8-a03b-442d84c5871f",
+                            "name": "effect",
+                            "displayName": "Effect",
+                            "displayNameEvent": "Effect changed",
+                            "displayNameAction": "Set effect",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "writable": true
                         }
                     ]
                 }

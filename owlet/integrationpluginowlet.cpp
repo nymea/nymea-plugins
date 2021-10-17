@@ -163,6 +163,9 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
                 if (params.contains("color")) {
                     thing->setStateValue(ws2812ColorStateTypeId, params.value("color").value<QColor>());
                 }
+                if (params.contains("effect")) {
+                    thing->setStateValue(ws2812EffectStateTypeId, params.value("effect").toInt());
+                }
             }
         }
     });
@@ -212,6 +215,10 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             QColor color = info->action().paramValue(ws2812ColorActionColorParamTypeId).value<QColor>();
             params.insert("color", (color.rgb() & 0xFFFFFF));
         }
+        if (info->action().actionTypeId() == ws2812EffectActionTypeId) {
+            int effect = info->action().paramValue(ws2812EffectActionEffectParamTypeId).toInt();
+            params.insert("effect", effect);
+        }
 
         int id = client->sendCommand("GPIO.ControlPin", params);
         connect(client, &OwletClient::replyReceived, info, [=](int commandId, const QVariantMap &params){
@@ -228,6 +235,8 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
         });
         return;
     }
+
+
 
     Q_ASSERT_X(false, "IntegrationPluginOwlet", "Not implemented");
     info->finish(Thing::ThingErrorUnsupportedFeature);
