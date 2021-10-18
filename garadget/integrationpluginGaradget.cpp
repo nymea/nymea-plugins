@@ -48,6 +48,41 @@ static QHash<ThingClassId, QHash<QString, StateTypeId>> stateMaps = {
     {sonoff_basicThingClassId, sonoff_basicPowerStateTypeIds},
 };
 
+// bee add static id
+
+static QHash<QString, StateTypeId> sonoff_basicstateStateTypeIds = {
+    {"closed", sonoff_basicStateStateTypeId},
+};
+
+static QHash<ThingClassId,QHash<QString, StateTypeId>> stateStateMAPS = {
+    {sonoff_basicThingClassId, sonoff_basicstateStateTypeIds},
+};
+
+static QHash<QString, StateTypeId> sonoff_basicClosingOutputStateTypeIds = {
+    {"CLOSE1", sonoff_basicClosingOutputStateTypeId},
+};
+
+static QHash<ThingClassId, QHash<QString, StateTypeId>> stateClosingOutputMaps = {
+    {sonoff_basicThingClassId, sonoff_basicClosingOutputStateTypeIds},
+};
+
+static QHash<QString, StateTypeId> sonoff_basicOpeningOutputStateTypeIds = {
+    {"OPEN1", sonoff_basicOpeningOutputStateTypeId},
+};
+
+static QHash<ThingClassId, QHash<QString, StateTypeId>> stateOpeningMaps = {
+    {sonoff_basicThingClassId, sonoff_basicOpeningOutputStateTypeIds},
+};
+
+static QHash<QString, StateTypeId> sonoff_basicMovingStateTypeIds = {
+    {"STOP1", sonoff_basicMovingStateTypeId},
+};
+
+static QHash<ThingClassId, QHash<QString, StateTypeId>> stateMovingMaps = {
+    {sonoff_basicThingClassId, sonoff_basicMovingStateTypeIds},
+};
+
+
 IntegrationPluginGaradget::IntegrationPluginGaradget()
 {
     // Helper maps for parent devices (aka sonoff_*)
@@ -58,6 +93,19 @@ IntegrationPluginGaradget::IntegrationPluginGaradget()
     m_connectedStateTypeMap[sonoff_basicThingClassId] = sonoff_basicConnectedStateTypeId;
 
     m_signalStrengthStateTypeMap[sonoff_basicThingClassId] = sonoff_basicSignalStrengthStateTypeId;
+
+    // bee adders for extendedgaragestate
+
+    m_stateStateTypeMap[sonoff_basicThingClassId] = sonoff_basicStateStateTypeId;
+
+    m_movingStateTypeMap[sonoff_basicThingClassId] = sonoff_basicMovingStateTypeId;
+
+    m_percentageStateTypeMap[sonoff_basicThingClassId] = sonoff_basicPercentageStateTypeId;
+
+    m_closingOutputStateTypeMap[sonoff_basicThingClassId] = sonoff_basicClosingOutputStateTypeId;
+
+    m_openingOutputStateTypeMap[sonoff_basicThingClassId] = sonoff_basicOpeningOutputStateTypeId;
+
 }
 
 IntegrationPluginGaradget::~IntegrationPluginGaradget()
@@ -73,29 +121,64 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (m_ipAddressParamTypeMap.contains(thing->thingClassId())) {
-        ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeMap.value(thing->thingClassId());
+//        ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeMap.value(thing->thingClassId());
 
-        QHostAddress deviceAddress = QHostAddress(thing->paramValue(ipAddressParamTypeId).toString());
+//        QHostAddress deviceAddress = QHostAddress(thing->paramValue(ipAddressParamTypeId).toString());
+        // ipaddress is defined here but not sure how to get rid of and still have the mqtt channel. Garadget only works with the broker.
+        QHostAddress deviceAddress = QHostAddress("192.168.1.174");
         if (deviceAddress.isNull()) {
             qCWarning(dcGaradget) << "Not a valid IP address given for IP address parameter";
             //: Error setting up thing
             return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
         }
-        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString().remove(QRegExp("[{}-]")), deviceAddress );
+//        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString().remove(QRegExp("[{}-]")), deviceAddress );
+        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel("garage", deviceAddress );
         if (!channel) {
             qCWarning(dcGaradget) << "Failed to create MQTT channel.";
             //: Error setting up thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));
         }
-// ipaddress is defined here but not sure how to get rid of and still have the mqtt channel. Garadget only works with the broker.
 
-        qCDebug(dcGaradget) << "BEE initial setup instructions:" << deviceAddress.toString() << channel;
+        qCDebug(dcGaradget) << "initial setup instructions:" << deviceAddress.toString() << channel;
+/*
+        QUrl url(QString("http://%1/cm").arg(deviceAddress.toString()));
+        QUrlQuery query;
+        QMap<QString, QString> configItems;
+        configItems.insert("MqttHost", channel->serverAddress().toString());
+        configItems.insert("MqttPort", QString::number(channel->serverPort()));
+        configItems.insert("MqttClient", channel->clientId());
+        configItems.insert("MqttUser", channel->username());
+        configItems.insert("MqttPassword", channel->password());
+        configItems.insert("Topic", "sonoff");
+        configItems.insert("FullTopic", channel->topicPrefixList().first() + "/%topic%/");
+
+        QStringList configList;
+        foreach (const QString &key, configItems.keys()) {
+            configList << key + ' ' + configItems.value(key);
+        }
+        QString fullCommand = "Backlog " + configList.join(';');
+        query.addQueryItem("cmnd", fullCommand.toUtf8().toPercentEncoding());
+
+        url.setQuery(query);
+
+        QNetworkRequest request(url);
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, channel, reply](){
+            if (reply->error() != QNetworkReply::NoError) {
+                qCDebug(dcTasmota) << "Sonoff thing setup call failed:" << reply->error() << reply->errorString() << reply->readAll();
+                hardwareManager()->mqttProvider()->releaseChannel(channel);
+                  //: Error setting up thing
+                info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Could not connect to Tasmota device."));
+                return;
+             }
+*/
+//BEE mod
 
         m_mqttChannels.insert(info->thing(), channel);
         connect(channel, &MqttChannel::clientConnected, this, &IntegrationPluginGaradget::onClientConnected);
         connect(channel, &MqttChannel::clientDisconnected, this, &IntegrationPluginGaradget::onClientDisconnected);
         connect(channel, &MqttChannel::publishReceived, this, &IntegrationPluginGaradget::onPublishReceived);
-
         qCDebug(dcGaradget) << "Garadget setup complete";
         info->finish(Thing::ThingErrorNoError);
         foreach (Thing *child, myThings()) {
@@ -104,22 +187,21 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
                 return;
             }
         }
+//      });
 
 // insert to reprogram client Garadget to new device/topic name
-        QJsonObject beeobj;
-        beeobj.insert("nme", QString(channel->topicPrefixList().first()));
-        QJsonDocument beedoc(beeobj);
-        QByteArray beedata = beedoc.toJson(QJsonDocument::Compact);
-        QString jsonString(beedata);
-        qCDebug(dcGaradget) << "Publishing:" << "garadget/garage/set-conf " << beedata;
-// next line will not publish to the correct device as topic is 32 characters long and garadget only allows 30 characters.
-        channel->publish("garadget/garaged/set-config", beedata);
-        channel->publish("garadget/garage/command", "get-config");
-// need to develop test for correct modification of nme
+        QJsonObject garadgetobj;
+        garadgetobj.insert("nme", QString(channel->topicPrefixList().first()));
+        QJsonDocument garadgetdoc(garadgetobj);
+        QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
+        QString jsonString(garadgetdata);
+        qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() << garadgetdata;
+        channel->publish("garadget/" + channel->topicPrefixList().first() + "/set-config", garadgetdata);
         return;
     }
 
     if (m_connectedStateTypeMap.contains(thing->thingClassId())) {
+        qCDebug(dcGaradget) << "entered connectedStateTypeMap function";
         Thing* parentDevice = myThings().findById(thing->parentId());
         StateTypeId connectedStateTypeId = m_connectedStateTypeMap.value(thing->thingClassId());
         thing->setStateValue(m_connectedStateTypeMap.value(thing->thingClassId()), parentDevice->stateValue(connectedStateTypeId));
@@ -135,6 +217,16 @@ void IntegrationPluginGaradget::thingRemoved(Thing *thing)
     if (m_mqttChannels.contains(thing)) {
         qCDebug(dcGaradget) << "Releasing MQTT channel";
         MqttChannel* channel = m_mqttChannels.take(thing);
+
+        // insert to reprogram client Garadget to new device/topic name
+                QJsonObject garadgetobj;
+                garadgetobj.insert("nme","garage" );
+                QJsonDocument garadgetdoc(garadgetobj);
+                QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
+                QString jsonString(garadgetdata);
+                qCDebug(dcGaradget) << "garadget/" + QString(channel->topicPrefixList().first()) + "/set-config" << " topic = " << garadgetdata;
+                channel->publish("garadget/" + QString(channel->topicPrefixList().first()) + "/set-config", garadgetdata);
+
         hardwareManager()->mqttProvider()->releaseChannel(channel);
     }
 }
@@ -144,38 +236,10 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    if (thing->thingClassId() == sonoff_basicThingClassId) {
-        MqttChannel *channel = m_mqttChannels.value(thing);
-        if (!channel) {
-            qCWarning(dcGaradget()) << "No MQTT channel for this thing.";
-            info->finish(Thing::ThingErrorHardwareNotAvailable);
-            return;
-        }
-        QString channelName = stateMaps.value(thing->thingClassId()).key(action.actionTypeId());
-        QByteArray payload = action.paramValue(action.actionTypeId()).toBool() ? "ON" : "OFF";
-        qCDebug(dcGaradget) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName << payload;
-        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName, payload);
-        thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
-        info->finish(Thing::ThingErrorNoError);
-        return;
-    }
+    qCDebug(dcGaradget) << "executeAction function" << (thing->thingClassId());
 
-    // Legacy (deprecated) connected devices
-    if (m_powerStateTypeMap.contains(thing->thingClassId())) {
-        Thing *parentDev = myThings().findById(thing->parentId());
-        MqttChannel *channel = m_mqttChannels.value(parentDev);
-        if (!channel) {
-            qCWarning(dcGaradget()) << "No mqtt channel for this thing.";
-            return info->finish(Thing::ThingErrorHardwareNotAvailable);
-        }
-        ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(thing->thingClassId());
-        ParamTypeId powerActionParamTypeId = ParamTypeId(m_powerStateTypeMap.value(thing->thingClassId()).toString());
-        qCDebug(dcGaradget) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + thing->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
-        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + thing->paramValue(channelParamTypeId).toString().toLower(), action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
-        thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), action.param(powerActionParamTypeId).value().toBool());
-        return info->finish(Thing::ThingErrorNoError);
-    }
     if (m_closableStopActionTypeMap.contains(thing->thingClassId())) {
+        qCDebug(dcGaradget) << "Publishing: m_closableStopActionTypeMap" << "how did I get here?";
         Thing *parentDev = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDev);
         if (!channel) {
@@ -202,7 +266,57 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         }
         return info->finish(Thing::ThingErrorNoError);
     }
-    qCWarning(dcGaradget) << "Unhandled execute action call for devie" << thing;
+
+    if (thing->thingClassId() == sonoff_basicThingClassId) {
+        MqttChannel *channel = m_mqttChannels.value(thing);
+        if (!channel) {
+            qCWarning(dcGaradget()) << "No MQTT channel for this thing.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        qCDebug(dcGaradget) << "entered sonoff_basicThingClassId function" << (thing->thingClassId());
+//        QString channelName = stateMaps.value(thing->thingClassId()).key(action.actionTypeId());
+//        QByteArray payload = action.paramValue(action.actionTypeId()).toBool() ? "ON" : "OFF";
+//        qCDebug(dcGaradget) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName << payload;
+//        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + channelName, payload);
+//        qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() + "/command" << payload;
+//        channel->publish("garadget/" + channel->topicPrefixList().first() + "/command", payload);
+//        thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
+//        info->finish(Thing::ThingErrorNoError);
+//        return;
+
+        if (action.actionTypeId() == sonoff_basicOpenActionTypeId) {
+            qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() + "/command" << "open";
+            channel->publish("garadget/" + channel->topicPrefixList().first() + "/command", "open");
+//            qCDebug(dcGaradget) << "OpenAction stuff:" << action.actionTypeId() << action.paramValue(action.actionTypeId());
+//            qCDebug(dcGaradget) << "OpenMapAction stuff:" << action.paramValue(action.actionTypeId()) << stateOpeningMaps.value(thing->thingClassId()).key(action.actionTypeId());
+//            thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sonoff_basicCloseActionTypeId) {
+            qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() + "/command" << "close";
+            channel->publish("garadget/" + channel->topicPrefixList().first() + "/command", "close");
+//            qCDebug(dcGaradget) << "CloseAction stuff:" << thing << thing->thingClassId() << thing->thingClassId();
+//            qCDebug(dcGaradget) << "CloseAction newparameter" << thing->paramValue(stateStateMAPS) ;
+//            thing->setStateValue(stateStateMAPS.value(thing->thingClassId()).key(action.actionTypeId()),"closed");
+//            qCDebug(dcGaradget) << "CloseMapAction stuff:" << stateStateMAPS.value(thing->thingClassId()).key(action.actionTypeId());
+//            thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sonoff_basicStopActionTypeId) {
+            qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() + "/command" << "stop";
+            channel->publish("garadget/" + channel->topicPrefixList().first() + "/command", "stop");
+//            qCDebug(dcGaradget) << "StopAction stuff:" << action.actionTypeId() << action.paramValue(action.actionTypeId());
+//            qCDebug(dcGaradget) << "StopMapAction stuff:" << action.paramValue(action.actionTypeId()) << stateMovingMaps.value(thing->thingClassId()).key(action.actionTypeId());
+//            thing->setStateValue(action.actionTypeId(), action.paramValue(action.actionTypeId()));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+
+    }
+    qCWarning(dcGaradget) << "Unhandled execute action call for device" << thing;
 }
 
 void IntegrationPluginGaradget::onClientConnected(MqttChannel *channel)
@@ -274,5 +388,19 @@ void IntegrationPluginGaradget::onPublishReceived(MqttChannel *channel, const QS
             child->setStateValue(m_signalStrengthStateTypeMap.value(child->thingClassId()), dataMap.value("Wifi").toMap().value("RSSI").toInt());
         }
     }
-}
+    if (topic.startsWith("garadget/" + channel->topicPrefixList().first() + "/status")) {
+        qCDebug(dcGaradget) << "Garadget status received " << payload;
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcGaradget) << "Cannot parse JSON from Garadget device" << error.errorString();
+            return;
+        }
+        QVariantMap dataMap = jsonDoc.toVariant().toMap();
+//        thing->setStateValue(m_signalStrengthStateTypeMap.value(thing->thingClassId()), dataMap.value("Gstatus").toMap().value("status"));
+        thing->setStateValue(m_stateStateTypeMap.value(thing->thingClassId()), dataMap.value("status").toMap().value("state"));
 
+        qCDebug(dcGaradget) << "Datamap " << m_signalStrengthStateTypeMap.value(thing->thingClassId());
+        qCDebug(dcGaradget) << "Garadget status decode " << jsonDoc;
+    }
+}

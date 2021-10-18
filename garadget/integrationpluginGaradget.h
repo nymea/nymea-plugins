@@ -63,6 +63,19 @@ private:
     // Helpers for parent devices (the ones starting with sonoff)
     QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeMap;
     QHash<ThingClassId, QList<ParamTypeId> > m_attachedDeviceParamTypeIdMap;
+    
+    // helpers from bee
+    QHash<ThingClassId, ParamTypeId> m_stateParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_movingParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_percentageParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_closingOutputParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_openingOutputParamTypeMap;
+    
+    QHash<ThingClassId, StateTypeId> m_stateStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_movingStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_percentageStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_closingOutputStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_openingOutputStateTypeMap;
 
     // Helpers for child devices (virtual ones, starting with Garadget)
     QHash<ThingClassId, ParamTypeId> m_channelParamTypeMap;

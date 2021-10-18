@@ -14,7 +14,7 @@
                     "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
                     "setupMethod": "JustAdd",
                     "createMethods": ["User"],
-                    "interfaces": [   ],
+                    "interfaces": ["extendedstatefulgaragedoor"],
                     "paramTypes": [
                         {
                             "id": "54a11a17-fc37-4316-891f-001c55e38220",
@@ -23,6 +23,16 @@
                             "type": "QString"
                         }
 
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "cc818e83-40d4-4dc3-850e-acb25477aeae",
+                            "name": "openingDuration",
+                            "displayName": "Opening duration [ms]",
+                            "type": "uint",
+                            "minValue": 1000,
+                            "defaultValue": 5000
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -45,6 +55,65 @@
                             "maxValue": 100,
                             "defaultValue": -1
                         },
+
+
+                        {
+                            "id": "174509b5-fc3e-4f03-8c93-8e044f0a2ce0" ,
+                            "name": "state",
+                            "displayName": "State",
+                            "displayNameEvent": "State changed",
+                            "displayNameAction": "Set state",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
+                            "defaultValue": "closed",
+                            "writable": true
+                        },
+                        {
+                            "id": "d3f711a1-9c79-459d-b697-d427280d9be8" ,
+                            "name": "moving",
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed",
+                            "displayNameAction": "Set moving",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b2bdaa74-a6e1-4208-9094-a38bae3f3672" ,
+                            "name": "percentage",
+                            "displayName": "Open position",
+                            "displayNameEvent": "Openposition changed",
+                            "displayNameAction": "Set percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "1aadbcf4-314b-409b-9223-55d433433edf" ,
+                            "name": "openingOutput",
+                            "displayName": "Openingoutput",
+                            "displayNameEvent": "Openingoutput changed",
+                            "displayNameAction": "Set openingOutput",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "e6b564ff-094d-45ba-a4db-f64a8bedf258" ,
+                            "name": "closingOutput",
+                            "displayName": "Closingoutput",
+                            "displayNameEvent": "Closingoutput changed",
+                            "displayNameAction": "Set closingOutput",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+
+
                         {
                             "id": "481a7cf8-418b-4774-8fd4-32693ab52299",
                             "name": "power",
@@ -61,6 +130,22 @@
 
                     ],
                     "actionTypes": [
+
+                        {
+                            "id": "ae3b1c67-7219-4768-a1c7-55c3b9a610cb" ,
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "56a9e131-b65e-4622-9a9b-f5b42d0021ef" ,
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "12ea84c1-0650-4ac1-a02c-de95965def92" ,
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
 
                      ],
                     "eventTypes": [
