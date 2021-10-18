@@ -1,6 +1,6 @@
 {
     "name": "Garadget",
-    "displayName": "Sonoff-Garadget",
+    "displayName": "Garadget",
     "id": "476781af-ad41-423b-b9bb-f308f2aff339",
     "vendors": [
         {
@@ -9,7 +9,7 @@
             "id": "22d59bee-79cc-4dea-b742-30ac6bdcf2c9",
             "thingClasses": [
                 {
-                    "name": "sonoff_basic",
+                    "name": "garadget",
                     "displayName": "Garadget",
                     "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
                     "setupMethod": "JustAdd",

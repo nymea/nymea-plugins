@@ -39,15 +39,14 @@ class IntegrationPluginGaradget: public IntegrationPlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginGaradget.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugingaradget.json")
     Q_INTERFACES(IntegrationPlugin)
 
 
 public:
-    explicit IntegrationPluginGaradget();
-    ~IntegrationPluginGaradget();
+    explicit IntegrationPluginGaradget() = default;
+    ~IntegrationPluginGaradget() = default;
 
-    void init() override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
@@ -59,39 +58,6 @@ private slots:
 
 private:
     QHash<Thing*, MqttChannel*> m_mqttChannels;
-
-    // Helpers for parent devices (the ones starting with sonoff)
-    QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeMap;
-    QHash<ThingClassId, QList<ParamTypeId> > m_attachedDeviceParamTypeIdMap;
-    
-    // helpers from bee
-    QHash<ThingClassId, ParamTypeId> m_stateParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_movingParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_percentageParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_closingOutputParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_openingOutputParamTypeMap;
-    
-    QHash<ThingClassId, StateTypeId> m_stateStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_movingStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_percentageStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_closingOutputStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_openingOutputStateTypeMap;
-
-    // Helpers for child devices (virtual ones, starting with Garadget)
-    QHash<ThingClassId, ParamTypeId> m_channelParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_openingChannelParamTypeMap;
-    QHash<ThingClassId, ParamTypeId> m_closingChannelParamTypeMap;
-    QHash<ThingClassId, StateTypeId> m_powerStateTypeMap;
-
-    QHash<ThingClassId, ActionTypeId> m_closableOpenActionTypeMap;
-    QHash<ThingClassId, ActionTypeId> m_closableCloseActionTypeMap;
-    QHash<ThingClassId, ActionTypeId> m_closableStopActionTypeMap;
-
-    // Helpers for both devices
-    QHash<ThingClassId, StateTypeId> m_connectedStateTypeMap;
-    QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeMap;
-
-    QHash<ThingClassId, StateTypeId> m_brightnessStateTypeMap;
 };
 
 #endif // INTEGRATIONPLUGINGARADGET_H
