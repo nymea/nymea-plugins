@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2021, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -40,11 +40,14 @@ class KeContactDataLayer : public QObject
 public:
     explicit KeContactDataLayer(QObject *parent = nullptr);
     ~KeContactDataLayer();
+
     bool init();
+    bool initialized() const;
 
     void write(const QHostAddress &address, const QByteArray &data);
 
 private:
+    bool m_initialized = false;
     int m_port = 7090;
     QUdpSocket *m_udpSocket = nullptr;
 
@@ -55,6 +58,7 @@ private slots:
     void readPendingDatagrams();
     void onSocketError(QAbstractSocket::SocketError error);
     void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+
 };
 
 #endif // KECONTACTDATALAYER_H

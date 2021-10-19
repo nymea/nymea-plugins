@@ -10,7 +10,7 @@
     </message>
 </context>
 <context>
-    <name>KebaKeContact</name>
+    <name>Keba</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/keba/plugininfo.h" line="137"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/keba/plugininfo.h" line="140"/>
@@ -266,7 +266,7 @@ The name of the StateType ({ba600276-8b36-4404-b8ec-415245e5bc15}) of ThingClass
         <source>Keba KeContact</source>
         <extracomment>The name of the ThingClass ({900dacec-cae7-4a37-95ba-501846368ea2})
 ----------
-The name of the plugin KebaKeContact ({9142b09f-30a9-43d0-9ede-2f8debe075ac})</extracomment>
+The name of the plugin Keba ({9142b09f-30a9-43d0-9ede-2f8debe075ac})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

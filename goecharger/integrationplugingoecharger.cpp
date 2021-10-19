@@ -105,14 +105,10 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     if (thing->thingClassId() == goeHomeThingClassId) {
-        QHostAddress address = QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString());
-        QUrl requestUrl;
-        requestUrl.setScheme("http");
-        requestUrl.setHost(address.toString());
-        requestUrl.setPath("/status");
 
-        QNetworkRequest request(requestUrl);
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+        // TODO: handle reconfigure
+
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [=](){
             if (reply->error() != QNetworkReply::NoError) {
@@ -131,8 +127,19 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             }
 
             qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
-            // Verify mqtt client and set it up
-            setupMqttChannel(info, address, jsonDoc.toVariant().toMap());
+            QVariantMap statusMap = jsonDoc.toVariant().toMap();
+            if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+                // Verify mqtt client and set it up
+                qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
+                QHostAddress address = QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString());
+                setupMqttChannel(info, address, statusMap);
+            } else {
+                // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
+                info->finish(Thing::ThingErrorNoError);
+                qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
+                update(thing, statusMap);
+                thing->setStateValue(goeHomeConnectedStateTypeId, true);
+            }
         });
         return;
     }
@@ -140,11 +147,32 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
     Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
 }
 
+void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
+{
+    if (thing->thingClassId() == goeHomeThingClassId) {
+        // Set up refresh timer if needed and if we are not using mqtt
+        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+            if (!m_refreshTimer) {
+                m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(4);
+                connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
+                m_refreshTimer->start();
+                qCDebug(dcGoECharger()) << "Enable HTTP refresh timer...";
+            }
+        }
+    }
+}
 
 void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
 {
+    // Cleanup mqtt channels if set up
     if (m_channels.contains(thing)) {
         hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
+    }
+
+    // Clean up refresh timer if set up
+    if (m_refreshTimer && myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+        m_refreshTimer = nullptr;
     }
 }
 
@@ -178,10 +206,18 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
-        int maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+        uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
         // Set the allow value
-        QString configuration = QString("ama=%1").arg(maxChargingCurrent);
+        QString configuration = QString("amp=%1").arg(maxChargingCurrent);
+        sendActionRequest(thing, info, configuration);
+        return;
+    } else if (action.actionTypeId() == goeHomeAbsoluteMaxAmpereActionTypeId) {
+        uint maxAmpere = action.paramValue(goeHomeAbsoluteMaxAmpereActionAbsoluteMaxAmpereParamTypeId).toUInt();
+        qCDebug(dcGoECharger()) << "Setting absolute maximal charging amperes to" << maxAmpere << "A";
+        // TODO: use amx if available
+        // Set the allow value
+        QString configuration = QString("ama=%1").arg(maxAmpere);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeCloudActionTypeId) {
@@ -296,25 +332,115 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         }
 
         QVariantList temperatureSensorList = statusMap.value("tma").toList();
-        if (temperatureSensorList.count() == 4) {
+        if (temperatureSensorList.count() >= 1)
             thing->setStateValue(goeHomeTemperatureSensor1StateTypeId, temperatureSensorList.at(0).toDouble());
+
+        if (temperatureSensorList.count() >= 2)
             thing->setStateValue(goeHomeTemperatureSensor2StateTypeId, temperatureSensorList.at(1).toDouble());
+
+        if (temperatureSensorList.count() >= 3)
             thing->setStateValue(goeHomeTemperatureSensor3StateTypeId, temperatureSensorList.at(2).toDouble());
+
+        if (temperatureSensorList.count() >= 4)
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
-        }
 
         thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
         thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
-        thing->setStateValue(goeHomeAdapterConnectedStateTypeId, (statusMap.value("adi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
-        thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("ama").toUInt());
+        thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("amp").toUInt());
         thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
         thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
         thing->setStateValue(goeHomeSerialNumberStateTypeId, statusMap.value("sse").toString());
+        thing->setStateValue(goeHomeAdapterConnectedStateTypeId, (statusMap.value("adi").toUInt() == 0 ? false : true));
+
+        uint amaLimit = statusMap.value("ama").toUInt();
+        uint cableLimit = statusMap.value("cbl").toUInt();
+
+        // Set the limit for the max charging amps
+        // FIXME: set the max value for the state to limit
+        //thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+
+        thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, amaLimit);
+        thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
+
+        // Parse nrg array
+        QVariantList measurementList = statusMap.value("nrg").toList();
+        if (measurementList.count() >= 1)
+            thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, measurementList.at(0).toUInt());
+
+        if (measurementList.count() >= 2)
+            thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, measurementList.at(1).toUInt());
+
+        if (measurementList.count() >= 3)
+            thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, measurementList.at(2).toUInt());
+
+        if (measurementList.count() >= 5)
+            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, measurementList.at(4).toUInt() / 10.0);
+        else {
+            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 6) {
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, measurementList.at(5).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 7) {
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, measurementList.at(6).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 8) {
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, measurementList.at(7).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+
+        if (measurementList.count() >= 9) {
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, measurementList.at(8).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
+        if (measurementList.count() >= 10) {
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, measurementList.at(9).toUInt() / 10.0);
+        } else {
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        }
     }
+}
+
+QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing)
+{
+    QHostAddress address = QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString());
+    QUrl requestUrl;
+    requestUrl.setScheme("http");
+    requestUrl.setHost(address.toString());
+    requestUrl.setPath("/status");
+
+    return QNetworkRequest(requestUrl);
 }
 
 QNetworkRequest IntegrationPluginGoECharger::buildConfigurationRequest(const QHostAddress &address, const QString &configuration)
@@ -537,6 +663,45 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
             });
         });
     });
+}
+
+void IntegrationPluginGoECharger::refreshHttp()
+{
+    // Update all things which don't use mqtt
+    foreach (Thing *thing, myThings()) {
+        if (thing->thingClassId() != goeHomeThingClassId)
+            continue;
+
+        // Poll thing which if not using mqtt
+        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+            qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing;
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, thing, [=](){
+                if (reply->error() != QNetworkReply::NoError) {
+                    qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
+                    thing->setStateValue(goeHomeConnectedStateTypeId, false);
+                    return;
+                }
+
+                QByteArray data = reply->readAll();
+                QJsonParseError error;
+                QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+                if (error.error != QJsonParseError::NoError) {
+                    qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+                    thing->setStateValue(goeHomeConnectedStateTypeId, false);
+                    return;
+                }
+
+                // Valid json data received, connected true
+                thing->setStateValue(goeHomeConnectedStateTypeId, true);
+
+                qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
+                QVariantMap statusMap = jsonDoc.toVariant().toMap();
+                update(thing, statusMap);
+            });
+        }
+    }
 }
 
 

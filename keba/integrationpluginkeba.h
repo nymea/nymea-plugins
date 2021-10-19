@@ -52,6 +52,7 @@ public:
     explicit IntegrationPluginKeba();
 
     void init() override;
+
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
 
@@ -64,7 +65,7 @@ private:
     PluginTimer *m_updateTimer = nullptr;
     PluginTimer *m_reconnectTimer = nullptr;
 
-    KeContactDataLayer *m_kebaData = nullptr;
+    KeContactDataLayer *m_kebaDataLayer = nullptr;
 
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<ThingId, int> m_lastSessionId;
