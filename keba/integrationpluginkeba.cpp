@@ -280,6 +280,8 @@ void IntegrationPluginKeba::setDeviceState(Thing *thing, KeContact::State state)
         thing->setStateValue(wallboxActivityStateTypeId, "Authorization rejected");
         break;
     }
+
+    thing->setStateValue(wallboxChargingStateTypeId, state == KeContact::StateCharging);
 }
 
 void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugState plugState)
@@ -421,13 +423,11 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
         thing->setStateValue(wallboxSystemEnabledStateTypeId, reportTwo.enableSys);
 
-        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currTimer);
-        thing->setStateValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentUser);
+        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentUser);
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
 
         // Set the state limits according to the hardware limits
         thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
-        thing->setStateMaxValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentHardwareLimitation);
 
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
@@ -462,7 +462,6 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
         thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.currentPhase1);
         thing->setStateValue(wallboxCurrentPhase2EventTypeId, reportThree.currentPhase2);
         thing->setStateValue(wallboxCurrentPhase3EventTypeId, reportThree.currentPhase3);
-        thing->setStateValue(wallboxCurrentStateTypeId, reportThree.currentPhase1 + reportThree.currentPhase2 + reportThree.currentPhase3);
         thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.voltagePhase1);
         thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.voltagePhase2);
         thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.voltagePhase3);
@@ -579,9 +578,6 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
         QUuid requestId;
         if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
             int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toDouble() * 1000;
-            requestId = keba->setMaxAmpere(milliAmpere);
-        } else if(action.actionTypeId() == wallboxMaxChargingCurrentGeneralActionTypeId) {
-            int milliAmpere = action.param(wallboxMaxChargingCurrentGeneralActionMaxChargingCurrentGeneralParamTypeId).value().toDouble() * 1000;
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
         } else if(action.actionTypeId() == wallboxPowerActionTypeId) {
             requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
