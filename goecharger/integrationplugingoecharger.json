@@ -13,7 +13,7 @@
                     "displayName": "go-eCharger Home",
                     "id": "3b663d51-fdb5-4944-b409-c07f7933877e",
                     "createMethods": ["Discovery", "User"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
+                    "interfaces": ["evcharger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "4342b72c-99d0-41a5-abc6-ea6c1cc1352c",
@@ -65,6 +65,14 @@
                             "name": "pluggedIn",
                             "displayName": "Car plugged in",
                             "displayNameEvent": "Car plugged in changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "48c6cdb8-9fc1-4c14-95df-3e2c62e59361",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -174,6 +182,16 @@
                             "unit": "KiloWattHour",
                             "defaultValue": 0.0,
                             "suggestLogging": true
+                        },
+                        {
+                            "id": "4b909ca1-3f62-406a-adc6-9b312e014741",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "c6f68517-c4cd-415d-9455-b1731f7d9a1a",
