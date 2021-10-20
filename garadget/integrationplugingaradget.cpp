@@ -45,13 +45,11 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-//  QHostAddress deviceAddress = QHostAddress(thing->paramValue(garadgetThingIpAddressParamTypeId).toString());
+    qCDebug(dcGaradget) << "entered setupThing";
+    QHostAddress deviceAddress = QHostAddress(thing->paramValue(garadgetThingIpAddressParamTypeId).toString());
     // ipaddress is defined here but not sure how to get rid of and still have the mqtt channel. Garadget only works with the broker.
+    // checking on possibility of http on garadget.
 
-    // Note from Michael: So, how does one configure the garadget device to connect to the MQTT broker? Is there a webinterface
-    // where you go with the browser and configure nymea's address there? If so, we could automate that so that the user
-    // doesn't have to do that.
-    QHostAddress deviceAddress = QHostAddress("192.168.1.174");
     if (deviceAddress.isNull()) {
         qCWarning(dcGaradget) << "Not a valid IP address given for IP address parameter";
         //: Error setting up thing
@@ -59,10 +57,11 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
     }
 
     // Note from Michael: Does the clientId really need to be "garage"? Note that client ids must be unique on a single
-    // broker. So setting this to "garage" would prevent multiple garadgets from connecting to the same nymea instance.
-    // Better use something unique like the thingId if the garadget device supports it. Or, maybe, the user could configure
-    // it during setup using a paramType (like the ip address param stuff above).
-    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel("garage", deviceAddress );
+    // right now changing nme over the broker is the method to change the topic to garadget/uuid that nymea likes.
+    // but if you delete the device from nymea, the topic is lost and you have to go to the device Wifi AP to fix.
+    // Painful unless you monitor mosquitto_sub to fix by mosquitto_pub unless you tell me a better way to restore to a known value.
+    // So we will see the path to follow based on the Garadget response.
+    MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString().remove(QRegExp("[{}-]")), deviceAddress );
     if (!channel) {
         qCWarning(dcGaradget) << "Failed to create MQTT channel.";
         //: Error setting up thing
@@ -71,8 +70,6 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcGaradget) << "initial setup instructions:" << deviceAddress.toString() << channel;
 
-    // Note from Michael: With other devices that use MQTT, normally we do a REST call to their webinterface just to configure
-    // nymea's IP on them with this code below. Could that work with the garadget too?
 /*
     QUrl url(QString("http://%1/cm").arg(deviceAddress.toString()));
     QUrlQuery query;
@@ -106,22 +103,21 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
             return;
          }
 */
-//BEE mod
-
     m_mqttChannels.insert(thing, channel);
     connect(channel, &MqttChannel::clientConnected, this, &IntegrationPluginGaradget::onClientConnected);
     connect(channel, &MqttChannel::clientDisconnected, this, &IntegrationPluginGaradget::onClientDisconnected);
     connect(channel, &MqttChannel::publishReceived, this, &IntegrationPluginGaradget::onPublishReceived);
-    qCDebug(dcGaradget) << "Garadget setup complete";
 
 // insert to reprogram client Garadget to new device/topic name    
+// trick till we figure out the http setup or whatever
     QJsonObject garadgetobj;
     garadgetobj.insert("nme", QString(channel->topicPrefixList().first()));
     QJsonDocument garadgetdoc(garadgetobj);
     QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
     QString jsonString(garadgetdata);
-    qCDebug(dcGaradget) << "Publishing:" << "garadget/" + channel->topicPrefixList().first() << garadgetdata;
-    channel->publish("garadget/" + channel->topicPrefixList().first() + "/set-config", garadgetdata);
+    qCDebug(dcGaradget) << "Setting Garadget topic to:" <<  channel->topicPrefixList().first() << garadgetdata;
+    channel->publish("garadget/garage/set-config", garadgetdata);
+    qCDebug(dcGaradget) << "Garadget setup complete";
 
 
     info->finish(Thing::ThingErrorNoError);
@@ -201,8 +197,46 @@ void IntegrationPluginGaradget::onPublishReceived(MqttChannel *channel, const QS
     qCDebug(dcGaradget) << "Publish received from garadget thing:" << topic << qUtf8Printable(payload);
     Thing *thing = m_mqttChannels.key(channel);
 
-    // TODO: Fill in the "state" state with "open", "closed", "opening", "closing", "intermediate", dending on what we get from the garadget
-    if (topic.startsWith(channel->topicPrefixList().first() + "/sonoff/STATE")) {
-        thing->setStateValue(garadgetStateStateTypeId, "closed");
-    }    
+    if (topic.startsWith("garadget/" + channel->topicPrefixList().first() + "/status")) {
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcGaradget) << "Cannot parse JSON from Garadget device" << error.errorString();
+            return;
+        }
+        QJsonObject jo = jsonDoc.object();
+        if (jo.value(QString("status")).toString().contains(QString("stopped"))) {
+            thing->setStateValue(garadgetStateStateTypeId, "intermediate");
+            qCDebug(dcGaradget) << "Garadget status value " << "intermediate" ;
+            thing->setStateValue(garadgetClosingOutputStateTypeId, false);
+// this set the states of Percentage state based on the status message from Garadget to show door in intermediate state
+            thing->setStateValue(garadgetPercentageStateTypeId,50);
+        } else {
+            thing->setStateValue(garadgetStateStateTypeId, jo.value(QString("status")).toString());
+            qCDebug(dcGaradget) << "Garadget status value " << jo.value(QString("status")).toString() ;
+
+// these set the states of Opening & Closing Output states based on the status message from Garadget
+// Percentage State set not as slick as your timer method but it does work
+            if (jo.value(QString("status")).toString().contains(QString("opening"))) {
+                thing->setStateValue(garadgetOpeningOutputStateTypeId, true);
+                qCDebug(dcGaradget) << "Garadget OpeningOutput " << "true" ;
+            } else {
+                if (jo.value(QString("status")).toString().contains(QString("open"))) {
+                    thing->setStateValue(garadgetOpeningOutputStateTypeId, false);
+                    thing->setStateValue(garadgetPercentageStateTypeId,0);
+                    qCDebug(dcGaradget) << "Garadget OpeningOutput " << "false" ;
+                }
+            }
+            if (jo.value(QString("status")).toString().contains(QString("closing"))) {
+                thing->setStateValue(garadgetClosingOutputStateTypeId, true);
+                qCDebug(dcGaradget) << "Garadget ClosingOutput " << "true" ;
+            }
+            if (jo.value(QString("status")).toString().contains(QString("closed"))) {
+                thing->setStateValue(garadgetClosingOutputStateTypeId, false);
+                thing->setStateValue(garadgetPercentageStateTypeId, 100);
+                qCDebug(dcGaradget) << "Garadget CloseingOutput " << "false" ;
+            }
+        }
+    }
+
 }
