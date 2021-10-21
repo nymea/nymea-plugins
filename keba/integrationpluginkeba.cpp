@@ -459,12 +459,12 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds/60 << "[min]";
 
     if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
-        thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.currentPhase1);
-        thing->setStateValue(wallboxCurrentPhase2EventTypeId, reportThree.currentPhase2);
-        thing->setStateValue(wallboxCurrentPhase3EventTypeId, reportThree.currentPhase3);
-        thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.voltagePhase1);
-        thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.voltagePhase2);
-        thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.voltagePhase3);
+        thing->setStateValue(wallboxCurrentPhaseAEventTypeId, reportThree.currentPhase1);
+        thing->setStateValue(wallboxCurrentPhaseBEventTypeId, reportThree.currentPhase2);
+        thing->setStateValue(wallboxCurrentPhaseCEventTypeId, reportThree.currentPhase3);
+        thing->setStateValue(wallboxVoltagePhaseAEventTypeId, reportThree.voltagePhase1);
+        thing->setStateValue(wallboxVoltagePhaseBEventTypeId, reportThree.voltagePhase2);
+        thing->setStateValue(wallboxVoltagePhaseCEventTypeId, reportThree.voltagePhase3);
         thing->setStateValue(wallboxCurrentPowerStateTypeId, reportThree.power);
         thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.energySession);
         thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.powerFactor);
