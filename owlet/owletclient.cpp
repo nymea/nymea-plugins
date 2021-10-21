@@ -29,7 +29,8 @@ void OwletClient::connectToHost(const QHostAddress &address, int port)
         });
 
     });
-    connect(m_socket, &QTcpSocket::errorOccurred, this, [this](){
+    typedef void (QTcpSocket:: *errorSignal)(QAbstractSocket::SocketError);
+    connect(m_socket, static_cast<errorSignal>(&QTcpSocket::error), this, [this](){
         qCDebug(dcOwlet()) << "Error in owlet communication";
         emit error();
     });
