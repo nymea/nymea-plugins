@@ -326,6 +326,119 @@
                     "eventTypes": [
 
                     ]
+                },
+                {
+                    "id": "1a81dffb-42e9-48f4-8fc5-b5917a7548b4",
+                    "name": "wallSwitchModule",
+                    "displayName": "Hue Wall Switch Module",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "longpressmultibutton", "battery", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "96f7e24c-7c24-449b-8df8-decbc00ccc5b",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "2450cdd2-6192-45fd-8374-583d12f45b68",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "6c5c3ae0-2efc-41a7-ac75-092fbdfd244d",
+                            "name": "buttonMode",
+                            "displayName": "Button mode",
+                            "type": "QString",
+                            "allowedValues": [ "Single rocker", "Single push button", "Dual rocker", "Dual push button" ],
+                            "defaultValue": "Single rocker"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d36454c9-a90e-415a-870a-5488ba981006",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ce55dd06-6d27-49f4-ad40-4a85bc126c2d",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "df6ce2f3-b09f-4fdd-b923-f8dca4e7a054",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6a5f652c-5fa1-4477-a68c-ec1f2a3c1f91",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "2e4453a3-b8de-4494-b49e-f09ca855ff77",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "19acc530-0c21-4582-9c82-17ccf5901476",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "564bb644-40b4-46ec-bb26-63ca0b704102",
+                                    "name": "buttonName",
+                                    "displayName": "Button",
+                                    "type": "QString",
+                                    "allowedValues": ["1", "2"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "20a9a579-3560-4260-878d-153b8d59d8ec",
+                            "name": "longPressed",
+                            "displayName": "Long pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "b8babc97-06f8-4413-8a94-2e90d0b52014",
+                                    "name": "buttonName",
+                                    "displayName": "Button",
+                                    "type": "QString",
+                                    "allowedValues": ["1", "2"]
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }
