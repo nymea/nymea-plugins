@@ -83,7 +83,6 @@
                             "type": "QString",
                             "defaultValue": ""
                         },
-
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
                             "name": "power",
@@ -102,6 +101,16 @@
                             "displayNameEvent": "System enabled changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "6713b2e7-41b3-4596-a304-3065726bdbe4",
+                            "name": "phaseCount",
+                            "displayName": "Number of connected phases",
+                            "displayNameEvent": "Number of connected phases changed",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
                         },
                         {
                             "id": "539e5602-6dd9-465d-9705-3bb59bcf8982",

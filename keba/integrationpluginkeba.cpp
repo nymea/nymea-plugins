@@ -458,6 +458,26 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     qCDebug(dcKeba()) << "     - Serial number" << reportThree.serialNumber;
     qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds/60 << "[min]";
 
+    // Check how many phases are connected
+    if (reportThree.voltagePhase1 == 0 && reportThree.voltagePhase2 == 0 && reportThree.voltagePhase3 == 0) {
+        // Note: if not charging, all voltage values are 0, only set the phase count if any voltage gets reported.
+    } else {
+        uint phaseCount = 0;
+        if (reportThree.voltagePhase1 > 0) {
+            phaseCount += 1;
+        }
+
+        if (reportThree.voltagePhase2 > 0) {
+            phaseCount += 1;
+        }
+
+        if (reportThree.voltagePhase3 > 0) {
+            phaseCount += 1;
+        }
+
+        thing->setStateValue(wallboxPhaseCountStateTypeId, phaseCount);
+    }
+
     if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
         thing->setStateValue(wallboxCurrentPhaseAEventTypeId, reportThree.currentPhase1);
         thing->setStateValue(wallboxCurrentPhaseBEventTypeId, reportThree.currentPhase2);
