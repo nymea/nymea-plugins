@@ -456,27 +456,7 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     qCDebug(dcKeba()) << "     - Energy session" << reportThree.energySession << "[kWh]";
     qCDebug(dcKeba()) << "     - Energy total" << reportThree.energyTotal << "[kWh]";
     qCDebug(dcKeba()) << "     - Serial number" << reportThree.serialNumber;
-    qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds/60 << "[min]";
-
-    // Check how many phases are connected
-    if (reportThree.voltagePhase1 == 0 && reportThree.voltagePhase2 == 0 && reportThree.voltagePhase3 == 0) {
-        // Note: if not charging, all voltage values are 0, only set the phase count if any voltage gets reported.
-    } else {
-        uint phaseCount = 0;
-        if (reportThree.voltagePhase1 > 0) {
-            phaseCount += 1;
-        }
-
-        if (reportThree.voltagePhase2 > 0) {
-            phaseCount += 1;
-        }
-
-        if (reportThree.voltagePhase3 > 0) {
-            phaseCount += 1;
-        }
-
-        thing->setStateValue(wallboxPhaseCountStateTypeId, phaseCount);
-    }
+    qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds / 60 << "[min]";
 
     if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
         thing->setStateValue(wallboxCurrentPhaseAEventTypeId, reportThree.currentPhase1);
@@ -489,6 +469,21 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
         thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.energySession);
         thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.powerFactor);
         thing->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.energyTotal);
+
+        // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+        if (!(reportThree.currentPhase1 == 0 && reportThree.currentPhase2 == 0 && reportThree.currentPhase3 == 0)) {
+            uint phaseCount = 0;
+            if (reportThree.currentPhase1 != 0)
+                phaseCount += 1;
+
+            if (reportThree.currentPhase2 != 0)
+                phaseCount += 1;
+
+            if (reportThree.currentPhase3 != 0)
+                phaseCount += 1;
+
+            thing->setStateValue(wallboxPhaseCountStateTypeId, phaseCount);
+        }
     } else {
         qCWarning(dcKeba()) << "Received report but the serial number didn't match";
     }
