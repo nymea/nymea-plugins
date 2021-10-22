@@ -899,6 +899,9 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             thing->setStateValue(carBatteryLevelStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId));
             thing->setStateValue(carBatteryCriticalStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId).toInt() < 10);
             info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == carMinimalChargingCurrentActionTypeId) {
+            thing->setStateValue(carMinimalChargingCurrentStateTypeId, action.paramValue(carMinimalChargingCurrentActionMinimalChargingCurrentParamTypeId).toUInt());
+            info->finish(Thing::ThingErrorNoError);
         }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
