@@ -1819,6 +1819,7 @@
                             "name": "minimalChargingCurrent",
                             "displayName": "Minimal charging current",
                             "displayNameEvent": "Minimal charging current changed",
+                            "displayNameAction": "Set minimal charging current",
                             "type": "uint",
                             "unit": "Ampere",
                             "writable": true,
