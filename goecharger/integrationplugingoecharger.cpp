@@ -349,7 +349,7 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
 
         thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
-        thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
+        thing->setStateValue(goeHomeSessionEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
@@ -371,80 +371,67 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
 
         // Parse nrg array
+        uint voltagePhaseA = 0; uint voltagePhaseB = 0; uint voltagePhaseC = 0;
+        double amperePhaseA = 0; double amperePhaseB = 0; double amperePhaseC = 0;
+        double currentPower = 0; double powerPhaseA = 0; double powerPhaseB = 0; double powerPhaseC = 0;
+
         QVariantList measurementList = statusMap.value("nrg").toList();
         if (measurementList.count() >= 1)
-            thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, measurementList.at(0).toUInt());
+            voltagePhaseA = measurementList.at(0).toUInt();
 
         if (measurementList.count() >= 2)
-            thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, measurementList.at(1).toUInt());
+            voltagePhaseB = measurementList.at(1).toUInt();
 
         if (measurementList.count() >= 3)
-            thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, measurementList.at(2).toUInt());
+            voltagePhaseC = measurementList.at(2).toUInt();
 
-        if (measurementList.count() >= 5) {
-            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, measurementList.at(4).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+        if (measurementList.count() >= 5)
+            amperePhaseA = measurementList.at(4).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        if (measurementList.count() >= 6)
+            amperePhaseB = measurementList.at(5).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-        if (measurementList.count() >= 6) {
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, measurementList.at(5).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+        if (measurementList.count() >= 7)
+            amperePhaseC = measurementList.at(6).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        if (measurementList.count() >= 8)
+            powerPhaseA = measurementList.at(7).toUInt() * 100.0; // 0.1kW -> W
 
-        if (measurementList.count() >= 7) {
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, measurementList.at(6).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+        if (measurementList.count() >= 9)
+            powerPhaseB = measurementList.at(8).toUInt() * 100.0; // 0.1kW -> W
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        if (measurementList.count() >= 10)
+            powerPhaseC = measurementList.at(9).toUInt() * 100.0; // 0.1kW -> W
 
-        if (measurementList.count() >= 8) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, measurementList.at(7).toUInt() * 100.0); // 0.1kW -> W
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        if (measurementList.count() >= 12)
+            currentPower = measurementList.at(11).toUInt() * 10.0; // 0.01kW -> W
 
-        if (measurementList.count() >= 9) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, measurementList.at(8).toUInt() * 100.0); // 0.1kW -> W
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        // Update all states
+        thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
+        thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, voltagePhaseB);
+        thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, voltagePhaseC);
+        thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, amperePhaseA);
+        thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, amperePhaseB);
+        thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, amperePhaseC);
+        thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, powerPhaseA);
+        thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, powerPhaseB);
+        thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
 
-        if (measurementList.count() >= 10) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, measurementList.at(9).toUInt() * 100.0); // 0.1kW -> W
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
-        }
+        thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
 
-        if (measurementList.count() >= 11) {
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, measurementList.at(11).toUInt() * 10.0); // 0.01kW -> W
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerStateTypeId, 0);
+        // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+        if (!(amperePhaseA == 0 && amperePhaseB == 0 && amperePhaseC == 0)) {
+            uint phaseCount = 0;
+            if (amperePhaseA != 0)
+                phaseCount += 1;
+
+            if (amperePhaseB != 0)
+                phaseCount += 1;
+
+            if (amperePhaseC != 0)
+                phaseCount += 1;
+
+            thing->setStateValue(goeHomePhaseCountStateTypeId, phaseCount);
         }
     }
 }
