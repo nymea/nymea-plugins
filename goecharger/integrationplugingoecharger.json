@@ -175,9 +175,9 @@
                         },
                         {
                             "id": "e8258831-ad89-4d27-b295-e8c10dd42b76",
-                            "name": "chargeEnergy",
-                            "displayName": "Charge energy",
-                            "displayNameEvent": "Charge energy changed",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "displayNameEvent": "Session energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0.0,
@@ -282,6 +282,16 @@
                             "unit": "Volt",
                             "defaultValue": 0.00,
                             "filter": "adaptive"
+                        },
+                        {
+                            "id": "b78d805a-f97c-4c9d-a647-5fc98f8d6dd1",
+                            "name": "phaseCount",
+                            "displayName": "Number of charging phases",
+                            "displayNameEvent": "Number of charging phases changed",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
                         },
                         {
                             "id": "b06479d5-7a38-4fbd-867e-e55bdb54651b",
