@@ -15,13 +15,13 @@
     </message>
     <message>
         <location filename="../integrationplugintado.cpp" line="80"/>
-        <location filename="../integrationplugintado.cpp" line="157"/>
+        <location filename="../integrationplugintado.cpp" line="164"/>
         <source>Wrong username or password.</source>
         <translation>Fascher Benutzername oder Passwort.</translation>
     </message>
     <message>
         <location filename="../integrationplugintado.cpp" line="83"/>
-        <location filename="../integrationplugintado.cpp" line="160"/>
+        <location filename="../integrationplugintado.cpp" line="167"/>
         <source>Connection error</source>
         <translation>Verbindungsfehler</translation>
     </message>

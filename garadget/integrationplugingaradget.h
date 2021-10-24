@@ -33,7 +33,11 @@
 
 #include "integrations/integrationplugin.h"
 
-class MqttChannel;
+#include <QHash>
+#include <QDebug>
+#include <QUdpSocket>
+
+class MqttClient;
 
 class IntegrationPluginGaradget: public IntegrationPlugin
 {
@@ -52,12 +56,12 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private slots:
-    void onClientConnected(MqttChannel *channel);
-    void onClientDisconnected(MqttChannel *channel);
-    void onPublishReceived(MqttChannel *channel, const QString &topic, const QByteArray &payload);
+    void subscribe(Thing *thing);
+
+    void publishReceived(const QString &topic, const QByteArray &payload, bool retained);
 
 private:
-    QHash<Thing*, MqttChannel*> m_mqttChannels;
+    QHash<Thing*, MqttClient*> m_mqttClients;
 };
 
 #endif // INTEGRATIONPLUGINGARADGET_H

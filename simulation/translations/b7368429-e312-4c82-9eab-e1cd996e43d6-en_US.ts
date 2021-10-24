@@ -844,18 +844,6 @@ The name of the StateType ({1302cb53-ccdc-49eb-88b6-85659c7d11b8}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Power power flow changed</source>
-        <extracomment>The name of the EventType ({d57f4d9c-759e-40eb-999e-a1acbc8df2b1}) of ThingClass smartMeter</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current power flow</source>
-        <extracomment>The name of the ParamType (ThingClass: smartMeter, EventType: currentPower, ID: {d57f4d9c-759e-40eb-999e-a1acbc8df2b1})
-----------
-The name of the StateType ({d57f4d9c-759e-40eb-999e-a1acbc8df2b1}) of ThingClass smartMeter</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Total energy consumption changed</source>
         <extracomment>The name of the EventType ({5ac91819-c855-441c-a734-ee5cc0514822}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
@@ -1201,6 +1189,18 @@ The name of the StateType ({ec324f2a-582b-4bd2-a2c8-03d5f20aa4f9}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: waterSensor, EventType: waterDetected, ID: {764cbbbf-6a5c-4265-9424-fc9e6dd86fda})
 ----------
 The name of the StateType ({764cbbbf-6a5c-4265-9424-fc9e6dd86fda}) of ThingClass waterSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current power usage</source>
+        <extracomment>The name of the ParamType (ThingClass: smartMeter, EventType: currentPower, ID: {d57f4d9c-759e-40eb-999e-a1acbc8df2b1})
+----------
+The name of the StateType ({d57f4d9c-759e-40eb-999e-a1acbc8df2b1}) of ThingClass smartMeter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power power usage changed</source>
+        <extracomment>The name of the EventType ({d57f4d9c-759e-40eb-999e-a1acbc8df2b1}) of ThingClass smartMeter</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
