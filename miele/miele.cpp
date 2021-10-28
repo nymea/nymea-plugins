@@ -92,7 +92,7 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         qCWarning(dcMiele()) << "No refresh token given!";
         setAuthenticated(false);
         return;
-    }    
+    }
 
     QUrl url(m_tokenUrl);
     QUrlQuery query;
@@ -173,7 +173,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
         }
         m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
         receivedAccessToken(m_accessToken);
-        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();        
+        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
         receivedRefreshToken(m_refreshToken);
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
@@ -184,7 +184,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
                 qCWarning(dcMiele()) << "Expire time too short";
                 return;
             }
-            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));            
+            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));
         }
     });
 }
@@ -211,13 +211,23 @@ void Miele::getDevices()
         if (!checkStatusCode(reply, rawData)) {
             return;
         }
-        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();       
-        if (map.contains("data")) {
-            QVariantMap dataMap = map.value("data").toMap();
-            qCDebug(dcMiele()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
-        } else if (map.contains("error")) {
-            qCWarning(dcMiele()) << "Send command" << map.value("error").toMap().value("description").toString();
+        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
+
+        QList<DeviceShort> foundDevices;
+        foreach (QVariant deviceData, map.values()) {
+            QVariantMap deviceDetails = deviceData.toMap();
+            if (!deviceDetails.contains("ident")) {
+                qCWarning(dcMiele()) << "Got device but no ident available";
+                continue;
+            }
+            DeviceShort ds;
+            QVariantMap deviceIdentMap = deviceDetails.value("ident").toMap();
+            ds.fabNumber = deviceIdentMap.value("deviceIdentLabel").toMap().value("fabNumber").toString();
+            ds.name = deviceIdentMap.value("deviceName").toString();
+            ds.type = static_cast<DeviceType>(deviceIdentMap.value("type").toMap().value("value_raw").toInt());
+            foundDevices.append(ds);
         }
+        emit devicesFound(foundDevices);
     });
 }
 
@@ -251,7 +261,7 @@ void Miele::getDevicesShort()
             ds.fabNumber = deviceObj["fabNumber"].toString();
             ds.name = deviceObj["deviceName"].toString();
             ds.state = deviceObj["state"].toString();
-            ds.type = deviceObj["type"].toString();
+            //ds.type = deviceObj["type"].toString();
             foundDevices.append(ds);
         }
         emit devicesFound(foundDevices);
@@ -373,7 +383,7 @@ QUuid Miele::setTargetTemperature(const QString &deviceId, int zone, int targetT
     QJsonArray tempZones;
     tempZones.push_front(temperatureObj);
     object.insert("targetTemperature", tempZones);
-    doc.setObject(object);    
+    doc.setObject(object);
     return putAction(deviceId, doc);
 }
 
@@ -440,16 +450,34 @@ void Miele::connectEventStream()
     connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
 
         while (reply->canReadLine()) {
-            QByteArray rawData = reply->readAll();
-            qCDebug(dcMiele()) << "Raw events data: " << rawData;
-            QJsonDocument data = QJsonDocument::fromJson(rawData);
-            qCDebug(dcMiele()) << "Got events data: " << data.toJson();
+            QByteArray eventTypeLine = reply->readLine();
+            if (eventTypeLine == "\n") {
+                continue;
+            }
+            if (!eventTypeLine.startsWith("event")) {
+                qCWarning(dcMiele()) << "Invalid event type line: " << eventTypeLine;
+                return;
+            }
+            QString eventType = eventTypeLine.split(':').last().trimmed();
+            if (eventType != "devices") {
+                qCWarning(dcMiele()) << "Ignoring '" << eventType << "' events";
+                return;
+            }
+            QByteArray eventDataLine = reply->readLine();
+            if (!eventDataLine.startsWith("data")) {
+                qCWarning(dcMiele()) << "Invalid data received: " << eventDataLine;
+                return;
+            }
+
+            qCDebug(dcMiele()) << "Raw events data: " << eventDataLine;
+            QJsonDocument data = QJsonDocument::fromJson(eventDataLine.replace("data: ", ""));
+            qCDebug(dcMiele()) << "Got events data: " << data.toJson(QJsonDocument::Compact);
             QVariantMap eventsData = data.toVariant().toMap();
             foreach (QVariant eventEntry, eventsData.values()) {
                 QVariantMap eventEntryMap = eventEntry.toMap();
                 if (!eventEntryMap.contains("ident")) {
                     qCWarning(dcMiele()) << "Got event but no device ident available";
-                    return;
+                    continue;
                 }
                 QVariantMap deviceIdent = eventEntryMap.value("ident").toMap().value("deviceIdentLabel").toMap();
                 QString deviceId = deviceIdent.value("fabNumber").toString();

@@ -66,6 +66,14 @@ IntegrationPluginMiele::IntegrationPluginMiele()
     m_mieleDeviceTypeLabelToThingClassId.insert("refrigerator", fridgeThingClassId);
     m_mieleDeviceTypeLabelToThingClassId.insert("hood", hoodThingClassId);
 
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::Oven, ovenThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::WashingMachine, washerThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::DishWasher, dishwasherThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::CoffeeSystem, coffeeMakerThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::TumbleDryer, dryerThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::Fridge, fridgeThingClassId);
+    m_mieleDeviceTypeToThingClassId.insert(Miele::DeviceType::Hood, hoodThingClassId);
+
 }
 
 void IntegrationPluginMiele::startPairing(ThingPairingInfo *info)
@@ -202,7 +210,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
                     qWarning(dcMiele()) << "No Miele account found for" << thing->name();
                     continue;
                 }
-                miele->getDevicesShort();
+                miele->getDevices();
                 Q_FOREACH (Thing *childThing, myThings().filterByParentId(thing->id())) {
                     QString deviceId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
                     miele->getDeviceState(deviceId);
@@ -213,7 +221,7 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
 
     if (thing->thingClassId() == mieleAccountThingClassId) {
         Miele *miele = m_mieleConnections.value(thing);
-        miele->getDevicesShort();
+        miele->getDevices();
         miele->connectEventStream();
         thing->setStateValue(mieleAccountConnectedStateTypeId, true);
         thing->setStateValue(mieleAccountLoggedInStateTypeId, true);
@@ -413,12 +421,12 @@ void IntegrationPluginMiele::onDevicesFound(QList<Miele::DeviceShort> devices)
 
         ThingDescriptors descriptors;
         foreach(Miele::DeviceShort ds, devices) {
-            qCDebug(dcMiele()) << "Setting up device: " << ds.type << " " << ds.name << " " << ds.state;
-            if (!m_mieleDeviceTypeLabelToThingClassId.contains(ds.type.toLower())) {
+            qCDebug(dcMiele()) << "Setting up device: " << ds.type << " " << ds.name;
+            if (!m_mieleDeviceTypeToThingClassId.contains(ds.type)) {
                 qCDebug(dcMiele()) << "Device type [" << ds.type << "] is not supported!";
                 continue;
             }
-            ThingClassId deviceClassId = m_mieleDeviceTypeLabelToThingClassId.value(ds.type.toLower());
+            ThingClassId deviceClassId = m_mieleDeviceTypeToThingClassId.value(ds.type);
             ThingDescriptor descriptor(deviceClassId, ds.name, "Appliance type: " + ds.type, parentDevice->id());
             ParamList params;
             params.append(Param(m_idParamTypeIds.value(deviceClassId), ds.fabNumber));

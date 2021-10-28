@@ -90,12 +90,40 @@ public:
         StatusNotConnected = 255
     };
 
+    enum DeviceType {
+        WashingMachine = 1,
+        TumbleDryer = 2,
+        DishWasher = 7,
+        Oven = 12,
+        OvenMicrowave = 13,
+        HobHighlight = 14,
+        SteamOven = 15,
+        MicroWave = 16,
+        CoffeeSystem = 17,
+        Hood = 18,
+        Fridge = 19,
+        Freezer = 20,
+        FridgeFreezer = 21,
+        VacuumCleaner = 23,
+        WasherDryer = 24,
+        DishWarmer = 25,
+        HobInduction = 27,
+        SteamOvenCombination = 31,
+        WineCabinet = 32,
+        WineConditioningUnit = 33,
+        WineStorageConditioningUnit = 34,
+        SteamOvenMicrowaveCombination = 45,
+        VacuumDrawer = 48,
+        DialogOven= 67,
+        WineCabinetFreezerCombination = 68
+    };
+
     struct DeviceShort {
         QString details;
         QString name;
         QString fabNumber;
         QString state;
-        QString type;
+        DeviceType type;
     };
 
     Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, const QString &language = "en", QObject *parent = nullptr);
@@ -125,7 +153,7 @@ public:
     QUuid setColorsStr(const QString &deviceId, const QString &color);
     QUuid setModes(const QString &deviceId, Mode mode);
     QUuid setVentilationStep(const QString &deviceId, int step);
-    QUuid setStartTime(const QString &deviceId, int seconds);    
+    QUuid setStartTime(const QString &deviceId, int seconds);
 
     // EVENTS
     void connectEventStream();
