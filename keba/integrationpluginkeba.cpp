@@ -127,6 +127,14 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
         QHostAddress address = QHostAddress(thing->paramValue(wallboxThingIpAddressParamTypeId).toString());
 
+        // Check if we have a keba with this ip, if reconfigure the object would already been removed from the hash
+        foreach (KeContact *kebaConnect, m_kebaDevices.values()) {
+            if (kebaConnect->address() == address) {
+                qCWarning(dcKeba()) << "Failed to set up keba for host address" << address.toString() << "because there has already been configured a keba for this ip.";
+                return info->finish(Thing::ThingErrorThingInUse, QT_TR_NOOP("Already configured for this IP address."));
+            }
+        }
+
         KeContact *keba = new KeContact(address, m_kebaDataLayer, this);
         connect(keba, &KeContact::reachableChanged, this, &IntegrationPluginKeba::onConnectionChanged);
         connect(keba, &KeContact::commandExecuted, this, &IntegrationPluginKeba::onCommandExecuted);
@@ -423,7 +431,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
         thing->setStateValue(wallboxSystemEnabledStateTypeId, reportTwo.enableSys);
 
-        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentUser);
+        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, qRound(reportTwo.currentUser));
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
 
         // Set the state limits according to the hardware limits
@@ -592,7 +600,7 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
 
         QUuid requestId;
         if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toDouble() * 1000;
+            int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toUInt() * 1000;
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
         } else if(action.actionTypeId() == wallboxPowerActionTypeId) {
             requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
