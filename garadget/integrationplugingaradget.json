@@ -25,16 +25,6 @@
                         }
 
                     ],
-                    "settingsTypes": [
-                        {
-                            "id": "cc818e83-40d4-4dc3-850e-acb25477aeae",
-                            "name": "openingDuration",
-                            "displayName": "Opening duration [ms]",
-                            "type": "uint",
-                            "minValue": 1000,
-                            "defaultValue": 5000
-                        }
-                    ],
                     "stateTypes": [
                         {
                             "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
@@ -46,35 +36,20 @@
                             "cached": false
                         },
                         {
-                            "id": "e276e6ca-4cb5-46d2-9a78-31f92d78ac70",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": -1
-                        },
-                        {
                             "id": "174509b5-fc3e-4f03-8c93-8e044f0a2ce0" ,
                             "name": "state",
                             "displayName": "State",
                             "displayNameEvent": "State changed",
-                            "displayNameAction": "Set state",
                             "type": "QString",
                             "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
-                            "defaultValue": "closed",
-                            "writable": true
+                            "defaultValue": "closed"
                         },
                         {
                             "id": "d3f711a1-9c79-459d-b697-d427280d9be8" ,
                             "name": "moving",
                             "displayName": "Moving",
                             "displayNameEvent": "Moving changed",
-                            "displayNameAction": "Set moving",
                             "type": "bool",
-                            "writable": true,
                             "defaultValue": false
                         },
                         {
@@ -94,9 +69,7 @@
                             "name": "openingOutput",
                             "displayName": "Openingoutput",
                             "displayNameEvent": "Openingoutput changed",
-                            "displayNameAction": "Set openingOutput",
                             "type": "bool",
-                            "writable": true,
                             "defaultValue": false,
                             "ioType": "digitalInput"
                         },
@@ -105,24 +78,39 @@
                             "name": "closingOutput",
                             "displayName": "Closingoutput",
                             "displayNameEvent": "Closingoutput changed",
-                            "displayNameAction": "Set closingOutput",
                             "type": "bool",
-                            "writable": true,
-                            "defaultValue": false,
-                            "ioType": "digitalInput"
+                            "defaultValue": false
                         },
                         {
-                            "id": "a7861633-4fb5-46b5-984b-af648303661c" ,
-                            "name": "nme",
-                            "displayName": "name of Device",
-                            "displayNameEvent": "Initial nme",
-                            "displayNameAction": "Initial NME name",
-                            "type": "QString",
-                            "writable": true,
-                            "defaultValue": "garage"
+                            "id": "656a181e-5c06-4bb6-8c5d-7921db07bef6" ,
+                            "name": "srt",
+                            "displayName": "Reflection Threshold 0-80",
+                            "displayNameEvent": "Reflection Threshold changed",
+                            "displayNameAction": "Set Reflection Threshold value",
+                            "type": "int",
+                            "defaultValue": 25,
+                            "writable": true
+                        },
+                        {
+                            "id": "c38e89db-b259-4fa0-9f20-03fe3b8a7514" ,
+                            "name": "rlt",
+                            "displayName": "Button Press Time in 10-2000 ms",
+                            "displayNameEvent": "Button Press Time changed",
+                            "displayNameAction": "Set Button Press Time value",
+                            "type": "int",
+                            "defaultValue": 300,
+                            "writable": true
+                        },
+                        {
+                            "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
+                            "name": "mtt",
+                            "displayName": "Door Moving Time in 1-120 Sec",
+                            "displayNameEvent": "Door Moving Time changed",
+                            "displayNameAction": "Set Door Moving Time value",
+                            "type": "int",
+                            "defaultValue": 10,
+                            "writable": true
                         }
-
-
                     ],
                     "actionTypes": [
                     {
@@ -140,44 +128,42 @@
                         "name": "stop",
                         "displayName": "Stop"
                     },
-
-                        {
-                            "id": "4cde52f7-78f9-49a4-b4c3-76bd702bc473",
-                            "name": "trigger",
-                            "displayName": "Publish",
-                            "paramTypes": [
-                                {
-                                    "id": "9208d419-82d4-4806-a15d-210991daf0ac",
-                                    "name": "topic",
-                                    "displayName": "Topic",
-                                    "type": "QString",
-                                    "defaultValue": "/"
-                                },
-                                {
-                                    "id": "088e7db5-c814-4165-b9ff-a411a4c20f19",
-                                    "name": "data",
-                                    "displayName": "Payload",
-                                    "type": "QString",
-                                    "defaultValue": ""
-                                },
-                                {
-                                    "id": "140d859b-87b7-44f0-b54f-a11846e24985",
-                                    "name": "qos",
-                                    "displayName": "QoS",
-                                    "type": "int",
-                                    "minValue": 0,
-                                    "maxValue": 2,
-                                    "defaultValue": 0
-                                },
-                                {
-                                    "id": "44079c1a-9a0a-426d-9508-5b2dcbe40a90",
-                                    "name": "retain",
-                                    "displayName": "Retain message",
-                                    "type": "bool",
-                                    "defaultValue": false
-                                }
-                            ]
-                        }
+                    {
+                        "id": "4cde52f7-78f9-49a4-b4c3-76bd702bc473",
+                        "name": "trigger",
+                        "displayName": "Publish",
+                        "paramTypes": [
+                            {
+                                "id": "9208d419-82d4-4806-a15d-210991daf0ac",
+                                "name": "topic",
+                                "displayName": "Topic",
+                                "type": "QString",
+                                "defaultValue": "/"
+                            },
+                            {
+                                "id": "088e7db5-c814-4165-b9ff-a411a4c20f19",
+                                "name": "data",
+                                "displayName": "Payload",
+                                "type": "QString",
+                                "defaultValue": ""
+                            },
+                            {
+                                "id": "140d859b-87b7-44f0-b54f-a11846e24985",
+                                "name": "qos",
+                                "displayName": "QoS",
+                                "type": "int",
+                                "minValue": 0,
+                                "maxValue": 2,
+                                "defaultValue": 0
+                            },
+                            {
+                                "id": "44079c1a-9a0a-426d-9508-5b2dcbe40a90",
+                                "name": "retain",
+                                "displayName": "Retain message",
+                                "type": "bool",
+                                "defaultValue": false
+                            }
+                        ]}
                      ],
                     "eventTypes": [
                         {
