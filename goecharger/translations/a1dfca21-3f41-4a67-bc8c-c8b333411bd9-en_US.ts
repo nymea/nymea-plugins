@@ -550,37 +550,37 @@ The name of the StateType ({08b107bc-1284-455d-9e5a-6a1c3adc389f}) of ThingClass
     </message>
     <message>
         <location filename="../integrationplugingoecharger.cpp" line="116"/>
-        <location filename="../integrationplugingoecharger.cpp" line="403"/>
-        <location filename="../integrationplugingoecharger.cpp" line="450"/>
-        <location filename="../integrationplugingoecharger.cpp" line="480"/>
-        <location filename="../integrationplugingoecharger.cpp" line="510"/>
-        <location filename="../integrationplugingoecharger.cpp" line="540"/>
-        <location filename="../integrationplugingoecharger.cpp" line="570"/>
+        <location filename="../integrationplugingoecharger.cpp" line="467"/>
+        <location filename="../integrationplugingoecharger.cpp" line="514"/>
+        <location filename="../integrationplugingoecharger.cpp" line="544"/>
+        <location filename="../integrationplugingoecharger.cpp" line="574"/>
+        <location filename="../integrationplugingoecharger.cpp" line="604"/>
+        <location filename="../integrationplugingoecharger.cpp" line="634"/>
         <source>The wallbox does not seem to be reachable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../integrationplugingoecharger.cpp" line="125"/>
-        <location filename="../integrationplugingoecharger.cpp" line="412"/>
-        <location filename="../integrationplugingoecharger.cpp" line="459"/>
-        <location filename="../integrationplugingoecharger.cpp" line="489"/>
-        <location filename="../integrationplugingoecharger.cpp" line="519"/>
-        <location filename="../integrationplugingoecharger.cpp" line="549"/>
-        <location filename="../integrationplugingoecharger.cpp" line="579"/>
+        <location filename="../integrationplugingoecharger.cpp" line="476"/>
+        <location filename="../integrationplugingoecharger.cpp" line="523"/>
+        <location filename="../integrationplugingoecharger.cpp" line="553"/>
+        <location filename="../integrationplugingoecharger.cpp" line="583"/>
+        <location filename="../integrationplugingoecharger.cpp" line="613"/>
+        <location filename="../integrationplugingoecharger.cpp" line="643"/>
         <source>The wallbox returned invalid data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingoecharger.cpp" line="433"/>
+        <location filename="../integrationplugingoecharger.cpp" line="497"/>
         <source>Error creating MQTT channel. Please check MQTT server settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingoecharger.cpp" line="466"/>
-        <location filename="../integrationplugingoecharger.cpp" line="496"/>
-        <location filename="../integrationplugingoecharger.cpp" line="526"/>
-        <location filename="../integrationplugingoecharger.cpp" line="556"/>
-        <location filename="../integrationplugingoecharger.cpp" line="587"/>
+        <location filename="../integrationplugingoecharger.cpp" line="530"/>
+        <location filename="../integrationplugingoecharger.cpp" line="560"/>
+        <location filename="../integrationplugingoecharger.cpp" line="590"/>
+        <location filename="../integrationplugingoecharger.cpp" line="620"/>
+        <location filename="../integrationplugingoecharger.cpp" line="651"/>
         <source>Error while configuring MQTT settings on the wallbox.</source>
         <translation type="unfinished"></translation>
     </message>

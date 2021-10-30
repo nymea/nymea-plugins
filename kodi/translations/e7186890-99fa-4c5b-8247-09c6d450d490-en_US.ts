@@ -451,12 +451,12 @@ The name of the StateType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../kodi.cpp" line="857"/>
+        <location filename="../kodi.cpp" line="862"/>
         <source>%1 seasons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../kodi.cpp" line="890"/>
+        <location filename="../kodi.cpp" line="895"/>
         <source>Season %1</source>
         <translation type="unfinished"></translation>
     </message>

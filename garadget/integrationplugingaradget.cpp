@@ -190,6 +190,9 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
             return;
         }
         QJsonObject jo = jsonDoc.object();
+        thing->setStateValue(garadgetSignallevelStateTypeId, jo.value(QString("signal")).toInt());
+        thing->setStateValue(garadgetSensorlevelStateTypeId, jo.value(QString("sensor")).toInt());
+        thing->setStateValue(garadgetBrightlevelStateTypeId, jo.value(QString("bright")).toInt());
         if (jo.value(QString("status")).toString().contains(QString("stopped"))) {
             thing->setStateValue(garadgetStateStateTypeId, "intermediate");
             qCDebug(dcGaradget) << "Garadget is" << jo.value(QString("status")).toString() ;

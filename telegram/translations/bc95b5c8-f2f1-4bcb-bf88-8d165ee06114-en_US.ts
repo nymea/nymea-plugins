@@ -5,7 +5,7 @@
     <name>IntegrationPluginTelegram</name>
     <message>
         <location filename="../integrationplugintelegram.cpp" line="58"/>
-        <location filename="../integrationplugintelegram.cpp" line="119"/>
+        <location filename="../integrationplugintelegram.cpp" line="138"/>
         <source>Error connecting to Telegram.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
@@ -21,7 +21,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugintelegram.cpp" line="169"/>
+        <location filename="../integrationplugintelegram.cpp" line="188"/>
         <source>The Telegram bot account seems to be disabled.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/telegram/plugininfo.h" line="34"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/telegram/plugininfo.h" line="37"/>
-        <source>Access token</source>
+        <source>Bot access token</source>
         <extracomment>The name of the ParamType (ThingClass: telegram, Type: discovery, ID: {2350bef6-d237-4bee-8e7e-6ab2c205f332})
 ----------
 The name of the ParamType (ThingClass: telegram, Type: thing, ID: {28e4c161-f77a-4baa-b415-dc693330756f})</extracomment>

@@ -4,14 +4,14 @@
 <context>
     <name>GpioController</name>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="211"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="215"/>
         <source>Gpio Controller</source>
         <extracomment>The name of the plugin GpioController ({127ead55-996a-44ac-ba82-fc3c634e018a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="205"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="208"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="209"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="212"/>
         <source>GPIO Output</source>
         <extracomment>The name of the ThingClass ({75d54a59-f9b0-4bc4-a86c-6b1fc47e0663})
 ----------
@@ -19,12 +19,12 @@ The name of the ThingClass ({3885c520-e202-4435-88f6-3c35c362b2e6})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="121"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="124"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="127"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="130"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="133"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="136"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="125"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="128"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="131"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="134"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="137"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="140"/>
         <source>Counter</source>
         <extracomment>The name of the ParamType (ThingClass: counterBbb, EventType: counter, ID: {fb5181d0-644b-4ab7-afa0-b7ddc8951526})
 ----------
@@ -40,14 +40,14 @@ The name of the ThingClass ({75b13371-a064-47a7-bb82-e9d93a5b5027})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="94"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="97"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="100"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="103"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="106"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="109"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="112"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="115"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="98"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="101"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="104"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="107"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="110"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="113"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="116"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="119"/>
         <source>Active low</source>
         <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {8745fbd1-d904-4551-93f4-0f923fcee9b5})
 ----------
@@ -67,8 +67,8 @@ The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {4dfddecc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="139"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="142"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="143"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="146"/>
         <source>Counter changed</source>
         <extracomment>The name of the EventType ({fb5181d0-644b-4ab7-afa0-b7ddc8951526}) of ThingClass counterBbb
 ----------
@@ -76,14 +76,14 @@ The name of the EventType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="169"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="172"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="175"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="178"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="181"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="184"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="187"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="190"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="173"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="176"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="179"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="182"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="185"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="188"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="191"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="194"/>
         <source>GPIO</source>
         <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {68bc0f3b-18c3-4a60-a2df-85bc0605caec})
 ----------
@@ -103,8 +103,8 @@ The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {9eda783f
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="214"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="217"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="218"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="221"/>
         <source>Long pressed</source>
         <extracomment>The name of the EventType ({11ffeeed-23fe-4cd7-bf15-c95c7250448c}) of ThingClass gpioButtonBbb
 ----------
@@ -112,14 +112,14 @@ The name of the EventType ({5ad39e3d-b155-4091-a7ef-d843c00d75aa}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="220"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="223"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="226"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="229"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="232"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="235"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="238"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="241"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="230"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="233"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="236"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="239"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="242"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="245"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="248"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="251"/>
         <source>Pin number</source>
         <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {f9da4a22-b010-4823-9b1c-d1f422c3ad2b})
 ----------
@@ -139,14 +139,14 @@ The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {2204d278
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="145"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="148"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="151"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="154"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="157"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="160"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="163"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="166"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="149"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="152"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="155"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="158"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="161"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="164"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="167"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="170"/>
         <source>Description</source>
         <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {cba6a527-9f5c-4c05-8602-60e0c920fd26})
 ----------
@@ -166,9 +166,9 @@ The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {504798eb
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="268"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="271"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="274"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="278"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="281"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="284"/>
         <source>Power changed</source>
         <extracomment>The name of the EventType ({22440876-417a-4d57-8e01-efe26ef9f235}) of ThingClass gpioInputBbb
 ----------
@@ -178,14 +178,14 @@ The name of the EventType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="244"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="247"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="250"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="253"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="256"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="259"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="262"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="265"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="254"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="257"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="260"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="263"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="266"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="269"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="272"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="275"/>
         <source>Power</source>
         <extracomment>The name of the ParamType (ThingClass: gpioInputBbb, EventType: power, ID: {22440876-417a-4d57-8e01-efe26ef9f235})
 ----------
@@ -205,8 +205,8 @@ The name of the StateType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="193"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="196"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="197"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="200"/>
         <source>GPIO Button</source>
         <extracomment>The name of the ThingClass ({4a4b79b9-7e43-4fd7-840f-31108bef0ee2})
 ----------
@@ -214,8 +214,8 @@ The name of the ThingClass ({1abd4dad-0757-4160-8df1-75c45bd61e6e})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="199"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="202"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="203"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="206"/>
         <source>GPIO Input</source>
         <extracomment>The name of the ThingClass ({ffd2aa29-55cc-4824-ba95-c311784f7824})
 ----------
@@ -223,8 +223,17 @@ The name of the ThingClass ({6aff228b-0410-4ef9-9593-51e8639aacea})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="277"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="280"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="224"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="227"/>
+        <source>Long pressed timeout [ms]</source>
+        <extracomment>The name of the ParamType (ThingClass: gpioButtonBbb, Type: settings, ID: {007be75a-bfcd-4039-b8ab-9bce25421894})
+----------
+The name of the ParamType (ThingClass: gpioButtonRpi, Type: settings, ID: {46a25783-3e96-4489-a3f0-15236d938f17})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="287"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="290"/>
         <source>Powered</source>
         <extracomment>The name of the ParamType (ThingClass: gpioInputRpi, EventType: power, ID: {57f1b7cc-26c8-434b-ba04-d3077dc886c8})
 ----------
@@ -232,20 +241,29 @@ The name of the StateType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="283"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="293"/>
         <source>Powered changed</source>
         <extracomment>The name of the EventType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of ThingClass gpioInputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="292"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="302"/>
         <source>Raspberry Pi</source>
         <extracomment>The name of the vendor ({f0d00b66-bbd8-4a07-8591-ea48a61b229e})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="295"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="298"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="305"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="308"/>
+        <source>Repeat long pressed</source>
+        <extracomment>The name of the ParamType (ThingClass: gpioButtonBbb, Type: settings, ID: {292bf500-b7ab-428b-908c-2fedae295ee2})
+----------
+The name of the ParamType (ThingClass: gpioButtonRpi, Type: settings, ID: {d826f02e-7528-4ad5-ac71-f49df988114d})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="311"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="314"/>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of ThingClass gpioOutputBbb
 ----------
@@ -253,8 +271,8 @@ The name of the ActionType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="286"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="289"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="296"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="299"/>
         <source>Pressed</source>
         <extracomment>The name of the EventType ({d02b16a8-a242-41f5-b4e0-d3209849f25e}) of ThingClass gpioButtonBbb
 ----------
@@ -262,7 +280,7 @@ The name of the EventType ({28330833-158c-4f99-9f6e-407ee8f29a4e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="118"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="122"/>
         <source>Beaglebone Black</source>
         <extracomment>The name of the vendor ({7835d14b-b455-49bd-9f31-72c6e8c3033d})</extracomment>
         <translation type="unfinished"></translation>
@@ -271,59 +289,62 @@ The name of the EventType ({28330833-158c-4f99-9f6e-407ee8f29a4e}) of ThingClass
 <context>
     <name>IntegrationPluginGpio</name>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="76"/>
+        <location filename="../integrationplugingpio.cpp" line="188"/>
         <source>No GPIOs found on this system.</source>
         <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="89"/>
+        <location filename="../integrationplugingpio.cpp" line="201"/>
         <source>Exporting GPIO failed.</source>
         <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="96"/>
+        <location filename="../integrationplugingpio.cpp" line="208"/>
         <source>Configuring output GPIO failed.</source>
         <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="103"/>
+        <location filename="../integrationplugingpio.cpp" line="215"/>
         <source>Configuring GPIO active low failed.</source>
         <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="110"/>
-        <location filename="../integrationplugingpio.cpp" line="431"/>
-        <location filename="../integrationplugingpio.cpp" line="451"/>
-        <source>Setting GPIO value failed.</source>
-        <extracomment>Error setting up GPIO thing
-----------
-Error executing GPIO action</extracomment>
+        <location filename="../integrationplugingpio.cpp" line="223"/>
+        <source>Set GPIO low failed.</source>
+        <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="130"/>
-        <location filename="../integrationplugingpio.cpp" line="162"/>
+        <location filename="../integrationplugingpio.cpp" line="526"/>
+        <location filename="../integrationplugingpio.cpp" line="546"/>
+        <source>Setting GPIO value failed.</source>
+        <extracomment>Error executing GPIO action</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="245"/>
+        <location filename="../integrationplugingpio.cpp" line="275"/>
         <source>Enabling GPIO monitor failed.</source>
         <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="191"/>
+        <location filename="../integrationplugingpio.cpp" line="313"/>
         <source>Enabling GPIO button failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="233"/>
+        <location filename="../integrationplugingpio.cpp" line="77"/>
         <source>No GPIOs available on this system.</source>
         <extracomment>Error discovering GPIO devices</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationplugingpio.cpp" line="415"/>
+        <location filename="../integrationplugingpio.cpp" line="510"/>
         <source>GPIO not found</source>
         <extracomment>Error executing GPIO action</extracomment>
         <translation type="unfinished"></translation>

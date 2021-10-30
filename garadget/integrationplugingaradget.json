@@ -1,5 +1,5 @@
 {
-    "name": "Garadget",
+    "name": "garadget",
     "displayName": "Garadget",
     "id": "476781af-ad41-423b-b9bb-f308f2aff339",
     "vendors": [
@@ -44,6 +44,31 @@
                             "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
                             "defaultValue": "closed"
                         },
+                        {
+                            "id": "024f178c-a920-42d4-887f-1c90a96d5eb3",
+                            "name": "signallevel",
+                            "displayName": "Signal Level",
+                            "displayNameEvent": "Signal Level changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4aaeefbd-46d9-4111-b262-a001a47ecb22",
+                            "name": "sensorlevel",
+                            "displayName": "Sensor Level",
+                            "displayNameEvent": "Sensor Level changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "bd7fece8-3ff6-421a-bb5e-80323beb8d8d",
+                            "name": "brightlevel",
+                            "displayName": "Ambient Brightness Level",
+                            "displayNameEvent": "Ambient Brightness changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+
                         {
                             "id": "656a181e-5c06-4bb6-8c5d-7921db07bef6" ,
                             "name": "srt",
