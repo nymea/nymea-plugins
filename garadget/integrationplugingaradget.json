@@ -1,0 +1,159 @@
+{
+    "name": "Garadget",
+    "displayName": "Garadget",
+    "id": "476781af-ad41-423b-b9bb-f308f2aff339",
+    "vendors": [
+        {
+            "name": "Garadget",
+            "displayName": "Garadget",
+            "id": "22d59bee-79cc-4dea-b742-30ac6bdcf2c9",
+            "thingClasses": [
+                {
+                    "name": "garadget",
+                    "displayName": "Garadget",
+                    "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": ["statefulgaragedoor", "inputtrigger", "outputtrigger"],
+                    "paramTypes": [
+                        {
+                            "id": "54a11a17-fc37-4316-891f-001c55e38220",
+                            "name":"deviceName",
+                            "displayName": "deviceName",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "174509b5-fc3e-4f03-8c93-8e044f0a2ce0" ,
+                            "name": "state",
+                            "displayName": "State",
+                            "displayNameEvent": "State changed",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
+                            "defaultValue": "closed"
+                        },
+                        {
+                            "id": "656a181e-5c06-4bb6-8c5d-7921db07bef6" ,
+                            "name": "srt",
+                            "displayName": "Reflection Threshold 0-80",
+                            "displayNameEvent": "Reflection Threshold changed",
+                            "displayNameAction": "Set Reflection Threshold value",
+                            "type": "int",
+                            "defaultValue": 25,
+                            "writable": true
+                        },
+                        {
+                            "id": "c38e89db-b259-4fa0-9f20-03fe3b8a7514" ,
+                            "name": "rlt",
+                            "displayName": "Button Press Time in 10-2000 ms",
+                            "displayNameEvent": "Button Press Time changed",
+                            "displayNameAction": "Set Button Press Time value",
+                            "type": "int",
+                            "defaultValue": 300,
+                            "writable": true
+                        },
+                        {
+                            "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
+                            "name": "mtt",
+                            "displayName": "Door Moving Time in 1-120 Sec",
+                            "displayNameEvent": "Door Moving Time changed",
+                            "displayNameAction": "Set Door Moving Time value",
+                            "type": "int",
+                            "defaultValue": 10,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                    {
+                        "id": "ae3b1c67-7219-4768-a1c7-55c3b9a610cb" ,
+                        "name": "open",
+                        "displayName": "Open"
+                    },
+                    {
+                        "id": "56a9e131-b65e-4622-9a9b-f5b42d0021ef" ,
+                        "name": "close",
+                        "displayName": "Close"
+                    },
+                    {
+                        "id": "12ea84c1-0650-4ac1-a02c-de95965def92" ,
+                        "name": "stop",
+                        "displayName": "Stop"
+                    },
+                    {
+                        "id": "4cde52f7-78f9-49a4-b4c3-76bd702bc473",
+                        "name": "trigger",
+                        "displayName": "Publish",
+                        "paramTypes": [
+                            {
+                                "id": "9208d419-82d4-4806-a15d-210991daf0ac",
+                                "name": "topic",
+                                "displayName": "Topic",
+                                "type": "QString",
+                                "defaultValue": "/"
+                            },
+                            {
+                                "id": "088e7db5-c814-4165-b9ff-a411a4c20f19",
+                                "name": "data",
+                                "displayName": "Payload",
+                                "type": "QString",
+                                "defaultValue": ""
+                            },
+                            {
+                                "id": "140d859b-87b7-44f0-b54f-a11846e24985",
+                                "name": "qos",
+                                "displayName": "QoS",
+                                "type": "int",
+                                "minValue": 0,
+                                "maxValue": 2,
+                                "defaultValue": 0
+                            },
+                            {
+                                "id": "44079c1a-9a0a-426d-9508-5b2dcbe40a90",
+                                "name": "retain",
+                                "displayName": "Retain message",
+                                "type": "bool",
+                                "defaultValue": false
+                            }
+                        ]}
+                     ],
+                    "eventTypes": [
+                        {
+                            "id": "a42983a9-9194-458d-9e67-fc4d7ce27e40",
+                            "name": "triggered",
+                            "displayName": "Publish received",
+                            "paramTypes": [
+                                {
+                                    "id": "5dfb6ce9-095b-4476-ac94-c7c35653de1f",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "7573d3c5-a867-4123-a7f9-65eb35eac233",
+                                    "name": "data",
+                                    "displayName": "Playload",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
