@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../integrationpluginfronius.cpp" line="145"/>
-        <location filename="../integrationpluginfronius.cpp" line="519"/>
+        <location filename="../integrationpluginfronius.cpp" line="523"/>
         <source>Please try again</source>
         <translation type="unfinished"></translation>
     </message>

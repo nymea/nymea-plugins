@@ -4,24 +4,24 @@
 <context>
     <name>IntegrationPluginOneWire</name>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="57"/>
+        <location filename="../integrationpluginonewire.cpp" line="58"/>
         <source>No one wire interface initialized. Please set up a one wire interface first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="119"/>
+        <location filename="../integrationpluginonewire.cpp" line="120"/>
         <source>There can only be one one wire interface per system.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="128"/>
+        <location filename="../integrationpluginonewire.cpp" line="129"/>
         <source>Error initializing one wire interface.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="239"/>
+        <location filename="../integrationpluginonewire.cpp" line="240"/>
         <source>OWFS interface is not available.</source>
         <translation type="unfinished"></translation>
     </message>

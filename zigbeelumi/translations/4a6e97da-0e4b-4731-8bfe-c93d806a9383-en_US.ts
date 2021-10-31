@@ -4,22 +4,22 @@
 <context>
     <name>ZigbeeLumi</name>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="218"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="221"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="224"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="227"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="230"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="233"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="236"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="239"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="242"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="245"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="248"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="251"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="254"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="257"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="260"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="263"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="223"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="226"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="229"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="232"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="235"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="238"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="241"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="244"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="247"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="250"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="253"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="256"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="259"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="262"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="265"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="268"/>
         <source>Available</source>
         <extracomment>The name of the ParamType (ThingClass: lumiVibrationSensor, EventType: connected, ID: {12970c44-5c59-4c6b-a244-6bc413d32c66})
 ----------
@@ -55,14 +55,14 @@ The name of the StateType ({eb09e3f4-44ea-4ca9-9eac-9a693595fe37}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="266"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="269"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="272"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="275"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="278"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="281"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="284"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="287"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="271"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="274"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="277"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="280"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="283"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="286"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="289"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="292"/>
         <source>Available changed</source>
         <extracomment>The name of the EventType ({12970c44-5c59-4c6b-a244-6bc413d32c66}) of ThingClass lumiVibrationSensor
 ----------
@@ -82,8 +82,8 @@ The name of the EventType ({eb09e3f4-44ea-4ca9-9eac-9a693595fe37}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="290"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="293"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="295"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="298"/>
         <source>Battery critical</source>
         <extracomment>The name of the ParamType (ThingClass: lumiWaterSensor, EventType: batteryCritical, ID: {72aa617c-88cc-4992-a1a2-400b5e19106e})
 ----------
@@ -91,20 +91,20 @@ The name of the StateType ({72aa617c-88cc-4992-a1a2-400b5e19106e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="296"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="301"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the EventType ({72aa617c-88cc-4992-a1a2-400b5e19106e}) of ThingClass lumiWaterSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="299"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="304"/>
         <source>Button longpressed</source>
         <extracomment>The name of the EventType ({9a7a3d9e-faa3-471f-8c82-0bb98d9a788a}) of ThingClass lumiRemote</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="302"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="305"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="307"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="310"/>
         <source>Button name</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, EventType: longPressed, ID: {0a8d4da6-be6e-4b7d-92d7-5cf35d74042f})
 ----------
@@ -112,20 +112,20 @@ The name of the ParamType (ThingClass: lumiRemote, EventType: pressed, ID: {72df
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="308"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="313"/>
         <source>Button pressed</source>
         <extracomment>The name of the EventType ({9a0c5f37-e346-41d9-93a4-4877c012b805}) of ThingClass lumiRemote</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="311"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="316"/>
         <source>Button sensor</source>
         <extracomment>The name of the ThingClass ({42c1edba-cc5f-4eb9-84f8-1b0d47a6f95e})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="314"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="317"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="319"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="322"/>
         <source>Closed</source>
         <extracomment>The name of the ParamType (ThingClass: lumiMagnetSensor, EventType: closed, ID: {6fad76ec-9d36-408d-bbf1-00e5d18bf6b0})
 ----------
@@ -133,18 +133,18 @@ The name of the StateType ({6fad76ec-9d36-408d-bbf1-00e5d18bf6b0}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="320"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="325"/>
         <source>Closed changed</source>
         <extracomment>The name of the EventType ({6fad76ec-9d36-408d-bbf1-00e5d18bf6b0}) of ThingClass lumiMagnetSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="323"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="326"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="329"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="332"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="335"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="338"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="328"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="331"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="334"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="337"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="340"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="343"/>
         <source>Connected</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, EventType: connected, ID: {d1afa3ba-f3bd-47e5-90fa-9d80dcce91d8})
 ----------
@@ -160,9 +160,9 @@ The name of the StateType ({58e01e24-fa6e-4518-ad05-f3b118901f69}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="341"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="344"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="347"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="346"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="349"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="352"/>
         <source>Connected changed</source>
         <extracomment>The name of the EventType ({d1afa3ba-f3bd-47e5-90fa-9d80dcce91d8}) of ThingClass lumiRemote
 ----------
@@ -172,10 +172,10 @@ The name of the EventType ({58e01e24-fa6e-4518-ad05-f3b118901f69}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="350"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="353"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="356"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="359"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="355"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="358"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="361"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="364"/>
         <source>Humidity</source>
         <extracomment>The name of the ParamType (ThingClass: lumiWeatherSensor, EventType: humidity, ID: {27a1e85a-f654-48d8-905d-05b3e2bc499e})
 ----------
@@ -187,8 +187,8 @@ The name of the StateType ({e6559d9e-2c64-485d-bb2b-8a9aec0ac656}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="362"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="365"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="367"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="370"/>
         <source>Humidity changed</source>
         <extracomment>The name of the EventType ({27a1e85a-f654-48d8-905d-05b3e2bc499e}) of ThingClass lumiWeatherSensor
 ----------
@@ -196,17 +196,17 @@ The name of the EventType ({e6559d9e-2c64-485d-bb2b-8a9aec0ac656}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="368"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="371"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="374"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="377"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="380"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="383"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="386"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="389"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="392"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="395"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="398"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="373"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="376"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="379"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="382"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="385"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="388"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="391"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="394"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="397"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="400"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="403"/>
         <source>IEEE adress</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, Type: thing, ID: {cce8b39c-ac8a-4a8f-b66e-b6100a209fb8})
 ----------
@@ -232,16 +232,16 @@ The name of the ParamType (ThingClass: lumiHTSensor, Type: thing, ID: {bd0b2bf2-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="401"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="406"/>
         <source>Identify</source>
         <extracomment>The name of the ActionType ({67052e4d-350a-406f-91a9-3ce3f8eaaa7f}) of ThingClass lumiPowerSocket</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="404"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="407"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="410"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="413"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="409"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="412"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="415"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="418"/>
         <source>Last seen time</source>
         <extracomment>The name of the ParamType (ThingClass: xiaomiMotionSensor, EventType: lastSeenTime, ID: {55229e22-e42b-4d38-af4b-fb668439d38a})
 ----------
@@ -253,8 +253,8 @@ The name of the StateType ({021ce190-a775-40e0-b19b-c6307c73e343}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="416"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="419"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="421"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="424"/>
         <source>Last seen time changed</source>
         <extracomment>The name of the EventType ({55229e22-e42b-4d38-af4b-fb668439d38a}) of ThingClass xiaomiMotionSensor
 ----------
@@ -262,8 +262,8 @@ The name of the EventType ({021ce190-a775-40e0-b19b-c6307c73e343}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="422"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="425"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="427"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="430"/>
         <source>Light intensity</source>
         <extracomment>The name of the ParamType (ThingClass: lumiMotionSensor, EventType: lightIntensity, ID: {eb3fb43e-a9bb-4498-880b-464cbb752ff6})
 ----------
@@ -271,32 +271,32 @@ The name of the StateType ({eb3fb43e-a9bb-4498-880b-464cbb752ff6}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="428"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="433"/>
         <source>Light intensity changed</source>
         <extracomment>The name of the EventType ({eb3fb43e-a9bb-4498-880b-464cbb752ff6}) of ThingClass lumiMotionSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="431"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="436"/>
         <source>Long pressed</source>
         <extracomment>The name of the EventType ({6e9dda9f-e51b-48c4-9839-01aa33085e2c}) of ThingClass lumiButtonSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="434"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="439"/>
         <source>Lumi</source>
         <extracomment>The name of the vendor ({f58dac98-0ba1-408f-946a-25d452080baa})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="437"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="442"/>
         <source>Magnet sensor</source>
         <extracomment>The name of the ThingClass ({b3e30f37-7467-4c66-8694-9fe624aebd10})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="440"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="443"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="445"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="448"/>
         <source>Motion sensor</source>
         <extracomment>The name of the ThingClass ({73bfe746-4fc7-4a2a-a3c2-32dc44214170})
 ----------
@@ -304,9 +304,9 @@ The name of the ThingClass ({b5530192-0891-4934-88a2-7338b069be24})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="446"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="449"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="452"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="451"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="454"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="457"/>
         <source>Power</source>
         <extracomment>The name of the ParamType (ThingClass: lumiPowerSocket, ActionType: power, ID: {4c81aa6b-3a8a-4d2c-be87-29486ca242af})
 ----------
@@ -316,22 +316,22 @@ The name of the StateType ({4c81aa6b-3a8a-4d2c-be87-29486ca242af}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="455"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="460"/>
         <source>Power changed</source>
         <extracomment>The name of the EventType ({4c81aa6b-3a8a-4d2c-be87-29486ca242af}) of ThingClass lumiPowerSocket</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="458"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="463"/>
         <source>Power socket</source>
         <extracomment>The name of the ThingClass ({76afde12-e781-4723-94ca-5704e800e821})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="461"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="464"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="467"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="470"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="466"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="469"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="472"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="475"/>
         <source>Present</source>
         <extracomment>The name of the ParamType (ThingClass: xiaomiMotionSensor, EventType: isPresent, ID: {9a30ff91-64cb-432c-8db7-cf6a751e8601})
 ----------
@@ -343,8 +343,8 @@ The name of the StateType ({fed7582b-c057-42ab-b7c0-d562a2e7917c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="473"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="476"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="478"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="481"/>
         <source>Present changed</source>
         <extracomment>The name of the EventType ({9a30ff91-64cb-432c-8db7-cf6a751e8601}) of ThingClass xiaomiMotionSensor
 ----------
@@ -352,14 +352,14 @@ The name of the EventType ({fed7582b-c057-42ab-b7c0-d562a2e7917c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="479"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="484"/>
         <source>Pressed</source>
         <extracomment>The name of the EventType ({2515e40a-8146-4f11-8d79-2be9e20224e5}) of ThingClass lumiButtonSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="482"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="485"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="487"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="490"/>
         <source>Pressure</source>
         <extracomment>The name of the ParamType (ThingClass: lumiWeatherSensor, EventType: pressure, ID: {7c3861f3-a9db-407e-9459-90a511d7f797})
 ----------
@@ -367,21 +367,21 @@ The name of the StateType ({7c3861f3-a9db-407e-9459-90a511d7f797}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="488"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="493"/>
         <source>Pressure changed</source>
         <extracomment>The name of the EventType ({7c3861f3-a9db-407e-9459-90a511d7f797}) of ThingClass lumiWeatherSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="491"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="496"/>
         <source>Relay</source>
         <extracomment>The name of the ThingClass ({8e381cb1-2caa-4261-be77-e76a538bf67a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="494"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="497"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="500"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="499"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="502"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="505"/>
         <source>Relay 1</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRelay, ActionType: relay1, ID: {486e0df0-cbda-4b67-b844-6f70e5af6891})
 ----------
@@ -391,15 +391,15 @@ The name of the StateType ({486e0df0-cbda-4b67-b844-6f70e5af6891}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="503"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="508"/>
         <source>Relay 1 changed</source>
         <extracomment>The name of the EventType ({486e0df0-cbda-4b67-b844-6f70e5af6891}) of ThingClass lumiRelay</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="506"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="509"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="512"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="511"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="514"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="517"/>
         <source>Relay 2</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRelay, ActionType: relay2, ID: {2caa4f0f-661e-4b59-83e5-8417058e48fd})
 ----------
@@ -409,52 +409,52 @@ The name of the StateType ({2caa4f0f-661e-4b59-83e5-8417058e48fd}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="515"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="520"/>
         <source>Relay 2 changed</source>
         <extracomment>The name of the EventType ({2caa4f0f-661e-4b59-83e5-8417058e48fd}) of ThingClass lumiRelay</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="518"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="523"/>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({4c81aa6b-3a8a-4d2c-be87-29486ca242af}) of ThingClass lumiPowerSocket</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="521"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="526"/>
         <source>Set relay 1</source>
         <extracomment>The name of the ActionType ({486e0df0-cbda-4b67-b844-6f70e5af6891}) of ThingClass lumiRelay</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="524"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="529"/>
         <source>Set relay 2</source>
         <extracomment>The name of the ActionType ({2caa4f0f-661e-4b59-83e5-8417058e48fd}) of ThingClass lumiRelay</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="527"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="530"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="533"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="536"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="539"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="542"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="545"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="548"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="551"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="554"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="557"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="560"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="563"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="566"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="569"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="572"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="575"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="578"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="581"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="584"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="587"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="590"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="532"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="535"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="538"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="541"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="544"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="547"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="550"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="553"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="556"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="559"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="562"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="565"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="568"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="571"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="574"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="577"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="580"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="583"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="586"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="589"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="592"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="595"/>
         <source>Signal strength</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, EventType: signalStrength, ID: {a764dbfb-7b86-439b-94ea-aec742dcb13e})
 ----------
@@ -502,17 +502,17 @@ The name of the StateType ({0cb72e84-01c4-4041-9aee-1dabf26a062e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="593"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="596"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="599"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="602"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="605"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="608"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="611"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="614"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="617"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="620"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="623"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="598"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="601"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="604"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="607"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="610"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="613"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="616"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="619"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="622"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="625"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="628"/>
         <source>Signal strength changed</source>
         <extracomment>The name of the EventType ({a764dbfb-7b86-439b-94ea-aec742dcb13e}) of ThingClass lumiRemote
 ----------
@@ -538,16 +538,16 @@ The name of the EventType ({0cb72e84-01c4-4041-9aee-1dabf26a062e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="626"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="631"/>
         <source>Switch</source>
         <extracomment>The name of the ThingClass ({f8aa2ba1-ce74-4691-b97d-85427f4cf8bd})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="629"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="632"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="635"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="638"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="634"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="637"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="640"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="643"/>
         <source>Temperature</source>
         <extracomment>The name of the ParamType (ThingClass: lumiWeatherSensor, EventType: temperature, ID: {b1641cec-3bf6-4654-b9c0-b81acb3b4481})
 ----------
@@ -559,8 +559,8 @@ The name of the StateType ({152b475e-6bd8-4e6f-8765-0636c0bc8e9d}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="641"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="644"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="646"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="649"/>
         <source>Temperature changed</source>
         <extracomment>The name of the EventType ({b1641cec-3bf6-4654-b9c0-b81acb3b4481}) of ThingClass lumiWeatherSensor
 ----------
@@ -568,14 +568,14 @@ The name of the EventType ({152b475e-6bd8-4e6f-8765-0636c0bc8e9d}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="647"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="652"/>
         <source>Temperature humidity sensor</source>
         <extracomment>The name of the ThingClass ({dfabab0e-d483-43f8-82c6-720899e70c86})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="650"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="653"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="655"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="658"/>
         <source>Time period</source>
         <extracomment>The name of the ParamType (ThingClass: xiaomiMotionSensor, Type: settings, ID: {96183481-42f2-40fc-8a19-5b59bd311720})
 ----------
@@ -583,28 +583,28 @@ The name of the ParamType (ThingClass: lumiMotionSensor, Type: settings, ID: {4a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="656"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="659"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="662"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="665"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="668"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="671"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="674"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="677"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="680"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="683"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="686"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="689"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="692"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="695"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="698"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="701"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="704"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="707"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="710"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="713"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="716"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="719"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="661"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="664"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="667"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="670"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="673"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="676"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="679"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="682"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="685"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="688"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="691"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="694"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="697"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="700"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="703"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="706"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="709"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="712"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="715"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="718"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="721"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="724"/>
         <source>Version</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, EventType: version, ID: {8164c1d0-657e-4347-99fb-f3fdc07af6de})
 ----------
@@ -652,17 +652,17 @@ The name of the StateType ({968ff8bb-b852-48d8-bde2-28cfa810b20e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="722"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="725"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="728"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="731"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="734"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="737"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="740"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="743"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="746"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="749"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="752"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="727"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="730"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="733"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="736"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="739"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="742"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="745"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="748"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="751"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="754"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="757"/>
         <source>Version changed</source>
         <extracomment>The name of the EventType ({8164c1d0-657e-4347-99fb-f3fdc07af6de}) of ThingClass lumiRemote
 ----------
@@ -688,20 +688,20 @@ The name of the EventType ({968ff8bb-b852-48d8-bde2-28cfa810b20e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="755"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="760"/>
         <source>Vibration detected</source>
         <extracomment>The name of the EventType ({ce98b90b-f4fb-431d-a7c9-534fd2b76ba4}) of ThingClass lumiVibrationSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="758"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="763"/>
         <source>Vibration sensor</source>
         <extracomment>The name of the ThingClass ({775be45e-08d8-4ae8-bc95-5721a5317856})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="761"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="764"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="766"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="769"/>
         <source>Water detected</source>
         <extracomment>The name of the ParamType (ThingClass: lumiWaterSensor, EventType: waterDetected, ID: {e43532a7-cbee-446e-9e4a-aff88026ad1a})
 ----------
@@ -709,41 +709,41 @@ The name of the StateType ({e43532a7-cbee-446e-9e4a-aff88026ad1a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="767"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="772"/>
         <source>Water detected changed</source>
         <extracomment>The name of the EventType ({e43532a7-cbee-446e-9e4a-aff88026ad1a}) of ThingClass lumiWaterSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="770"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="775"/>
         <source>Water sensor</source>
         <extracomment>The name of the ThingClass ({e8e18bbe-27bb-4fd7-98fc-f5cef3b5f213})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="773"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="778"/>
         <source>Weather sensor</source>
         <extracomment>The name of the ThingClass ({0b582616-0b05-4ac9-8b59-51b66079b571})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="776"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="781"/>
         <source>Zigbee Lumi</source>
         <extracomment>The name of the plugin ZigbeeLumi ({4a6e97da-0e4b-4731-8bfe-c93d806a9383})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="779"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="782"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="785"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="788"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="791"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="794"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="797"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="800"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="803"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="806"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="809"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="784"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="787"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="790"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="793"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="796"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="799"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="802"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="805"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="808"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="811"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/zigbeelumi/plugininfo.h" line="814"/>
         <source>Zigbee network UUID</source>
         <extracomment>The name of the ParamType (ThingClass: lumiRemote, Type: thing, ID: {8eec3cae-8f3b-4c32-b26a-f7c49844841e})
 ----------
