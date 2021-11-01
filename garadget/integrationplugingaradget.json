@@ -46,10 +46,13 @@
                         },
                         {
                             "id": "024f178c-a920-42d4-887f-1c90a96d5eb3",
-                            "name": "signallevel",
+                            "name": "signalStrength",
                             "displayName": "WIFI Signal Level",
                             "displayNameEvent": "WIFI Signal Level changed",
-                            "type": "int",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
                             "defaultValue": 0
                         },
                         {
