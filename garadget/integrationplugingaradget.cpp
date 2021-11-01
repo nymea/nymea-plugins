@@ -213,4 +213,10 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt()/1000);
         qCDebug(dcGaradget) << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() * 1000;
     }
+    if (topic.endsWith("/set-config")){
+        if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) ) {
+            thing->setStateValue(garadgetConnectedStateTypeId, false);
+            qCDebug(dcGaradget) << "set connected to false";
+        }
+    }
 }
