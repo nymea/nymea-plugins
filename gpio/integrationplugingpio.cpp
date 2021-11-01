@@ -245,11 +245,11 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::enabledChanged, thing, [thing](bool enabled){
+        connect(monitor, &GpioMonitor::interruptOccurred, thing, [thing](bool value){
             if (thing->thingClassId() == gpioInputRpiThingClassId) {
-                thing->setStateValue(gpioInputRpiPowerStateTypeId, enabled);
+                thing->setStateValue(gpioInputRpiPowerStateTypeId, value);
             } else if (thing->thingClassId() == gpioInputBbbThingClassId) {
-                thing->setStateValue(gpioInputBbbPowerStateTypeId, enabled);
+                thing->setStateValue(gpioInputBbbPowerStateTypeId, value);
             }
         });
 
@@ -275,9 +275,9 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::enabledChanged, thing, [this, thing](bool enabled){
+        connect(monitor, &GpioMonitor::interruptOccurred, thing, [this, thing](bool value){
             if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
-                if (enabled) {
+                if (value) {
                     m_counterValues[thing->id()] += 1;
                 }
             }

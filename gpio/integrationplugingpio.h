@@ -36,9 +36,9 @@
 #include "gpiodescriptor.h"
 
 // libnymea-gpio
-#include "gpio.h"
-#include "gpiomonitor.h"
-#include "gpiobutton.h"
+#include <gpio.h>
+#include <gpiomonitor.h>
+#include <gpiobutton.h>
 
 class IntegrationPluginGpio : public IntegrationPlugin
 {
