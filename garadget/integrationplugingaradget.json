@@ -47,7 +47,7 @@
                         {
                             "id": "024f178c-a920-42d4-887f-1c90a96d5eb3",
                             "name": "signallevel",
-                            "displayName": "Signal Level",
+                            "displayName": "WIFI Signal Level",
                             "displayNameEvent": "Signal Level changed",
                             "type": "int",
                             "defaultValue": 0
@@ -55,9 +55,10 @@
                         {
                             "id": "4aaeefbd-46d9-4111-b262-a001a47ecb22",
                             "name": "sensorlevel",
-                            "displayName": "Sensor Level",
+                            "displayName": "Lazer Sensor Level",
                             "displayNameEvent": "Sensor Level changed",
                             "type": "int",
+                            "suggestLogging": true,
                             "defaultValue": 0
                         },
                         {
@@ -66,6 +67,7 @@
                             "displayName": "Ambient Brightness Level",
                             "displayNameEvent": "Ambient Brightness changed",
                             "type": "int",
+                            "suggestLogging": true,
                             "defaultValue": 0
                         },
 
@@ -168,7 +170,7 @@
                                 {
                                     "id": "7573d3c5-a867-4123-a7f9-65eb35eac233",
                                     "name": "data",
-                                    "displayName": "Playload",
+                                    "displayName": "Payload",
                                     "type": "QString"
                                 }
                             ]
