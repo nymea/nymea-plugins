@@ -19,7 +19,7 @@ Garadget Initial Configuration:
         enter nymead Broker Port:
         enter nymead Broker User ID: (if needed)
         enter nymead Broker Password: (if needed)
-        enter Device Topic ID: (this must be unique across all garadget devices and contain NO /s allowed)
+        enter Device Topic ID: (this must be unique across all garadget devices and contain NO /s)
     select Save & Connect (The device will reconnect to your WiFi network via dhcp)
 
 nymea configuration:
@@ -31,15 +31,13 @@ nymea configuration:
 
 nymea operation:
     on the Garadget window, the up icon, stop icon, and down icon cause the device to activate the garage door.
-    on the Garadget detail window (uppre righthand corner, you can tune the Garadget configuration for:
+    on the Garadget detail window (uppre righthand corner), you can tune the Garadget configuration for:
         Refection Threshold
         Button Press Time
         Door Moving Time. (you should adjust to the time it takes your door to open)
     when changed it takes a couple seconds for Garadget to respond and update the values shown in the nymea window.
 
 notes:
-    Publish does not send any messages.
-    other than the three types shown above and the open, close and stop items, no action is taken by the plugin.
     DECKO Garage Door opener requires a ~ 3.3 Volt zener diode in series of the connection between the Garadget and the DECKO
 
 Issues: Garadget operating a DECKO garage door opener (may not be issue with other garage door openers)
@@ -48,4 +46,5 @@ Issues: Garadget operating a DECKO garage door opener (may not be issue with oth
     This confusion is an issue of the Garadget and not of nymea-plugin.
 
     The plugin will show connected as soon as the Garadget connects to the broker.
-    The plugin does NOT know if the Garadget disconnects and therefore will continue to show connected even if the Garadget is no longer connected.
+    The plugin will detect if the device is commanded to change broker connection and therefore set state to disconnected.
+    The plugin does NOT know if the Garadget disconnects (power down or breakage) and therefore will continue to show connected even if the Garadget is no longer connected.

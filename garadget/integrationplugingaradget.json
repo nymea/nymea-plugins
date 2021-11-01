@@ -14,7 +14,7 @@
                     "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
                     "setupMethod": "JustAdd",
                     "createMethods": ["User"],
-                    "interfaces": ["statefulgaragedoor", "inputtrigger"],
+                    "interfaces": ["statefulgaragedoor", "inputtrigger", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "54a11a17-fc37-4316-891f-001c55e38220",
@@ -48,7 +48,7 @@
                             "id": "024f178c-a920-42d4-887f-1c90a96d5eb3",
                             "name": "signallevel",
                             "displayName": "WIFI Signal Level",
-                            "displayNameEvent": "Signal Level changed",
+                            "displayNameEvent": "WIFI Signal Level changed",
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -56,7 +56,7 @@
                             "id": "4aaeefbd-46d9-4111-b262-a001a47ecb22",
                             "name": "sensorlevel",
                             "displayName": "Lazer Sensor Level",
-                            "displayNameEvent": "Sensor Level changed",
+                            "displayNameEvent": "Lazer Sensor Level changed",
                             "type": "int",
                             "suggestLogging": true,
                             "defaultValue": 0

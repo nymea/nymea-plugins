@@ -216,7 +216,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     if (topic.endsWith("/set-config")){
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
-            qCDebug(dcGaradget) << "set connected to false";
+            qCDebug(dcGaradget) << "Detected change of Broker msg - set connected to false";
         }
     }
 }
