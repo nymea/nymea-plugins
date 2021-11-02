@@ -1276,7 +1276,9 @@
                                     "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
                                     "name": "count",
                                     "displayName": "Press count",
-                                    "type": "uint"
+                                    "type": "uint",
+                                    "minValue": 1,
+                                    "maxValue": 3
                                  }
                             ]
                         },

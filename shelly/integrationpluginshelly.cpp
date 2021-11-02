@@ -1519,7 +1519,7 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
         url.setScheme("http");
         url.setHost(address);
         url.setPort(80);
-        url.setPath("/settings/relay/0");
+        url.setPath(QString("/settings/relay/%1").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() + 1));
         url.setUserName(parentDevice->paramValue(usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
         url.setPassword(parentDevice->paramValue(passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
 
