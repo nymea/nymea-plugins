@@ -50,7 +50,7 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
         thing->setParamValue(garadgetThingDeviceNameParamTypeId,"garadget/" + device + "/#" );
     }
 
-    qCDebug(dcGaradget) << "entered setupThing" << thing->paramValue(garadgetThingDeviceNameParamTypeId);
+    qCDebug(dcGaradget) << "entered setupThing" << thing->paramValue(garadgetThingDeviceNameParamTypeId) ;
     MqttClient *client = nullptr;
     if (thing->thingClassId() == garadgetThingClassId) {
         client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
@@ -69,13 +69,48 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
         qCDebug(dcGaradget) << "entered is Connected" << client;
         subscribe(thing);
     }
-
+    m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
 }
+
+
+void IntegrationPluginGaradget::postSetupThing(Thing *thing)
+{
+
+    if (!m_pluginTimer) {
+        QString name = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
+        if (name.endsWith("/#")) {
+            name.chop(2);
+        }
+        name = name + "/command";
+        qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
+        uint updatetime = 10;
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
+            if (m_garadgetconnect == 1) {
+                foreach (Thing *thing, myThings()) {
+                    m_mqttClients.value(thing)->publish(name, "get-status");
+                }
+            }
+            uint timesinceupdate = QDateTime::currentDateTime().toTime_t() - m_lastActivityTimeStamps[thing].toTime_t();
+            if ((timesinceupdate > updatetime) && (m_garadgetconnect == 1)) {
+                qCDebug(dcGaradget) << "disconnect garadget" << m_lastActivityTimeStamps[thing] << timesinceupdate ;
+                thing->setStateValue(garadgetConnectedStateTypeId, false);
+                m_garadgetconnect = 0;
+            }
+        });
+    }
+}
+
+
 
 void IntegrationPluginGaradget::thingRemoved(Thing *thing)
 {
     qCDebug(dcGaradget) << thing << "Removed";
     m_mqttClients.take(thing)->deleteLater();
+    if (m_pluginTimer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+    }
 }
 
 void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
@@ -183,6 +218,8 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     }
     if (topic.endsWith("/status")) {
         thing->setStateValue(garadgetConnectedStateTypeId, true);
+        m_garadgetconnect = 1;
+        m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -190,8 +227,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
             return;
         }
         QJsonObject jo = jsonDoc.object();
-        qCDebug(dcGaradget) << "wifi signal" << (100 + jo.value(QString("signal")).toInt()) / 0.5 ;
-        thing->setStateValue(garadgetSignalStrengthStateTypeId, (100 + jo.value(QString("signal")).toInt()) / 0.5 );
+        thing->setStateValue(garadgetSignalStrengthStateTypeId, (100 + jo.value(QString("signal")).toInt()) * 2 );
         thing->setStateValue(garadgetSensorlevelStateTypeId, jo.value(QString("sensor")).toInt());
         thing->setStateValue(garadgetBrightlevelStateTypeId, jo.value(QString("bright")).toInt());
         if (jo.value(QString("status")).toString().contains(QString("stopped"))) {
@@ -217,6 +253,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     if (topic.endsWith("/set-config")){
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
+            m_garadgetconnect = 0;
             qCDebug(dcGaradget) << "Detected change of Broker msg - set connected to false";
         }
     }

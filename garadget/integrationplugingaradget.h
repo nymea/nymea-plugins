@@ -31,11 +31,14 @@
 #ifndef INTEGRATIONPLUGINGARADGET_H
 #define INTEGRATIONPLUGINGARADGET_H
 
+#include "plugintimer.h"
 #include "integrations/integrationplugin.h"
+#include "network/networkaccessmanager.h"
 
 #include <QHash>
 #include <QDebug>
-#include <QUdpSocket>
+
+#include <QTimer>
 
 class MqttClient;
 
@@ -54,14 +57,19 @@ public:
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
-
-private slots:
-    void subscribe(Thing *thing);
-
-    void publishReceived(const QString &topic, const QByteArray &payload, bool retained);
+    void postSetupThing(Thing *thing) override;
 
 private:
     QHash<Thing*, MqttClient*> m_mqttClients;
+    PluginTimer *m_pluginTimer = nullptr;
+    QHash<Thing*, QDateTime> m_lastActivityTimeStamps;
+
+    int m_garadgetconnect = 0;
+
+private slots:
+    void subscribe(Thing *thing);
+    void publishReceived(const QString &topic, const QByteArray &payload, bool retained);
+
 };
 
 #endif // INTEGRATIONPLUGINGARADGET_H
