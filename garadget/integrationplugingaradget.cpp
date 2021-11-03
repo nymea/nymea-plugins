@@ -82,7 +82,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         }
         name = name + "/command";
         qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
-        uint updatetime = 10;
+        uint updatetime = 30;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
             foreach (Thing *thing, myThings()) {
@@ -150,7 +150,7 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         }
     }
     if (action.actionTypeId() == garadgetMttActionTypeId) {
-        if ( (action.paramValue( garadgetMttActionMttParamTypeId).toInt() > 0) and (action.paramValue( garadgetMttActionMttParamTypeId).toInt() < 121) ){
+        if ( (action.paramValue( garadgetMttActionMttParamTypeId).toInt() > 4) and (action.paramValue( garadgetMttActionMttParamTypeId).toInt() < 61) ){
             actint = action.paramValue( garadgetMttActionMttParamTypeId).toInt() * 1000;
             conftype = "mtt";
         } else {
@@ -160,8 +160,8 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
     }
     if (action.actionTypeId() == garadgetRltActionTypeId) {
         if ( (action.paramValue( garadgetRltActionRltParamTypeId).toInt() > 9) and (action.paramValue( garadgetRltActionRltParamTypeId).toInt() < 2001) ){
-            actint = action.paramValue(garadgetRltActionRltParamTypeId).toInt() * 1000;
-            conftype = "mtt";
+            actint = action.paramValue(garadgetRltActionRltParamTypeId).toInt();
+            conftype = "rlt";
         } else {
             name = name + "/command";
             act = "get-config";

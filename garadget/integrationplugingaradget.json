@@ -14,7 +14,7 @@
                     "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
                     "setupMethod": "JustAdd",
                     "createMethods": ["User"],
-                    "interfaces": ["statefulgaragedoor", "inputtrigger", "wirelessconnectable"],
+                    "interfaces": ["statefulgaragedoor", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "54a11a17-fc37-4316-891f-001c55e38220",
@@ -97,7 +97,7 @@
                         {
                             "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
                             "name": "mtt",
-                            "displayName": "Door Moving Time in 1-120 Sec",
+                            "displayName": "Door Moving Time in 5-60 Sec",
                             "displayNameEvent": "Door Moving Time changed",
                             "displayNameAction": "Set Door Moving Time value",
                             "type": "int",
