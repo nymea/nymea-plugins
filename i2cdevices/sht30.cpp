@@ -49,7 +49,6 @@ QByteArray SHT30::readData(int fileDescriptor)
     config[1] = 0x06;
     if (write(fileDescriptor, config, 2) != 2) {
         qCWarning(dcI2cDevices()) << "SHT30: could not configure sensor.";
-        QThread::msleep(500);
         return QByteArray();
     }
     QThread::msleep(500);
@@ -59,7 +58,6 @@ QByteArray SHT30::readData(int fileDescriptor)
     char data[6] = {0};
     if (read(fileDescriptor, data, 6) != 6) {
         qCWarning(dcI2cDevices()) << "SHT30: could not read sensor values.";
-        QThread::msleep(500);
         return QByteArray();
     }
 
