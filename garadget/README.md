@@ -47,4 +47,4 @@ Issues: Garadget operating a DECKO garage door opener (may not be issue with oth
 
     The plugin will show connected as soon as the Garadget connects to the broker.
     The plugin will detect if the device is commanded to change broker connection and therefore set state to disconnected.
-    The plugin does NOT know if the Garadget disconnects (power down or breakage) and therefore will continue to show connected even if the Garadget is no longer connected.
+    The plugin may take 1 minute to show disconnects (power down or breakage).
