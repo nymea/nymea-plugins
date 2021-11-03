@@ -217,8 +217,11 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         return;
     }
     if (topic.endsWith("/status")) {
-        thing->setStateValue(garadgetConnectedStateTypeId, true);
-        m_garadgetconnect = 1;
+        if (thing->stateValue(garadgetConnectedStateTypeId) == false) {
+            qCDebug(dcGaradget) << "Setting Garadget to connected" ;
+            thing->setStateValue(garadgetConnectedStateTypeId, true);
+            m_garadgetconnect = 1;
+        }
         m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
