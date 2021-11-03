@@ -64,7 +64,6 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<Thing*, QDateTime> m_lastActivityTimeStamps;
 
-    int m_garadgetconnect = 0;
 
 private slots:
     void subscribe(Thing *thing);

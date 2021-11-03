@@ -69,33 +69,30 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
         qCDebug(dcGaradget) << "entered is Connected" << client;
         subscribe(thing);
     }
-    m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
 }
 
 
 void IntegrationPluginGaradget::postSetupThing(Thing *thing)
 {
 
-    if (!m_pluginTimer) {
+    if (!m_pluginTimer && !myThings().isEmpty()) {
         QString name = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
         if (name.endsWith("/#")) {
             name.chop(2);
         }
         name = name + "/command";
         qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
-        uint updatetime = 30;
+        uint updatetime = 10;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
-            if (m_garadgetconnect == 1) {
-                foreach (Thing *thing, myThings()) {
+            foreach (Thing *thing, myThings()) {
+                if ((m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 1000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
+                    qCDebug(dcGaradget) << "disconnect garadget";
+                    thing->setStateValue(garadgetConnectedStateTypeId, false);
+                }
+                if (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) {
                     m_mqttClients.value(thing)->publish(name, "get-status");
                 }
-            }
-            uint timesinceupdate = QDateTime::currentDateTime().toTime_t() - m_lastActivityTimeStamps[thing].toTime_t();
-            if ((timesinceupdate > updatetime) && (m_garadgetconnect == 1)) {
-                qCDebug(dcGaradget) << "disconnect garadget" << m_lastActivityTimeStamps[thing] << timesinceupdate ;
-                thing->setStateValue(garadgetConnectedStateTypeId, false);
-                m_garadgetconnect = 0;
             }
         });
     }
@@ -207,20 +204,19 @@ void IntegrationPluginGaradget::subscribe(Thing *thing)
 
 void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByteArray &payload, bool retained)
 {
-    qCDebug(dcGaradget) << "Received message from topic" << topic << "with msg" << payload << "retain flag" << retained;
+//    qCDebug(dcGaradget) << "Received message from topic" << topic << "with msg" << payload << "retain flag" << retained;
 
 
     MqttClient* client = static_cast<MqttClient*>(sender());
     Thing *thing = m_mqttClients.key(client);
     if (!thing) {
-        qCWarning(dcGaradget) << "Received a publish message from a client where de don't have a matching thing";
+        qCWarning(dcGaradget) << "Received a publish message from a client where de don't have a matching thing" << retained;
         return;
     }
     if (topic.endsWith("/status")) {
         if (thing->stateValue(garadgetConnectedStateTypeId) == false) {
             qCDebug(dcGaradget) << "Setting Garadget to connected" ;
             thing->setStateValue(garadgetConnectedStateTypeId, true);
-            m_garadgetconnect = 1;
         }
         m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
         QJsonParseError error;
@@ -230,7 +226,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
             return;
         }
         QJsonObject jo = jsonDoc.object();
-        thing->setStateValue(garadgetSignalStrengthStateTypeId, (100 + jo.value(QString("signal")).toInt()) * 2 );
+        thing->setStateValue(garadgetSignalStrengthStateTypeId, (99 + jo.value(QString("signal")).toInt()) * 2 );
         thing->setStateValue(garadgetSensorlevelStateTypeId, jo.value(QString("sensor")).toInt());
         thing->setStateValue(garadgetBrightlevelStateTypeId, jo.value(QString("bright")).toInt());
         if (jo.value(QString("status")).toString().contains(QString("stopped"))) {
@@ -256,7 +252,6 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     if (topic.endsWith("/set-config")){
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
-            m_garadgetconnect = 0;
             qCDebug(dcGaradget) << "Detected change of Broker msg - set connected to false";
         }
     }
