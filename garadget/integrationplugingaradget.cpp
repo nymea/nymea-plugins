@@ -83,7 +83,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         }
         name = name + "/command";
         qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
-        uint updatetime = 10;
+        uint updatetime = 30;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
             if (m_garadgetconnect == 1) {
