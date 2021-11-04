@@ -157,7 +157,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
             thing->setStateValue(wallboxSerialnumberStateTypeId, report.serialNumber);
             thing->setStateValue(wallboxModelStateTypeId, report.product);
-            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds/60);
+            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds / 60);
 
             m_kebaDevices.insert(thing->id(), keba);
             info->finish(Thing::ThingErrorNoError);
@@ -435,8 +435,12 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
 
         // Set the state limits according to the hardware limits
-        thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
-
+        if (reportTwo.currentHardwareLimitation > 0) {
+            thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
+        } else {
+            // If we have no limit given, reset to the statetype limit
+            thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, thing->thingClass().getStateType(wallboxMaxChargingCurrentStateTypeId).maxValue());
+        }
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
 
