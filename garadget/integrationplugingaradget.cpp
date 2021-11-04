@@ -141,7 +141,7 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
     QString conftype = "";
     int actint = 0;
     if (action.actionTypeId() == garadgetSrtActionTypeId) {
-        if ( (action.paramValue(garadgetSrtActionSrtParamTypeId).toInt() > -1) and (action.paramValue(garadgetSrtActionSrtParamTypeId).toInt() < 81)) {
+        if (action.paramValue(garadgetSrtActionSrtParamTypeId).toInt() > -1) {
             actint = action.paramValue( garadgetSrtActionSrtParamTypeId).toInt();
             conftype = "srt";
         } else {
@@ -150,8 +150,8 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         }
     }
     if (action.actionTypeId() == garadgetMttActionTypeId) {
-        if ( (action.paramValue( garadgetMttActionMttParamTypeId).toInt() > 4) and (action.paramValue( garadgetMttActionMttParamTypeId).toInt() < 61) ){
-            actint = action.paramValue( garadgetMttActionMttParamTypeId).toInt() * 1000;
+        if (action.paramValue( garadgetMttActionMttParamTypeId).toInt() > 0) {
+            actint = action.paramValue( garadgetMttActionMttParamTypeId).toInt();
             conftype = "mtt";
         } else {
             name = name + "/command";
@@ -159,7 +159,7 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         }
     }
     if (action.actionTypeId() == garadgetRltActionTypeId) {
-        if ( (action.paramValue( garadgetRltActionRltParamTypeId).toInt() > 9) and (action.paramValue( garadgetRltActionRltParamTypeId).toInt() < 2001) ){
+        if (action.paramValue( garadgetRltActionRltParamTypeId).toInt() > 0) {
             actint = action.paramValue(garadgetRltActionRltParamTypeId).toInt();
             conftype = "rlt";
         } else {
@@ -246,7 +246,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         QJsonObject jo = jsonDoc.object();
         thing->setStateValue(garadgetSrtStateTypeId,jo.value(QString("srt")).toInt());
         thing->setStateValue(garadgetRltStateTypeId,jo.value(QString("rlt")).toInt());
-        thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt()/1000);
+        thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt());
         qCDebug(dcGaradget) << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() * 1000;
     }
     if (topic.endsWith("/set-config")){

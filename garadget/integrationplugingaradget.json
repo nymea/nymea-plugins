@@ -97,7 +97,7 @@
                         {
                             "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
                             "name": "mtt",
-                            "displayName": "Door Moving Time in 5-60 Sec",
+                            "displayName": "Door Moving Time 5000-60000 ms",
                             "displayNameEvent": "Door Moving Time changed",
                             "displayNameAction": "Set Door Moving Time value",
                             "type": "int",
