@@ -154,6 +154,16 @@
                             "maxValue": 100
                         },
                         {
+                            "id": "33e2ed95-f01e-44db-8156-34d124a8ecc8",
+                            "name": "maxChargingCurrentHardware",
+                            "displayName": "Maximal hardware charging current",
+                            "displayNameEvent": "Maximal hardware charging current changed",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "defaultValue": 32,
+                            "suggestLogging": true
+                        },
+                        {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
                             "name": "voltagePhaseA",
                             "displayName": "Voltage phase A",

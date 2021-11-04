@@ -433,6 +433,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
 
         thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, qRound(reportTwo.currentUser));
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
+        thing->setStateValue(wallboxMaxChargingCurrentHardwareStateTypeId, reportTwo.currentHardwareLimitation);
 
         // Set the state limits according to the hardware limits
         if (reportTwo.currentHardwareLimitation > 0) {
