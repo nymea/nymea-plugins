@@ -25,6 +25,22 @@
                         }
 
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "13ad28d6-15e5-4e20-862b-51062344b576",
+                            "name": "rdt",
+                            "displayName": "sensor scan interval in mS 200-60,000",
+                            "type": "uint",
+                            "defaultValue": 1000
+                        },
+                        {
+                            "id": "6be83c99-cbf0-4d1d-b838-697e442ebb43",
+                            "name": "rlp",
+                            "displayName": "multi button press delay mS 10-5,000",
+                            "type": "uint",
+                            "defaultValue": 1000
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",

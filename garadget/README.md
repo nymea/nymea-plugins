@@ -34,17 +34,21 @@ nymea operation:
     on the Garadget detail window (uppre righthand corner), you can tune the Garadget configuration for:
         Refection Threshold
         Button Press Time
-        Door Moving Time. (you should adjust to the time it takes your door to open)
+        Door Moving Time. (you should adjust to the time it takes your door to open to prevent garadget indicating stopped unnecessarily)
+    on the Configure Things page for Garadget, you can tune the Garadget configuration for:
+        sensor scan interval
+        multi button press delay (garadget manual labels this consecutive button presses delay)
     when changed it takes a couple seconds for Garadget to respond and update the values shown in the nymea window.
 
 notes:
     DECKO Garage Door opener requires a ~ 3.3 Volt zener diode in series of the connection between the Garadget and the DECKO
+    Garadget manual indicates the range of mtt is 1000 to 12000 ms but testing on v1.24 shows it currently only accepts 5000 to 60000 ms (nymea will request other values but Garadget may reject)
 
 Issues: Garadget operating a DECKO garage door opener (may not be issue with other garage door openers)
     the Garadget can get confused on the correct relay actions to take if you hit "stop" and then either "open" or "close" when operating a DECKO 
     It is best to be in direct view of the door if you hit "stop" (the plugin image will be halfway up) to be sure you know where the door will go next.
-    This confusion is an issue of the Garadget and not of nymea-plugin.
+    This confusion is an issue of the Garadget device and not of nymea-plugin.
 
     The plugin will show connected as soon as the Garadget connects to the broker.
-    The plugin will detect if the device is commanded to change broker connection and therefore set state to disconnected.
+    The plugin will detect if the device is commanded to change broker connection or topic name and therefore set state to disconnected.
     The plugin may take 1 minute to show disconnects (power down or breakage).

@@ -80,7 +80,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         if (name.endsWith("/#")) {
             name.chop(2);
         }
-        name = name + "/command";
+
         qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
         uint updatetime = 30;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
@@ -91,10 +91,26 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
                     thing->setStateValue(garadgetConnectedStateTypeId, false);
                 }
                 if (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) {
-                    m_mqttClients.value(thing)->publish(name, "get-status");
+                    m_mqttClients.value(thing)->publish(name + "/command", "get-status");
                 }
             }
         });
+        connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId, const QVariant &value){
+            foreach (Thing *thing, myThings()) {
+                QJsonObject garadgetobj;
+
+                if ((thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) && (settingTypeId == garadgetSettingsRdtParamTypeId)){
+                    garadgetobj.insert("rdt", value.toInt());
+                    garadgetobj.insert("rlp", thing->setting(garadgetSettingsRlpParamTypeId).toInt());
+                    QJsonDocument garadgetdoc(garadgetobj);
+                    QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
+                    QString jsonDoc(garadgetdata);
+                    qCDebug(dcGaradget()) << "Changing Configuration" << garadgetdata;
+                    m_mqttClients.value(thing)->publish(name + "/set-config", garadgetdata);
+                }
+            }
+        });
+
     }
 }
 
@@ -247,10 +263,12 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         thing->setStateValue(garadgetSrtStateTypeId,jo.value(QString("srt")).toInt());
         thing->setStateValue(garadgetRltStateTypeId,jo.value(QString("rlt")).toInt());
         thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt());
-        qCDebug(dcGaradget) << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() * 1000;
+        thing->setSettingValue(garadgetSettingsRdtParamTypeId,jo.value(QString("rdt")).toInt());
+        thing->setSettingValue(garadgetSettingsRlpParamTypeId,jo.value(QString("rlp")).toInt());
+        qCDebug(dcGaradget) << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() << "rdt ="  << thing->setting(garadgetSettingsRdtParamTypeId).toUInt() << "rlp =" << thing->setting(garadgetSettingsRlpParamTypeId).toUInt();
     }
     if (topic.endsWith("/set-config")){
-        if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) ) {
+        if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) or (payload.contains("nme")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
             qCDebug(dcGaradget) << "Detected change of Broker msg - set connected to false";
         }
