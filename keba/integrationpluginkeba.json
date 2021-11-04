@@ -44,22 +44,6 @@
                             "cached": false
                         },
                         {
-                            "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
-                            "name": "error1",
-                            "displayName": "Error 1",
-                            "displayNameEvent": "Error 1 changed",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
-                            "name": "error2",
-                            "displayName": "Error 2",
-                            "displayNameEvent": "Error 2 changed",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
                             "id": "c3fca233-95b9-4948-88c6-4c0f13cf53b1",
                             "name": "model",
                             "displayName": "Model",
@@ -167,8 +151,7 @@
                             "unit": "Percentage",
                             "defaultValue": 100,
                             "minValue": 0,
-                            "maxValue": 100,
-                            "suggestLogging": true
+                            "maxValue": 100
                         },
                         {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
@@ -308,6 +291,22 @@
                             "displayNameEvent": "Uptime changed",
                             "type": "int",
                             "unit": "Minutes",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
+                            "name": "error1",
+                            "displayName": "Error 1",
+                            "displayNameEvent": "Error 1 changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
+                            "name": "error2",
+                            "displayName": "Error 2",
+                            "displayNameEvent": "Error 2 changed",
+                            "type": "int",
                             "defaultValue": 0
                         },
                         {
