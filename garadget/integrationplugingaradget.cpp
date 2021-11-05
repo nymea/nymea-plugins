@@ -43,18 +43,10 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     QString device = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
-    if (!(device.startsWith( "garadget/"))) {
-        if (device.contains("/")) {
-            return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP(QString ("The given deviceName is not valid - no /s allowed")));
-        }
-        thing->setParamValue(garadgetThingDeviceNameParamTypeId,"garadget/" + device + "/#" );
-    }
 
     qCDebug(dcGaradget) << "entered setupThing" << thing->paramValue(garadgetThingDeviceNameParamTypeId) ;
     MqttClient *client = nullptr;
-    if (thing->thingClassId() == garadgetThingClassId) {
-        client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
-    }
+    client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
     m_mqttClients.insert(thing, client);
 
     connect(client, &MqttClient::connected, this, [this, thing](){
@@ -75,13 +67,7 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 void IntegrationPluginGaradget::postSetupThing(Thing *thing)
 {
 
-    if (!m_pluginTimer && !myThings().isEmpty()) {
-        QString name = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
-        if (name.endsWith("/#")) {
-            name.chop(2);
-        }
-
-        qCDebug(dcGaradget) << "inside m_pluginTimer with" << name ;
+    if (!m_pluginTimer) {
         uint updatetime = 30;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
@@ -91,7 +77,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
                     thing->setStateValue(garadgetConnectedStateTypeId, false);
                 }
                 if (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) {
-                    m_mqttClients.value(thing)->publish(name + "/command", "get-status");
+                    m_mqttClients.value(thing)->publish("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/command", "get-status");
                 }
             }
         });
@@ -106,7 +92,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
                     QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
                     QString jsonDoc(garadgetdata);
                     qCDebug(dcGaradget()) << "Changing Configuration" << garadgetdata;
-                    m_mqttClients.value(thing)->publish(name + "/set-config", garadgetdata);
+                    m_mqttClients.value(thing)->publish("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/set-config", garadgetdata);
                 }
             }
         });
@@ -120,7 +106,7 @@ void IntegrationPluginGaradget::thingRemoved(Thing *thing)
 {
     qCDebug(dcGaradget) << thing << "Removed";
     m_mqttClients.take(thing)->deleteLater();
-    if (m_pluginTimer) {
+    if (m_pluginTimer && !myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
     }
@@ -131,10 +117,7 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    QString name = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
-    if (name.endsWith("/#")) {
-        name.chop(2);
-    }
+    QString name = "garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
     MqttClient *client = m_mqttClients.value(thing);
     if (!client) {
         qCWarning(dcGaradget) << "No valid MQTT client for thing" << thing->name();
@@ -203,6 +186,7 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
             }
         });
     }
+    info->finish(Thing::ThingErrorNoError);
     return;
 }
 
@@ -213,9 +197,7 @@ void IntegrationPluginGaradget::subscribe(Thing *thing)
         // Device might have been removed
         return;
     }
-    if (thing->thingClassId() == garadgetThingClassId) {
-        client->subscribe(thing->paramValue(garadgetThingDeviceNameParamTypeId).toString());
-    }
+    client->subscribe("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/#");
 }
 
 void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByteArray &payload, bool retained)
@@ -226,7 +208,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     MqttClient* client = static_cast<MqttClient*>(sender());
     Thing *thing = m_mqttClients.key(client);
     if (!thing) {
-        qCWarning(dcGaradget) << "Received a publish message from a client where de don't have a matching thing" << retained;
+        qCWarning(dcGaradget) << "Received a publish message from a client but don't have a matching thing" << retained;
         return;
     }
     if (topic.endsWith("/status")) {
