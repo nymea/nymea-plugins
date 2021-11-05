@@ -106,7 +106,7 @@ void IntegrationPluginGaradget::thingRemoved(Thing *thing)
 {
     qCDebug(dcGaradget) << thing << "Removed";
     m_mqttClients.take(thing)->deleteLater();
-    if (m_pluginTimer && !myThings().isEmpty()) {
+    if (m_pluginTimer && myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
     }
