@@ -51,6 +51,6 @@ public:
 
 private:
     QString  m_charging_state;
-    int      m_charge;
+    int m_charge;
 };
 #endif // FRONIUSSTORAGE_H

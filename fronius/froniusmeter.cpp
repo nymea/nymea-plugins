@@ -79,17 +79,63 @@ void FroniusMeter::updateThingInfo(const QByteArray &data)
 
     //Add Smart meter with following states: „PowerReal_P_Sum“, „EnergyReal_WAC_Sum_Produced“, „EnergyReal_WAC_Sum_Consumed“
 
-    // Set the meter thing state
+    qCDebug(dcFronius()) << "Meter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+    // Power
     if (dataMap.contains("PowerReal_P_Sum")) {
-        pluginThing()->setStateValue(meterCurrentPowerStateTypeId, dataMap.value("PowerReal_P_Sum").toInt());
+        pluginThing()->setStateValue(meterCurrentPowerStateTypeId, dataMap.value("PowerReal_P_Sum").toDouble());
     }
 
+    if (dataMap.contains("PowerReal_P_Phase_1")) {
+        pluginThing()->setStateValue(meterCurrentPowerPhaseAStateTypeId, dataMap.value("PowerReal_P_Phase_1").toDouble());
+    }
+
+    if (dataMap.contains("PowerReal_P_Phase_2")) {
+        pluginThing()->setStateValue(meterCurrentPowerPhaseBStateTypeId, dataMap.value("PowerReal_P_Phase_2").toDouble());
+    }
+
+    if (dataMap.contains("PowerReal_P_Phase_3")) {
+        pluginThing()->setStateValue(meterCurrentPowerPhaseCStateTypeId, dataMap.value("PowerReal_P_Phase_3").toDouble());
+    }
+
+    // Current
+    if (dataMap.contains("Current_AC_Phase_1")) {
+        pluginThing()->setStateValue(meterCurrentPhaseAStateTypeId, dataMap.value("Current_AC_Phase_1").toDouble());
+    }
+
+    if (dataMap.contains("Current_AC_Phase_2")) {
+        pluginThing()->setStateValue(meterCurrentPhaseBStateTypeId, dataMap.value("Current_AC_Phase_2").toDouble());
+    }
+
+    if (dataMap.contains("Current_AC_Phase_3")) {
+        pluginThing()->setStateValue(meterCurrentPhaseCStateTypeId, dataMap.value("Current_AC_Phase_3").toDouble());
+    }
+
+    // Voltage
+    if (dataMap.contains("Voltage_AC_Phase_1")) {
+        pluginThing()->setStateValue(meterVoltagePhaseAStateTypeId, dataMap.value("Voltage_AC_Phase_1").toDouble());
+    }
+
+    if (dataMap.contains("Voltage_AC_Phase_2")) {
+        pluginThing()->setStateValue(meterVoltagePhaseBStateTypeId, dataMap.value("Voltage_AC_Phase_2").toDouble());
+    }
+
+    if (dataMap.contains("Voltage_AC_Phase_3")) {
+        pluginThing()->setStateValue(meterVoltagePhaseCStateTypeId, dataMap.value("Voltage_AC_Phase_3").toDouble());
+    }
+
+    // Total energy
     if (dataMap.contains("EnergyReal_WAC_Sum_Produced")) {
-            pluginThing()->setStateValue(meterTotalEnergyProducedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Produced").toInt()/1000.00);
+        pluginThing()->setStateValue(meterTotalEnergyProducedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Produced").toInt()/1000.00);
     }
 
     if (dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
-            pluginThing()->setStateValue(meterTotalEnergyConsumedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Consumed").toInt()/1000.00);
+        pluginThing()->setStateValue(meterTotalEnergyConsumedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Consumed").toInt()/1000.00);
+    }
+
+    // Frequency
+    if (dataMap.contains("Frequency_Phase_Average")) {
+        pluginThing()->setStateValue(meterFrequencyStateTypeId, dataMap.value("Frequency_Phase_Average").toDouble());
     }
 
     //update successful
