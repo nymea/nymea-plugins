@@ -193,7 +193,7 @@ void IntegrationPluginFronius::postSetupThing(Thing *thing)
     qCDebug(dcFronius()) << "Post setup" << thing->name();
 
     if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
             foreach (Thing *logger, m_froniusLoggers)
                 updateThingStates(logger);
