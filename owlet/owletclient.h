@@ -5,15 +5,17 @@
 #include <QHostAddress>
 #include <QTcpSocket>
 
+class OwletTransport;
+
 class OwletClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit OwletClient(QObject *parent = nullptr);
+    explicit OwletClient(OwletTransport *transport, QObject *parent = nullptr);
 
-    void connectToHost(const QHostAddress &address, int port);
+    OwletTransport *transport() const;
 
-    int sendCommand(const QString &method, const QVariantMap &params);
+    int sendCommand(const QString &method, const QVariantMap &params = QVariantMap());
 
 signals:
     void connected();
@@ -27,7 +29,7 @@ private slots:
     void dataReceived(const QByteArray &data);
 
 private:
-    QTcpSocket *m_socket = nullptr;
+    OwletTransport *m_transport = nullptr;
     int m_commandId = 0;
 
     QByteArray m_receiveBuffer;

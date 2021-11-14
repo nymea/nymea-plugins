@@ -1,13 +1,19 @@
 include(../plugins.pri)
 
-QT += network
+QT += network serialport
 
 SOURCES += \
     integrationpluginowlet.cpp \
-    owletclient.cpp
+    owletclient.cpp \
+    owletserialtransport.cpp \
+    owlettcptransport.cpp \
+    owlettransport.cpp
 
 HEADERS += \
     integrationpluginowlet.h \
-    owletclient.h
+    owletclient.h \
+    owletserialtransport.h \
+    owlettcptransport.h \
+    owlettransport.h
 
 

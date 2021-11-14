@@ -56,8 +56,9 @@ public:
 private:
     ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
 
-    QHash<Thing*, OwletClient*> m_clients;
-
+    QHash<Thing *, OwletClient *> m_clients;
+    QHash<ThingClassId, ParamTypeId> m_owletIdParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_owletSerialPortParamTypeMap;
 };
 
 #endif // INTEGRATIONPLUGINOWLET_H

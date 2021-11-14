@@ -37,14 +37,11 @@
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
 
+#include "owlettcptransport.h"
+#include "owletserialtransport.h"
+
 #include <QColor>
 #include <QTimer>
-
-static QHash<ThingClassId, ParamTypeId> idParamTypeMap = {
-    { digitalOutputThingClassId, digitalOutputThingOwletIdParamTypeId },
-    { digitalInputThingClassId, digitalInputThingOwletIdParamTypeId },
-    { ws2812ThingClassId, ws2812ThingOwletIdParamTypeId }
-};
 
 IntegrationPluginOwlet::IntegrationPluginOwlet()
 {
@@ -52,55 +49,92 @@ IntegrationPluginOwlet::IntegrationPluginOwlet()
 
 void IntegrationPluginOwlet::init()
 {
+    m_owletIdParamTypeMap.insert(digitalOutputThingClassId, digitalOutputThingOwletIdParamTypeId);
+    m_owletIdParamTypeMap.insert(digitalInputThingClassId, digitalInputThingOwletIdParamTypeId);
+    m_owletIdParamTypeMap.insert(ws2812ThingClassId, ws2812ThingOwletIdParamTypeId);
+
+    m_owletSerialPortParamTypeMap.insert(arduinoMiniProThingClassId, arduinoMiniProThingSerialPortParamTypeId);
+
     m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_nymea-owlet._tcp");
 }
 
 void IntegrationPluginOwlet::discoverThings(ThingDiscoveryInfo *info)
 {
-    foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
-        qCDebug(dcOwlet()) << "Found owlet:" << entry;
-        ThingDescriptor descriptor(info->thingClassId(), entry.name(), entry.txt("platform"));
-        descriptor.setParams(ParamList() << Param(idParamTypeMap.value(info->thingClassId()), entry.txt("id")));
-        foreach (Thing *existingThing, myThings().filterByParam(idParamTypeMap.value(info->thingClassId()), entry.txt("id"))) {
-            descriptor.setThingId(existingThing->id());
-            break;
+    if (info->thingClassId() == arduinoMiniProThingClassId) {
+        // Discover serial ports for arduino bords
+        foreach(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
+            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation();
+            QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
+            ThingDescriptor thingDescriptor(info->thingClassId(), "Owlet Arduino Pro Mini", description);
+            ParamList parameters;
+
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(m_owletSerialPortParamTypeMap.value(info->thingClassId())).toString() == port.systemLocation()) {
+                    thingDescriptor.setThingId(existingThing->id());
+                    break;
+                }
+            }
+
+            parameters.append(Param(m_owletSerialPortParamTypeMap.value(info->thingClassId()), port.systemLocation()));
+            thingDescriptor.setParams(parameters);
+            info->addThingDescriptor(thingDescriptor);
         }
-        info->addThingDescriptor(descriptor);
+        info->finish(Thing::ThingErrorNoError);
+    } else {
+        foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+            qCDebug(dcOwlet()) << "Found owlet:" << entry;
+            ThingDescriptor descriptor(info->thingClassId(), entry.name(), entry.txt("platform"));
+            descriptor.setParams(ParamList() << Param(m_owletIdParamTypeMap.value(info->thingClassId()), entry.txt("id")));
+            foreach (Thing *existingThing, myThings().filterByParam(m_owletIdParamTypeMap.value(info->thingClassId()), entry.txt("id"))) {
+                descriptor.setThingId(existingThing->id());
+                break;
+            }
+            info->addThingDescriptor(descriptor);
+        }
+        info->finish(Thing::ThingErrorNoError);
     }
-    info->finish(Thing::ThingErrorNoError);
 }
 
 
 void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-
+    OwletTransport *transport = nullptr;
     QHostAddress ip;
     int port = 5555;
-    foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
-        if (entry.txt("id") == info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId()))) {
-            ip = entry.hostAddress();
-            port = entry.port();
-            break;
+
+    if (thing->thingClassId() != arduinoMiniProThingClassId) {
+        foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+            if (entry.txt("id") == info->thing()->paramValue(m_owletIdParamTypeMap.value(info->thing()->thingClassId()))) {
+                ip = entry.hostAddress();
+                port = entry.port();
+                break;
+            }
         }
-    }
-    // Try cached ip
-    if (ip.isNull()) {
-        pluginStorage()->beginGroup(thing->id().toString());
-        ip = QHostAddress(pluginStorage()->value("cachedIP").toString());
-        pluginStorage()->endGroup();
+        // Try cached ip
+        if (ip.isNull()) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            ip = QHostAddress(pluginStorage()->value("cachedIP").toString());
+            pluginStorage()->endGroup();
+        }
+
+        if (ip.isNull()) {
+            qCWarning(dcOwlet()) << "Can't find owlet in the local network.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        transport = new OwletTcpTransport(ip, port, this);
+
+    } else if (thing->thingClassId() == arduinoMiniProThingClassId) {
+        QString serialPort = thing->paramValue(arduinoMiniProThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup arduino mini pro owlet on" << serialPort;
+        transport = new OwletSerialTransport(serialPort, 115200, this);
     }
 
-    if (ip.isNull()) {
-        qCWarning(dcOwlet()) << "Can't find owlet in the local network.";
-        info->finish(Thing::ThingErrorHardwareNotAvailable);
-        return;
-    }
-
-    OwletClient *client = new OwletClient(this);
-
+    OwletClient *client = new OwletClient(transport, this);
     connect(client, &OwletClient::connected, info, [=](){
-        qCDebug(dcOwlet()) << "Connected to owleet";
+        qCDebug(dcOwlet()) << "Connected to owlet";
         m_clients.insert(thing, client);
 
         if (thing->thingClassId() == digitalOutputThingClassId) {
@@ -127,15 +161,31 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
 
         info->finish(Thing::ThingErrorNoError);
     });
+
     connect(client, &OwletClient::error, info, [=](){
         info->finish(Thing::ThingErrorHardwareFailure);
     });
+
     connect(client, &OwletClient::connected, thing, [=](){
         thing->setStateValue("connected", true);
-        pluginStorage()->beginGroup(thing->id().toString());
-        pluginStorage()->setValue("cachedIP", ip.toString());
-        pluginStorage()->endGroup();
+
+        // FIXME: find a better way
+        if (thing->thingClassId() != arduinoMiniProThingClassId) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            pluginStorage()->setValue("cachedIP", ip.toString());
+            pluginStorage()->endGroup();
+        }
+
+        qCDebug(dcOwlet()) << "Sending get platform information request...";
+        int id = client->sendCommand("Platform.GetInformation");
+        connect(client, &OwletClient::replyReceived, thing, [=](int commandId, const QVariantMap &params){
+            if (id != commandId)
+                return;
+
+            qCDebug(dcOwlet()) << "Reply from owlet platform information:" << params;
+        });
     });
+
     connect(client, &OwletClient::disconnected, thing, [=](){
         thing->setStateValue("connected", false);
     });
@@ -170,7 +220,7 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         }
     });
 
-    client->connectToHost(ip, port);
+    client->transport()->connectTransport();
 }
 
 

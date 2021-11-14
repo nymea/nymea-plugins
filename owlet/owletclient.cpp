@@ -1,49 +1,33 @@
 #include "owletclient.h"
-
+#include "owlettransport.h"
 #include "extern-plugininfo.h"
 
 #include <QJsonDocument>
 #include <QTimer>
 
-OwletClient::OwletClient(QObject *parent) : QObject(parent)
+OwletClient::OwletClient(OwletTransport *transport, QObject *parent) :
+    QObject(parent),
+    m_transport(transport)
 {
-
+    connect(m_transport, &OwletTransport::dataReceived, this, &OwletClient::dataReceived);
+    connect(m_transport, &OwletTransport::error, this, &OwletClient::error);
+    connect(m_transport, &OwletTransport::connectedChanged, this, [=](bool isConnected){
+        if (isConnected) {
+            emit connected();
+        } else {
+            emit disconnected();
+        }
+    });
 }
 
-void OwletClient::connectToHost(const QHostAddress &address, int port)
+OwletTransport *OwletClient::transport() const
 {
-    if (m_socket) {
-        m_socket->abort();
-        m_socket->deleteLater();
-    }
-
-    m_socket = new QTcpSocket(this);
-    connect(m_socket, &QTcpSocket::connected, this, [this](){
-        emit connected();
-    });
-    connect(m_socket, &QTcpSocket::disconnected, this, [this, address, port](){
-        qCDebug(dcOwlet()) << "Disconnected from owleet";
-        emit disconnected();
-        QTimer::singleShot(1000, this, [=]{
-            connectToHost(address, port);
-        });
-
-    });
-    typedef void (QTcpSocket:: *errorSignal)(QAbstractSocket::SocketError);
-    connect(m_socket, static_cast<errorSignal>(&QTcpSocket::error), this, [this](){
-        qCDebug(dcOwlet()) << "Error in owlet communication";
-        emit error();
-    });
-
-    connect(m_socket, &QTcpSocket::readyRead, this, [this](){
-        dataReceived(m_socket->readAll());
-    });
-    m_socket->connectToHost(address, port);
+    return m_transport;
 }
 
 int OwletClient::sendCommand(const QString &method, const QVariantMap &params)
 {
-    if (!m_socket) {
+    if (!m_transport->connected()) {
         qCWarning(dcOwlet()) << "Not connected to owlet. Not sending command.";
         return -1;
     }
@@ -54,7 +38,7 @@ int OwletClient::sendCommand(const QString &method, const QVariantMap &params)
     packet.insert("id", id);
     packet.insert("method", method);
     packet.insert("params", params);
-    m_socket->write(QJsonDocument::fromVariant(packet).toJson(QJsonDocument::Compact));
+    m_transport->sendData(QJsonDocument::fromVariant(packet).toJson(QJsonDocument::Compact));
     return id;
 }
 
