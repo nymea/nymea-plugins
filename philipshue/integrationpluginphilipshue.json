@@ -13,6 +13,7 @@
                     "name": "bridge",
                     "displayName": "Hue gateway",
                     "interfaces": ["gateway", "update"],
+                    "providedInterfaces": ["light", "button", "presencesensor", "powersocket"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
                     "browsable": true,
