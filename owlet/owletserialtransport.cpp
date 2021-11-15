@@ -20,9 +20,10 @@ OwletSerialTransport::OwletSerialTransport(const QString &serialPortName, uint b
     m_serialPort->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &OwletSerialTransport::onReadyRead);
-    connect(m_serialPort, &QSerialPort::errorOccurred, this, [=](QSerialPort::SerialPortError serialPortError){
-        if (serialPortError != QSerialPort::NoError) {
-            qCWarning(dcOwlet()) << "Serial port error occured" << serialPortError << m_serialPort->errorString();
+    typedef void (QSerialPort:: *errorSignal)(QSerialPort::SerialPortError);
+    connect(m_serialPort, static_cast<errorSignal>(&QSerialPort::error), this, [=](){
+        if (m_serialPort->error() != QSerialPort::NoError) {
+            qCWarning(dcOwlet()) << "Serial port error occured" << m_serialPort->error() << m_serialPort->errorString();
             emit error();
             m_reconnectTimer->start();
             if (m_serialPort->isOpen()) {
