@@ -20,18 +20,13 @@ OwletSerialTransport::OwletSerialTransport(const QString &serialPortName, uint b
     m_serialPort->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &OwletSerialTransport::onReadyRead);
-    typedef void (QSerialPort:: *errorSignal)(QSerialPort::SerialPortError);
-    connect(m_serialPort, static_cast<errorSignal>(&QSerialPort::error), this, [=](){
-        if (m_serialPort->error() != QSerialPort::NoError) {
-            qCWarning(dcOwlet()) << "Serial port error occured" << m_serialPort->error() << m_serialPort->errorString();
-            emit error();
-            m_reconnectTimer->start();
-            if (m_serialPort->isOpen()) {
-                m_serialPort->close();
-            }
-            emit connectedChanged(false);
-        }
-    });
+#if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
+    // NOTE: Using QueuedConnection because in older Qt versions error is emitted before the port says its closed which might end up in a loop...
+    connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onError(QSerialPort::SerialPortError)), Qt::QueuedConnection);
+#else
+    connect(m_serialPort, &QSerialPort::errorOccurred, this, &OwletSerialTransport::onError);
+#endif
+
 
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setInterval(5000);
@@ -165,5 +160,18 @@ void OwletSerialTransport::onReadyRead()
             m_buffer.append(receivedByte);
             break;
         }
+    }
+}
+
+void OwletSerialTransport::onError(QSerialPort::SerialPortError serialPortError)
+{
+    if (serialPortError != QSerialPort::NoError && serialPortError != QSerialPort::OpenError && m_serialPort->isOpen()) {
+        qCWarning(dcOwlet()) << "Serial port error occured" << serialPortError << m_serialPort->errorString();
+        emit error();
+        m_reconnectTimer->start();
+        if (m_serialPort->isOpen()) {
+            m_serialPort->close();
+        }
+        emit connectedChanged(false);
     }
 }

@@ -23,6 +23,7 @@ public slots:
 
 private slots:
     void onReadyRead();
+    void onError(QSerialPort::SerialPortError serialPortError);
 
 private:
 
