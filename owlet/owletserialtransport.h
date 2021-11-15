@@ -43,4 +43,6 @@ private:
     bool m_protocolEscaping = false;
 };
 
+Q_DECLARE_METATYPE(QSerialPort::SerialPortError)
+
 #endif // OWLETSERIALTRANSPORT_H
