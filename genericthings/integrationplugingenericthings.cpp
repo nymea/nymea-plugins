@@ -901,8 +901,8 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
         }
     } else if (thing->thingClassId() == simpleHeatPumpThingClassId) {
-        if (action.actionTypeId() == simpleHeatPumpBoostActionTypeId) {
-            thing->setStateValue(simpleHeatPumpBoostStateTypeId, action.paramValue(simpleHeatPumpBoostActionBoostParamTypeId).toBool());
+        if (action.actionTypeId() == simpleHeatPumpPowerActionTypeId) {
+            thing->setStateValue(simpleHeatPumpPowerStateTypeId, action.paramValue(simpleHeatPumpBoostActionPowerParamTypeId).toBool());
             info->finish(Thing::ThingErrorNoError);
         }
     } else {

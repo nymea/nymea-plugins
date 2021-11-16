@@ -1831,10 +1831,10 @@
                     "stateTypes": [
                         {
                             "id": "ac2ac0f9-058c-4586-8871-2d9dbc6e1758",
-                            "name": "boost",
-                            "displayName": "Boost production enabled",
-                            "displayNameEvent": "Boost production changed",
-                            "displayNameAction": "Boost production",
+                            "name": "power",
+                            "displayName": "Heat pump enabled",
+                            "displayNameEvent": "Heat pump changed",
+                            "displayNameAction": "Enable/Disable heat pump",
                             "type": "bool",
                             "writable": true,
                             "defaultValue": false,
