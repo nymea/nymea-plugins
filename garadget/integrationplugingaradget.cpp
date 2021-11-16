@@ -44,7 +44,6 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 
     QString device = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
 
-    qCDebug(dcGaradget) << "entered setupThing" << thing->paramValue(garadgetThingDeviceNameParamTypeId) ;
     MqttClient *client = nullptr;
     client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
     m_mqttClients.insert(thing, client);
@@ -58,7 +57,6 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
     connect(client, &MqttClient::publishReceived, this, &IntegrationPluginGaradget::publishReceived);
     // In case we're already connected, manually call subscribe now
     if (client->isConnected()) {
-        qCDebug(dcGaradget) << "entered is Connected" << client;
         subscribe(thing);
     }
 }
@@ -68,17 +66,23 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
 {
 
     if (!m_pluginTimer) {
-        uint updatetime = 30;
+        int updatetime = 30;
+        int lwtupdatetime = 300 / updatetime;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
+            m_statuscounter[thing] += 1;
             foreach (Thing *thing, myThings()) {
-                if ((m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 1000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
-                    qCDebug(dcGaradget) << "disconnect garadget";
+                if ((m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 2000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
+                    qCDebug(dcGaradget) << "disconnect device" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
                     thing->setStateValue(garadgetConnectedStateTypeId, false);
                 }
-                if (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) {
+                if ( (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) || m_statuscounter[thing] > lwtupdatetime) {
                     m_mqttClients.value(thing)->publish("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/command", "get-status");
                 }
+            }
+            if (m_statuscounter[thing] > lwtupdatetime) {
+                qCDebug(dcGaradget) << "reset statusCounter" << m_statuscounter;
+                m_statuscounter[thing] = 1;
             }
         });
         connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId, const QVariant &value){
@@ -104,7 +108,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
 
 void IntegrationPluginGaradget::thingRemoved(Thing *thing)
 {
-    qCDebug(dcGaradget) << thing << "Removed";
+    qCDebug(dcGaradget) << "device " << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "Removed";
     m_mqttClients.take(thing)->deleteLater();
     if (m_pluginTimer && myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
@@ -167,7 +171,6 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         }
     }
     if (conftype != "") {
-        qCDebug(dcGaradget) << "Processing config change" << conftype << "to" << action.paramValue( garadgetSrtActionSrtParamTypeId).toInt();
         name = name + "/set-config";
         QJsonObject garadgetobj;
         garadgetobj.insert(conftype, actint);
@@ -202,9 +205,6 @@ void IntegrationPluginGaradget::subscribe(Thing *thing)
 
 void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByteArray &payload, bool retained)
 {
-//    qCDebug(dcGaradget) << "Received message from topic" << topic << "with msg" << payload << "retain flag" << retained;
-
-
     MqttClient* client = static_cast<MqttClient*>(sender());
     Thing *thing = m_mqttClients.key(client);
     if (!thing) {
@@ -213,7 +213,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     }
     if (topic.endsWith("/status")) {
         if (thing->stateValue(garadgetConnectedStateTypeId) == false) {
-            qCDebug(dcGaradget) << "Setting Garadget to connected" ;
+            qCDebug(dcGaradget) << "Setting" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "to connected" ;
             thing->setStateValue(garadgetConnectedStateTypeId, true);
         }
         m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
@@ -229,7 +229,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         thing->setStateValue(garadgetBrightlevelStateTypeId, jo.value(QString("bright")).toInt());
         if (jo.value(QString("status")).toString().contains(QString("stopped"))) {
             thing->setStateValue(garadgetStateStateTypeId, "intermediate");
-            qCDebug(dcGaradget) << "Garadget is" << jo.value(QString("status")).toString() ;
+            qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "is" << jo.value(QString("status")).toString() ;
         } else {
             thing->setStateValue(garadgetStateStateTypeId, jo.value(QString("status")).toString());
         }
@@ -247,12 +247,12 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt());
         thing->setSettingValue(garadgetSettingsRdtParamTypeId,jo.value(QString("rdt")).toInt());
         thing->setSettingValue(garadgetSettingsRlpParamTypeId,jo.value(QString("rlp")).toInt());
-        qCDebug(dcGaradget) << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() << "rdt ="  << thing->setting(garadgetSettingsRdtParamTypeId).toUInt() << "rlp =" << thing->setting(garadgetSettingsRlpParamTypeId).toUInt();
+        qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() << "rdt ="  << thing->setting(garadgetSettingsRdtParamTypeId).toUInt() << "rlp =" << thing->setting(garadgetSettingsRlpParamTypeId).toUInt();
     }
     if (topic.endsWith("/set-config")){
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) or (payload.contains("nme")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
-            qCDebug(dcGaradget) << "Detected change of Broker msg - set connected to false";
+            qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "Detected change of Broker msg - set connected to false";
         }
     }
 }

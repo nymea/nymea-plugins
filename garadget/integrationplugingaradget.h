@@ -43,6 +43,7 @@
 class MqttClient;
 
 class IntegrationPluginGaradget: public IntegrationPlugin
+
 {
     Q_OBJECT
 
@@ -63,7 +64,7 @@ private:
     QHash<Thing*, MqttClient*> m_mqttClients;
     PluginTimer *m_pluginTimer = nullptr;
     QHash<Thing*, QDateTime> m_lastActivityTimeStamps;
-
+    QHash<Thing*, int> m_statuscounter;
 
 private slots:
     void subscribe(Thing *thing);

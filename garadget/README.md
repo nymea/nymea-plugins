@@ -43,12 +43,13 @@ nymea operation:
 notes:
     DECKO Garage Door opener requires a ~ 3.3 Volt zener diode in series of the connection between the Garadget and the DECKO
     Garadget manual indicates the range of mtt is 1000 to 12000 ms but testing on v1.24 shows it currently only accepts 5000 to 60000 ms (nymea will request other values but Garadget may reject)
+    The plugin will show connected as soon as the Garadget connects to the broker.
+    The plugin will detect if the device is commanded to change broker connection or topic name and therefore set state to disconnected.
+    The plugin may take 1 minute to show disconnects (power down or breakage).
 
 Issues: Garadget operating a DECKO garage door opener (may not be issue with other garage door openers)
     the Garadget can get confused on the correct relay actions to take if you hit "stop" and then either "open" or "close" when operating a DECKO 
     It is best to be in direct view of the door if you hit "stop" (the plugin image will be halfway up) to be sure you know where the door will go next.
     This confusion is an issue of the Garadget device and not of nymea-plugin.
 
-    The plugin will show connected as soon as the Garadget connects to the broker.
-    The plugin will detect if the device is commanded to change broker connection or topic name and therefore set state to disconnected.
-    The plugin may take 1 minute to show disconnects (power down or breakage).
+    If nymead reboots rapidly, Garadget may not detect and show disconnected. In this case You may need to push the reset button on the Garadget
