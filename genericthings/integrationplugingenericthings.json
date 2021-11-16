@@ -1833,7 +1833,7 @@
                             "id": "ac2ac0f9-058c-4586-8871-2d9dbc6e1758",
                             "name": "power",
                             "displayName": "Heat pump enabled",
-                            "displayNameEvent": "Heat pump changed",
+                            "displayNameEvent": "Heat pump power changed",
                             "displayNameAction": "Enable/Disable heat pump",
                             "type": "bool",
                             "writable": true,
