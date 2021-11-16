@@ -69,7 +69,7 @@ void IntegrationPluginSimpleHeatpump::setupThing(ThingSetupInfo *info)
         }
 
         int gpioNumber = thing->paramValue(simpleHeatPumpInterfaceThingGpioNumberParamTypeId).toInt();
-        bool initialValue = thing->stateValue(simpleHeatPumpInterfaceBoostStateTypeId).toBool();
+        bool initialValue = thing->stateValue(simpleHeatPumpInterfacePowerStateTypeId).toBool();
 
         if (gpioNumber < 0) {
             qCWarning(dcSimpleHeatPump()) << "Invalid GPIO number" << gpioNumber;
@@ -126,15 +126,15 @@ void IntegrationPluginSimpleHeatpump::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (info->action().actionTypeId() == simpleHeatPumpInterfaceBoostActionTypeId) {
-            bool boostEnabled = info->action().paramValue(simpleHeatPumpInterfaceBoostActionBoostParamTypeId).toBool();
-            if (!gpio->setValue(boostEnabled ? Gpio::ValueHigh : Gpio::ValueLow)) {
-                qCWarning(dcSimpleHeatPump()) << "Failed to set the boost mode for" << thing << "to" << boostEnabled;
+        if (info->action().actionTypeId() == simpleHeatPumpInterfacePowerActionTypeId) {
+            bool heatPumpEnabled = info->action().paramValue(simpleHeatPumpInterfacePowerActionPowerParamTypeId).toBool();
+            if (!gpio->setValue(heatPumpEnabled ? Gpio::ValueHigh : Gpio::ValueLow)) {
+                qCWarning(dcSimpleHeatPump()) << "Failed to set the power for" << thing << "to" << heatPumpEnabled;
                 info->finish(Thing::ThingErrorHardwareFailure);
                 return;
             }
 
-            thing->setStateValue(simpleHeatPumpInterfaceBoostStateTypeId, boostEnabled);
+            thing->setStateValue(simpleHeatPumpInterfacePowerStateTypeId, heatPumpEnabled);
             info->finish(Thing::ThingErrorNoError);
         }
     }
