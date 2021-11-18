@@ -43,6 +43,15 @@
                     ],
                     "stateTypes": [
                         {
+                            "id": "3338c7af-89a0-4db3-aaa4-a01a276396d0",
+                            "name": "LWT",
+                            "displayName": "LWT Support",
+                            "displayNameEvent": "LWT Support",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": false
+                        },
+                        {
                             "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
                             "name": "connected",
                             "displayName": "Connected",

@@ -42,8 +42,7 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QString device = thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
-
+    thing->setStateValue(garadgetLWTStateTypeId,false);
     MqttClient *client = nullptr;
     client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
     m_mqttClients.insert(thing, client);
@@ -72,16 +71,15 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
             m_statuscounter[thing] += 1;
             foreach (Thing *thing, myThings()) {
-                if ((m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 2000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
+                if ((thing->stateValue(garadgetLWTStateTypeId) == false) && (m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 2000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
                     qCDebug(dcGaradget) << "disconnect device" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
                     thing->setStateValue(garadgetConnectedStateTypeId, false);
                 }
-                if ( (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) || m_statuscounter[thing] > lwtupdatetime) {
+                if ( ((thing->stateValue(garadgetLWTStateTypeId) == false) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) || m_statuscounter[thing] > lwtupdatetime) {
                     m_mqttClients.value(thing)->publish("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/command", "get-status");
                 }
             }
             if (m_statuscounter[thing] > lwtupdatetime) {
-                qCDebug(dcGaradget) << "reset statusCounter" << m_statuscounter;
                 m_statuscounter[thing] = 1;
             }
         });
@@ -213,7 +211,7 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     }
     if (topic.endsWith("/status")) {
         if (thing->stateValue(garadgetConnectedStateTypeId) == false) {
-            qCDebug(dcGaradget) << "Setting" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "to connected" ;
+            qCDebug(dcGaradget) << "Setting" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "to Online" ;
             thing->setStateValue(garadgetConnectedStateTypeId, true);
         }
         m_lastActivityTimeStamps[thing] = QDateTime::currentDateTime();
@@ -253,6 +251,24 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) or (payload.contains("nme")) ) {
             thing->setStateValue(garadgetConnectedStateTypeId, false);
             qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "Detected change of Broker msg - set connected to false";
+        }
+    }
+    if (topic.endsWith("/LWT")){
+        if (payload.contains("Online") or payload.contains("Offline")) {
+            thing->setStateValue(garadgetLWTStateTypeId,true);
+            qCDebug(dcGaradget()) << "enabling LWT functionality" << thing->stateValue(garadgetLWTStateTypeId);
+        }
+        if (payload.contains("Online")) {
+            if (thing->stateValue(garadgetConnectedStateTypeId) == false) {
+                qCDebug(dcGaradget) << "Setting" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "to Online" ;
+                thing->setStateValue(garadgetConnectedStateTypeId, true);
+            }
+        }
+        if (payload.contains("Offline")) {
+            if (thing->stateValue(garadgetConnectedStateTypeId) == true) {
+                qCDebug(dcGaradget) << "Setting" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "to Offline" ;
+                thing->setStateValue(garadgetConnectedStateTypeId, false);
+            }
         }
     }
 }
