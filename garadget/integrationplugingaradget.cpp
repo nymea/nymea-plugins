@@ -42,7 +42,10 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    thing->setStateValue(garadgetLWTStateTypeId,false);
+    pluginStorage()->beginGroup(thing->id().toString());
+    pluginStorage()->setValue("lastWillAvailable", false);
+    pluginStorage()->endGroup();
+
     MqttClient *client = nullptr;
     client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
     m_mqttClients.insert(thing, client);
@@ -71,11 +74,14 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
             m_statuscounter[thing] += 1;
             foreach (Thing *thing, myThings()) {
-                if ((thing->stateValue(garadgetLWTStateTypeId) == false) && (m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 2000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
+                pluginStorage()->beginGroup(thing->id().toString());
+                bool lastWillAvailable = pluginStorage()->value("lastWillAvailable").toBool();
+                pluginStorage()->endGroup();
+                if ((lastWillAvailable == false) && (m_lastActivityTimeStamps[thing].msecsTo(QDateTime::currentDateTime()) > 2000 * updatetime) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) {
                     qCDebug(dcGaradget) << "disconnect device" << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString();
                     thing->setStateValue(garadgetConnectedStateTypeId, false);
                 }
-                if ( ((thing->stateValue(garadgetLWTStateTypeId) == false) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) || m_statuscounter[thing] > lwtupdatetime) {
+                if ( ((lastWillAvailable == false) && (thing->stateValue(garadgetConnectedStateTypeId).toBool() == true)) || m_statuscounter[thing] > lwtupdatetime) {
                     m_mqttClients.value(thing)->publish("garadget/" + thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() + "/command", "get-status");
                 }
             }
@@ -83,13 +89,15 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
                 m_statuscounter[thing] = 1;
             }
         });
-        connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId, const QVariant &value){
+        connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId){
             foreach (Thing *thing, myThings()) {
                 QJsonObject garadgetobj;
 
                 if ((thing->stateValue(garadgetConnectedStateTypeId).toBool() == true) && (settingTypeId == garadgetSettingsRdtParamTypeId)){
-                    garadgetobj.insert("rdt", value.toInt());
+                    garadgetobj.insert("rdt", thing->setting(garadgetSettingsRdtParamTypeId).toInt());
                     garadgetobj.insert("rlp", thing->setting(garadgetSettingsRlpParamTypeId).toInt());
+                    garadgetobj.insert("rlt",thing->setting(garadgetSettingsRltParamTypeId).toInt());
+                    garadgetobj.insert("mtt", thing->setting(garadgetSettingsMttParamTypeId).toInt());
                     QJsonDocument garadgetdoc(garadgetobj);
                     QByteArray garadgetdata = garadgetdoc.toJson(QJsonDocument::Compact);
                     QString jsonDoc(garadgetdata);
@@ -145,24 +153,6 @@ void IntegrationPluginGaradget::executeAction(ThingActionInfo *info)
         if (action.paramValue(garadgetSrtActionSrtParamTypeId).toInt() > -1) {
             actint = action.paramValue( garadgetSrtActionSrtParamTypeId).toInt();
             conftype = "srt";
-        } else {
-            name = name + "/command";
-            act = "get-config";
-        }
-    }
-    if (action.actionTypeId() == garadgetMttActionTypeId) {
-        if (action.paramValue( garadgetMttActionMttParamTypeId).toInt() > 0) {
-            actint = action.paramValue( garadgetMttActionMttParamTypeId).toInt();
-            conftype = "mtt";
-        } else {
-            name = name + "/command";
-            act = "get-config";
-        }
-    }
-    if (action.actionTypeId() == garadgetRltActionTypeId) {
-        if (action.paramValue( garadgetRltActionRltParamTypeId).toInt() > 0) {
-            actint = action.paramValue(garadgetRltActionRltParamTypeId).toInt();
-            conftype = "rlt";
         } else {
             name = name + "/command";
             act = "get-config";
@@ -241,11 +231,11 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
         }
         QJsonObject jo = jsonDoc.object();
         thing->setStateValue(garadgetSrtStateTypeId,jo.value(QString("srt")).toInt());
-        thing->setStateValue(garadgetRltStateTypeId,jo.value(QString("rlt")).toInt());
-        thing->setStateValue(garadgetMttStateTypeId,jo.value(QString("mtt")).toInt());
+        thing->setSettingValue(garadgetSettingsRltParamTypeId,jo.value(QString("rlt")).toInt());
+        thing->setSettingValue(garadgetSettingsMttParamTypeId,jo.value(QString("mtt")).toInt());
         thing->setSettingValue(garadgetSettingsRdtParamTypeId,jo.value(QString("rdt")).toInt());
         thing->setSettingValue(garadgetSettingsRlpParamTypeId,jo.value(QString("rlp")).toInt());
-        qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->stateValue(garadgetRltStateTypeId).toInt()<< "mtt =" << thing->stateValue(garadgetMttStateTypeId).toInt() << "rdt ="  << thing->setting(garadgetSettingsRdtParamTypeId).toUInt() << "rlp =" << thing->setting(garadgetSettingsRlpParamTypeId).toUInt();
+        qCDebug(dcGaradget) << thing->paramValue(garadgetThingDeviceNameParamTypeId).toString() << "System Configuration" << "srt =" << thing->stateValue(garadgetSrtStateTypeId).toInt() << "rlt =" << thing->setting(garadgetSettingsRltParamTypeId).toInt()<< "mtt =" << thing->setting(garadgetSettingsMttParamTypeId).toInt() << "rdt ="  << thing->setting(garadgetSettingsRdtParamTypeId).toUInt() << "rlp =" << thing->setting(garadgetSettingsRlpParamTypeId).toUInt();
     }
     if (topic.endsWith("/set-config")){
         if ( (payload.contains("mqip"))  or (payload.contains("mqpt")) or (payload.contains("nme")) ) {
@@ -255,8 +245,10 @@ void IntegrationPluginGaradget::publishReceived(const QString &topic, const QByt
     }
     if (topic.endsWith("/LWT")){
         if (payload.contains("Online") or payload.contains("Offline")) {
-            thing->setStateValue(garadgetLWTStateTypeId,true);
-            qCDebug(dcGaradget()) << "enabling LWT functionality" << thing->stateValue(garadgetLWTStateTypeId);
+            qCDebug(dcGaradget()) << "Setting support for LWT";
+            pluginStorage()->beginGroup(thing->id().toString());
+            pluginStorage()->setValue("lastWillAvailable", true);
+            pluginStorage()->endGroup();
         }
         if (payload.contains("Online")) {
             if (thing->stateValue(garadgetConnectedStateTypeId) == false) {

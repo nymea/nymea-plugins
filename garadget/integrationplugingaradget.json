@@ -39,18 +39,23 @@
                             "displayName": "multi button press delay mS 10-5,000",
                             "type": "uint",
                             "defaultValue": 1000
+                        },
+                        {
+                            "id": "c38e89db-b259-4fa0-9f20-03fe3b8a7514" ,
+                            "name": "rlt",
+                            "displayName": "Button Press Time in 10-2000 ms",
+                            "type": "int",
+                            "defaultValue": 300
+                        },
+                        {
+                            "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
+                            "name": "mtt",
+                            "displayName": "Door Moving Time 5000-60000 ms",
+                            "type": "int",
+                            "defaultValue": 10
                         }
                     ],
                     "stateTypes": [
-                        {
-                            "id": "3338c7af-89a0-4db3-aaa4-a01a276396d0",
-                            "name": "LWT",
-                            "displayName": "LWT Support",
-                            "displayNameEvent": "LWT Support",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": false
-                        },
                         {
                             "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
                             "name": "connected",
@@ -107,26 +112,6 @@
                             "displayNameAction": "Set Reflection Threshold value",
                             "type": "int",
                             "defaultValue": 25,
-                            "writable": true
-                        },
-                        {
-                            "id": "c38e89db-b259-4fa0-9f20-03fe3b8a7514" ,
-                            "name": "rlt",
-                            "displayName": "Button Press Time in 10-2000 ms",
-                            "displayNameEvent": "Button Press Time changed",
-                            "displayNameAction": "Set Button Press Time value",
-                            "type": "int",
-                            "defaultValue": 300,
-                            "writable": true
-                        },
-                        {
-                            "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
-                            "name": "mtt",
-                            "displayName": "Door Moving Time 5000-60000 ms",
-                            "displayNameEvent": "Door Moving Time changed",
-                            "displayNameAction": "Set Door Moving Time value",
-                            "type": "int",
-                            "defaultValue": 10,
                             "writable": true
                         }
                     ],
