@@ -35,6 +35,7 @@ PLUGIN_DIRS = \
     lifx                \
     mailnotification    \
     mqttclient          \
+    mystrom             \
     neatobotvac         \
     nanoleaf            \
     netatmo             \

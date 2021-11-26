@@ -1,0 +1,82 @@
+{
+    "name": "myStrom",
+    "displayName": "myStrom",
+    "id": "fc7f1a24-42a8-45ce-9ffb-136292eb0164",
+    "vendors": [
+        {
+            "name": "myStrom",
+            "displayName": "myStrom",
+            "id": "884b2875-759a-4373-aca4-6a8cb7220f85",
+            "thingClasses": [
+                {
+                    "id": "27dc49c0-58cd-4d5f-a95b-0c437dd828cf",
+                    "name": "switch",
+                    "displayName": "myStrom WiFi Switch",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "44144c44-a447-4cee-b77a-18454a779a9c",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8864755d-4e6a-4e45-b2db-3eb5d4f3d53d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "71723ea3-d2a1-48c4-9a2c-532d938e5022",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "717f2593-1544-483b-aac8-f9800b299e4d",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "a3533121-69ee-44fd-8394-13373e8f960e",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total energy consumed changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ccb52b57-5800-4f03-b7fa-f36dcebe1d4e",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "filter": "adaptive"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
