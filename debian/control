@@ -476,6 +476,14 @@ Description: nymea.io plugin for lifx
  .
  This package will install the nymea.io plugin for lifx
 
+Package: nymea-plugin-mecelectronics
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for mec electronics devices
+ This package will add support for the mec meter to nymea.
+
 
 Package: nymea-plugin-mailnotification
 Architecture: any

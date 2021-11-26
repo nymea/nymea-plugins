@@ -1,0 +1,13 @@
+{
+    "title": "mecElectronics",
+    "tagline": "mecMeter",
+    "icon": "mecelectronics.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy",
+    ]
+}

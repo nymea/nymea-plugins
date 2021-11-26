@@ -1,0 +1,204 @@
+{
+    "name": "mecElectronics",
+    "displayName": "mecElectronics",
+    "id": "5853701d-a335-4282-892f-f23670269505",
+    "vendors": [
+        {
+            "name": "mecElectronics",
+            "displayName": "mec electronics",
+            "id": "09b121c5-29c5-456c-b30a-07c2662c763c",
+            "thingClasses": [
+                {
+                    "id": "a26a874d-aa3f-4531-bf9f-1c03ab70aa62",
+                    "name": "mecMeter",
+                    "displayName": "mecMeter",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": [ "energymeter", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "00f4fac0-0c27-4132-95cd-841869a8b122",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "825fbdf8-cf4b-4122-a5f6-b99cff182154",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ffcf6c7c-e1bc-48d3-adf6-142864c200bd",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2c36c0ce-1935-4fc7-84ad-b4e22335d7f7",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "317ca9f1-92a7-4b7e-bd16-6df6e364ef61",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total returned energy",
+                            "displayNameEvent": "Total returned energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a2900841-5817-4971-b5a2-cca3e1ab6c1d",
+                            "name": "currentPhaseA",
+                            "displayName": "Phase A current",
+                            "displayNameEvent": "Phase A current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0aebf62a-fc9c-4457-8168-6a40c0227337",
+                            "name": "voltagePhaseA",
+                            "displayName": "Phase A voltage",
+                            "displayNameEvent": "Phase A voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "777ca8ed-623f-4aaa-8aaf-a0f3746ffc4d",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Phase A power",
+                            "displayNameEvent": "Phase A power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ae04176e-387e-4876-8e0c-32f8fa224595",
+                            "name": "energyConsumedPhaseA",
+                            "displayName": "Phase A consumed energy",
+                            "displayNameEvent": "Phase A consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b454057d-8e97-4f96-b0c3-7e4cbf4044c0",
+                            "name": "energyProducedPhaseA",
+                            "displayName": "Phase A returned energy",
+                            "displayNameEvent": "Phase A returned energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "90fc6894-044a-45ec-83f4-f38134f35018",
+                            "name": "currentPhaseB",
+                            "displayName": "Phase B current",
+                            "displayNameEvent": "Phase B current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4495030f-23e9-4013-ab00-d95fc8c2eb21",
+                            "name": "voltagePhaseB",
+                            "displayName": "Phase B voltage",
+                            "displayNameEvent": "Phase B voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "632998c0-28c5-4986-acaa-1a40b77efc9d",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Phase B power",
+                            "displayNameEvent": "Phase B power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e20911fb-e0a6-4fe6-a9f7-ecbb1ebb8ee7",
+                            "name": "energyConsumedPhaseB",
+                            "displayName": "Phase B consumed energy",
+                            "displayNameEvent": "Phase B consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a0407475-e770-4a74-b4b4-34b458a26801",
+                            "name": "energyProducedPhaseB",
+                            "displayName": "Phase B returned energy",
+                            "displayNameEvent": "Phase B returned energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ec0ed738-0e79-4db9-83df-746ec18d25f3",
+                            "name": "currentPhaseC",
+                            "displayName": "Phase C current",
+                            "displayNameEvent": "Phase C current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fb8f5094-6d6b-44b7-b244-67614a7a06ff",
+                            "name": "voltagePhaseC",
+                            "displayName": "Phase C voltage",
+                            "displayNameEvent": "Phase C voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "333909a9-f28e-4e8a-a377-ff32fb80ae82",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Phase C power",
+                            "displayNameEvent": "Phase C power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ef43baf0-2f20-44d5-930d-528107c53cac",
+                            "name": "energyConsumedPhaseC",
+                            "displayName": "Phase C consumed energy",
+                            "displayNameEvent": "Phase C consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6b08f113-204c-45c9-9b1a-118416aefcd7",
+                            "name": "energyProducedPhaseC",
+                            "displayName": "Phase C returned energy",
+                            "displayNameEvent": "Phase C returned energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
