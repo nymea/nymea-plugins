@@ -86,7 +86,7 @@ KebaDiscovery::KebaDiscovery(KeContactDataLayer *kebaDataLayer, NetworkDeviceDis
                 result.serialNumber = dataMap.value("Serial").toString();
                 result.firmwareVersion = dataMap.value("Firmware").toString();
                 m_results.append(result);
-                qCDebug(dcKeba()) << "Discovery: -->" << networkDeviceInfo.address().toString() << networkDeviceInfo.macAddress() << result.product << result.serialNumber << result.firmwareVersion;
+                qCDebug(dcKeba()) << "Discovery: -->" << networkDeviceInfo << networkDeviceInfo.macAddress() << result.product << result.serialNumber << result.firmwareVersion;
             }
         }
     });

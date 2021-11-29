@@ -470,8 +470,11 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 //"timeQ": 3
                 //"DIP-Sw1": "0x22"
                 //"DIP-Sw2":
+                reportOne.dipSw1 = data.value("DIP-Sw1").toString().remove("0x").toUInt(nullptr, 16);
+                reportOne.dipSw2 = data.value("DIP-Sw2").toString().remove("0x").toUInt(nullptr, 16);
+
                 if (data.contains("COM-module")) {
-                    reportOne.comModule = (data.value("COM-module").toInt() == 1);
+                    reportOne.comModule = (data.value("COM-moDIP-Sw1dule").toInt() == 1);
                 } else {
                     reportOne.comModule = false;
                 }

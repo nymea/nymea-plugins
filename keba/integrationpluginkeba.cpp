@@ -58,9 +58,15 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
             m_kebaDataLayer->deleteLater();
             m_kebaDataLayer = nullptr;
             qCWarning(dcKeba()) << "Failed to create Keba data layer...";
-            info->finish(Thing::ThingErrorHardwareFailure);
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The communication could not be established."));
             return;
         }
+    }
+
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcKeba()) << "The network discovery does not seem to be available.";
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The network discovery is not available. Please enter the IP address manually."));
+        return;
     }
 
     if (info->thingClassId() == wallboxThingClassId) {
@@ -157,6 +163,17 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             qCDebug(dcKeba()) << "     - Product" << report.product;
             qCDebug(dcKeba()) << "     - Uptime" << report.seconds/60 << "[min]";
             qCDebug(dcKeba()) << "     - Com Module" << report.comModule;
+
+            // Verify the DIP switches and warn the user in case if wrong configuration
+            // For having UPD controll on the wallbox we need DIP Switch 1.3 enabled
+            KeContact::DipSwitchOneFlag dipSwOne(report.dipSw1);
+            qCDebug(dcKeba()) << dipSwOne;
+            if (!dipSwOne.testFlag(KeContact::DipSwitchOneSmartHomeInterface)) {
+                qCWarning(dcKeba()) << "Connected successfully to Keba but the DIP Switch for controlling it is not enabled.";
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The required communication interface is not enabled on this wallbox. Please make sure the DIP switch 1.3 is switched on and try again."));
+                return;
+            }
+
 
             thing->setStateValue(wallboxConnectedStateTypeId, true);
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
@@ -386,7 +403,7 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
     if (m_asyncActions.contains(requestId)) {
         KeContact *keba = static_cast<KeContact *>(sender());
 
-        keba->getReport2(); //Check if the state was actually set
+        keba->getReport2(); // Check if the state was actually set
 
         Thing *thing = myThings().findById(m_kebaDevices.key(keba));
         if (!thing) {
@@ -613,8 +630,12 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
 
         QUuid requestId;
         if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toUInt() * 1000;
+            int milliAmpere = action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
+            // Note: since the response only indicates the successfull receiving of the command,
+            // and we only can request the report every 2 seconds as verification, lets set the value right the way
+            // to prevent jitter while moving the slider
+            //thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt());
         } else if(action.actionTypeId() == wallboxPowerActionTypeId) {
             requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
         } else if(action.actionTypeId() == wallboxDisplayActionTypeId) {

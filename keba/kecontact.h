@@ -67,6 +67,27 @@ class KeContact : public QObject
 {
     Q_OBJECT
 public:
+    enum DipSwitchOne {
+        // Power settings
+        // DIP 6 7 8 (Bit 2, 1, 0)
+        //     0 0 0 : 10A
+        //     1 0 0 : 13A
+        //     0 1 0 : 16A
+        //     1 1 0 : 20A
+        //     0 0 1 : 25A
+        //     1 0 1 : 32A
+        DipSwitchOnePin8 = 0x01,
+        DipSwitchOnePin7 = 0x02,
+        DipSwitchOnePin6 = 0x04,
+        DipSwitchOnePin5 = 0x08,
+        DipSwitchOnePin4 = 0x10,
+        DipSwitchOneSmartHomeInterface = 0x20, // 3
+        DipSwitchOneExternalInputX2 = 0x40, // 2
+        DipSwitchOneExternalInputX1 = 0x80 // 1
+    };
+    Q_ENUM(DipSwitchOne)
+    Q_DECLARE_FLAGS(DipSwitchOneFlag, DipSwitchOne)
+
     enum State {
         StateStarting = 0,
         StateNotReady,
@@ -102,6 +123,8 @@ public:
         QString firmware;       // Firmware version
         bool comModule;         // Communication module is installed (only P30)
         int seconds;            // Current system clock since restart of the charging station.(only P30)
+        quint8 dipSw1;            // Dip Switch 1 flag
+        quint8 dipSw2;            // Dip Switch 2 flag
     };
 
     struct ReportTwo {
@@ -216,5 +239,8 @@ private slots:
     void onReceivedDatagram(const QHostAddress &address, const QByteArray &datagram);
 
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KeContact::DipSwitchOneFlag);
+
 #endif // KECONTACT_H
 
