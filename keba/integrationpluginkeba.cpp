@@ -30,11 +30,12 @@
 
 #include "plugininfo.h"
 #include "integrationpluginkeba.h"
-#include "network/networkdevicediscovery.h"
 
 #include <QJsonDocument>
 #include <QUdpSocket>
 #include <QTimeZone>
+
+#include "kebadiscovery.h"
 
 IntegrationPluginKeba::IntegrationPluginKeba()
 {
@@ -48,49 +49,50 @@ void IntegrationPluginKeba::init()
 
 void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
 {
+
+    // Init data layer if not already created
+    if (!m_kebaDataLayer){
+        qCDebug(dcKeba()) << "Creating new Keba data layer...";
+        m_kebaDataLayer= new KeContactDataLayer(this);
+        if (!m_kebaDataLayer->init()) {
+            m_kebaDataLayer->deleteLater();
+            m_kebaDataLayer = nullptr;
+            qCWarning(dcKeba()) << "Failed to create Keba data layer...";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+    }
+
     if (info->thingClassId() == wallboxThingClassId) {
-        qCDebug(dcKeba()) << "Discovering Keba Wallbox...";
-        NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-        connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-            ThingDescriptors descriptors;
-            qCDebug(dcKeba()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
-            foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-                if (!networkDeviceInfo.macAddressManufacturer().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
-                    continue;
+        // Create a discovery with the info as parent for auto deleting the object
+        KebaDiscovery *discovery = new KebaDiscovery(m_kebaDataLayer, hardwareManager()->networkDeviceDiscovery(), info);
+        connect(discovery, &KebaDiscovery::discoveryFinished, info, [=](){
+            foreach (const KebaDiscovery::KebaDiscoveryResult &result, discovery->discoveryResults()) {
 
-                qCDebug(dcKeba()) << "     - Keba Wallbox" << networkDeviceInfo;
-                QString title = "Keba Wallbox ";
-                if (networkDeviceInfo.hostName().isEmpty()) {
-                    title += "(" + networkDeviceInfo.address().toString() + ")";
-                } else {
-                    title += networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
-                }
-
-                QString description;
-                if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                    description = networkDeviceInfo.macAddress();
-                } else {
-                    description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
-                }
-
-                ThingDescriptor descriptor(wallboxThingClassId, title, description);
+                ThingDescriptor descriptor(wallboxThingClassId, "Keba " + result.product, "Serial: " + result.serialNumber + " - " + result.networkDeviceInfo.address().toString());
 
                 // Check if we already have set up this device
-                Things existingThings = myThings().filterByParam(wallboxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
+                Things existingThings = myThings().filterByParam(wallboxThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
                 if (existingThings.count() == 1) {
-                    qCDebug(dcKeba()) << "This wallbox already exists in the system!" << networkDeviceInfo;
+                    qCDebug(dcKeba()) << "This wallbox already exists in the system!" << result.networkDeviceInfo;
                     descriptor.setThingId(existingThings.first()->id());
                 }
 
                 ParamList params;
-                params << Param(wallboxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
-                params << Param(wallboxThingIpAddressParamTypeId, networkDeviceInfo.address().toString());
+                params << Param(wallboxThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
+                params << Param(wallboxThingIpAddressParamTypeId, result.networkDeviceInfo.address().toString());
+                params << Param(wallboxThingModelParamTypeId, result.product);
+                params << Param(wallboxThingSerialNumberParamTypeId, result.serialNumber);
                 descriptor.setParams(params);
                 info->addThingDescriptor(descriptor);
             }
 
             info->finish(Thing::ThingErrorNoError);
         });
+
+        // Start the discovery process
+        discovery->startDiscovery();
+
     } else {
         qCWarning(dcKeba()) << "Could not discover things because of unhandled thing class id" << info->thingClassId().toString();
         info->finish(Thing::ThingErrorThingClassNotFound);
@@ -143,6 +145,9 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         connect(keba, &KeContact::report1XXReceived, this, &IntegrationPluginKeba::onReport1XXReceived);
         connect(keba, &KeContact::broadcastReceived, this, &IntegrationPluginKeba::onBroadcastReceived);
 
+        // TODO: first test the ip, verify serial number if responds
+        // if no response, rediscover, reassign ip in case if changes
+
         connect(keba, &KeContact::reportOneReceived, info, [info, this, keba] (const KeContact::ReportOne &report) {
             Thing *thing = info->thing();
 
@@ -155,8 +160,6 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
             thing->setStateValue(wallboxConnectedStateTypeId, true);
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
-            thing->setStateValue(wallboxSerialnumberStateTypeId, report.serialNumber);
-            thing->setStateValue(wallboxModelStateTypeId, report.product);
             thing->setStateValue(wallboxUptimeStateTypeId, report.seconds / 60);
 
             m_kebaDevices.insert(thing->id(), keba);
@@ -358,6 +361,11 @@ void IntegrationPluginKeba::searchNetworkDevices()
     });
 }
 
+void IntegrationPluginKeba::onDiscoveryWaitUpdResponseTimeout()
+{
+
+}
+
 void IntegrationPluginKeba::onConnectionChanged(bool status)
 {
     KeContact *keba = static_cast<KeContact *>(sender());
@@ -402,7 +410,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     if (!thing)
         return;
 
-    qCDebug(dcKeba()) << "Report 2 received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
+    qCDebug(dcKeba()) << "Report 2 received for" << thing->name() << "Serial number:" << thing->paramValue(wallboxThingSerialNumberParamTypeId).toString();
     qCDebug(dcKeba()) << "     - State:" << reportTwo.state;
     qCDebug(dcKeba()) << "     - Error 1:" << reportTwo.error1;
     qCDebug(dcKeba()) << "     - Error 2:" << reportTwo.error2;
@@ -422,7 +430,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     qCDebug(dcKeba()) << "     - Serial number:" << reportTwo.serialNumber;
     qCDebug(dcKeba()) << "     - Uptime:" << reportTwo.seconds/60 << "[min]";
 
-    if (reportTwo.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+    if (reportTwo.serialNumber == thing->paramValue(wallboxThingSerialNumberParamTypeId).toString()) {
         setDeviceState(thing, reportTwo.state);
         setDevicePlugState(thing, reportTwo.plugState);
 
@@ -458,7 +466,7 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     if (!thing)
         return;
 
-    qCDebug(dcKeba()) << "Report 3 received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
+    qCDebug(dcKeba()) << "Report 3 received for" << thing->name() << "Serial number:" << thing->paramValue(wallboxThingSerialNumberParamTypeId).toString();
     qCDebug(dcKeba()) << "     - Current phase 1:" << reportThree.currentPhase1 << "[A]";
     qCDebug(dcKeba()) << "     - Current phase 2:" << reportThree.currentPhase2 << "[A]";
     qCDebug(dcKeba()) << "     - Current phase 3:" << reportThree.currentPhase3 << "[A]";
@@ -471,7 +479,7 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     qCDebug(dcKeba()) << "     - Serial number" << reportThree.serialNumber;
     qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds / 60 << "[min]";
 
-    if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+    if (reportThree.serialNumber == thing->paramValue(wallboxThingSerialNumberParamTypeId).toString()) {
         thing->setStateValue(wallboxCurrentPhaseAEventTypeId, reportThree.currentPhase1);
         thing->setStateValue(wallboxCurrentPhaseBEventTypeId, reportThree.currentPhase2);
         thing->setStateValue(wallboxCurrentPhaseCEventTypeId, reportThree.currentPhase3);
@@ -509,7 +517,7 @@ void IntegrationPluginKeba::onReport1XXReceived(int reportNumber, const KeContac
     if (!thing)
         return;
 
-    qCDebug(dcKeba()) << "Report" << reportNumber << "received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
+    qCDebug(dcKeba()) << "Report" << reportNumber << "received for" << thing->name() << "Serial number:" << thing->paramValue(wallboxThingSerialNumberParamTypeId).toString();
     qCDebug(dcKeba()) << "     - Session Id" << report.sessionId;
     qCDebug(dcKeba()) << "     - Curr HW" << report.currHW;
     qCDebug(dcKeba()) << "     - Energy start" << report.startEnergy;
@@ -534,7 +542,7 @@ void IntegrationPluginKeba::onReport1XXReceived(int reportNumber, const KeContac
 
     } else if (reportNumber == 101) {
         // Report 101 is the lastest finished session
-        if (report.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+        if (report.serialNumber == thing->paramValue(wallboxThingSerialNumberParamTypeId).toString()) {
             if (!m_lastSessionId.contains(thing->id())) {
                 // This happens after reboot
                 m_lastSessionId.insert(thing->id(), report.sessionId);

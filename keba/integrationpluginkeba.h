@@ -31,8 +31,10 @@
 #ifndef INTEGRATIONPLUGINKEBA_H
 #define INTEGRATIONPLUGINKEBA_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+#include <network/networkdevicediscovery.h>
+
 #include "kecontact.h"
 #include "kecontactdatalayer.h"
 
@@ -40,6 +42,7 @@
 #include <QUdpSocket>
 #include <QDateTime>
 #include <QUdpSocket>
+
 
 class IntegrationPluginKeba : public IntegrationPlugin
 {
@@ -64,12 +67,10 @@ public:
 private:
     PluginTimer *m_updateTimer = nullptr;
     PluginTimer *m_reconnectTimer = nullptr;
-
     KeContactDataLayer *m_kebaDataLayer = nullptr;
 
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<ThingId, int> m_lastSessionId;
-
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
 
     void setDeviceState(Thing *device, KeContact::State state);
@@ -78,6 +79,8 @@ private:
     void searchNetworkDevices();
 
 private slots:
+    void onDiscoveryWaitUpdResponseTimeout();
+
     void onConnectionChanged(bool status);
     void onCommandExecuted(QUuid requestId, bool success);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);

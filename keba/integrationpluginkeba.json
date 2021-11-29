@@ -31,6 +31,24 @@
                             "inputType": "TextLine",
                             "defaultValue":"",
                             "readOnly": true
+                        },
+                        {
+                            "id": "45255155-318b-4204-8ce6-2c106a56286d",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue":"",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "a996c698-4831-4977-8979-f76f78ac7da8",
+                            "name": "model",
+                            "displayName": "Product name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue":"",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -42,30 +60,6 @@
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
-                        },
-                        {
-                            "id": "c3fca233-95b9-4948-88c6-4c0f13cf53b1",
-                            "name": "model",
-                            "displayName": "Model",
-                            "displayNameEvent": "Model changed",
-                            "type": "QString",
-                            "defaultValue": "Unknown"
-                        },
-                        {
-                            "id": "e941ace5-fb7f-4dc2-b3f2-188233f4e934",
-                            "name": "firmware",
-                            "displayName": "Firmware",
-                            "displayNameEvent": "Firmware changed",
-                            "type": "QString",
-                            "defaultValue": ""
-                        },
-                        {
-                            "id": "9a1b4316-ce01-4cd3-890f-a8c94b8b5029",
-                            "name": "serialnumber",
-                            "displayName": "Serial number",
-                            "displayNameEvent": "Serial number changed",
-                            "type": "QString",
-                            "defaultValue": ""
                         },
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
@@ -328,6 +322,14 @@
                             "writable": true,
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "e941ace5-fb7f-4dc2-b3f2-188233f4e934",
+                            "name": "firmware",
+                            "displayName": "Firmware",
+                            "displayNameEvent": "Firmware changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
