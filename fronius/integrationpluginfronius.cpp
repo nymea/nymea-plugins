@@ -151,8 +151,9 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             // Knwon version with broken JSON API
             if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
                 qCWarning(dcFronius()) << "The Fronius data logger has a version which is known to have a broken JSON API firmware.";
-                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
-                return;
+                // FIXME: temporary disable the version check in order to try to make it work nether the less
+                // info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
+                // return;
             }
 
             FroniusLogger *newLogger = new FroniusLogger(thing, this);
@@ -415,6 +416,18 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
                 ThingDescriptor descriptor(inverterThingClassId, thingName, "Fronius Solar Inverter", loggerThing->id());
                 ParamList params;
                 params.append(Param(inverterThingIdParamTypeId, inverterId));
+                descriptor.setParams(params);
+                thingDescriptors.append(descriptor);
+            }
+        }
+
+        // Note: in case of well known broken API version 1.6-2 the inverter map is broken and contains "1": { ...
+        if (bodyMap.value("Data").toMap().contains("1")) {
+            if (!thingExists(inverterThingIdParamTypeId, "1")) {
+                QString thingName = loggerThing->name() + " Inverter " + "1";
+                ThingDescriptor descriptor(inverterThingClassId, thingName, "Fronius Solar Inverter", loggerThing->id());
+                ParamList params;
+                params.append(Param(inverterThingIdParamTypeId, 1));
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
