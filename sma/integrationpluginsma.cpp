@@ -40,49 +40,51 @@ IntegrationPluginSma::IntegrationPluginSma()
 
 void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
-        qCWarning(dcSma()) << "Failed to discover network devices. The network device discovery is not available.";
-        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discover devices in your network."));
-        return;
-    }
-
-    qCDebug(dcSma()) << "Starting network discovery...";
-    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-        ThingDescriptors descriptors;
-        qCDebug(dcSma()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
-        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-            // Filter for sma hosts
-            if (!networkDeviceInfo.hostName().toLower().contains("sma"))
-                continue;
-
-            QString title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
-            QString description;
-            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                description = networkDeviceInfo.macAddress();
-            } else {
-                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
-            }
-
-            ThingDescriptor descriptor(sunnyWebBoxThingClassId, title, description);
-
-            // Check for reconfiguration
-            foreach (Thing *existingThing, myThings()) {
-                if (existingThing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() == networkDeviceInfo.macAddress()) {
-                    descriptor.setThingId(existingThing->id());
-                    break;
-                }
-            }
-
-            ParamList params;
-            params << Param(sunnyWebBoxThingHostParamTypeId, networkDeviceInfo.address().toString());
-            params << Param(sunnyWebBoxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
-            descriptor.setParams(params);
-            descriptors.append(descriptor);
+    if (info->thingClassId() == sunnyWebBoxThingClassId) {
+        if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+            qCWarning(dcSma()) << "Failed to discover network devices. The network device discovery is not available.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discover devices in your network."));
+            return;
         }
-        info->addThingDescriptors(descriptors);
-        info->finish(Thing::ThingErrorNoError);
-    });
+
+        qCDebug(dcSma()) << "Starting network discovery...";
+        NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+        connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+            ThingDescriptors descriptors;
+            qCDebug(dcSma()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+            foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+                // Filter for sma hosts
+                if (!networkDeviceInfo.hostName().toLower().contains("sma"))
+                    continue;
+
+                QString title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
+                QString description;
+                if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                    description = networkDeviceInfo.macAddress();
+                } else {
+                    description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+                }
+
+                ThingDescriptor descriptor(sunnyWebBoxThingClassId, title, description);
+
+                // Check for reconfiguration
+                foreach (Thing *existingThing, myThings()) {
+                    if (existingThing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() == networkDeviceInfo.macAddress()) {
+                        descriptor.setThingId(existingThing->id());
+                        break;
+                    }
+                }
+
+                ParamList params;
+                params << Param(sunnyWebBoxThingHostParamTypeId, networkDeviceInfo.address().toString());
+                params << Param(sunnyWebBoxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
+                descriptor.setParams(params);
+                descriptors.append(descriptor);
+            }
+            info->addThingDescriptors(descriptors);
+            info->finish(Thing::ThingErrorNoError);
+        });
+    }
 
 }
 
@@ -160,7 +162,7 @@ void IntegrationPluginSma::thingRemoved(Thing *thing)
 
 void IntegrationPluginSma::onRefreshTimer()
 {
-    Q_FOREACH(Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
+    foreach (Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
         SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         sunnyWebBox->getPlantOverview();
     }
