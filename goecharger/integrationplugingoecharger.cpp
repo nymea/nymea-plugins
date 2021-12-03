@@ -60,7 +60,7 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 
             qCDebug(dcGoECharger()) << "Checking discovered" << networkDeviceInfo;
             // Filter by hostname
-            if (!networkDeviceInfo.hostName().contains("go-eCharger"))
+            if (!networkDeviceInfo.hostName().toLower().contains("go-echarger"))
                 continue;
 
             // We need also the mac address
@@ -71,14 +71,14 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
             if (networkDeviceInfo.hostName().isEmpty()) {
                 title = networkDeviceInfo.address().toString();
             } else {
-                title = "go-eCharger (" + networkDeviceInfo.address().toString() + ")";
+                title = "go-eCharger";
             }
 
             QString description;
             if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                description = networkDeviceInfo.macAddress();
+                description = networkDeviceInfo.address().toString();
             } else {
-                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+                description = networkDeviceInfo.address().toString() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
             }
 
             ThingDescriptor descriptor(goeHomeThingClassId, title, description);
@@ -368,7 +368,11 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
 
         // Set the limit for the max charging amps
-        thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+        if (cableLimit != 0) {
+            thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+        } else {
+            thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, amaLimit);
+        }
 
         // Parse nrg array
         uint voltagePhaseA = 0; uint voltagePhaseB = 0; uint voltagePhaseC = 0;
