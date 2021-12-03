@@ -151,7 +151,6 @@ void IntegrationPluginSonos::confirmPairing(ThingPairingInfo *info, const QStrin
         if (!sonos) {
             qWarning(dcSonos()) << "No sonos connection found for thing:" << info->thingName();
             m_setupSonosConnections.remove(info->thingId());
-            sonos->deleteLater();
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }

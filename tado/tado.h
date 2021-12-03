@@ -67,20 +67,20 @@ public:
     };
 
     struct ZoneState {
-        bool connected;
-        bool power;
+        bool connected = false;
+        bool power = false;
         QString tadoMode;
         QString settingType;
-        double settingTemperature;
-        bool settingPower;
-        double temperature;
-        double humidity;
-        bool windowOpen;
-        double heatingPowerPercentage;
+        double settingTemperature = false;
+        bool settingPower = false;
+        double temperature = false;
+        double humidity = false;
+        bool windowOpen = false;
+        double heatingPowerPercentage = false;
         QString heatingPowerType;
-        bool overlayIsSet;
-        bool overlaySettingPower;
-        double overlaySettingTemperature;
+        bool overlayIsSet = false;
+        bool overlaySettingPower = false;
+        double overlaySettingTemperature = false;
         QString overlayType;
     };
 
