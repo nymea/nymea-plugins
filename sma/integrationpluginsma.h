@@ -35,7 +35,7 @@
 #include "plugintimer.h"
 #include "sunnywebbox.h"
 
-#include <QDebug>
+#include "speedwireinterface.h"
 
 class IntegrationPluginSma: public IntegrationPlugin {
     Q_OBJECT

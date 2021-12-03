@@ -84,8 +84,23 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             info->addThingDescriptors(descriptors);
             info->finish(Thing::ThingErrorNoError);
         });
-    }
+    } else if (info->thingClassId() == speedwireInverterThingClassId) {
+        SpeedwireInterface *speedwireDiscovery = new SpeedwireInterface(info);
+        if (!speedwireDiscovery->initialize()) {
+            qCWarning(dcSma()) << "Could not discovery inverter. The speedwire interface initialization failed.";
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to discover the network."));
+            return;
+        }
 
+        connect(speedwireDiscovery, &SpeedwireInterface::discoveryFinished, this, [=](){
+            qCDebug(dcSma()) << "Speed wire discovery finished.";
+
+            speedwireDiscovery->deleteLater();
+            info->finish(Thing::ThingErrorNoError);
+        });
+
+        speedwireDiscovery->startDiscovery();
+    }
 }
 
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)

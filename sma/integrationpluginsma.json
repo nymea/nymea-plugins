@@ -12,8 +12,8 @@
                     "id": "49304127-ce9b-45dd-8511-05030a4ac003",
                     "name": "sunnyWebBox",
                     "displayName": "Sunny WebBox",
-                    "createMethods": ["user", "discovery"],
-                    "interfaces": ["smartmeterproducer"],
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["solarinverter"],
                     "paramTypes": [
                         {
                             "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
@@ -83,6 +83,59 @@
                             "displayNameEvent": "Error changed",
                             "type": "QString",
                             "defaultValue": "None"
+                        }
+                    ]
+                },
+                {
+                    "id": "0c5097af-e136-4430-9fb4-0ccbb30c3e1c",
+                    "name": "speedwireInverter",
+                    "displayName": "SMA Inverter Speedwire",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["solarinverter"],
+                    "paramTypes": [
+                        {
+                            "id": "d90193e6-a996-4e49-bf6d-564d596d7e74",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.168"
+                        },
+                        {
+                            "id": "2780eab7-1f1c-4cc7-a789-a8790329ca9e",
+                            "name": "macAddress",
+                            "displayName": "hardware address",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "35733d27-4fe0-439a-be71-7c1597481659",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "015868bd-cc35-44cf-b631-78ea7c73b967",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f29b6283-873b-45f5-8a14-622d34f11d4f",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "displayNameEvent": "Total energy produced changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
                         }
                     ]
                 }
