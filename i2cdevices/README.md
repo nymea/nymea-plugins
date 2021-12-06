@@ -6,6 +6,7 @@ Currently supported devices are:
 
 * ADS1113/ADS1114/ADS1115
 * Pi-16ADC
+* SHT3x HT Sensor
 
 ## ADS1113/ADS1114/ADS1115
 
@@ -99,3 +100,10 @@ more than 16 channels are required.
 
 Additional information ca be found at the devices users guide at 
 [https://www.alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf](https://www.alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf).
+
+## SHT3x HT Sensor
+
+The SHT3x HT Sensor allows to measure the temperature and humidity and read the values using the I2C interface. Once connected to the I2C bus, 
+the device can be discovered and added to the system.
+
+Additional information can be found [here](https://www.sensirion.com/en/environmental-sensors/humidity-sensors/digital-humidity-sensors-for-various-applications/)

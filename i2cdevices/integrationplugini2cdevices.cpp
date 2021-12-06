@@ -33,6 +33,7 @@
 
 #include "pi16adcchannel.h"
 #include "ads1115channel.h"
+#include "sht30.h"
 
 #include <hardware/i2c/i2cmanager.h>
 
@@ -113,6 +114,18 @@ void IntegrationPluginI2CDevices::discoverThings(ThingDiscoveryInfo *info)
                 ParamList params;
                 params << Param(ads1115ThingI2cPortParamTypeId, scanResult.portName);
                 params << Param(ads1115ThingI2cAddressParamTypeId, scanResult.address);
+                descriptor.setParams(params);
+                info->addThingDescriptor(descriptor);
+            }
+        }
+
+        if (info->thingClassId() == sht3xThingClassId) {
+            // The SHT3x has selectable addresses 0x44 or 0x45
+            if (scanResult.address == 0x44 || scanResult.address == 0x45) {
+                ThingDescriptor descriptor(sht3xThingClassId, "SHT3x HT Sensor", QString("%1: 0x%2").arg(scanResult.portName).arg(scanResult.address, 0, 16));
+                ParamList params;
+                params << Param(sht3xThingI2cPortParamTypeId, scanResult.portName);
+                params << Param(sht3xThingI2cAddressParamTypeId, scanResult.address);
                 descriptor.setParams(params);
                 info->addThingDescriptor(descriptor);
             }
@@ -198,6 +211,30 @@ void IntegrationPluginI2CDevices::setupThing(ThingSetupInfo *info)
             hardwareManager()->i2cManager()->startReading(ads1115, 5000);
             m_i2cDevices.insert(ads1115, thing);
         }
+        info->finish(Thing::ThingErrorNoError);
+    }
+
+    if (info->thing()->thingClassId() == sht3xThingClassId) {
+
+        QString i2cPortName = info->thing()->paramValue(sht3xThingI2cPortParamTypeId).toString();
+        int i2cAddress = info->thing()->paramValue(sht3xThingI2cAddressParamTypeId).toInt();
+        Q_UNUSED(i2cAddress)
+
+        SHT30 *sht3x = new SHT30(i2cPortName, i2cAddress, this);
+        if (!hardwareManager()->i2cManager()->open(sht3x)) {
+            delete sht3x;
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to open I2C port."));
+            return;
+        }
+
+        Thing *thing = info->thing();
+        connect(sht3x, &SHT30::measurementAvailable, thing, [thing](double temperature, double humidity){
+            thing->setStateValue(sht3xTemperatureStateTypeId, temperature);
+            thing->setStateValue(sht3xHumidityStateTypeId, humidity);
+        });
+
+        hardwareManager()->i2cManager()->startReading(sht3x, 5000);
+        m_i2cDevices.insert(sht3x, thing);
         info->finish(Thing::ThingErrorNoError);
     }
 }
