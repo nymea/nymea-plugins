@@ -118,6 +118,7 @@ isEmpty(WITH_PLUGINS) {
 }
 PLUGINS-=$${WITHOUT_PLUGINS}
 
+#FIXME: PLUGINS=sma
 message("Building plugins:")
 for(plugin, PLUGINS) {
     exists($${plugin}) {

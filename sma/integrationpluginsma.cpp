@@ -31,9 +31,15 @@
 #include "integrationpluginsma.h"
 #include "plugininfo.h"
 
-#include "network/networkdevicediscovery.h"
+#include <network/networkdevicediscovery.h>
+#include "speedwirediscovery.h"
 
 IntegrationPluginSma::IntegrationPluginSma()
+{
+
+}
+
+void IntegrationPluginSma::init()
 {
 
 }
@@ -84,18 +90,44 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             info->addThingDescriptors(descriptors);
             info->finish(Thing::ThingErrorNoError);
         });
-    } else if (info->thingClassId() == speedwireInverterThingClassId) {
-        SpeedwireInterface *speedwireDiscovery = new SpeedwireInterface(info);
+    } else if (info->thingClassId() == speedwireMeterThingClassId) {
+        SpeedwireDiscovery *speedwireDiscovery = new SpeedwireDiscovery(hardwareManager()->networkDeviceDiscovery(), info);
         if (!speedwireDiscovery->initialize()) {
             qCWarning(dcSma()) << "Could not discovery inverter. The speedwire interface initialization failed.";
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to discover the network."));
             return;
         }
 
-        connect(speedwireDiscovery, &SpeedwireInterface::discoveryFinished, this, [=](){
+        connect(speedwireDiscovery, &SpeedwireDiscovery::discoveryFinished, this, [=](){
             qCDebug(dcSma()) << "Speed wire discovery finished.";
-
             speedwireDiscovery->deleteLater();
+
+            ThingDescriptors descriptors;
+            foreach (const SpeedwireDiscovery::SpeedwireDiscoveryResult &result, speedwireDiscovery->discoveryResult()) {
+                if (result.deviceType == SpeedwireInterface::DeviceTypeMeter) {
+                    if (result.serialNumber == 0)
+                        continue;
+
+                    ThingDescriptor descriptor(speedwireMeterThingClassId, "SMA Energy Meter", "Serial: " + QString::number(result.serialNumber) + " - " + result.address.toString());
+                    // We found an energy meter, let's check if we already added this one
+                    foreach (Thing *existingThing, myThings()) {
+                        if (existingThing->paramValue(speedwireMeterThingSerialNumberParamTypeId).toUInt() == result.serialNumber) {
+                            descriptor.setThingId(existingThing->id());
+                            break;
+                        }
+                    }
+
+                    ParamList params;
+                    params << Param(speedwireMeterThingHostParamTypeId, result.address.toString());
+                    params << Param(speedwireMeterThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
+                    params << Param(speedwireMeterThingSerialNumberParamTypeId, result.serialNumber);
+                    params << Param(speedwireMeterThingModelIdParamTypeId, result.modelId);
+                    descriptor.setParams(params);
+                    descriptors.append(descriptor);
+                }
+            }
+
+            info->addThingDescriptors(descriptors);
             info->finish(Thing::ThingErrorNoError);
         });
 
@@ -145,7 +177,49 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
                 connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
             }
         });
-    } else {
+    } else if (thing->thingClassId() == speedwireMeterThingClassId) {
+        QHostAddress address = QHostAddress(thing->paramValue(speedwireMeterThingHostParamTypeId).toString());
+        quint32 serialNumber = static_cast<quint32>(thing->paramValue(speedwireMeterThingSerialNumberParamTypeId).toUInt());
+        quint16 modelId = static_cast<quint16>(thing->paramValue(speedwireMeterThingModelIdParamTypeId).toUInt());
+
+        if (m_speedwireMeters.contains(thing)) {
+            m_speedwireMeters.take(thing)->deleteLater();
+        }
+
+        SpeedwireMeter *meter = new SpeedwireMeter(address, modelId, serialNumber, this);
+        if (!meter->initialize()) {
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        // TODO: reachable state
+
+        connect(meter, &SpeedwireMeter::valuesUpdated, this, [=](){
+            thing->setStateValue(speedwireMeterConnectedStateTypeId, true);
+            thing->setStateValue(speedwireMeterCurrentPowerStateTypeId, meter->currentPower());
+            thing->setStateValue(speedwireMeterCurrentPowerPhaseAStateTypeId, meter->currentPowerPhaseA());
+            thing->setStateValue(speedwireMeterCurrentPowerPhaseBStateTypeId, meter->currentPowerPhaseB());
+            thing->setStateValue(speedwireMeterCurrentPowerPhaseCStateTypeId, meter->currentPowerPhaseC());
+            thing->setStateValue(speedwireMeterVoltagePhaseAStateTypeId, meter->voltagePhaseA());
+            thing->setStateValue(speedwireMeterVoltagePhaseBStateTypeId, meter->voltagePhaseB());
+            thing->setStateValue(speedwireMeterVoltagePhaseCStateTypeId, meter->voltagePhaseC());
+            thing->setStateValue(speedwireMeterTotalEnergyConsumedStateTypeId, meter->totalEnergyConsumed());
+            thing->setStateValue(speedwireMeterTotalEnergyProducedStateTypeId, meter->totalEnergyProduced());
+            thing->setStateValue(speedwireMeterEnergyConsumedPhaseAStateTypeId, meter->energyConsumedPhaseA());
+            thing->setStateValue(speedwireMeterEnergyConsumedPhaseBStateTypeId, meter->energyConsumedPhaseB());
+            thing->setStateValue(speedwireMeterEnergyConsumedPhaseCStateTypeId, meter->energyConsumedPhaseC());
+            thing->setStateValue(speedwireMeterEnergyProducedPhaseAStateTypeId, meter->energyProducedPhaseA());
+            thing->setStateValue(speedwireMeterEnergyProducedPhaseBStateTypeId, meter->energyProducedPhaseB());
+            thing->setStateValue(speedwireMeterEnergyProducedPhaseCStateTypeId, meter->energyProducedPhaseC());
+            thing->setStateValue(speedwireMeterCurrentPhaseAStateTypeId, meter->amperePhaseA());
+            thing->setStateValue(speedwireMeterCurrentPhaseBStateTypeId, meter->amperePhaseB());
+            thing->setStateValue(speedwireMeterCurrentPhaseCStateTypeId, meter->amperePhaseC());
+            thing->setStateValue(speedwireMeterFirmwareVersionStateTypeId, meter->softwareVersion());
+        });
+
+        m_speedwireMeters.insert(thing, meter);
+        info->finish(Thing::ThingErrorNoError);
+    }else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }

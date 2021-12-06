@@ -35,7 +35,7 @@
 #include "plugintimer.h"
 #include "sunnywebbox.h"
 
-#include "speedwireinterface.h"
+#include "speedwiremeter.h"
 
 class IntegrationPluginSma: public IntegrationPlugin {
     Q_OBJECT
@@ -45,6 +45,7 @@ class IntegrationPluginSma: public IntegrationPlugin {
 public:
     explicit IntegrationPluginSma();
 
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
@@ -59,6 +60,7 @@ private slots:
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
+    QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
 };
 
 #endif // INTEGRATIONPLUGINSMA_H
