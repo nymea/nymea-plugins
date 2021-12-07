@@ -78,6 +78,7 @@ PLUGIN_DIRS = \
     zigbeegenericlights \
     zigbeelumi          \
     zigbeephilipshue    \
+    zigbeeremotes       \
     zigbeetradfri       \
 
 

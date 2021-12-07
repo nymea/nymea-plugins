@@ -1150,22 +1150,6 @@ Description: nymea.io zigbee plugin for develco things
  This package will install the nymea.io plugin for Develco
 
 
-Package: nymea-plugin-zigbee-lumi
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for lumi/aquara/xiaomi things
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Lumi
-
-
 Package: nymea-plugin-zigbee-generic
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1198,6 +1182,22 @@ Description: nymea.io zigbee plugin for different generic recognizable lights
  This package will install the nymea.io plugin for generic recognizable lights
 
 
+Package: nymea-plugin-zigbee-lumi
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-zigbee1,
+         nymea-plugins-translations,
+Description: nymea.io zigbee plugin for lumi/aquara/xiaomi things
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Lumi
+
+
 Package: nymea-plugin-zigbee-philipshue
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1212,6 +1212,15 @@ Description: nymea.io zigbee plugin for Philips Hue devices
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for Philips Hue zigbee devices
+
+
+Package: nymea-plugin-zigbee-remotes
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-zigbee1,
+         nymea-plugins-translations,
+Description: nymea.io plugin for various zigbee remote controls.
 
 
 Package: nymea-plugin-zigbee-tradfri
