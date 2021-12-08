@@ -262,14 +262,14 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
             if (!levelCluster) {
                 qCWarning(dcZigbeePhilipsHue()) << "Could not find level client cluster on" << thing << endpointHa;
             } else {
-                connect(levelCluster, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](ZigbeeClusterLevelControl::FadeMode fadeMode, quint8 stepSize, quint16 transitionTime){
-                    qCDebug(dcZigbeePhilipsHue()) << thing << "level button pressed" << fadeMode << stepSize << transitionTime;
-                    switch (fadeMode) {
-                    case ZigbeeClusterLevelControl::FadeModeUp:
+                connect(levelCluster, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](bool withOnOff, ZigbeeClusterLevelControl::StepMode stepMode, quint8 stepSize, quint16 transitionTime){
+                    qCDebug(dcZigbeePhilipsHue()) << thing << "level button pressed" << withOnOff << stepMode << stepSize << transitionTime;
+                    switch (stepMode) {
+                    case ZigbeeClusterLevelControl::StepModeUp:
                         qCDebug(dcZigbeePhilipsHue()) << thing << "DIM UP pressed";
                         emit emitEvent(Event(smartButtonLongPressedEventTypeId, thing->id()));
                         break;
-                    case ZigbeeClusterLevelControl::FadeModeDown:
+                    case ZigbeeClusterLevelControl::StepModeDown:
                         qCDebug(dcZigbeePhilipsHue()) << thing << "DIM DOWN pressed";
                         emit emitEvent(Event(smartButtonLongPressedEventTypeId, thing->id()));
                         break;

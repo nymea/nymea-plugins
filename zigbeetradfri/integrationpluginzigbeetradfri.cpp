@@ -339,8 +339,8 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
                 }
             });
 
-            connect(levelCluster, &ZigbeeClusterLevelControl::commandMoveSent, thing, [=](ZigbeeClusterLevelControl::MoveMode moveMode, quint8 rate){
-                qCDebug(dcZigbeeTradfri()) << "level command move received" << moveMode << rate;
+            connect(levelCluster, &ZigbeeClusterLevelControl::commandMoveSent, thing, [=](bool withOnOff, ZigbeeClusterLevelControl::MoveMode moveMode, quint8 rate){
+                qCDebug(dcZigbeeTradfri()) << "level command move received" << withOnOff << moveMode << rate;
                 switch (moveMode) {
                 case ZigbeeClusterLevelControl::MoveModeUp:
                     qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Up";
@@ -353,14 +353,14 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
                 }
             });
 
-            connect(levelCluster, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](ZigbeeClusterLevelControl::FadeMode fadeMode, quint8 stepSize, quint16 transitionTime){
-                qCDebug(dcZigbeeTradfri()) << "level command step received" << fadeMode << stepSize << transitionTime;
-                switch (fadeMode) {
-                case ZigbeeClusterLevelControl::FadeModeUp:
+            connect(levelCluster, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](bool withOnOff, ZigbeeClusterLevelControl::StepMode stepMode, quint8 stepSize, quint16 transitionTime){
+                qCDebug(dcZigbeeTradfri()) << "level command step received" << withOnOff << stepMode << stepSize << transitionTime;
+                switch (stepMode) {
+                case ZigbeeClusterLevelControl::StepModeUp:
                     qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Up";
                     emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Up")));
                     break;
-                case ZigbeeClusterLevelControl::FadeModeDown:
+                case ZigbeeClusterLevelControl::StepModeDown:
                     qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Down";
                     emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Down")));
                     break;
@@ -373,31 +373,26 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
         if (!scenesCluster) {
             qCWarning(dcZigbeeTradfri()) << "Could not find scenes client cluster on" << thing << endpoint;
         } else {
-            connect(scenesCluster, &ZigbeeClusterScenes::commandSent, thing, [=](quint8 command, const QByteArray &payload){
-                qCDebug(dcZigbeeTradfri()) << thing << "scene command received" << command << payload.toHex();
-                if (payload.count() <= 0)
-                    return;
+            connect(scenesCluster, &ZigbeeClusterScenes::commandSent, thing, [=](ZigbeeClusterScenes::Command command, quint16 groupId, quint8 sceneId){
+                qCDebug(dcZigbeeTradfri()) << thing << "scene command received" << command << groupId << sceneId;
 
-                switch (command) {
                 // Note: these comands are not in the specs
-                case 0x07:
-                    if (payload.at(0) == 0x00) {
+                if (command == 0x07) {
+                    if (groupId == 0x00) {
                         qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Right";
                         emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Right")));
-                    } else if (payload.at(0) == 0x01) {
+                    } else if (groupId == 0x01) {
                         qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Left";
                         emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Left")));
                     }
-                    break;
-                case 0x08:
-                    if (payload.at(0) == 0x00) {
+                } else if (command == 0x08) {
+                    if (groupId == 0x00) {
                         qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Right";
                         emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Right")));
-                    } else if (payload.at(0) == 0x01) {
+                    } else if (groupId == 0x01) {
                         qCDebug(dcZigbeeTradfri()) << thing << "button pressed: Left";
                         emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Left")));
                     }
-                    break;
                 }
             });
         }
