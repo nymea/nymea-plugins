@@ -208,7 +208,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
     } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
         uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
-        // FIXME: check if we can use amx since it is better for pc charging, not all version seen implement amx
+        // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
         // Maybe check if the user sets it or a rule / hems logic
         // Set the allow value
         QString configuration = QString("amp=%1").arg(maxChargingCurrent);
@@ -354,7 +354,7 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
-        // FIXME: check if we can use amx since it is better for pc charging, not all version seen implement this
+        // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement this
         thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("amp").toUInt());
         thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
         thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
