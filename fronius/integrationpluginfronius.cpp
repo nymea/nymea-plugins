@@ -151,8 +151,8 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             // Knwon version with broken JSON API
             if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
                 qCWarning(dcFronius()) << "The Fronius data logger has a version which is known to have a broken JSON API firmware.";
-                 info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
-                 return;
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
+                return;
             }
 
             FroniusLogger *newLogger = new FroniusLogger(thing, this);
