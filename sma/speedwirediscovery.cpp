@@ -1,3 +1,33 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2021, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "speedwirediscovery.h"
 #include "extern-plugininfo.h"
 
@@ -11,35 +41,9 @@ SpeedwireDiscovery::SpeedwireDiscovery(NetworkDeviceDiscovery *networkDeviceDisc
     // More details: https://github.com/RalfOGit/libspeedwire/
 
 
-    //    //! Multicast device discovery request packet, according to SMA documentation.
-    //    //! However, this does not seem to be supported anymore with version 3.x devices
-    //    const unsigned char multicast_request[] = {
-    //        0x53, 0x4d, 0x41, 0x00, 0x00, 0x04, 0x02, 0xa0,     // sma signature, tag0
-    //        0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x20,     // 0xffffffff group, 0x0000 length, 0x0020 "SMA Net ?", Version ?
-    //        0x00, 0x00, 0x00, 0x00                              // 0x0000 protocol, 0x00 #long words, 0x00 ctrl
-    //    };
-
-    //    //! Unicast device discovery request packet, according to SMA documentation
-    //    const unsigned char unicast_request[] = {
-    //        0x53, 0x4d, 0x41, 0x00, 0x00, 0x04, 0x02, 0xa0,     // sma signature, tag0
-    //        0x00, 0x00, 0x00, 0x01, 0x00, 0x26, 0x00, 0x10,     // 0x26 length, 0x0010 "SMA Net 2", Version 0
-    //        0x60, 0x65, 0x09, 0xa0, 0xff, 0xff, 0xff, 0xff,     // 0x6065 protocol, 0x09 #long words, 0xa0 ctrl, 0xffff dst susyID any, 0xffffffff dst serial any
-    //        0xff, 0xff, 0x00, 0x00, 0x7d, 0x00, 0x52, 0xbe,     // 0x0000 dst cntrl, 0x007d src susy id, 0x3a28be52 src serial
-    //        0x28, 0x3a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     // 0x0000 src cntrl, 0x0000 error code, 0x0000 fragment ID
-    //        0x01, 0x80, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,     // 0x8001 packet ID
-    //        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    //        0x00, 0x00
-    //    };
 
     //    // Request: 534d4100000402a00000000100260010 606509a0 ffffffffffff0000 7d0052be283a0000 000000000180 00020000 00000000 00000000 00000000  => command = 0x00000200, first = 0x00000000; last = 0x00000000; trailer = 0x00000000
     //    // Response 534d4100000402a000000001004e0010 606513a0 7d0052be283a00c0 7a01842a71b30000 000000000180 01020000 00000000 00000000 00030000 00ff0000 00000000 01007a01 842a71b3 00000a00 0c000000 00000000 00000000 01010000 00000000
-
-
-
-
-
-
-
 
     //    qCDebug(dcSma()) << "SpeedwireDiscovery: Create speed wire interface for multicast" << m_multicastAddress.toString() << "on port" << m_port;
     //    QByteArray exampleData = QByteArray::fromHex("534d4100000402a000000001024400106069010e714369aee618a41600010400000000000001080000000021391229100002040000004415000208000000001575a137d800030400000000000003080000000003debed0e800040400000017c6000408000000001008c2070000090400000000000009080000000027c77bed20000a04000000481d000a08000000001722823410000d0400000003b00015040000000000001508000000000d1e1e0e3000160400000015120016080000000006c5a2d8b800170400000000000017080000000001bd6f680000180400000007990018080000000004def712b8001d040000000000001d08000000000eeefaafd0001e040000001666001e0800000000074b38bf88001f040000000a300020040000037bcb00210400000003ad0029040000000000002908000000000a9b1afec8002a040000001a81002a08000000000803e62b88002b040000000000002b080000000001511459b8002c0400000006d5002c0800000000052c8455b80031040000000000003108000000000cf83b37100032040000001b5f0032080000000008a6e257f80033040000000c3f003404000003747900350400000003c8003d040000000000003d08000000000a53d0ba08003e040000001482003e080000000007800fd188003f040000000000003f080000000001185820c8004004000000095800400800000000064563b1900045040000000000004508000000000d26d3eae0004604000000168900460800000000082b4fc5a80047040000000a440048040000037ed1004904000000038e900000000102085200000000");
@@ -160,7 +164,7 @@ void SpeedwireDiscovery::startMulticastDiscovery()
 
 void SpeedwireDiscovery::sendUnicastDiscoveryRequest(const QHostAddress &targetHostAddress)
 {
-    if (m_unicastSocket->writeDatagram(m_discoveryDatagramUnicast, targetHostAddress, m_port) < 0) {
+    if (m_unicastSocket->writeDatagram(Speedwire::discoveryDatagramUnicast(), targetHostAddress, m_port) < 0) {
         qCWarning(dcSma()) << "SpeedwireDiscovery: Failed to send unicast discovery datagram to address" << targetHostAddress.toString();
         return;
     }
@@ -222,38 +226,25 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
     }
 
     // Ignore discovery requests
-    if (datagram == m_discoveryDatagramMulticast || datagram == m_discoveryDatagramUnicast)
+    if (datagram == Speedwire::discoveryDatagramMulticast() || datagram == Speedwire::discoveryDatagramUnicast())
         return;
 
     QDataStream stream(datagram);
-    stream.setByteOrder(QDataStream::BigEndian);
-
-    SpeedwireInterface::SpeedwireHeader header = SpeedwireInterface::parseHeader(stream);
+    Speedwire::Header header = Speedwire::parseHeader(stream);
     if (!header.isValid()) {
         qCWarning(dcSma()) << "SpeedwireDiscovery: Datagram header is not valid. Ignoring data...";
         return;
     }
-    // Example data:
-    // 534d4100 0004 02a0 0000 0001 0244 0010 6069 010e 7143 69ae     e618a416 00010400000000000001080000000021391229100002040000004415000208000000001575a137d800030400000000000003080000000003debed0e800040400000017c6000408000000001008c2070000090400000000000009080000000027c77bed20000a04000000481d000a08000000001722823410000d0400000003b00015040000000000001508000000000d1e1e0e3000160400000015120016080000000006c5a2d8b800170400000000000017080000000001bd6f680000180400000007990018080000000004def712b8001d040000000000001d08000000000eeefaafd0001e040000001666001e0800000000074b38bf88001f040000000a300020040000037bcb00210400000003ad0029040000000000002908000000000a9b1afec8002a040000001a81002a08000000000803e62b88002b040000000000002b080000000001511459b8002c0400000006d5002c0800000000052c8455b80031040000000000003108000000000cf83b37100032040000001b5f0032080000000008a6e257f80033040000000c3f003404000003747900350400000003c8003d040000000000003d08000000000a53d0ba08003e040000001482003e080000000007800fd188003f040000000000003f080000000001185820c8004004000000095800400800000000064563b1900045040000000000004508000000000d26d3eae0004604000000168900460800000000082b4fc5a80047040000000a440048040000037ed1004904000000038e900000000102085200000000
 
+    qCDebug(dcSma()) << "SpeedwireDiscovery:" << header;
 
-
-    qCDebug(dcSma()) << "SpeedwireDiscovery: ======================= Header";
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Length:" << header.headerLength;
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Tag0:" << header.tagType;
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Tag0 version:" << header.tagVersion;
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Group:" << header.group << (header.group == 1 ? "(default group)" : "");
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Data length:" << header.payloadLength << datagram.length();
-    qCDebug(dcSma()) << "SpeedwireDiscovery: SMA Net 2 Version" << header.smaNet2Version;
-    qCDebug(dcSma()) << "SpeedwireDiscovery: Protocol ID" << header.protocolId;
-
-    if (header.protocolId == SpeedwireInterface::ProtocolIdDiscoveryResponse) {
+    if (header.protocolId == Speedwire::ProtocolIdDiscoveryResponse) {
         qCDebug(dcSma()) << "SpeedwireDiscovery: Received discovery response from" << QString("%1:%2").arg(senderAddress.toString()).arg(senderPort);
-        //              Response: 534d4100 0004 02a0 0000 0001 0002 0000 0001
-        // "192.168.178.25:9522" "534d4100 0004 02a0 0000 0001 0002 0000 0001 0004 0010 0001 0003 0004 0020 0000 0001 0004 0030 c0a8 b219 0004 0040 0000 0000 0002 0070 ef0c 00000000"
-        // "192.168.178.22:9522" "534d4100 0004 02a0 0000 0001 0002 0000 0001 0004 0010 0001 0001 0004 0020 0000 0001 0004 0030 c0a8 b216 0004 0040 0000 0001 00000000"
 
-        if (!datagram.startsWith(m_discoveryResponseDatagram)) {
+        // "534d4100 0004 02a0 0000 0001 0002 0000 0001 0004 0010 0001 0003 0004 0020 0000 0001 0004 0030 c0a8 b219 0004 0040 0000 0000 0002 0070 ef0c 00000000"
+        // "534d4100 0004 02a0 0000 0001 0002 0000 0001 0004 0010 0001 0001 0004 0020 0000 0001 0004 0030 c0a8 b216 0004 0040 0000 0001 00000000"
+
+        if (!datagram.startsWith(Speedwire::discoveryResponseDatagram())) {
             qCWarning(dcSma()) << "SpeedwireDiscovery: Received discovery reply but the message start does not match the required schema. Ignoring data...";
             return;
         }
@@ -264,7 +255,6 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
                 qCWarning(dcSma()) << "SpeedwireDiscovery: Found SMA using UDP discovery but the host is not in the network discovery result list. Not adding to results" << senderAddress.toString();
                 return;
             }
-
 
             SpeedwireDiscoveryResult result;
             result.address = senderAddress;
@@ -283,14 +273,12 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
 
     // We received SMA data, let's parse depending on the protocol id
 
-    if (header.protocolId == SpeedwireInterface::ProtocolIdMeter) {
+    if (header.protocolId == Speedwire::ProtocolIdMeter) {
         // Example: 010e 714369ae
         quint16 modelId;
         quint32 serialNumber;
         stream >> modelId >> serialNumber;
-        qCDebug(dcSma()) << "SpeedwireDiscovery: ======================= Meter identifier";
-        qCDebug(dcSma()) << "SpeedwireDiscovery: Model ID:" << modelId;
-        qCDebug(dcSma()) << "SpeedwireDiscovery: Serial number:" << serialNumber;
+        qCDebug(dcSma()) << "SpeedwireDiscovery: Meter identifier: Model ID:" << modelId << "Serial number:" << serialNumber;
 
         if (!m_results.contains(senderAddress)) {
             SpeedwireDiscoveryResult result;
@@ -305,13 +293,10 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
 
         m_results[senderAddress].modelId = modelId;
         m_results[senderAddress].serialNumber = serialNumber;
-    } else if (header.protocolId == SpeedwireInterface::ProtocolIdInverter) {
-        quint16 modelId;
-        quint32 serialNumber;
-        stream >> modelId >> serialNumber;
-        qCDebug(dcSma()) << "SpeedwireDiscovery: ======================= Inverter identifier";
-        qCDebug(dcSma()) << "SpeedwireDiscovery: Model ID:" << modelId;
-        qCDebug(dcSma()) << "SpeedwireDiscovery: Serial number:" << serialNumber;
+    } else if (header.protocolId == Speedwire::ProtocolIdInverter) {
+        Speedwire::InverterPackage inverterPackage = Speedwire::parseInverterPackage(stream);
+        // Response from inverter 534d4100 0004 02a0 0000 0001 004e 0010 6065 1390 7d00 52be283a 0000 b500 c2c12e12 0000 0000 00000 1800102000000000000000000000003000000ff0000ecd5ff1f0100b500c2c12e1200000a000c00000000000000030000000101000000000000
+        qCDebug(dcSma()) << "SpeedwireDiscovery:" << inverterPackage;
 
         if (!m_results.contains(senderAddress)) {
             SpeedwireDiscoveryResult result;
@@ -324,18 +309,17 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
             m_results[senderAddress].networkDeviceInfo = m_networkDeviceInfos.get(senderAddress);
         }
 
-        m_results[senderAddress].modelId = modelId;
-        m_results[senderAddress].serialNumber = serialNumber;
+        m_results[senderAddress].modelId = inverterPackage.sourceModelId;
+        m_results[senderAddress].serialNumber = inverterPackage.sourceSerialNumber;
     } else {
         qCWarning(dcSma()) << "SpeedwireDiscovery: Unhandled data received" << datagram.toHex();
         return;
     }
-
 }
 
 void SpeedwireDiscovery::sendDiscoveryRequest()
 {
-    if (m_multicastSocket->writeDatagram(m_discoveryDatagramMulticast, m_multicastAddress, m_port) < 0) {
+    if (m_multicastSocket->writeDatagram(Speedwire::discoveryDatagramMulticast(), m_multicastAddress, m_port) < 0) {
         qCWarning(dcSma()) << "SpeedwireDiscovery: Failed to send discovery datagram to multicast address" << m_multicastAddress.toString();
         return;
     }
@@ -359,7 +343,6 @@ void SpeedwireDiscovery::onDiscoveryProcessFinished()
         qCDebug(dcSma()) << "SpeedwireDiscovery: Model ID:" << result.modelId;
         qCDebug(dcSma()) << "SpeedwireDiscovery: Serial number:" << result.serialNumber;
     }
-
 
     emit discoveryFinished();
 }

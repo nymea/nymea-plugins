@@ -53,13 +53,14 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private slots:
-    void onRefreshTimer();
-
     void onConnectedChanged(bool connected);
     void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
 
+    void setupRefreshTimer();
+
 private:
     PluginTimer *m_refreshTimer = nullptr;
+
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
     QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
     QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;

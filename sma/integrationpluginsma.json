@@ -422,8 +422,8 @@
                         {
                             "id": "b366f680-6134-488b-8362-b1b824a8daca",
                             "name": "currentPowerMpp1",
-                            "displayName": "Current power MPP1",
-                            "displayNameEvent": "Current power MPP1 changed",
+                            "displayName": "DC power MPP1",
+                            "displayNameEvent": "DC power MPP1 changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0
@@ -431,8 +431,8 @@
                         {
                             "id": "87d9b654-5558-47a3-9db9-ffd7c23b4774",
                             "name": "currentPowerMpp2",
-                            "displayName": "Current power MPP2",
-                            "displayNameEvent": "Current power MPP2 changed",
+                            "displayName": "DC power MPP2",
+                            "displayNameEvent": "DC power MPP2 changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0
@@ -444,6 +444,24 @@
                             "displayNameEvent": "Total energy produced changed",
                             "type": "double",
                             "unit": "KiloWattHour",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "e8bc8f81-e5c5-4900-b429-93fcaa262fcb",
+                            "name": "energyProducedToday",
+                            "displayName": "Energy produced today",
+                            "displayNameEvent": "Energy produced today changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "fdccf5de-7413-4480-9ca0-1151665dede8",
+                            "name": "frequency",
+                            "displayName": "Frequency",
+                            "displayNameEvent": "Frequency changed",
+                            "type": "double",
+                            "unit": "Hertz",
                             "defaultValue": 0.00
                         },
                         {

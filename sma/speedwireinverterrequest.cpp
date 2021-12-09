@@ -28,61 +28,49 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SPEEDWIREINTERFACE_H
-#define SPEEDWIREINTERFACE_H
+#include "speedwireinverterrequest.h"
 
-#include <QObject>
-#include <QUdpSocket>
-#include <QDataStream>
-
-#include "speedwire.h"
-
-class SpeedwireInterface : public QObject
+SpeedwireInverterRequest::SpeedwireInverterRequest()
 {
-    Q_OBJECT
-public:
-    enum DeviceType {
-        DeviceTypeUnknown,
-        DeviceTypeMeter,
-        DeviceTypeInverter
-    };
-    Q_ENUM(DeviceType)
 
-    explicit SpeedwireInterface(const QHostAddress &address, bool multicast, QObject *parent = nullptr);
-    ~SpeedwireInterface();
+}
 
-    bool initialize();
-    void deinitialize();
+Speedwire::Command SpeedwireInverterRequest::command() const
+{
+    return m_command;
+}
 
-    bool initialized() const;
+void SpeedwireInverterRequest::setCommand(Speedwire::Command command)
+{
+    m_command = command;
+}
 
-    quint16 sourceModelId() const;
-    quint32 sourceSerialNumber() const;
+quint16 SpeedwireInverterRequest::packetId() const
+{
+    return m_packetId;
+}
 
-public slots:
-    void sendData(const QByteArray &data);
+void SpeedwireInverterRequest::setPacketId(quint16 packetId)
+{
+    m_packetId = packetId;
+}
 
-signals:
-    void dataReceived(const QByteArray &data);
+QByteArray SpeedwireInverterRequest::requestData() const
+{
+    return m_requestData;
+}
 
-private:
-    QUdpSocket *m_socket = nullptr;
-    QHostAddress m_address;
-    quint16 m_port = Speedwire::port();
-    QHostAddress m_multicastAddress = Speedwire::multicastAddress();
-    bool m_multicast = false;
-    bool m_initialized = false;
+void SpeedwireInverterRequest::setRequestData(const QByteArray &requestData)
+{
+    m_requestData = requestData;
+}
 
-    // Requester
-    quint16 m_sourceModelId = 0x007d;
-    quint32 m_sourceSerialNumber = 0x3a28be52;
+quint8 SpeedwireInverterRequest::retries() const
+{
+    return m_retries;
+}
 
-private slots:
-    void readPendingDatagrams();
-    void onSocketError(QAbstractSocket::SocketError error);
-    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
-
-};
-
-
-#endif // SPEEDWIREINTERFACE_H
+void SpeedwireInverterRequest::setRetries(quint8 retries)
+{
+    m_retries = retries;
+}

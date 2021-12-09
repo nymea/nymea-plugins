@@ -28,61 +28,62 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SPEEDWIREINTERFACE_H
-#define SPEEDWIREINTERFACE_H
+#ifndef SPEEDWIREINVERTERREPLY_H
+#define SPEEDWIREINVERTERREPLY_H
 
 #include <QObject>
-#include <QUdpSocket>
-#include <QDataStream>
+#include <QTimer>
 
-#include "speedwire.h"
+#include "speedwireinverterrequest.h"
 
-class SpeedwireInterface : public QObject
+class SpeedwireInverterReply : public QObject
 {
     Q_OBJECT
+
+    friend class SpeedwireInverter;
+
 public:
-    enum DeviceType {
-        DeviceTypeUnknown,
-        DeviceTypeMeter,
-        DeviceTypeInverter
+    enum Error {
+        ErrorNoError,       // Response on, no error
+        ErrorInverterError, // Inverter returned error
+        ErrorTimeout        // Request timeouted
     };
-    Q_ENUM(DeviceType)
+    Q_ENUM(Error)
 
-    explicit SpeedwireInterface(const QHostAddress &address, bool multicast, QObject *parent = nullptr);
-    ~SpeedwireInterface();
+    // Request
+    SpeedwireInverterRequest request() const;
 
-    bool initialize();
-    void deinitialize();
+    Error error() const;
 
-    bool initialized() const;
-
-    quint16 sourceModelId() const;
-    quint32 sourceSerialNumber() const;
-
-public slots:
-    void sendData(const QByteArray &data);
+    // Response
+    QByteArray responseData() const;
+    Speedwire::Header responseHeader() const;
+    Speedwire::InverterPackage responsePackage() const;
+    QByteArray responsePayload() const;
 
 signals:
-    void dataReceived(const QByteArray &data);
+    void finished();
+    void timeout();
 
 private:
-    QUdpSocket *m_socket = nullptr;
-    QHostAddress m_address;
-    quint16 m_port = Speedwire::port();
-    QHostAddress m_multicastAddress = Speedwire::multicastAddress();
-    bool m_multicast = false;
-    bool m_initialized = false;
+    explicit SpeedwireInverterReply(const SpeedwireInverterRequest &request, QObject *parent = nullptr);
 
-    // Requester
-    quint16 m_sourceModelId = 0x007d;
-    quint32 m_sourceSerialNumber = 0x3a28be52;
+    QTimer m_timer;
+    Error m_error = ErrorNoError;
+    SpeedwireInverterRequest m_request;
+    quint8 m_retries = 0;
+    quint8 m_maxRetries = 3;
+    int m_timeout = 3000;
 
-private slots:
-    void readPendingDatagrams();
-    void onSocketError(QAbstractSocket::SocketError error);
-    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+    QByteArray m_responseData;
+    Speedwire::Header m_responseHeader;
+    Speedwire::InverterPackage m_responsePackage;
+    QByteArray m_responsePayload;
+
+
+    void finishReply(Error error);
+    void startWaiting();
 
 };
 
-
-#endif // SPEEDWIREINTERFACE_H
+#endif // SPEEDWIREINVERTERREPLY_H

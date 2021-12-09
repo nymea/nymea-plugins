@@ -28,61 +28,35 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SPEEDWIREINTERFACE_H
-#define SPEEDWIREINTERFACE_H
+#ifndef SPEEDWIREINVERTERREQUEST_H
+#define SPEEDWIREINVERTERREQUEST_H
 
 #include <QObject>
-#include <QUdpSocket>
-#include <QDataStream>
 
 #include "speedwire.h"
 
-class SpeedwireInterface : public QObject
+class SpeedwireInverterRequest
 {
-    Q_OBJECT
 public:
-    enum DeviceType {
-        DeviceTypeUnknown,
-        DeviceTypeMeter,
-        DeviceTypeInverter
-    };
-    Q_ENUM(DeviceType)
+    explicit SpeedwireInverterRequest();
 
-    explicit SpeedwireInterface(const QHostAddress &address, bool multicast, QObject *parent = nullptr);
-    ~SpeedwireInterface();
+    Speedwire::Command command() const;
+    void setCommand(Speedwire::Command command);
 
-    bool initialize();
-    void deinitialize();
+    quint16 packetId() const;
+    void setPacketId(quint16 packetId);
 
-    bool initialized() const;
+    QByteArray requestData() const;
+    void setRequestData(const QByteArray &requestData);
 
-    quint16 sourceModelId() const;
-    quint32 sourceSerialNumber() const;
-
-public slots:
-    void sendData(const QByteArray &data);
-
-signals:
-    void dataReceived(const QByteArray &data);
+    quint8 retries() const;
+    void setRetries(quint8 retries);
 
 private:
-    QUdpSocket *m_socket = nullptr;
-    QHostAddress m_address;
-    quint16 m_port = Speedwire::port();
-    QHostAddress m_multicastAddress = Speedwire::multicastAddress();
-    bool m_multicast = false;
-    bool m_initialized = false;
-
-    // Requester
-    quint16 m_sourceModelId = 0x007d;
-    quint32 m_sourceSerialNumber = 0x3a28be52;
-
-private slots:
-    void readPendingDatagrams();
-    void onSocketError(QAbstractSocket::SocketError error);
-    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
-
+    Speedwire::Command m_command;
+    quint16 m_packetId = 0;
+    QByteArray m_requestData;
+    quint8 m_retries = 2; // Default try 2 times before timeout
 };
 
-
-#endif // SPEEDWIREINTERFACE_H
+#endif // SPEEDWIREINVERTERREQUEST_H

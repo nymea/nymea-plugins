@@ -212,12 +212,6 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             connect(sunnyWebBox, &SunnyWebBox::connectedChanged, this, &IntegrationPluginSma::onConnectedChanged);
             connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
-
-            if (!m_refreshTimer) {
-                qCDebug(dcSma()) << "Starting refresh timer";
-                m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
-                connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
-            }
         });
     } else if (thing->thingClassId() == speedwireMeterThingClassId) {
         QHostAddress address = QHostAddress(thing->paramValue(speedwireMeterThingHostParamTypeId).toString());
@@ -235,7 +229,9 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             return;
         }
 
-        // TODO: reachable state
+        connect(meter, &SpeedwireMeter::reachableChanged, this, [=](bool reachable){
+            thing->setStateValue(speedwireMeterConnectedStateTypeId, reachable);
+        });
 
         connect(meter, &SpeedwireMeter::valuesUpdated, this, [=](){
             thing->setStateValue(speedwireMeterConnectedStateTypeId, true);
@@ -278,11 +274,36 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             return;
         }
 
-        // TODO: reachable state
+        qCDebug(dcSma()) << "Inverter: Interface initialized successfully.";
+
+        connect(inverter, &SpeedwireInverter::reachableChanged, this, [=](bool reachable){
+            thing->setStateValue(speedwireInverterConnectedStateTypeId, reachable);
+        });
+
+        connect(inverter, &SpeedwireInverter::valuesUpdated, this, [=](){
+            thing->setStateValue(speedwireInverterTotalEnergyProducedStateTypeId, inverter->totalEnergyProduced());
+            thing->setStateValue(speedwireInverterEnergyProducedTodayStateTypeId, inverter->todayEnergyProduced());
+            thing->setStateValue(speedwireInverterCurrentPowerStateTypeId, -inverter->totalAcPower());
+            thing->setStateValue(speedwireInverterFrequencyStateTypeId, inverter->gridFrequency());
+
+            thing->setStateValue(speedwireInverterVoltagePhaseAStateTypeId, inverter->voltageAcPhase1());
+            thing->setStateValue(speedwireInverterVoltagePhaseBStateTypeId, inverter->voltageAcPhase2());
+            thing->setStateValue(speedwireInverterVoltagePhaseCStateTypeId, inverter->voltageAcPhase3());
+
+            thing->setStateValue(speedwireInverterCurrentPhaseAStateTypeId, inverter->currentAcPhase1());
+            thing->setStateValue(speedwireInverterCurrentPhaseBStateTypeId, inverter->currentAcPhase2());
+            thing->setStateValue(speedwireInverterCurrentPhaseCStateTypeId, inverter->currentAcPhase3());
+
+            thing->setStateValue(speedwireInverterCurrentPowerMpp1StateTypeId, inverter->powerDcMpp1());
+            thing->setStateValue(speedwireInverterCurrentPowerMpp2StateTypeId, inverter->powerDcMpp2());
+
+        });
+
         m_speedwireInverters.insert(thing, inverter);
         info->finish(Thing::ThingErrorNoError);
 
-        inverter->sendLoginRequest();
+        // Initial refresh data
+        inverter->refresh();
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -295,8 +316,19 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
         SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         if (!sunnyWebBox)
             return;
+
+        setupRefreshTimer();
         sunnyWebBox->getPlantOverview();
         thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
+    } else if (thing->thingClassId() == speedwireInverterThingClassId) {
+        SpeedwireInverter *inverter = m_speedwireInverters.value(thing);
+        if (inverter) {
+            thing->setStateValue(speedwireInverterConnectedStateTypeId, inverter->reachable());
+        } else {
+            thing->setStateValue(speedwireInverterConnectedStateTypeId, false);
+        }
+
+        setupRefreshTimer();
     }
 }
 
@@ -306,18 +338,18 @@ void IntegrationPluginSma::thingRemoved(Thing *thing)
         m_sunnyWebBoxes.take(thing)->deleteLater();
     }
 
+    if (thing->thingClassId() == speedwireMeterThingClassId && m_speedwireMeters.contains(thing)) {
+        m_speedwireMeters.take(thing)->deleteLater();
+    }
+
+    if (thing->thingClassId() == speedwireInverterThingClassId && m_speedwireInverters.contains(thing)) {
+        m_speedwireInverters.take(thing)->deleteLater();
+    }
+
     if (myThings().isEmpty()) {
         qCDebug(dcSma()) << "Stopping timer";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
         m_refreshTimer = nullptr;
-    }
-}
-
-void IntegrationPluginSma::onRefreshTimer()
-{
-    foreach (Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
-        SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
-        sunnyWebBox->getPlantOverview();
     }
 }
 
@@ -346,4 +378,25 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, Sun
         qCDebug(dcSma()) << "Received error" << overview.error;
         thing->setStateValue(sunnyWebBoxErrorStateTypeId, overview.error);
     }
+}
+
+void IntegrationPluginSma::setupRefreshTimer()
+{
+    // If already set up...
+    if (m_refreshTimer)
+        return;
+
+    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
+    connect(m_refreshTimer, &PluginTimer::timeout, this, [=](){
+        foreach (Thing *thing, myThings().filterByThingClassId(sunnyWebBoxThingClassId)) {
+            SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
+            sunnyWebBox->getPlantOverview();
+        }
+
+        foreach (SpeedwireInverter *inverter, m_speedwireInverters) {
+            inverter->refresh();
+        }
+    });
+
+    m_refreshTimer->start();
 }

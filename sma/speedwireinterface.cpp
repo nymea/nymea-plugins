@@ -1,3 +1,33 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2021, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "speedwireinterface.h"
 #include "extern-plugininfo.h"
 
@@ -43,10 +73,10 @@ void SpeedwireInterface::deinitialize()
             if (!m_socket->leaveMulticastGroup(m_multicastAddress)) {
                 qCWarning(dcSma()) << "SpeedwireInterface: Failed to leave multicast group" << m_multicastAddress.toString();
             }
-
-            m_socket->close();
-            m_initialized = false;
         }
+
+        m_socket->close();
+        m_initialized = false;
     }
 }
 
@@ -65,22 +95,12 @@ quint32 SpeedwireInterface::sourceSerialNumber() const
     return m_sourceSerialNumber;
 }
 
-SpeedwireInterface::SpeedwireHeader SpeedwireInterface::parseHeader(QDataStream &stream)
-{
-    SpeedwireHeader header;
-    quint16 protocolId;
-    stream >> header.smaSignature >> header.headerLength;
-    stream >> header.tagType >> header.tagVersion >> header.group;
-    stream >> header.payloadLength >> header.smaNet2Version;
-    stream >> protocolId;
-    header.protocolId = static_cast<ProtocolId>(protocolId);
-    return header;
-}
-
 void SpeedwireInterface::sendData(const QByteArray &data)
 {
-    //qCDebug(dcSma()) << "Send data:" << data.toHex();
-    m_socket->writeDatagram(data, m_address, m_port);
+    qCDebug(dcSma()) << "SpeedwireInterface: -->" << m_address.toString() << m_port << data.toHex();
+    if (m_socket->writeDatagram(data, m_address, m_port) < 0) {
+        qCWarning(dcSma()) << "SpeedwireInterface: failed to send data" << m_socket->errorString();
+    }
 }
 
 void SpeedwireInterface::readPendingDatagrams()

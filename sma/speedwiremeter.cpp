@@ -1,3 +1,33 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2021, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "speedwiremeter.h"
 #include "extern-plugininfo.h"
 
@@ -9,16 +39,30 @@ SpeedwireMeter::SpeedwireMeter(const QHostAddress &address, quint16 modelId, qui
 {
     m_interface = new SpeedwireInterface(m_address, true, this);
     connect(m_interface, &SpeedwireInterface::dataReceived, this, &SpeedwireMeter::processData);
+
+    // Reachable timestamp
+    m_timer.setInterval(5000);
+    m_timer.setSingleShot(false);
+    connect(&m_timer, &QTimer::timeout, this, &SpeedwireMeter::evaluateReachable);
 }
 
 bool SpeedwireMeter::initialize()
 {
-    return m_interface->initialize();
+    bool initSuccess = m_interface->initialize();
+    if (initSuccess)
+        m_timer.start();
+
+    return initSuccess;
 }
 
 bool SpeedwireMeter::initialized() const
 {
     return m_interface->initialized();
+}
+
+bool SpeedwireMeter::reachable() const
+{
+    return m_reachable;
 }
 
 double SpeedwireMeter::currentPower() const
@@ -116,19 +160,45 @@ QString SpeedwireMeter::softwareVersion() const
     return m_softwareVersion;
 }
 
+void SpeedwireMeter::evaluateReachable()
+{
+    // Note: the meter sends every second the data on the multicast
+    qint64 currentTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000;
+    // If the meter has not sent data within the last 5 seconds it seems not to be reachable
+    bool reachable = false;
+    if (currentTimestamp - m_lastSeenTimestamp < 10) {
+        reachable = true;
+    }
+
+    if (m_reachable != reachable) {
+        qCDebug(dcSma()) << "Meter: reachable changed to" << reachable;
+        m_reachable = reachable;
+        emit reachableChanged(m_reachable);
+    }
+
+    // Restart the timer
+    if (m_reachable) {
+        m_timer.start();
+    } else {
+        // Reachable will be triggered automatically once data arrives
+        // No need to run the timer all the time
+        m_timer.stop();
+    }
+}
+
 void SpeedwireMeter::processData(const QByteArray &data)
 {
     qCDebug(dcSma()) << "Meter: data received" << data.toHex();
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);
 
-    SpeedwireInterface::SpeedwireHeader header = SpeedwireInterface::parseHeader(stream);
+    Speedwire::Header header = Speedwire::parseHeader(stream);
     if (!header.isValid()) {
         qCDebug(dcSma()) << "Meter: Datagram header is not valid. Ignoring data...";
         return;
     }
 
-    if (header.protocolId != SpeedwireInterface::ProtocolIdMeter) {
+    if (header.protocolId != Speedwire::ProtocolIdMeter) {
         qCDebug(dcSma()) << "Meter: received header protocol which is not from the meter protocol. Ignoring data...";
         return;
     }
@@ -265,6 +335,10 @@ void SpeedwireMeter::processData(const QByteArray &data)
             //qCDebug(dcSma()) << "Meter: End of data reached.";
         }
     }
+
+    // Save the current timestamp for reachable evaluation
+    m_lastSeenTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000;
+    evaluateReachable();
 
     emit valuesUpdated();
 }
