@@ -79,8 +79,6 @@ private:
     void searchNetworkDevices();
 
 private slots:
-    void onDiscoveryWaitUpdResponseTimeout();
-
     void onConnectionChanged(bool status);
     void onCommandExecuted(QUuid requestId, bool success);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);

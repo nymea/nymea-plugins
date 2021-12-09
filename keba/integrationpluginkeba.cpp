@@ -378,11 +378,6 @@ void IntegrationPluginKeba::searchNetworkDevices()
     });
 }
 
-void IntegrationPluginKeba::onDiscoveryWaitUpdResponseTimeout()
-{
-
-}
-
 void IntegrationPluginKeba::onConnectionChanged(bool status)
 {
     KeContact *keba = static_cast<KeContact *>(sender());
@@ -632,7 +627,7 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
         if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
             int milliAmpere = action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
-            // Note: since the response only indicates the successfull receiving of the command,
+            // Note: since the response only indicates the successful receiving of the command,
             // and we only can request the report every 2 seconds as verification, lets set the value right the way
             // to prevent jitter while moving the slider
             //thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt());
