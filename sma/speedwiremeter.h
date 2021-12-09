@@ -14,7 +14,6 @@ public:
     bool initialize();
     bool initialized() const;
 
-
     double currentPower() const;
     double totalEnergyProduced() const;
     double totalEnergyConsumed() const;

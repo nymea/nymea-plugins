@@ -132,6 +132,48 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
         });
 
         speedwireDiscovery->startDiscovery();
+    } else if (info->thingClassId() == speedwireInverterThingClassId) {
+        SpeedwireDiscovery *speedwireDiscovery = new SpeedwireDiscovery(hardwareManager()->networkDeviceDiscovery(), info);
+        if (!speedwireDiscovery->initialize()) {
+            qCWarning(dcSma()) << "Could not discovery inverter. The speedwire interface initialization failed.";
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to discover the network."));
+            return;
+        }
+
+        connect(speedwireDiscovery, &SpeedwireDiscovery::discoveryFinished, this, [=](){
+            qCDebug(dcSma()) << "Speed wire discovery finished.";
+            speedwireDiscovery->deleteLater();
+
+            ThingDescriptors descriptors;
+            foreach (const SpeedwireDiscovery::SpeedwireDiscoveryResult &result, speedwireDiscovery->discoveryResult()) {
+                if (result.deviceType == SpeedwireInterface::DeviceTypeInverter) {
+                    if (result.serialNumber == 0)
+                        continue;
+
+                    ThingDescriptor descriptor(speedwireInverterThingClassId, "SMA Inverter", "Serial: " + QString::number(result.serialNumber) + " - " + result.address.toString());
+                    // We found an energy meter, let's check if we already added this one
+                    foreach (Thing *existingThing, myThings()) {
+                        if (existingThing->paramValue(speedwireInverterThingSerialNumberParamTypeId).toUInt() == result.serialNumber) {
+                            descriptor.setThingId(existingThing->id());
+                            break;
+                        }
+                    }
+
+                    ParamList params;
+                    params << Param(speedwireInverterThingHostParamTypeId, result.address.toString());
+                    params << Param(speedwireInverterThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
+                    params << Param(speedwireInverterThingSerialNumberParamTypeId, result.serialNumber);
+                    params << Param(speedwireInverterThingModelIdParamTypeId, result.modelId);
+                    descriptor.setParams(params);
+                    descriptors.append(descriptor);
+                }
+            }
+
+            info->addThingDescriptors(descriptors);
+            info->finish(Thing::ThingErrorNoError);
+        });
+
+        speedwireDiscovery->startDiscovery();
     }
 }
 
@@ -188,6 +230,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
         SpeedwireMeter *meter = new SpeedwireMeter(address, modelId, serialNumber, this);
         if (!meter->initialize()) {
+            qCWarning(dcSma()) << "Setup failed. Could not initialize meter interface.";
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
@@ -219,7 +262,28 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
         m_speedwireMeters.insert(thing, meter);
         info->finish(Thing::ThingErrorNoError);
-    }else {
+    } else if (thing->thingClassId() == speedwireInverterThingClassId) {
+        QHostAddress address = QHostAddress(thing->paramValue(speedwireInverterThingHostParamTypeId).toString());
+        quint32 serialNumber = static_cast<quint32>(thing->paramValue(speedwireInverterThingSerialNumberParamTypeId).toUInt());
+        quint16 modelId = static_cast<quint16>(thing->paramValue(speedwireInverterThingModelIdParamTypeId).toUInt());
+
+        if (m_speedwireInverters.contains(thing)) {
+            m_speedwireInverters.take(thing)->deleteLater();
+        }
+
+        SpeedwireInverter *inverter = new SpeedwireInverter(address, modelId, serialNumber, this);
+        if (!inverter->initialize()) {
+            qCWarning(dcSma()) << "Setup failed. Could not initialize inverter interface.";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        // TODO: reachable state
+        m_speedwireInverters.insert(thing, inverter);
+        info->finish(Thing::ThingErrorNoError);
+
+        inverter->sendLoginRequest();
+    } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }

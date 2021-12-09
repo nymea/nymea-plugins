@@ -31,11 +31,12 @@
 #ifndef INTEGRATIONPLUGINSMA_H
 #define INTEGRATIONPLUGINSMA_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "sunnywebbox.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
+#include "sunnywebbox.h"
 #include "speedwiremeter.h"
+#include "speedwireinverter.h"
 
 class IntegrationPluginSma: public IntegrationPlugin {
     Q_OBJECT
@@ -61,6 +62,7 @@ private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
     QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
+    QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;
 };
 
 #endif // INTEGRATIONPLUGINSMA_H

@@ -218,28 +218,28 @@ void SpeedwireMeter::processData(const QByteArray &data)
 
             if (measurementIndex == 1 && measurement != 0) {
                 m_totalEnergyConsumed = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Total energy consumed" << m_totalEnergyConsumed << "kWh";
+                qCDebug(dcSma()) << "Meter: Total energy consumed" << m_totalEnergyConsumed << "kWh";
             } else if (measurementIndex == 2 && measurement != 0) {
                 m_totalEnergyProduced = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Total energy produced" << m_totalEnergyProduced << "kWh";
+                qCDebug(dcSma()) << "Meter: Total energy produced" << m_totalEnergyProduced << "kWh";
             } else if (measurementIndex == 21 && measurement != 0) {
                 m_energyConsumedPhaseA = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy consumed phase A" << m_energyConsumedPhaseA << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy consumed phase A" << m_energyConsumedPhaseA << "kWh";
             } else if (measurementIndex == 41 && measurement != 0) {
                 m_energyConsumedPhaseB = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy consumed phase B" << m_energyConsumedPhaseB << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy consumed phase B" << m_energyConsumedPhaseB << "kWh";
             } else if (measurementIndex == 61 && measurement != 0) {
                 m_energyConsumedPhaseC = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy consumed phase C" << m_energyConsumedPhaseC << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy consumed phase C" << m_energyConsumedPhaseC << "kWh";
             } else if (measurementIndex == 22 && measurement != 0) {
                 m_energyProducedPhaseA = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy produced phase A" << m_energyProducedPhaseA << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy produced phase A" << m_energyProducedPhaseA << "kWh";
             } else if (measurementIndex == 42 && measurement != 0) {
                 m_energyProducedPhaseB = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy produced phase B" << m_energyProducedPhaseB << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy produced phase B" << m_energyProducedPhaseB << "kWh";
             } else if (measurementIndex == 62 && measurement != 0) {
                 m_energyProducedPhaseC = measurement / 3600000.0;
-                qCDebug(dcSma()) << "Energy produced phase C" << m_energyProducedPhaseC << "kWh";
+                qCDebug(dcSma()) << "Meter: Energy produced phase C" << m_energyProducedPhaseC << "kWh";
             } else {
 //                qCDebug(dcSma()) << "Meter: --> Channel:" << measurementChannel << "Index:" <<  measurementIndex << "Type:" << measurmentType << "Rate:" << measurmentTariff;
 //                qCDebug(dcSma()) << "Meter: Value:" << measurement;

@@ -306,6 +306,155 @@
                             "defaultValue": ""
                         }
                     ]
+                },
+                {
+                    "id": "b63a0669-f2ac-4769-abea-e14cafb2309a",
+                    "name": "speedwireInverter",
+                    "displayName": "SMA Inverter",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": [ "solarinverter" ],
+                    "paramTypes": [
+                        {
+                            "id": "c8098d53-69eb-4d0b-9f07-e43c4a0ea9a9",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.168"
+                        },
+                        {
+                            "id": "7df0ab60-0f11-4495-8e0d-508ba2b6d858",
+                            "name": "macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "e42242b4-2811-47f9-b42b-b150ed233217",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "d9892f74-5b93-4c98-8da2-72aca033273a",
+                            "name": "modelId",
+                            "displayName": "Model ID",
+                            "type": "uint",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "aaff72c3-c70a-4a2f-bed1-89f38cebe442",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6ef4eb16-a3d6-4bc9-972d-5e7cb81173a5",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage phase A",
+                            "displayNameEvent": "Voltage phase A changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d9a5768b-1bf5-4933-810d-84dd7a688f71",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage phase B",
+                            "displayNameEvent": "Voltage phase B changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fc168dc6-eecf-40b4-b214-3e28da0dbb12",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage phase C",
+                            "displayNameEvent": "Voltage phase C changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2a6c59ca-853a-47d6-96fb-0c85edf32f52",
+                            "name": "currentPhaseA",
+                            "displayName": "Current phase A",
+                            "displayNameEvent": "Current phase A changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4db96fec-737c-4c4b-bf07-5ef2fd62508a",
+                            "name": "currentPhaseB",
+                            "displayName": "Current phase B",
+                            "displayNameEvent": "Current phase B changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0f23fb0e-a440-4ac2-9aff-896bc65feb2c",
+                            "name": "currentPhaseC",
+                            "displayName": "Current phase C",
+                            "displayNameEvent": "Current phase C changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d7ceb482-5df8-4c0c-82bd-62ce7ba22c43",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b366f680-6134-488b-8362-b1b824a8daca",
+                            "name": "currentPowerMpp1",
+                            "displayName": "Current power MPP1",
+                            "displayNameEvent": "Current power MPP1 changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "87d9b654-5558-47a3-9db9-ffd7c23b4774",
+                            "name": "currentPowerMpp2",
+                            "displayName": "Current power MPP2",
+                            "displayNameEvent": "Current power MPP2 changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "51cadd66-2cf1-485a-a2a9-191d11abfbd1",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "displayNameEvent": "Total energy produced changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "6d76cc7b-9e00-4561-be7b-4e2a6b8f7b66",
+                            "name": "firmwareVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ]
                 }
             ]
         }

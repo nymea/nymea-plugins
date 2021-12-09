@@ -5,9 +5,6 @@
 #include <QUdpSocket>
 #include <QDataStream>
 
-
-
-
 class SpeedwireInterface : public QObject
 {
     Q_OBJECT
@@ -44,9 +41,7 @@ public:
         inline bool isValid() const {
             return smaSignature == 0x534d4100 && protocolId != ProtocolIdUnknown;
         }
-
     };
-
 
     explicit SpeedwireInterface(const QHostAddress &address, bool multicast, QObject *parent = nullptr);
     ~SpeedwireInterface();
