@@ -209,7 +209,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
         // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
-        // Maybe check if the user sets it or a rule / hems logic
+        // Maybe check if the user sets it or a automatism
         // Set the allow value
         QString configuration = QString("amp=%1").arg(maxChargingCurrent);
         sendActionRequest(thing, info, configuration);
@@ -424,7 +424,7 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
 
         // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
-        if (!(amperePhaseA == 0 && amperePhaseB == 0 && amperePhaseC == 0)) {
+        if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
             uint phaseCount = 0;
             if (amperePhaseA != 0)
                 phaseCount += 1;
