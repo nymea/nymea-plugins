@@ -38,9 +38,7 @@ IntegrationPluginSgReady::IntegrationPluginSgReady()
 
 void IntegrationPluginSgReady::init()
 {
-    // Load possible system configurations for gpio pairs depending on well knwon platforms
-
-
+    // TODO: Load possible system configurations for gpio pairs depending on well knwon platforms
 }
 
 void IntegrationPluginSgReady::discoverThings(ThingDiscoveryInfo *info)
@@ -128,7 +126,7 @@ void IntegrationPluginSgReady::executeAction(ThingActionInfo *info)
             return;
         }
 
-        // FIXME: the modes have timeing constrains we need to take care off.
+        // FIXME: the modes have timing constrains we need to take care off.
 
         if (info->action().actionTypeId() == sgReadyInterfaceSgReadyModeActionTypeId) {
             QString sgReadyModeString = info->action().paramValue(sgReadyInterfaceSgReadyModeActionSgReadyModeParamTypeId).toString();
