@@ -384,7 +384,7 @@
                     "name": "storage",
                     "displayName": "Fronius solar storage",
                     "createMethods": ["auto"],
-                    "interfaces": [ "battery", "connectable" ],
+                    "interfaces": [ "energystorage", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "49087f31-abf5-4bb8-946b-a3626ee80566",

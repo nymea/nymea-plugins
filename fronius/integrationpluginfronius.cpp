@@ -71,9 +71,9 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
 
             QString title;
             if (networkDeviceInfo.hostName().isEmpty()) {
-                title += networkDeviceInfo.address().toString();
+                title += "Fronius Solar";
             } else {
-                title += networkDeviceInfo.address().toString() + " (" + networkDeviceInfo.hostName() + ")";
+                title += "Fronius Solar (" + networkDeviceInfo.hostName() + ")";
             }
 
             QString description;
@@ -411,8 +411,8 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         foreach (const QString &inverterId, inverterMap.keys()) {
             //check if thing already connected to logger
             if (!thingExists(inverterThingIdParamTypeId, inverterId)) {
-                QString thingName = loggerThing->name() + " Inverter " + inverterId;
-                ThingDescriptor descriptor(inverterThingClassId, thingName, "Fronius Solar Inverter", loggerThing->id());
+                QString thingDescription = loggerThing->name();
+                ThingDescriptor descriptor(inverterThingClassId, "Fronius Solar Inverter", thingDescription, loggerThing->id());
                 ParamList params;
                 params.append(Param(inverterThingIdParamTypeId, inverterId));
                 descriptor.setParams(params);
