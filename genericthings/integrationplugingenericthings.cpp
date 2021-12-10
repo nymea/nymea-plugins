@@ -264,8 +264,24 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 thing->setStateValue(batteryBatteryCriticalStateTypeId, currentBatteryLevel <= value.toInt());
             }
         });
+    } else if (thing->thingClassId() == carThingClassId) {
+        // Set the min charging current state if the settings value changed
+        connect(thing, &Thing::settingChanged, this, [thing](const ParamTypeId &paramTypeId, const QVariant &value){
+            if (paramTypeId == carSettingsMinChargingCurrentParamTypeId) {
+                qCDebug(dcGenericThings()) << "Car minimum charging current settings changed" << value.toUInt() << "A";
+                thing->setStateValue(carMinChargingCurrentStateTypeId, value);
+            }
+        });
+
+        // Finish the setup
+        info->finish(Thing::ThingErrorNoError);
+
+        // Set the inital state value
+        thing->setStateValue(carMinChargingCurrentStateTypeId, thing->setting(carSettingsMinChargingCurrentParamTypeId));
+        return;
     }
 
+    // Fall trough, if not already finished and returned...
     info->finish(Thing::ThingErrorNoError);
 }
 
@@ -898,9 +914,6 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else if (action.actionTypeId() == carBatteryLevelActionTypeId) {
             thing->setStateValue(carBatteryLevelStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId));
             thing->setStateValue(carBatteryCriticalStateTypeId, action.paramValue(carBatteryLevelActionBatteryLevelParamTypeId).toInt() < 10);
-            info->finish(Thing::ThingErrorNoError);
-        } else if (action.actionTypeId() == carMinChargingCurrentActionTypeId) {
-            thing->setStateValue(carMinChargingCurrentStateTypeId, action.paramValue(carMinChargingCurrentActionMinChargingCurrentParamTypeId).toUInt());
             info->finish(Thing::ThingErrorNoError);
         }
     } else {

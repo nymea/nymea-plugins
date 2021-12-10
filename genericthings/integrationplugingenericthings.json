@@ -1781,6 +1781,18 @@
                     "displayName": "Generic electric car",
                     "createMethods": ["user"],
                     "interfaces": ["electricvehicle"],
+                    "settingsTypes": [
+                        {
+                            "id": "0c55516d-4285-4d02-8926-1dae03649e18",
+                            "name": "minChargingCurrent",
+                            "displayName": "Minimum charging current",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "minValue": 6,
+                            "maxValue": 16,
+                            "defaultValue": 6
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "363a2a39-61b6-4109-9cd9-aca7367d12c7",
@@ -1819,10 +1831,8 @@
                             "name": "minChargingCurrent",
                             "displayName": "Minimum charging current",
                             "displayNameEvent": "Minimum charging current changed",
-                            "displayNameAction": "Set minimum charging current",
                             "type": "uint",
                             "unit": "Ampere",
-                            "writable": true,
                             "minValue": 6,
                             "maxValue": 16,
                             "defaultValue": 6
