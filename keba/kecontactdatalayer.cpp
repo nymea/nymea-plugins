@@ -66,6 +66,7 @@ bool KeContactDataLayer::initialized() const
 
 void KeContactDataLayer::write(const QHostAddress &address, const QByteArray &data)
 {
+    qCDebug(dcKeba()) << "KeContactDataLayer: -->" << address.toString() << data;
     m_udpSocket->writeDatagram(data, address, m_port);
 }
 
@@ -80,7 +81,7 @@ void KeContactDataLayer::readPendingDatagrams()
     while (socket->hasPendingDatagrams()) {
         datagram.resize(socket->pendingDatagramSize());
         socket->readDatagram(datagram.data(), datagram.size(), &senderAddress, &senderPort);
-        qCDebug(dcKeba()) << "KeContactDataLayer: Data received from" << senderAddress.toString() << datagram ;
+        qCDebug(dcKeba()) << "KeContactDataLayer: <--" << senderAddress.toString() << datagram;
         emit datagramReceived(senderAddress, datagram);
     }
 }

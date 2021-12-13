@@ -62,7 +62,6 @@ private:
 };
 
 
-
 class KeContact : public QObject
 {
     Q_OBJECT

@@ -161,7 +161,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             qCDebug(dcKeba()) << "     - Firmware" << report.firmware;
             qCDebug(dcKeba()) << "     - Serial" << report.serialNumber;
             qCDebug(dcKeba()) << "     - Product" << report.product;
-            qCDebug(dcKeba()) << "     - Uptime" << report.seconds/60 << "[min]";
+            qCDebug(dcKeba()) << "     - Uptime" << report.seconds / 60 << "[min]";
             qCDebug(dcKeba()) << "     - Com Module" << report.comModule;
 
             // Verify the DIP switches and warn the user in case if wrong configuration
@@ -173,7 +173,6 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The required communication interface is not enabled on this wallbox. Please make sure the DIP switch 1.3 is switched on and try again."));
                 return;
             }
-
 
             thing->setStateValue(wallboxConnectedStateTypeId, true);
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
@@ -219,7 +218,7 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
     }
 
     if (!m_updateTimer) {
-        m_updateTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        m_updateTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
         connect(m_updateTimer, &PluginTimer::timeout, this, [this]() {
             foreach (Thing *thing, myThings().filterByThingClassId(wallboxThingClassId)) {
                 KeContact *keba = m_kebaDevices.value(thing->id());
@@ -239,7 +238,7 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
     }
 
     if (!m_reconnectTimer) {
-        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(60*5);
+        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(60 * 5);
         connect(m_reconnectTimer, &PluginTimer::timeout, this, [this] {
             // Only search for new network devices if there is one keba which is not connected
             foreach (Thing *thing, myThings().filterByThingClassId(wallboxThingClassId)) {
@@ -282,6 +281,86 @@ void IntegrationPluginKeba::thingRemoved(Thing *thing)
         if (m_updateTimer) {
             hardwareManager()->pluginTimerManager()->unregisterTimer(m_updateTimer);
             m_updateTimer = nullptr;
+        }
+    }
+}
+
+void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
+{
+    Thing *thing = info->thing();
+    Action action = info->action();
+
+    if (thing->thingClassId() == wallboxThingClassId) {
+        KeContact *keba = m_kebaDevices.value(thing->id());
+        if (!keba) {
+            qCWarning(dcKeba()) << "Device not properly initialized, Keba object missing";
+            return info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
+
+        QUuid requestId;
+        if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
+            int milliAmpere = action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
+            requestId = keba->setMaxAmpereGeneral(milliAmpere);
+        } else if (action.actionTypeId() == wallboxPowerActionTypeId) {
+            requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
+        } else if (action.actionTypeId() == wallboxDisplayActionTypeId) {
+            requestId = keba->displayMessage(action.param(wallboxDisplayActionMessageParamTypeId).value().toByteArray());
+        } else if (action.actionTypeId() == wallboxOutputX2ActionTypeId) {
+            requestId = keba->setOutputX2(action.param(wallboxOutputX2ActionOutputX2ParamTypeId).value().toBool());
+        } else if (action.actionTypeId() == wallboxFailsafeModeActionTypeId) {
+            int timeout = 0;
+            if (action.param(wallboxFailsafeModeActionFailsafeModeParamTypeId).value().toBool()) {
+                timeout = 60;
+            }
+            requestId = keba->setFailsafe(timeout, 0, false);
+        } else {
+            qCWarning(dcKeba()) << "Unhandled ActionTypeId:" << action.actionTypeId();
+            return info->finish(Thing::ThingErrorActionTypeNotFound);
+        }
+
+        // If the keba returns an invalid uuid, something went wrong
+        if (requestId.isNull()) {
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        m_asyncActions.insert(requestId, info);
+        connect(info, &ThingActionInfo::aborted, this, [requestId, this]{ m_asyncActions.remove(requestId); });
+    } else {
+        qCWarning(dcKeba()) << "Execute action, unhandled device class" << thing->thingClass();
+        info->finish(Thing::ThingErrorThingClassNotFound);
+    }
+}
+
+void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
+{
+    if (m_asyncActions.contains(requestId)) {
+        KeContact *keba = static_cast<KeContact *>(sender());
+
+        //keba->getReport2(); // Check if the state was actually set
+
+        Thing *thing = myThings().findById(m_kebaDevices.key(keba));
+        if (!thing) {
+            qCWarning(dcKeba()) << "On command executed: missing device object";
+            return;
+        }
+
+        ThingActionInfo *info = m_asyncActions.take(requestId);
+        if (success) {
+            qCDebug(dcKeba()) << "Action execution finished successfully. Request ID:" << requestId.toString();
+            info->finish(Thing::ThingErrorNoError);
+
+            // Set the value to the state so we don't have to wait for the report 2 response
+            if (info->action().actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
+                uint value = info->action().paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+                info->thing()->setStateValue(wallboxMaxChargingCurrentStateTypeId, value);
+            } else if (info->action().actionTypeId() == wallboxPowerActionTypeId) {
+                info->thing()->setStateValue(wallboxPowerStateTypeId, info->action().paramValue(wallboxPowerActionTypeId).toBool());
+            }
+
+        } else {
+            qCWarning(dcKeba()) << "Action execution finished with error. Request ID:" << requestId.toString();
+            info->finish(Thing::ThingErrorHardwareFailure);
         }
     }
 }
@@ -342,34 +421,34 @@ void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugStat
 void IntegrationPluginKeba::searchNetworkDevices()
 {
     qCDebug(dcKeba()) << "Start searching for things...";
-    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-        ThingDescriptors descriptors;
-        qCDebug(dcKeba()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
-        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-            if (!networkDeviceInfo.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
-                continue;
 
+    KebaDiscovery *discovery = new KebaDiscovery(m_kebaDataLayer, hardwareManager()->networkDeviceDiscovery(), this);
+    connect(discovery, &KebaDiscovery::discoveryFinished, this, [=](){
+        foreach (const KebaDiscovery::KebaDiscoveryResult &result, discovery->discoveryResults()) {
             foreach (Thing *existingThing, myThings().filterByThingClassId(wallboxThingClassId)) {
                 if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString().isEmpty()) {
                     //This device got probably manually setup, to enable auto rediscovery the MAC address needs to setup
-                    if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() == networkDeviceInfo.address().toString()) {
-                        qCDebug(dcKeba()) << "Keba Wallbox MAC Address has been discovered" << existingThing->name() << networkDeviceInfo.macAddress();
-                        existingThing->setParamValue(wallboxThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
+                    if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() == result.networkDeviceInfo.address().toString()) {
+                        qCDebug(dcKeba()) << "Keba Wallbox MAC Address has been discovered" << existingThing->name() << result.networkDeviceInfo.macAddress();
+                        existingThing->setParamValue(wallboxThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
                     }
-                } else if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == networkDeviceInfo.macAddress())  {
+                } else if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == result.networkDeviceInfo.macAddress())  {
                     // We found the existing keba thing, lets check if the ip has changed
-                    if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != networkDeviceInfo.address().toString()) {
-                        qCDebug(dcKeba()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << networkDeviceInfo.address().toString();
-                        existingThing->setParamValue(wallboxThingIpAddressParamTypeId, networkDeviceInfo.address().toString());
+                    if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != result.networkDeviceInfo.address().toString()) {
+                        qCDebug(dcKeba()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << result.networkDeviceInfo.address().toString();
+                        existingThing->setParamValue(wallboxThingIpAddressParamTypeId, result.networkDeviceInfo.address().toString());
                         KeContact *keba = m_kebaDevices.value(existingThing->id());
                         if (keba) {
-                            keba->setAddress(QHostAddress(networkDeviceInfo.address()));
+                            keba->setAddress(QHostAddress(result.networkDeviceInfo.address()));
+
+                            // Refresh
+                            keba->getReport2();
+                            keba->getReport3();
                         } else {
-                            qCWarning(dcKeba()) << "Could not update IP address, for" << existingThing;
+                            qCWarning(dcKeba()) << "Could not update IP address since there is no keba connection for" << existingThing;
                         }
                     } else {
-                        qCDebug(dcKeba()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << networkDeviceInfo.address().toString();
+                        qCDebug(dcKeba()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << result.networkDeviceInfo.address().toString();
                     }
                     break;
                 }
@@ -390,28 +469,6 @@ void IntegrationPluginKeba::onConnectionChanged(bool status)
     thing->setStateValue(wallboxConnectedStateTypeId, status);
     if (!status) {
         searchNetworkDevices();
-    }
-}
-
-void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
-{
-    if (m_asyncActions.contains(requestId)) {
-        KeContact *keba = static_cast<KeContact *>(sender());
-
-        keba->getReport2(); // Check if the state was actually set
-
-        Thing *thing = myThings().findById(m_kebaDevices.key(keba));
-        if (!thing) {
-            qCWarning(dcKeba()) << "On command executed: missing device object";
-            return;
-        }
-
-        ThingActionInfo *info = m_asyncActions.take(requestId);
-        if (success) {
-            info->finish(Thing::ThingErrorNoError);
-        } else {
-            info->finish(Thing::ThingErrorHardwareFailure);
-        }
     }
 }
 
@@ -608,56 +665,5 @@ void IntegrationPluginKeba::onBroadcastReceived(KeContact::BroadcastType type, c
     case KeContact::BroadcastTypeEnableSys:
         thing->setStateValue(wallboxSystemEnabledStateTypeId, (content.toInt() != 0));
         break;
-    }
-}
-
-void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
-{
-    Thing *thing = info->thing();
-    Action action = info->action();
-
-    if (thing->thingClassId() == wallboxThingClassId) {
-        KeContact *keba = m_kebaDevices.value(thing->id());
-        if (!keba) {
-            qCWarning(dcKeba()) << "Device not properly initialized, Keba object missing";
-            return info->finish(Thing::ThingErrorHardwareNotAvailable);
-        }
-
-        QUuid requestId;
-        if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
-            requestId = keba->setMaxAmpereGeneral(milliAmpere);
-            // Note: since the response only indicates the successful receiving of the command,
-            // and we only can request the report every 2 seconds as verification, lets set the value right the way
-            // to prevent jitter while moving the slider
-            //thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, action.paramValue(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt());
-        } else if(action.actionTypeId() == wallboxPowerActionTypeId) {
-            requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
-        } else if(action.actionTypeId() == wallboxDisplayActionTypeId) {
-            requestId = keba->displayMessage(action.param(wallboxDisplayActionMessageParamTypeId).value().toByteArray());
-        } else if(action.actionTypeId() == wallboxOutputX2ActionTypeId) {
-            requestId = keba->setOutputX2(action.param(wallboxOutputX2ActionOutputX2ParamTypeId).value().toBool());
-        } else if(action.actionTypeId() == wallboxFailsafeModeActionTypeId) {
-            int timeout = 0;
-            if (action.param(wallboxFailsafeModeActionFailsafeModeParamTypeId).value().toBool()) {
-                timeout = 60;
-            }
-            requestId = keba->setFailsafe(timeout, 0, false);
-        } else {
-            qCWarning(dcKeba()) << "Unhandled ActionTypeId:" << action.actionTypeId();
-            return info->finish(Thing::ThingErrorActionTypeNotFound);
-        }
-
-        // If the keba returns an invalid uuid, something went wrong
-        if (requestId.isNull()) {
-            info->finish(Thing::ThingErrorHardwareFailure);
-            return;
-        }
-
-        m_asyncActions.insert(requestId, info);
-        connect(info, &ThingActionInfo::aborted, this, [requestId, this]{ m_asyncActions.remove(requestId); });
-    } else {
-        qCWarning(dcKeba()) << "Execute action, unhandled device class" << thing->thingClass();
-        info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
