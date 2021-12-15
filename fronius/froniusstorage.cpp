@@ -78,13 +78,15 @@ void FroniusStorage::updateThingInfo(const QByteArray &data)
     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
    // QVariantMap headMap = jsonDoc.toVariant().toMap().value("Head").toMap();
 
+    qCDebug(dcFronius()) << "Storage data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
     // create StorageInfo list map
     QVariantMap storageInfoMap = dataMap.value("Controller").toMap();
 
     // copy retrieved information to thing states
     if (storageInfoMap.contains("StateOfCharge_Relative")) {
         pluginThing()->setStateValue(storageBatteryLevelStateTypeId, storageInfoMap.value("StateOfCharge_Relative").toInt());
-        if (!pluginThing()->stateValue(storageChargingStateTypeId).toBool() && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
+        if (pluginThing()->stateValue(storageChargingStateStateTypeId).toString() == "charging" && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
             pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, true);
         } else {
             pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, false);
@@ -94,7 +96,9 @@ void FroniusStorage::updateThingInfo(const QByteArray &data)
     if (storageInfoMap.contains("Temperature_Cell"))
         pluginThing()->setStateValue(storageCellTemperatureStateTypeId, storageInfoMap.value("Temperature_Cell").toDouble());
 
-    //update successful
+    if (storageInfoMap.contains("Capacity_Maximum"))
+        pluginThing()->setStateValue(storageCapacityStateTypeId, storageInfoMap.value("Capacity_Maximum").toDouble());
+
     pluginThing()->setStateValue(storageConnectedStateTypeId,true);
 }
 
@@ -120,8 +124,13 @@ void FroniusStorage::updateActivityInfo(const QByteArray &data)
 
     // create StorageInfo list map
     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-
     float charge_akku = dataMap.value("Site").toMap().value("P_Akku").toFloat();
-    pluginThing()->setStateValue(storageChargingStateTypeId, charge_akku < 0);
-    pluginThing()->setStateValue(storageDischargingStateTypeId, charge_akku > 0);
+    pluginThing()->setStateValue(storageCurrentPowerStateTypeId, charge_akku);
+    if (charge_akku < 0) {
+        pluginThing()->setStateValue(storageChargingStateStateTypeId, "discharging");
+    } else if (charge_akku > 0) {
+        pluginThing()->setStateValue(storageChargingStateStateTypeId, "charging");
+    } else {
+        pluginThing()->setStateValue(storageChargingStateStateTypeId, "idle");
+    }
 }

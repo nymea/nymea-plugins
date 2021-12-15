@@ -78,6 +78,8 @@ void FroniusInverter::updateThingInfo(const QByteArray &data)
     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
     QVariantMap headMap = jsonDoc.toVariant().toMap().value("Head").toMap();
 
+    qCDebug(dcFronius()) << "Inverter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
     // Set the inverter device state
     if (dataMap.contains("PAC")) {
         if(dataMap.value("PAC").toMap().values().at(0) == "W")
