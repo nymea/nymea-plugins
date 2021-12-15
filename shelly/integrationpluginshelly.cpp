@@ -458,7 +458,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
-            namePattern = QRegExp("^shellydimmer(2)?-[0-9A-Z]+$");
+            namePattern = QRegExp("^(shellydimmer(2)?|ShellyVintage)-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly2ThingClassId) {
             namePattern = QRegExp("^shellyswitch-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly25ThingClassId) {
@@ -1302,7 +1302,7 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             // Create 2 switches for some that have 2
             if (info->thing()->thingClassId() == shelly2ThingClassId
                     || info->thing()->thingClassId() == shelly25ThingClassId
-                    || info->thing()->thingClassId() == shellyDimmerThingClassId
+                    || (info->thing()->thingClassId() == shellyDimmerThingClassId && info->thing()->paramValue(shellyDimmerThingIdParamTypeId).toString().startsWith("shellydimmer")) // Don't create chids for shelly vintage
                     || info->thing()->thingClassId() == shelly1lThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
