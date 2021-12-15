@@ -34,6 +34,7 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
+    mecelectronics      \
     mailnotification    \
     mqttclient          \
     mystrom             \
