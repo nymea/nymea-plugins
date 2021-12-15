@@ -976,6 +976,22 @@ Description: nymea.io plugin for simulated devices
  This package will install the nymea.io plugin for simulated devices
 
 
+Package: nymea-plugin-simpleheatpump
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-gpio,
+         nymea-plugins-translations,
+Description: nymea.io plugin for simple heat pumps
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for simple heat pumps
+
+
 Package: nymea-plugin-somfytahoma
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1356,6 +1372,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-remotessh,
          nymea-plugin-serialportcommander,
          nymea-plugin-systemmonitor,
+         nymea-plugin-simpleheatpump,
          nymea-plugin-onewire,
          nymea-plugin-dynatrace,
 Description: Meta package for nymea makers, tinkerers and hackers plugins.
