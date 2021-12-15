@@ -237,15 +237,15 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
     // Gpio input
     if (thing->thingClassId() == gpioInputRpiThingClassId || thing->thingClassId() == gpioInputBbbThingClassId) {
         GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
-        monitor->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool());
-        if (!monitor->enable()) {
+        bool activeLow = thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool();
+        if (!monitor->enable(activeLow)) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
             //: Error setting up GPIO thing
             monitor->deleteLater();
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::interruptOccurred, thing, [thing](bool value){
+        connect(monitor, &GpioMonitor::valueChanged, thing, [thing](bool value){
             if (thing->thingClassId() == gpioInputRpiThingClassId) {
                 thing->setStateValue(gpioInputRpiPowerStateTypeId, value);
             } else if (thing->thingClassId() == gpioInputBbbThingClassId) {
@@ -267,15 +267,15 @@ void IntegrationPluginGpio::setupThing(ThingSetupInfo *info)
     // Counter
     if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
         GpioMonitor *monitor = new GpioMonitor(thing->paramValue(m_gpioParamTypeIds.value(thing->thingClassId())).toInt(), this);
-        monitor->setActiveLow(thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool());
-        if (!monitor->enable()) {
+        bool activeLow = thing->paramValue(m_activeLowParamTypeIds.value(thing->thingClassId())).toBool();
+        if (!monitor->enable(activeLow)) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for thing" << thing->name();
             monitor->deleteLater();
             //: Error setting up GPIO thing
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
-        connect(monitor, &GpioMonitor::interruptOccurred, thing, [this, thing](bool value){
+        connect(monitor, &GpioMonitor::valueChanged, thing, [this, thing](bool value){
             if (thing->thingClassId() == counterRpiThingClassId || thing->thingClassId() == counterBbbThingClassId) {
                 if (value) {
                     m_counterValues[thing->id()] += 1;
