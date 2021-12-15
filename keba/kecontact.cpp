@@ -129,7 +129,6 @@ void KeContact::sendCommand(const QByteArray &command)
         return;
     }
 
-    qCDebug(dcKeba()) << "--> Writing datagram to" << m_address.toString() << command;
     m_dataLayer->write(m_address, command);
     m_requestTimeoutTimer->start(5000);
 }
@@ -157,6 +156,8 @@ void KeContact::setReachable(bool reachable)
         qCDebug(dcKeba()) << "The keba wallbox on" << m_address.toString() << "is now reachable again.";
     } else {
         qCWarning(dcKeba()) << "The keba wallbox on" << m_address.toString() << "is not reachable any more.";
+        m_requestQueue.clear();
+        m_currentRequest = KeContactRequest();
     }
 
     m_reachable = reachable;
@@ -231,7 +232,6 @@ QUuid KeContact::setMaxAmpereGeneral(int milliAmpere)
     QByteArray datagram = commandLine.toUtf8();
     KeContactRequest request(QUuid::createUuid(), datagram);
     request.setDelayUntilNextCommand(1200);
-    qCDebug(dcKeba()) << "Set max  general charging amps: Datagram:" << datagram;
     m_requestQueue.enqueue(request);
     sendNextCommand();
     return request.requestId();
@@ -390,11 +390,8 @@ QUuid KeContact::unlockCharger()
 void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray &datagram)
 {
     // Make sure the datagram is for this keba
-    if (address != m_address) {
+    if (address != m_address)
         return;
-    }
-
-    qCDebug(dcKeba()) << "<--" << qUtf8Printable(datagram);
 
     if (datagram.contains("TCH-OK")){
         // We received valid data from the address over the data link, so the wallbox must be reachable
@@ -462,7 +459,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportOne reportOne;
-                qCDebug(dcKeba()) << "Report 1 received";
+                //qCDebug(dcKeba()) << "Report 1 received";
                 reportOne.product      = data.value("Product").toString();
                 reportOne.firmware     = data.value("Firmware").toString();
                 reportOne.serialNumber = data.value("Serial").toString();
@@ -470,6 +467,9 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 //"timeQ": 3
                 //"DIP-Sw1": "0x22"
                 //"DIP-Sw2":
+                reportOne.dipSw1 = data.value("DIP-Sw1").toString().remove("0x").toUInt(nullptr, 16);
+                reportOne.dipSw2 = data.value("DIP-Sw2").toString().remove("0x").toUInt(nullptr, 16);
+
                 if (data.contains("COM-module")) {
                     reportOne.comModule = (data.value("COM-module").toInt() == 1);
                 } else {
@@ -487,7 +487,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportTwo reportTwo;
-                qCDebug(dcKeba()) << "Report 2 received";
+                //qCDebug(dcKeba()) << "Report 2 received";
                 int state = data.value("State").toInt();
                 reportTwo.state = State(state);
                 reportTwo.error1 = data.value("Error1").toInt();
@@ -518,17 +518,17 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 ReportThree reportThree;
-                qCDebug(dcKeba()) << "Report 3 received";
-                reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
-                reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
-                reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
+                //qCDebug(dcKeba()) << "Report 3 received";
+                reportThree.currentPhase1 = data.value("I1").toInt() / 1000.00;
+                reportThree.currentPhase2 = data.value("I2").toInt() / 1000.00;
+                reportThree.currentPhase3 = data.value("I3").toInt() / 1000.00;
                 reportThree.voltagePhase1 = data.value("U1").toInt();
                 reportThree.voltagePhase2 = data.value("U2").toInt();
                 reportThree.voltagePhase3 = data.value("U3").toInt();
-                reportThree.power         = data.value("P").toInt()/1000.00;
-                reportThree.powerFactor   = data.value("PF").toInt()/10.00;
-                reportThree.energySession = data.value("E pres").toInt()/10000.00;
-                reportThree.energyTotal   = data.value("E total").toInt()/10000.00;
+                reportThree.power         = data.value("P").toInt() / 1000.00;
+                reportThree.powerFactor   = data.value("PF").toInt() / 10.00;
+                reportThree.energySession = data.value("E pres").toInt() / 10000.00;
+                reportThree.energyTotal   = data.value("E total").toInt() / 10000.00;
                 reportThree.serialNumber  = data.value("Serial").toString();
                 reportThree.seconds  = data.value("Sec").toInt();
                 emit reportThreeReceived(reportThree);
@@ -537,7 +537,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 setReachable(true);
 
                 Report1XX report;
-                qCDebug(dcKeba()) << "Report" << id << "received";
+                //qCDebug(dcKeba()) << "Report" << id << "received";
                 report.sessionId = data.value("Session ID").toInt();
                 report.currHW = data.value("Curr HW").toInt();
                 report.startEnergy = data.value("E start").toInt() / 10000.00;
@@ -552,6 +552,8 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
                 emit report1XXReceived(id, report);
             }
         } else {
+            // Broadcast message, lets see what we recognize
+
             if (data.contains("State")) {
                 // We received valid data from the address over the data link, so the wallbox must be reachable
                 setReachable(true);
