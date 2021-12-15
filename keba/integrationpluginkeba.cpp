@@ -127,6 +127,14 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
         QHostAddress address = QHostAddress(thing->paramValue(wallboxThingIpAddressParamTypeId).toString());
 
+        // Check if we have a keba with this ip, if reconfigure the object would already been removed from the hash
+        foreach (KeContact *kebaConnect, m_kebaDevices.values()) {
+            if (kebaConnect->address() == address) {
+                qCWarning(dcKeba()) << "Failed to set up keba for host address" << address.toString() << "because there has already been configured a keba for this ip.";
+                return info->finish(Thing::ThingErrorThingInUse, QT_TR_NOOP("Already configured for this IP address."));
+            }
+        }
+
         KeContact *keba = new KeContact(address, m_kebaDataLayer, this);
         connect(keba, &KeContact::reachableChanged, this, &IntegrationPluginKeba::onConnectionChanged);
         connect(keba, &KeContact::commandExecuted, this, &IntegrationPluginKeba::onCommandExecuted);
@@ -149,7 +157,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
             thing->setStateValue(wallboxSerialnumberStateTypeId, report.serialNumber);
             thing->setStateValue(wallboxModelStateTypeId, report.product);
-            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds/60);
+            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds / 60);
 
             m_kebaDevices.insert(thing->id(), keba);
             info->finish(Thing::ThingErrorNoError);
@@ -280,6 +288,8 @@ void IntegrationPluginKeba::setDeviceState(Thing *thing, KeContact::State state)
         thing->setStateValue(wallboxActivityStateTypeId, "Authorization rejected");
         break;
     }
+
+    thing->setStateValue(wallboxChargingStateTypeId, state == KeContact::StateCharging);
 }
 
 void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugState plugState)
@@ -421,15 +431,17 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
         thing->setStateValue(wallboxSystemEnabledStateTypeId, reportTwo.enableSys);
 
-        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currTimer);
-        thing->setStateValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentUser);
+        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, qRound(reportTwo.currentUser));
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
+        thing->setStateValue(wallboxMaxChargingCurrentHardwareStateTypeId, reportTwo.currentHardwareLimitation);
 
         // Set the state limits according to the hardware limits
-        // FIXME: enable limits once landed
-        //thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
-        //thing->setStateMaxValue(wallboxMaxChargingCurrentGeneralStateTypeId, reportTwo.currentHardwareLimitation);
-
+        if (reportTwo.currentHardwareLimitation > 0) {
+            thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
+        } else {
+            // If we have no limit given, reset to the statetype limit
+            thing->setStateMaxValue(wallboxMaxChargingCurrentStateTypeId, thing->thingClass().getStateType(wallboxMaxChargingCurrentStateTypeId).maxValue());
+        }
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
 
@@ -457,20 +469,34 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     qCDebug(dcKeba()) << "     - Energy session" << reportThree.energySession << "[kWh]";
     qCDebug(dcKeba()) << "     - Energy total" << reportThree.energyTotal << "[kWh]";
     qCDebug(dcKeba()) << "     - Serial number" << reportThree.serialNumber;
-    qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds/60 << "[min]";
+    qCDebug(dcKeba()) << "     - Uptime" << reportThree.seconds / 60 << "[min]";
 
     if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
-        thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.currentPhase1);
-        thing->setStateValue(wallboxCurrentPhase2EventTypeId, reportThree.currentPhase2);
-        thing->setStateValue(wallboxCurrentPhase3EventTypeId, reportThree.currentPhase3);
-        thing->setStateValue(wallboxCurrentStateTypeId, reportThree.currentPhase1 + reportThree.currentPhase2 + reportThree.currentPhase3);
-        thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.voltagePhase1);
-        thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.voltagePhase2);
-        thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.voltagePhase3);
+        thing->setStateValue(wallboxCurrentPhaseAEventTypeId, reportThree.currentPhase1);
+        thing->setStateValue(wallboxCurrentPhaseBEventTypeId, reportThree.currentPhase2);
+        thing->setStateValue(wallboxCurrentPhaseCEventTypeId, reportThree.currentPhase3);
+        thing->setStateValue(wallboxVoltagePhaseAEventTypeId, reportThree.voltagePhase1);
+        thing->setStateValue(wallboxVoltagePhaseBEventTypeId, reportThree.voltagePhase2);
+        thing->setStateValue(wallboxVoltagePhaseCEventTypeId, reportThree.voltagePhase3);
         thing->setStateValue(wallboxCurrentPowerStateTypeId, reportThree.power);
         thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.energySession);
         thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.powerFactor);
         thing->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.energyTotal);
+
+        // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+        if (!(reportThree.currentPhase1 == 0 && reportThree.currentPhase2 == 0 && reportThree.currentPhase3 == 0)) {
+            uint phaseCount = 0;
+            if (reportThree.currentPhase1 != 0)
+                phaseCount += 1;
+
+            if (reportThree.currentPhase2 != 0)
+                phaseCount += 1;
+
+            if (reportThree.currentPhase3 != 0)
+                phaseCount += 1;
+
+            thing->setStateValue(wallboxPhaseCountStateTypeId, phaseCount);
+        }
     } else {
         qCWarning(dcKeba()) << "Received report but the serial number didn't match";
     }
@@ -579,10 +605,7 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
 
         QUuid requestId;
         if (action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toDouble() * 1000;
-            requestId = keba->setMaxAmpere(milliAmpere);
-        } else if(action.actionTypeId() == wallboxMaxChargingCurrentGeneralActionTypeId) {
-            int milliAmpere = action.param(wallboxMaxChargingCurrentGeneralActionMaxChargingCurrentGeneralParamTypeId).value().toDouble() * 1000;
+            int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toUInt() * 1000;
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
         } else if(action.actionTypeId() == wallboxPowerActionTypeId) {
             requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());

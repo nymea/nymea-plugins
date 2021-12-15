@@ -44,22 +44,6 @@
                             "cached": false
                         },
                         {
-                            "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
-                            "name": "error1",
-                            "displayName": "Error 1",
-                            "displayNameEvent": "Error 1 changed",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
-                            "name": "error2",
-                            "displayName": "Error 2",
-                            "displayNameEvent": "Error 2 changed",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
                             "id": "c3fca233-95b9-4948-88c6-4c0f13cf53b1",
                             "name": "model",
                             "displayName": "Model",
@@ -83,7 +67,6 @@
                             "type": "QString",
                             "defaultValue": ""
                         },
-
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
                             "name": "power",
@@ -102,6 +85,16 @@
                             "displayNameEvent": "System enabled changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "6713b2e7-41b3-4596-a304-3065726bdbe4",
+                            "name": "phaseCount",
+                            "displayName": "Number of connected phases",
+                            "displayNameEvent": "Number of connected phases changed",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
                         },
                         {
                             "id": "539e5602-6dd9-465d-9705-3bb59bcf8982",
@@ -128,14 +121,12 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "a29c1748-fe97-4830-a56e-e1cc4e618385",
-                            "name": "current",
-                            "displayName": "Current",
-                            "displayNameEvent": "Current changed",
-                            "type": "double",
-                            "unit": "Ampere",
-                            "defaultValue": 0.00,
-                            "suggestLogging": true
+                            "id": "c9785626-2501-478d-8c18-c42ad5d9a269",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging changed",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
                             "id": "593656f0-babf-4308-8767-68f34e10fb15",
@@ -143,25 +134,11 @@
                             "displayName": "Maximal charging current",
                             "displayNameEvent": "Maximal charging current changed",
                             "displayNameAction": "Set maximal charging current",
-                            "type": "double",
+                            "type": "uint",
                             "unit": "Ampere",
-                            "defaultValue": 6.0,
-                            "minValue": 6.0,
-                            "maxValue": 32.0,
-                            "writable": true,
-                            "suggestLogging": true
-                        },
-                        {
-                            "id": "da0cfb97-0b27-4d8f-bdf7-45b1ca727038",
-                            "name": "maxChargingCurrentGeneral",
-                            "displayName": "Maximal general charging current",
-                            "displayNameEvent": "Maximal general charging current changed",
-                            "displayNameAction": "Set maximal general charging current",
-                            "type": "double",
-                            "unit": "Ampere",
-                            "defaultValue": 6.0,
-                            "minValue": 6.0,
-                            "maxValue": 32.0,
+                            "defaultValue": 6,
+                            "minValue": 6,
+                            "maxValue": 32,
                             "writable": true,
                             "suggestLogging": true
                         },
@@ -174,41 +151,50 @@
                             "unit": "Percentage",
                             "defaultValue": 100,
                             "minValue": 0,
-                            "maxValue": 100,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "33e2ed95-f01e-44db-8156-34d124a8ecc8",
+                            "name": "maxChargingCurrentHardware",
+                            "displayName": "Maximal hardware charging current",
+                            "displayNameEvent": "Maximal hardware charging current changed",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "defaultValue": 32,
                             "suggestLogging": true
                         },
                         {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
-                            "name": "voltagePhase1",
-                            "displayName": "Voltage phase 1",
-                            "displayNameEvent": "Voltage phase 1 changed",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage phase A",
+                            "displayNameEvent": "Voltage phase A changed",
                             "type": "int",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
                             "id": "c8344ca5-21ac-4cd1-8f4b-e5ed202c5862",
-                            "name": "voltagePhase2",
-                            "displayName": "Voltage phase 2",
-                            "displayNameEvent": "Voltage phase 2 changed",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage phase B",
+                            "displayNameEvent": "Voltage phase B changed",
                             "type": "int",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
                             "id": "5f01e86c-0943-4849-a01a-db441916ebd5",
-                            "name": "voltagePhase3",
-                            "displayName": "Voltage phase 3",
-                            "displayNameEvent": "Voltage phase 3 changed",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage phase C",
+                            "displayNameEvent": "Voltage phase C changed",
                             "type": "int",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
                             "id": "31ec17b0-11e3-4332-92b0-fea821cf024f",
-                            "name": "currentPhase1",
-                            "displayName": "Current phase 1",
-                            "displayNameEvent": "Current phase 1 changed",
+                            "name": "currentPhaseA",
+                            "displayName": "Current phase A",
+                            "displayNameEvent": "Current phase A changed",
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
@@ -216,9 +202,9 @@
                         },
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
-                            "name": "currentPhase2",
-                            "displayName": "Current phase 2",
-                            "displayNameEvent": "Current phase 2 changed",
+                            "name": "currentPhaseB",
+                            "displayName": "Current phase B",
+                            "displayNameEvent": "Current phase B changed",
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
@@ -226,9 +212,9 @@
                         },
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
-                            "name": "currentPhase3",
-                            "displayName": "Current phase 3",
-                            "displayNameEvent": "Current phase 3 changed",
+                            "name": "currentPhaseC",
+                            "displayName": "Current phase C",
+                            "displayNameEvent": "Current phase C changed",
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
@@ -315,6 +301,22 @@
                             "displayNameEvent": "Uptime changed",
                             "type": "int",
                             "unit": "Minutes",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
+                            "name": "error1",
+                            "displayName": "Error 1",
+                            "displayNameEvent": "Error 1 changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
+                            "name": "error2",
+                            "displayName": "Error 2",
+                            "displayNameEvent": "Error 2 changed",
+                            "type": "int",
                             "defaultValue": 0
                         },
                         {
