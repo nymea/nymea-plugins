@@ -26,6 +26,10 @@ Radiator thermostats that follow the ZigBee specification.
 
 Door/window that follow the ZigBee IAS Zone specification.
 
+### Motion sensors
+
+Door/window that follow the ZigBee IAS Zone specification.
+
 ## Requirements
 
 * A compatible ZigBee controller and a running ZigBee network in nymea. You can find more information about supported controllers and ZigBee network configurations [here](https://nymea.io/documentation/users/usage/configuration#zigbee).

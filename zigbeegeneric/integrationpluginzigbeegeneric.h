@@ -37,6 +37,8 @@
 
 #include <QTimer>
 
+#include "extern-plugininfo.h"
+
 class IntegrationPluginZigbeeGeneric: public IntegrationPlugin, public ZigbeeHandler
 {
     Q_OBJECT
@@ -66,7 +68,7 @@ private:
     void initSimplePowerSocket(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void initDoorLock(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void initThermostat(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
-    void initDoorSensor(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void initIASSensor(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
     void bindPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
