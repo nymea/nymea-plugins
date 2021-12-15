@@ -88,7 +88,7 @@ void KeContactDataLayer::readPendingDatagrams()
 
 void KeContactDataLayer::onSocketError(QAbstractSocket::SocketError error)
 {
-    qCDebug(dcKeba()) << "KeContactDataLayer: Socket error" << error;
+    qCWarning(dcKeba()) << "KeContactDataLayer: Socket error" << error;
 }
 
 void KeContactDataLayer::onSocketStateChanged(QAbstractSocket::SocketState socketState)

@@ -137,7 +137,8 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         foreach (KeContact *kebaConnect, m_kebaDevices.values()) {
             if (kebaConnect->address() == address) {
                 qCWarning(dcKeba()) << "Failed to set up keba for host address" << address.toString() << "because there has already been configured a keba for this IP.";
-                return info->finish(Thing::ThingErrorThingInUse, QT_TR_NOOP("Already configured for this IP address."));
+                info->finish(Thing::ThingErrorThingInUse, QT_TR_NOOP("Already configured for this IP address."));
+                return;
             }
         }
 
@@ -158,6 +159,18 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             qCDebug(dcKeba()) << "     - Product" << report.product;
             qCDebug(dcKeba()) << "     - Uptime" << report.seconds / 60 << "[min]";
             qCDebug(dcKeba()) << "     - Com Module" << report.comModule;
+            qCDebug(dcKeba()) << "     - DIP switch 1" << report.dipSw1;
+            qCDebug(dcKeba()) << "     - DIP switch 2" << report.dipSw2;
+
+            if (thing->paramValue(wallboxThingSerialNumberParamTypeId).toString().isEmpty()) {
+                qCDebug(dcKeba()) << "Update serial number parameter for" << thing << "to" << report.serialNumber;
+                thing->setParamValue(wallboxThingSerialNumberParamTypeId, report.serialNumber);
+            }
+
+            if (thing->paramValue(wallboxThingModelParamTypeId).toString().isEmpty()) {
+                qCDebug(dcKeba()) << "Update model parameter for" << thing << "to" << report.product;
+                thing->setParamValue(wallboxThingModelParamTypeId, report.product);
+            }
 
             // Verify the DIP switches and warn the user in case if wrong configuration
             // For having UPD controll on the wallbox we need DIP Switch 1.3 enabled
@@ -169,12 +182,13 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 return;
             }
 
+            m_kebaDevices.insert(thing->id(), keba);
+            info->finish(Thing::ThingErrorNoError);
+            qCDebug(dcKeba()) << "Setup finsihed successfully for" << thing << thing->params();
+
             thing->setStateValue(wallboxConnectedStateTypeId, true);
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
             thing->setStateValue(wallboxUptimeStateTypeId, report.seconds / 60);
-
-            m_kebaDevices.insert(thing->id(), keba);
-            info->finish(Thing::ThingErrorNoError);
         });
 
         keba->getReport1();
@@ -363,7 +377,6 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
             } else if (info->action().actionTypeId() == wallboxPowerActionTypeId) {
                 info->thing()->setStateValue(wallboxPowerStateTypeId, info->action().paramValue(wallboxPowerActionTypeId).toBool());
             }
-
         } else {
             qCWarning(dcKeba()) << "Action execution finished with error. Request ID:" << requestId.toString();
             info->finish(Thing::ThingErrorHardwareFailure);
