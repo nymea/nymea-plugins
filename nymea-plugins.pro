@@ -22,6 +22,7 @@ PLUGIN_DIRS = \
     fastcom             \
     flowercare          \
     fronius             \
+    garadget            \
     genericelements     \
     genericthings       \
     goecharger          \

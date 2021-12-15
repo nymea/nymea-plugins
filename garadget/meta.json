@@ -1,0 +1,14 @@
+{
+    "title": "Garadget",
+    "tagline": "Garadget",
+    "icon": "garadget.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network",
+        "mqtt"
+    ],
+    "categories": [
+        "lock"
+    ]
+}

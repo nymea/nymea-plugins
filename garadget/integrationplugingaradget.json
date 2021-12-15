@@ -1,0 +1,163 @@
+{
+    "name": "garadget",
+    "displayName": "Garadget",
+    "id": "476781af-ad41-423b-b9bb-f308f2aff339",
+    "vendors": [
+        {
+            "name": "Garadget",
+            "displayName": "Garadget",
+            "id": "22d59bee-79cc-4dea-b742-30ac6bdcf2c9",
+            "thingClasses": [
+                {
+                    "name": "garadget",
+                    "displayName": "Garadget",
+                    "id": "e808b8ae-7608-41ce-8444-892f0648a4d3",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": ["statefulgaragedoor", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "54a11a17-fc37-4316-891f-001c55e38220",
+                            "name":"deviceName",
+                            "displayName": "deviceName",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "13ad28d6-15e5-4e20-862b-51062344b576",
+                            "name": "rdt",
+                            "displayName": "sensor scan interval in mS 200-60,000",
+                            "type": "uint",
+                            "defaultValue": 1000
+                        },
+                        {
+                            "id": "6be83c99-cbf0-4d1d-b838-697e442ebb43",
+                            "name": "rlp",
+                            "displayName": "multi button press delay mS 10-5,000",
+                            "type": "uint",
+                            "defaultValue": 1000
+                        },
+                        {
+                            "id": "c38e89db-b259-4fa0-9f20-03fe3b8a7514" ,
+                            "name": "rlt",
+                            "displayName": "Button Press Time in 10-2000 ms",
+                            "type": "int",
+                            "defaultValue": 300
+                        },
+                        {
+                            "id": "acda9268-4663-46d1-a409-231d648e6fc8" ,
+                            "name": "mtt",
+                            "displayName": "Door Moving Time 5000-60000 ms",
+                            "type": "int",
+                            "defaultValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a3d7e6eb-82d0-47ee-b95f-4dde931eb7e2",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "174509b5-fc3e-4f03-8c93-8e044f0a2ce0" ,
+                            "name": "state",
+                            "displayName": "State",
+                            "displayNameEvent": "State changed",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
+                            "defaultValue": "closed"
+                        },
+                        {
+                            "id": "024f178c-a920-42d4-887f-1c90a96d5eb3",
+                            "name": "signalStrength",
+                            "displayName": "WIFI Signal Level",
+                            "displayNameEvent": "WIFI Signal Level changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4aaeefbd-46d9-4111-b262-a001a47ecb22",
+                            "name": "sensorlevel",
+                            "displayName": "Lazer Sensor Level",
+                            "displayNameEvent": "Lazer Sensor Level changed",
+                            "type": "int",
+                            "suggestLogging": true,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "bd7fece8-3ff6-421a-bb5e-80323beb8d8d",
+                            "name": "brightlevel",
+                            "displayName": "Ambient Brightness Level",
+                            "displayNameEvent": "Ambient Brightness changed",
+                            "type": "int",
+                            "suggestLogging": true,
+                            "defaultValue": 0
+                        },
+
+                        {
+                            "id": "656a181e-5c06-4bb6-8c5d-7921db07bef6" ,
+                            "name": "srt",
+                            "displayName": "Reflection Threshold 0-80",
+                            "displayNameEvent": "Reflection Threshold changed",
+                            "displayNameAction": "Set Reflection Threshold value",
+                            "type": "int",
+                            "defaultValue": 25,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "ae3b1c67-7219-4768-a1c7-55c3b9a610cb" ,
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "56a9e131-b65e-4622-9a9b-f5b42d0021ef" ,
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "12ea84c1-0650-4ac1-a02c-de95965def92" ,
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "a42983a9-9194-458d-9e67-fc4d7ce27e40",
+                            "name": "triggered",
+                            "displayName": "Publish received",
+                            "paramTypes": [
+                                {
+                                    "id": "5dfb6ce9-095b-4476-ac94-c7c35653de1f",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "7573d3c5-a867-4123-a7f9-65eb35eac233",
+                                    "name": "data",
+                                    "displayName": "Payload",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
