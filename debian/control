@@ -532,6 +532,15 @@ Description: nymea.io plugin for a generic MQTT client
  This package will install a generic MQTT client plugin for nymea.io
 
 
+Package: nymea-plugin-mystrom
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for myStrom devices
+ This package will add support for myStrom devices to nymea.
+
+
 Package: nymea-plugin-neatobotvac
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1308,6 +1317,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-mailnotification,
          nymea-plugin-texasinstruments,
          nymea-plugin-telegram,
+         nymea-plugin-mystrom,
          nymea-plugin-nanoleaf,
          nymea-plugin-neatobotvac,
          nymea-plugin-netatmo,

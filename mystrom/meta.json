@@ -1,0 +1,14 @@
+{
+    "title": "myStrom",
+    "tagline": "myStrom",
+    "icon": "mystrom.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor",
+        "socket"
+    ]
+}
