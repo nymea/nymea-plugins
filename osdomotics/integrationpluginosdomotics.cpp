@@ -63,7 +63,9 @@ IntegrationPluginOsdomotics::IntegrationPluginOsdomotics()
 
 IntegrationPluginOsdomotics::~IntegrationPluginOsdomotics()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+    if (m_pluginTimer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+    }
 }
 
 void IntegrationPluginOsdomotics::init()
