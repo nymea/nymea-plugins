@@ -33,6 +33,8 @@
 
 #include <integrations/integrationplugin.h>
 
+#include "extern-plugininfo.h"
+
 class I2CDevice;
 
 class IntegrationPluginI2CDevices: public IntegrationPlugin

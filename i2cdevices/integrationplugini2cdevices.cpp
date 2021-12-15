@@ -33,10 +33,12 @@
 
 #include "pi16adcchannel.h"
 #include "ads1115channel.h"
+#include "ina219.h"
 
 #include <hardware/i2c/i2cmanager.h>
 
 #include <QDebug>
+#include <QJsonDocument>
 
 IntegrationPluginI2CDevices::IntegrationPluginI2CDevices(): IntegrationPlugin()
 {
@@ -107,12 +109,24 @@ void IntegrationPluginI2CDevices::discoverThings(ThingDiscoveryInfo *info)
         }
 
         if (info->thingClassId() == ads1115ThingClassId) {
-            // The ADS1115 has selectable addresses from 0x48 to 0x51
+            // The ADS1115 has selectable addresses from 0x48 to 0x4B
             if (scanResult.address >= 0x48 && scanResult.address <= 0x4B) {
                 ThingDescriptor descriptor(ads1115ThingClassId, "ADS1113/ADS1114/ADS1115", QString("%1: 0x%2").arg(scanResult.portName).arg(scanResult.address, 0, 16));
                 ParamList params;
                 params << Param(ads1115ThingI2cPortParamTypeId, scanResult.portName);
                 params << Param(ads1115ThingI2cAddressParamTypeId, scanResult.address);
+                descriptor.setParams(params);
+                info->addThingDescriptor(descriptor);
+            }
+        }
+
+        if (info->thingClassId() == ina219ThingClassId) {
+            // The INA219 has selectable addresses from 0x040 tox 0x4A
+            if (scanResult.address >= 0x40 && scanResult.address <= 0x4A) {
+                ThingDescriptor descriptor(ina219ThingClassId, "INA219", QString("%1: 0x%2").arg(scanResult.portName).arg(scanResult.address, 0, 16));
+                ParamList params;
+                params << Param(ina219ThingI2cPortParamTypeId, scanResult.portName);
+                params << Param(ina219ThingI2cAddressParamTypeId, scanResult.address);
                 descriptor.setParams(params);
                 info->addThingDescriptor(descriptor);
             }
@@ -198,6 +212,56 @@ void IntegrationPluginI2CDevices::setupThing(ThingSetupInfo *info)
             hardwareManager()->i2cManager()->startReading(ads1115, 5000);
             m_i2cDevices.insert(ads1115, thing);
         }
+        info->finish(Thing::ThingErrorNoError);
+    }
+
+    if (info->thing()->thingClassId() == ina219ThingClassId) {
+        QString i2cPortName = info->thing()->paramValue(ina219ThingI2cPortParamTypeId).toString();
+        int i2cAddress = info->thing()->paramValue(ina219ThingI2cAddressParamTypeId).toInt();
+        double shuntOhms = info->thing()->paramValue(ina219ThingShuntOhmsParamTypeId).toDouble();
+        Ina219::VoltageRange voltageRange = info->thing()->paramValue(ina219ThingVoltageRangeParamTypeId).toUInt() == 16 ? Ina219::VoltageRange16 : Ina219::VoltageRange32;
+
+        Ina219 *ina219 = new Ina219(i2cPortName, i2cAddress, shuntOhms, voltageRange, this);
+        if (!hardwareManager()->i2cManager()->open(ina219)) {
+            delete ina219;
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to open I2C port."));
+            return;
+        }
+
+        Thing *thing = info->thing();
+        connect(ina219, &Ina219::readingAvailable, thing, [thing](const QByteArray &data){
+            QJsonParseError error;
+            QVariantMap values = QJsonDocument::fromJson(data, &error).toVariant().toMap();
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcI2cDevices()) << thing->name() << "Failed to read data from INA219";
+                return;
+            }
+            double currentPower = values.value("power").toDouble();
+            thing->setStateValue(ina219CurrentPowerStateTypeId, currentPower);
+            thing->setStateValue(ina219VoltagePhaseAStateTypeId, values.value("busVoltage").toDouble());
+            thing->setStateValue(ina219CurrentPhaseAStateTypeId, values.value("current").toDouble());
+            thing->setStateValue(ina219OverflowStateTypeId, values.value("overflow").toBool());
+
+            // Calculate an estimate of totalEnergyConsumed
+            QDateTime lastUpdate = thing->property("lastUpdate").toDateTime();
+            if (lastUpdate.isNull()) {
+                lastUpdate = QDateTime::currentDateTime();
+            }
+            double hoursPassed = lastUpdate.msecsTo(QDateTime::currentDateTime()) / 1000 / 60 / 60;
+            if (currentPower >= 0) {
+                double totalEnergyConsumed = thing->stateValue(ina219TotalEnergyConsumedStateTypeId).toDouble();
+                totalEnergyConsumed += currentPower / 1000 * hoursPassed;
+                thing->setStateValue(ina219TotalEnergyConsumedStateTypeId, totalEnergyConsumed);
+            } else {
+                double totalEnergyReturned = thing->stateValue(ina219TotalEnergyProducedStateTypeId).toDouble();
+                totalEnergyReturned += -currentPower / 1000 * hoursPassed;
+                thing->setStateValue(ina219TotalEnergyProducedStateTypeId, totalEnergyReturned);
+            }
+        });
+
+        hardwareManager()->i2cManager()->writeData(ina219, "init");
+        hardwareManager()->i2cManager()->startReading(ina219, 5000);
+
         info->finish(Thing::ThingErrorNoError);
     }
 }

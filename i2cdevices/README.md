@@ -99,3 +99,26 @@ more than 16 channels are required.
 
 Additional information ca be found at the devices users guide at 
 [https://www.alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf](https://www.alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf).
+
+## INA219
+
+The INA219 is a voltage/current meter by Texas Instruments.
+
+### Usage
+
+In order to use this device within nymea, it needs to be connected to the I²C bus. At least SDA, 
+SCL, GND and VDD must be connected. Normally the device comes with a 0.1 Ohm shunt resistor. If
+replacing the shunt resistor on the device with something else, the according value needs to be
+given during the setup in nymea.
+
+The measured input value will be a floating point value from 0 to 1, depending on the selected input gain.
+For instance, if the selected input gain is 4.096V, a voltage of 0V will be indicated in nymea as
+0 while an input voltage of 4.096V will be represented as 1.
+
+Setup can be done by performing a discovery for it in nymea. Please verify that the found results 
+are matching with the address configuration of the device. If the address selector pins are unmodified, 
+the I²C address will be 64 (0x48). It can be configured to another I²C address by bridging the addrss
+selector pins on the device. The INA219 has selectable addresses from 0x40 tox 0x4A.
+
+The device will represent itself as energy meter in nymea and if used, for example in a caravan, it ca
+cater as the root meter for the caravans energy system.

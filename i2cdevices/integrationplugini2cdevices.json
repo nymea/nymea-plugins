@@ -449,6 +449,102 @@
                             "defaultValue": false
                         }
                     ]
+                },
+                {
+                    "id": "95239915-fe8e-403f-b1b8-9132c4cbef3c",
+                    "name": "ina219",
+                    "displayName": "INA219",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["energymeter"],
+                    "paramTypes": [
+                        {
+                            "id": "28ef56f1-8057-4ca5-879f-20914a63982a",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "380d18b4-551d-4b47-99e4-bfc231ff9d9d",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        },
+                        {
+                            "id": "80b72157-24f9-4bb3-ab89-78feaf0248ff",
+                            "name": "shuntOhms",
+                            "displayName": "Shunt resistor",
+                            "type": "double",
+                            "unit": "Ohm",
+                            "minValue": 0,
+                            "maxValue": 1000000,
+                            "defaultValue": 0.1
+                        },
+                        {
+                            "id": "40b3d7da-908e-4b17-a483-28580b598c69",
+                            "name": "voltageRange",
+                            "displayName": "Voltage range",
+                            "type": "uint",
+                            "unit": "Volt",
+                            "allowedValues": [16, 32],
+                            "defaultValue": 16
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "49fdc415-f270-48ef-9b8f-1212d0cb39e4",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "64856549-f445-4c15-bdda-5a1513604a88",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ff6461fb-ebbf-4acf-bcbb-8de2ddd3b15b",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total returned energy",
+                            "displayNameEvent": "Total returned energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2da9be93-85cd-4504-8ae8-91af351963a8",
+                            "name": "currentPhaseA",
+                            "displayName": "Current",
+                            "displayNameEvent": "Current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b4ea6bcb-39f6-45aa-893e-275cfbf0bcd3",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage",
+                            "displayNameEvent": "Voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f31947cc-8c48-4bc3-b61b-01cfc7b472bf",
+                            "name": "overflow",
+                            "displayName": "Overflow",
+                            "displayNameEvent": "Overflow changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
                 }
             ]
         }
