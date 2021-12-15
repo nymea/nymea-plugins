@@ -60,7 +60,7 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 
             qCDebug(dcGoECharger()) << "Checking discovered" << networkDeviceInfo;
             // Filter by hostname
-            if (!networkDeviceInfo.hostName().contains("go-eCharger"))
+            if (!networkDeviceInfo.hostName().toLower().contains("go-echarger"))
                 continue;
 
             // We need also the mac address
@@ -71,14 +71,14 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
             if (networkDeviceInfo.hostName().isEmpty()) {
                 title = networkDeviceInfo.address().toString();
             } else {
-                title = "go-eCharger (" + networkDeviceInfo.address().toString() + ")";
+                title = "go-eCharger";
             }
 
             QString description;
             if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                description = networkDeviceInfo.macAddress();
+                description = networkDeviceInfo.address().toString();
             } else {
-                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+                description = networkDeviceInfo.address().toString() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
             }
 
             ThingDescriptor descriptor(goeHomeThingClassId, title, description);
@@ -208,6 +208,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
     } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
         uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
+        // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
+        // Maybe check if the user sets it or a automatism
         // Set the allow value
         QString configuration = QString("amp=%1").arg(maxChargingCurrent);
         sendActionRequest(thing, info, configuration);
@@ -318,6 +320,8 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
             break;
         }
 
+        thing->setStateValue(goeHomeChargingStateTypeId, carState == CarStateCharging);
+
         Access accessStatus = static_cast<Access>(statusMap.value("ast").toUInt());
         switch (accessStatus) {
         case AccessOpen:
@@ -345,11 +349,12 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
 
         thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
-        thing->setStateValue(goeHomeChargeEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
+        thing->setStateValue(goeHomeSessionEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeCloudStateTypeId, (statusMap.value("cdi").toUInt() == 0 ? false : true));
         thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
+        // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement this
         thing->setStateValue(goeHomeMaxChargingCurrentStateTypeId, statusMap.value("amp").toUInt());
         thing->setStateValue(goeHomeLedBrightnessStateTypeId, statusMap.value("lbr").toUInt());
         thing->setStateValue(goeHomeLedEnergySaveStateTypeId, statusMap.value("lse").toBool());
@@ -359,75 +364,78 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         uint amaLimit = statusMap.value("ama").toUInt();
         uint cableLimit = statusMap.value("cbl").toUInt();
 
-        // Set the limit for the max charging amps
-        // FIXME: set the max value for the state to limit
-        //thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
-
         thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, amaLimit);
         thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
 
+        // Set the limit for the max charging amps
+        if (cableLimit != 0) {
+            thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, qMin(amaLimit, cableLimit));
+        } else {
+            thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, amaLimit);
+        }
+
         // Parse nrg array
+        uint voltagePhaseA = 0; uint voltagePhaseB = 0; uint voltagePhaseC = 0;
+        double amperePhaseA = 0; double amperePhaseB = 0; double amperePhaseC = 0;
+        double currentPower = 0; double powerPhaseA = 0; double powerPhaseB = 0; double powerPhaseC = 0;
+
         QVariantList measurementList = statusMap.value("nrg").toList();
         if (measurementList.count() >= 1)
-            thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, measurementList.at(0).toUInt());
+            voltagePhaseA = measurementList.at(0).toUInt();
 
         if (measurementList.count() >= 2)
-            thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, measurementList.at(1).toUInt());
+            voltagePhaseB = measurementList.at(1).toUInt();
 
         if (measurementList.count() >= 3)
-            thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, measurementList.at(2).toUInt());
+            voltagePhaseC = measurementList.at(2).toUInt();
 
         if (measurementList.count() >= 5)
-            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, measurementList.at(4).toUInt() / 10.0);
-        else {
-            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+            amperePhaseA = measurementList.at(4).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-        }
+        if (measurementList.count() >= 6)
+            amperePhaseB = measurementList.at(5).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-        if (measurementList.count() >= 6) {
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, measurementList.at(5).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+        if (measurementList.count() >= 7)
+            amperePhaseC = measurementList.at(6).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-        }
+        if (measurementList.count() >= 8)
+            powerPhaseA = measurementList.at(7).toUInt() * 100.0; // 0.1kW -> W
 
-        if (measurementList.count() >= 7) {
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, measurementList.at(6).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, 0);
+        if (measurementList.count() >= 9)
+            powerPhaseB = measurementList.at(8).toUInt() * 100.0; // 0.1kW -> W
 
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-        }
+        if (measurementList.count() >= 10)
+            powerPhaseC = measurementList.at(9).toUInt() * 100.0; // 0.1kW -> W
 
-        if (measurementList.count() >= 8) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, measurementList.at(7).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-        }
+        if (measurementList.count() >= 12)
+            currentPower = measurementList.at(11).toUInt() * 10.0; // 0.01kW -> W
 
-        if (measurementList.count() >= 9) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, measurementList.at(8).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, 0);
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
-        }
-        if (measurementList.count() >= 10) {
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, measurementList.at(9).toUInt() / 10.0);
-        } else {
-            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, 0);
+        // Update all states
+        thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
+        thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, voltagePhaseB);
+        thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, voltagePhaseC);
+        thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, amperePhaseA);
+        thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, amperePhaseB);
+        thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, amperePhaseC);
+        thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, powerPhaseA);
+        thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, powerPhaseB);
+        thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
+
+        thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
+
+        // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+        if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
+            uint phaseCount = 0;
+            if (amperePhaseA != 0)
+                phaseCount += 1;
+
+            if (amperePhaseB != 0)
+                phaseCount += 1;
+
+            if (amperePhaseC != 0)
+                phaseCount += 1;
+
+            thing->setStateValue(goeHomePhaseCountStateTypeId, phaseCount);
         }
     }
 }

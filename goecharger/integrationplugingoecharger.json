@@ -13,7 +13,7 @@
                     "displayName": "go-eCharger Home",
                     "id": "3b663d51-fdb5-4944-b409-c07f7933877e",
                     "createMethods": ["Discovery", "User"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
+                    "interfaces": ["evcharger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "4342b72c-99d0-41a5-abc6-ea6c1cc1352c",
@@ -66,7 +66,17 @@
                             "displayName": "Car plugged in",
                             "displayNameEvent": "Car plugged in changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "48c6cdb8-9fc1-4c14-95df-3e2c62e59361",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "suggestLogging": true
                         },
                         {
                             "id": "d80e1ed8-c3ae-4b68-bf86-21b4d7b2b201",
@@ -90,7 +100,8 @@
                             "displayNameAction": "Allow charging",
                             "displayNameEvent": "Allow charging changed",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "446fb786-bfbe-4938-963c-73d02184573f",
@@ -98,12 +109,13 @@
                             "displayName": "Charging current",
                             "displayNameEvent": "Charging current changed",
                             "displayNameAction": "Set charging current",
-                            "type": "double",
+                            "type": "uint",
                             "unit": "Ampere",
                             "minValue": 6,
                             "maxValue": 32,
                             "defaultValue": 16,
-                            "writable": true
+                            "writable": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "58cd977d-22df-48c9-829a-81554130d607",
@@ -114,9 +126,10 @@
                             "type": "uint",
                             "unit": "Ampere",
                             "minValue": 6,
-                            "maxValue": 20,
-                            "defaultValue": 0.00,
-                            "writable": true
+                            "maxValue": 32,
+                            "defaultValue": 20,
+                            "writable": true,
+                            "suggestLogging": true
                         },
                         {
                             "id": "ac849296-3f70-4b1b-aa30-127d774667bb",
@@ -126,8 +139,7 @@
                             "displayNameEvent": "Cloud enabled changed",
                             "type": "bool",
                             "defaultValue": true,
-                            "writable": true,
-                            "suggestLogging": true
+                            "writable": true
                         },
                         {
                             "id": "08b107bc-1284-455d-9e5a-6a1c3adc389f",
@@ -167,13 +179,22 @@
                         },
                         {
                             "id": "e8258831-ad89-4d27-b295-e8c10dd42b76",
-                            "name": "chargeEnergy",
-                            "displayName": "Charge energy",
-                            "displayNameEvent": "Charge energy changed",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "displayNameEvent": "Session energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0.0,
                             "suggestLogging": true
+                        },
+                        {
+                            "id": "f00cfcab-9271-48fa-b843-89244c9551ae",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "c6f68517-c4cd-415d-9455-b1731f7d9a1a",
@@ -182,8 +203,7 @@
                             "displayNameEvent": "Current power phase A changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "92005049-9ab9-4d7d-a7b6-6ab1a36c5f5f",
@@ -192,8 +212,7 @@
                             "displayNameEvent": "Current power phase B changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "1076fbd0-f42b-46e3-adc9-004361d6cd51",
@@ -202,8 +221,7 @@
                             "displayNameEvent": "Current power phase C changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "c8aab9e2-ba53-43b9-95db-e2c3edc97e33",
@@ -212,8 +230,7 @@
                             "displayNameEvent": "Phase A current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "f11ac403-728d-48f3-8669-0e684faf9890",
@@ -222,8 +239,7 @@
                             "displayNameEvent": "Phase B current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "55295e1c-50b0-400b-82e4-b3417b5ed4d1",
@@ -232,8 +248,7 @@
                             "displayNameEvent": "Phase C current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "76da8f16-44a4-4242-b78b-09c9bb127623",
@@ -242,8 +257,7 @@
                             "displayNameEvent": "Phase A volatage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "7df01eb4-0d4d-400c-b1bc-001ca83a6a3c",
@@ -252,8 +266,7 @@
                             "displayNameEvent": "Phase B voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "31814cfe-626d-4168-802b-b7fc6592fc79",
@@ -262,8 +275,17 @@
                             "displayNameEvent": "Phase C voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00,
-                            "filter": "adaptive"
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "b78d805a-f97c-4c9d-a647-5fc98f8d6dd1",
+                            "name": "phaseCount",
+                            "displayName": "Number of charging phases",
+                            "displayNameEvent": "Number of charging phases changed",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
                         },
                         {
                             "id": "b06479d5-7a38-4fbd-867e-e55bdb54651b",
@@ -294,8 +316,7 @@
                             "displayNameEvent": "Temperature 1 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0,
-                            "suggestLogging": true
+                            "defaultValue": 0.0
                         },
                         {
                             "id": "558e273a-4028-495a-902a-e4e932a0ae24",
@@ -304,8 +325,7 @@
                             "displayNameEvent": "Temperature 2 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0,
-                            "suggestLogging": true
+                            "defaultValue": 0.0
                         },
                         {
                             "id": "dbf8a5dc-b8f5-437a-ac0c-c4cf8a09aacb",
@@ -314,8 +334,7 @@
                             "displayNameEvent": "Temperature 3 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0,
-                            "suggestLogging": true
+                            "defaultValue": 0.0
                         },
                         {
                             "id": "1953e29f-fe28-4016-9b05-f4baf4c311ff",
@@ -324,8 +343,7 @@
                             "displayNameEvent": "Temperature 4 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0,
-                            "suggestLogging": true
+                            "defaultValue": 0.0
                         },
                         {
                             "id": "5d18b48d-b886-409e-ab2e-336d9c94a55c",
