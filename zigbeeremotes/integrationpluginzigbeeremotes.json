@@ -1,0 +1,75 @@
+{
+    "name": "ZigbeeRemotes",
+    "displayName": "Zigbee remotes",
+    "id": "d0184b49-6e6d-42fe-92e1-e2ede67ca7df",
+    "vendors": [
+        {
+            "name": "jung",
+            "displayName": "JUNG GmbH",
+            "id": "521ade0c-fad5-49a9-99f5-e2bc124c01a5",
+            "thingClasses": [
+                {
+                    "id": "f81ad8c0-29e3-4284-ad3a-393e11c2cc37",
+                    "name": "insta",
+                    "displayName": "JUNG ZLL 5004",
+                    "createMethods": ["auto"],
+                    "interfaces": ["multibutton", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "93da9fd8-9068-476c-8ff3-53fe51a11808",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "4b425f78-0300-49bc-8c89-cdf651940da4",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bf6d6426-a967-4084-86bf-4edd2d074316",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "3859cc17-b534-4e00-be3b-6fbdb67ed0fe",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "407d2e3e-4aca-4021-a79b-4b896e9c2440",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "135a1871-ea74-45fd-ac26-5d8ca21586a3",
+                                    "name": "buttonName",
+                                    "displayName": "Button",
+                                    "type": "QString",
+                                    "allowedValues": ["OFF", "ON", "+", "-", "1", "2", "3", "4", "5", "6"]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
