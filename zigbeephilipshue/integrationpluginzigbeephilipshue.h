@@ -34,7 +34,7 @@
 #include "integrations/integrationplugin.h"
 #include "hardware/zigbee/zigbeehandler.h"
 #include "plugintimer.h"
-
+#include "extern-plugininfo.h"
 #include <QTimer>
 
 class IntegrationPluginZigbeePhilipsHue: public IntegrationPlugin, public ZigbeeHandler
