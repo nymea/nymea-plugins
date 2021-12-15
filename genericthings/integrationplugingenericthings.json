@@ -1689,6 +1689,64 @@
                     ]
                 },
                 {
+                    "id": "f1576df0-fb45-4bf0-89fa-a83c4118c326",
+                    "name": "waterLevelSensor",
+                    "displayName": "Generic water level sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["waterlevelsensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "5e98e8d2-d849-46c5-b25a-d54f184ea4c7",
+                            "name": "capacity",
+                            "displayName": "Tank capactity",
+                            "type": "double",
+                            "unit": "Liter",
+                            "minValue": 0,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "16ea3cf2-46fd-40a3-88bf-21a2bb7cbabe",
+                            "name": "minInputValue",
+                            "displayName": "Minimum input value",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4e228f9b-8631-4643-8375-3d8d76d12e9c",
+                            "name": "maxInputValue",
+                            "displayName": "Maximum input value",
+                            "type": "double",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "07563165-e42d-4d0f-ac60-31cdd19170f2",
+                            "name": "waterLevel",
+                            "displayName": "Water level",
+                            "displayNameEvent": "Water level changed",
+                            "type": "double",
+                            "unit": "Liter",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "d344887d-da5d-4742-83bd-608754b2d0aa",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
                     "id": "339a0c54-4086-404f-8d36-bcf20621b785",
                     "name": "presenceSensor",
                     "displayName": "Generic presence sensor",

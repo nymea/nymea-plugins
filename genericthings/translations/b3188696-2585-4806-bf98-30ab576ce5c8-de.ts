@@ -196,7 +196,13 @@ The name of the StateType ({925225d9-2965-444a-9c42-63c2873700fb}) of ThingClass
     </message>
     <message>
         <source>Input value</source>
-        <extracomment>The name of the ParamType (ThingClass: lightSensor, ActionType: input, ID: {520e5d27-7d15-4d79-94cf-5d01f5a09ea8})
+        <extracomment>The name of the ParamType (ThingClass: waterLevelSensor, ActionType: input, ID: {d344887d-da5d-4742-83bd-608754b2d0aa})
+----------
+The name of the ParamType (ThingClass: waterLevelSensor, EventType: input, ID: {d344887d-da5d-4742-83bd-608754b2d0aa})
+----------
+The name of the StateType ({d344887d-da5d-4742-83bd-608754b2d0aa}) of ThingClass waterLevelSensor
+----------
+The name of the ParamType (ThingClass: lightSensor, ActionType: input, ID: {520e5d27-7d15-4d79-94cf-5d01f5a09ea8})
 ----------
 The name of the ParamType (ThingClass: lightSensor, EventType: input, ID: {520e5d27-7d15-4d79-94cf-5d01f5a09ea8})
 ----------
@@ -265,7 +271,9 @@ The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
     </message>
     <message>
         <source>Input value changed</source>
-        <extracomment>The name of the EventType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
+        <extracomment>The name of the EventType ({d344887d-da5d-4742-83bd-608754b2d0aa}) of ThingClass waterLevelSensor
+----------
+The name of the EventType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
 ----------
 The name of the EventType ({e3eb500a-ac00-426c-932a-dee4fd6fbcf5}) of ThingClass gasSensor
 ----------
@@ -527,7 +535,9 @@ The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClas
     </message>
     <message>
         <source>Set input value</source>
-        <extracomment>The name of the ActionType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
+        <extracomment>The name of the ActionType ({d344887d-da5d-4742-83bd-608754b2d0aa}) of ThingClass waterLevelSensor
+----------
+The name of the ActionType ({520e5d27-7d15-4d79-94cf-5d01f5a09ea8}) of ThingClass lightSensor
 ----------
 The name of the ActionType ({e3eb500a-ac00-426c-932a-dee4fd6fbcf5}) of ThingClass gasSensor
 ----------
@@ -1421,7 +1431,9 @@ The name of the StateType ({5135648f-57b7-44b0-b9d0-c5accad09356}) of ThingClass
     </message>
     <message>
         <source>Maximum input value</source>
-        <extracomment>The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {198847f6-a188-42b0-9e0b-15587eaabbed})
+        <extracomment>The name of the ParamType (ThingClass: waterLevelSensor, Type: settings, ID: {4e228f9b-8631-4643-8375-3d8d76d12e9c})
+----------
+The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {198847f6-a188-42b0-9e0b-15587eaabbed})
 ----------
 The name of the ParamType (ThingClass: phSensor, Type: settings, ID: {a8889e45-59e5-4cc4-b228-611f8f19f531})</extracomment>
         <translation>Maximaler Eingangswert</translation>
@@ -1438,7 +1450,9 @@ The name of the ParamType (ThingClass: phSensor, Type: settings, ID: {a8889e45-5
     </message>
     <message>
         <source>Minimum input value</source>
-        <extracomment>The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {58e84041-d451-44a2-972e-13a79b449b58})
+        <extracomment>The name of the ParamType (ThingClass: waterLevelSensor, Type: settings, ID: {16ea3cf2-46fd-40a3-88bf-21a2bb7cbabe})
+----------
+The name of the ParamType (ThingClass: o2Sensor, Type: settings, ID: {58e84041-d451-44a2-972e-13a79b449b58})
 ----------
 The name of the ParamType (ThingClass: orpSensor, Type: settings, ID: {396bf3f9-a3fc-44c3-90f8-b316670116a7})
 ----------
@@ -1542,6 +1556,28 @@ The name of the StateType ({363a2a39-61b6-4109-9cd9-aca7367d12c7}) of ThingClass
         <source>Generic door or window sensor</source>
         <extracomment>The name of the ThingClass ({2d936f56-48ee-4be1-9b3e-28a335ad8085})</extracomment>
         <translation>Generischer Tür- oder Fenstersensor</translation>
+    </message>
+    <message>
+        <source>Generic water level sensor</source>
+        <extracomment>The name of the ThingClass ({f1576df0-fb45-4bf0-89fa-a83c4118c326})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tank capactity</source>
+        <extracomment>The name of the ParamType (ThingClass: waterLevelSensor, Type: settings, ID: {5e98e8d2-d849-46c5-b25a-d54f184ea4c7})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water level</source>
+        <extracomment>The name of the ParamType (ThingClass: waterLevelSensor, EventType: waterLevel, ID: {07563165-e42d-4d0f-ac60-31cdd19170f2})
+----------
+The name of the StateType ({07563165-e42d-4d0f-ac60-31cdd19170f2}) of ThingClass waterLevelSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water level changed</source>
+        <extracomment>The name of the EventType ({07563165-e42d-4d0f-ac60-31cdd19170f2}) of ThingClass waterLevelSensor</extracomment>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
