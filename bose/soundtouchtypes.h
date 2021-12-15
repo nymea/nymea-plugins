@@ -139,7 +139,7 @@ struct ContentItemObject {
     QString source;             //Attribute. The type or name of the service playing. To determine if the product is in standby mode, check if source == STANDBY.
     QString location;           //Attribute. READ-ONLY. This attribute is used by Bose to point to the content the user is accessing. You can save it to access content later, but do not attempt to generate your own locations.
     QString sourceAccount;      //Attribute. The user-account associated with this source.
-    bool isPresetable;          //Attribute. TRUE if the source can be set as one of the six (6) SoundTouch presets.
+    bool isPresetable = false;  //Attribute. TRUE if the source can be set as one of the six (6) SoundTouch presets.
     QString itemName;           //Element. The album, station, playlist, song, phone, etc. name depending on the source.
     QString containerArt;       //URL
 };
