@@ -36,6 +36,7 @@
 #include <network/networkdevicediscovery.h>
 
 #include "kecontact.h"
+#include "kebadiscovery.h"
 #include "kecontactdatalayer.h"
 
 #include <QHash>
@@ -72,6 +73,7 @@ private:
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<ThingId, int> m_lastSessionId;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    KebaDiscovery *m_runningDiscovery = nullptr;
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);

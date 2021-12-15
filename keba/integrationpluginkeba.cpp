@@ -35,8 +35,6 @@
 #include <QUdpSocket>
 #include <QTimeZone>
 
-#include "kebadiscovery.h"
-
 IntegrationPluginKeba::IntegrationPluginKeba()
 {
 
@@ -70,7 +68,7 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
     }
 
     if (info->thingClassId() == wallboxThingClassId) {
-        // Create a discovery with the info as parent for auto deleting the object
+        // Create a discovery with the info as parent for auto deleting the object once the discovery info is done
         KebaDiscovery *discovery = new KebaDiscovery(m_kebaDataLayer, hardwareManager()->networkDeviceDiscovery(), info);
         connect(discovery, &KebaDiscovery::discoveryFinished, info, [=](){
             foreach (const KebaDiscovery::KebaDiscoveryResult &result, discovery->discoveryResults()) {
@@ -138,7 +136,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         // Check if we have a keba with this ip, if reconfigure the object would already been removed from the hash
         foreach (KeContact *kebaConnect, m_kebaDevices.values()) {
             if (kebaConnect->address() == address) {
-                qCWarning(dcKeba()) << "Failed to set up keba for host address" << address.toString() << "because there has already been configured a keba for this ip.";
+                qCWarning(dcKeba()) << "Failed to set up keba for host address" << address.toString() << "because there has already been configured a keba for this IP.";
                 return info->finish(Thing::ThingErrorThingInUse, QT_TR_NOOP("Already configured for this IP address."));
             }
         }
@@ -151,12 +149,9 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         connect(keba, &KeContact::report1XXReceived, this, &IntegrationPluginKeba::onReport1XXReceived);
         connect(keba, &KeContact::broadcastReceived, this, &IntegrationPluginKeba::onBroadcastReceived);
 
-        // TODO: first test the ip, verify serial number if responds
-        // if no response, rediscover, reassign ip in case if changes
-
+        // Make sure we receive data from the keba and the DIP switches are configured correctly
         connect(keba, &KeContact::reportOneReceived, info, [info, this, keba] (const KeContact::ReportOne &report) {
             Thing *thing = info->thing();
-
             qCDebug(dcKeba()) << "Report one received for" << thing->name();
             qCDebug(dcKeba()) << "     - Firmware" << report.firmware;
             qCDebug(dcKeba()) << "     - Serial" << report.serialNumber;
@@ -187,8 +182,9 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         connect(info, &ThingSetupInfo::aborted, keba, &KeContact::deleteLater); // Clean up if the setup fails
         connect(keba, &KeContact::destroyed, this, [thing, this]{
             m_kebaDevices.remove(thing->id());
+            // Setup failed, lets search the network, maybe the IP has changed...
+            searchNetworkDevices();
         });
-
     } else {
         qCWarning(dcKeba()) << "Could not setup thing: unhandled device class" << thing->thingClass();
         info->finish(Thing::ThingErrorThingClassNotFound);
@@ -213,7 +209,8 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
     }
 
     // Try to find the mac address in case the user added the ip manually
-    if (thing->paramValue(wallboxThingMacAddressParamTypeId).toString().isEmpty() || thing->paramValue(wallboxThingMacAddressParamTypeId).toString() == "00:00:00:00:00:00") {
+    if (thing->paramValue(wallboxThingMacAddressParamTypeId).toString().isEmpty()
+            || thing->paramValue(wallboxThingMacAddressParamTypeId).toString() == "00:00:00:00:00:00") {
         searchNetworkDevices();
     }
 
@@ -240,19 +237,24 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
     if (!m_reconnectTimer) {
         m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(60 * 5);
         connect(m_reconnectTimer, &PluginTimer::timeout, this, [this] {
+            bool startDiscoveryRequired = false;
             // Only search for new network devices if there is one keba which is not connected
             foreach (Thing *thing, myThings().filterByThingClassId(wallboxThingClassId)) {
                 KeContact *keba = m_kebaDevices.value(thing->id());
                 if (!keba) {
                     qCWarning(dcKeba()) << "No Keba connection found for" << thing->name();
+                    startDiscoveryRequired = true;
                     continue;
                 }
 
                 if (!keba->reachable()) {
-                    searchNetworkDevices();
+                    startDiscoveryRequired = true;
                     return;
                 }
             }
+
+            if (startDiscoveryRequired)
+                searchNetworkDevices();
         });
 
         m_reconnectTimer->start();
@@ -262,7 +264,7 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
 void IntegrationPluginKeba::thingRemoved(Thing *thing)
 {
     qCDebug(dcKeba()) << "Deleting" << thing->name();
-    if (thing->thingClassId() == wallboxThingClassId) {
+    if (thing->thingClassId() == wallboxThingClassId && m_kebaDevices.contains(thing->id())) {
         KeContact *keba = m_kebaDevices.take(thing->id());
         keba->deleteLater();
     }
@@ -295,6 +297,13 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
         if (!keba) {
             qCWarning(dcKeba()) << "Device not properly initialized, Keba object missing";
             return info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
+
+        // Make sure wallbox is reachable
+        if (!keba->reachable()) {
+            qCWarning(dcKeba()) << "Failed to execute action. The wallbox seems not to be reachable" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
         }
 
         QUuid requestId;
@@ -336,9 +345,6 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
 {
     if (m_asyncActions.contains(requestId)) {
         KeContact *keba = static_cast<KeContact *>(sender());
-
-        //keba->getReport2(); // Check if the state was actually set
-
         Thing *thing = myThings().findById(m_kebaDevices.key(keba));
         if (!thing) {
             qCWarning(dcKeba()) << "On command executed: missing device object";
@@ -420,23 +426,36 @@ void IntegrationPluginKeba::setDevicePlugState(Thing *thing, KeContact::PlugStat
 
 void IntegrationPluginKeba::searchNetworkDevices()
 {
-    qCDebug(dcKeba()) << "Start searching for things...";
+    if (m_runningDiscovery) {
+        qCDebug(dcKeba()) << "Keba discovery already running.";
+        return;
+    }
 
-    KebaDiscovery *discovery = new KebaDiscovery(m_kebaDataLayer, hardwareManager()->networkDeviceDiscovery(), this);
-    connect(discovery, &KebaDiscovery::discoveryFinished, this, [=](){
-        foreach (const KebaDiscovery::KebaDiscoveryResult &result, discovery->discoveryResults()) {
+    if (!m_kebaDataLayer) {
+        qCDebug(dcKeba()) << "Could not search wallboxes in the network. The data layer seems not to be available";
+        return;
+    }
+
+    qCDebug(dcKeba()) << "Start searching for wallboxes in the network...";
+    m_runningDiscovery = new KebaDiscovery(m_kebaDataLayer, hardwareManager()->networkDeviceDiscovery(), this);
+    connect(m_runningDiscovery, &KebaDiscovery::discoveryFinished, this, [=](){
+        foreach (const KebaDiscovery::KebaDiscoveryResult &result, m_runningDiscovery->discoveryResults()) {
             foreach (Thing *existingThing, myThings().filterByThingClassId(wallboxThingClassId)) {
                 if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString().isEmpty()) {
                     //This device got probably manually setup, to enable auto rediscovery the MAC address needs to setup
                     if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() == result.networkDeviceInfo.address().toString()) {
-                        qCDebug(dcKeba()) << "Keba Wallbox MAC Address has been discovered" << existingThing->name() << result.networkDeviceInfo.macAddress();
+                        qCDebug(dcKeba()) << "Wallbox MAC address has been discovered" << existingThing->name() << result.networkDeviceInfo.macAddress();
                         existingThing->setParamValue(wallboxThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
                     }
                 } else if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == result.networkDeviceInfo.macAddress())  {
                     // We found the existing keba thing, lets check if the ip has changed
                     if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != result.networkDeviceInfo.address().toString()) {
-                        qCDebug(dcKeba()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << result.networkDeviceInfo.address().toString();
+                        // Update the ip address of the thing.
+                        // FIXME: as of now the thing manager does not store the changed param
+                        qCDebug(dcKeba()) << "Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << result.networkDeviceInfo.address().toString();
                         existingThing->setParamValue(wallboxThingIpAddressParamTypeId, result.networkDeviceInfo.address().toString());
+
+                        // Make sure the setup has already run for this thing, if not, the thingmanager will retry with the new ip every 15 seconds
                         KeContact *keba = m_kebaDevices.value(existingThing->id());
                         if (keba) {
                             keba->setAddress(QHostAddress(result.networkDeviceInfo.address()));
@@ -445,15 +464,19 @@ void IntegrationPluginKeba::searchNetworkDevices()
                             keba->getReport2();
                             keba->getReport3();
                         } else {
-                            qCWarning(dcKeba()) << "Could not update IP address since there is no keba connection for" << existingThing;
+                            qCWarning(dcKeba()) << "Could not update IP address since the keba connection has not been set up yet for" << existingThing;
                         }
                     } else {
-                        qCDebug(dcKeba()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << result.networkDeviceInfo.address().toString();
+                        qCDebug(dcKeba()) << "Wallbox" << existingThing->name() << "IP address has not changed" << result.networkDeviceInfo.address().toString();
                     }
                     break;
                 }
             }
         }
+
+        // Clean up
+        m_runningDiscovery->deleteLater();
+        m_runningDiscovery = nullptr;
     });
 }
 
