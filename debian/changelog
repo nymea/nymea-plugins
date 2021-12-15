@@ -1,7 +1,64 @@
-nymea-plugins (0.30.0) UNRELEASED; urgency=medium
+nymea-plugins (0.30.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * ZigbeePhilipsHue: Use manufacturer specific remote commands
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Mon, 20 Sep 2021 11:19:13 +0200
+  [ Jenkins ]
+  * Bump urllib3 from 1.26.3 to 1.26.5 in /yamahaavr
+
+  [ Michael Zanetti ]
+  * 0.30
+
+  [ Simon Stürz ]
+  * Keba: set limit for charging current and update to new interface
+    definitions
+  * goECharger: set limit for charging current and update to new
+    interface definitions
+  * New Plugin: SG-Ready heat pump based on GPIOs interface
+  * New Plugin: Simple heat pump
+  * GenericThings: Update generic SG-Ready thing and add heat pump
+    interfaces
+
+  [ Michael Zanetti ]
+  * Generic things: Add a generic water level sensor
+  * TP-Link Kasa: Add support for the KP115 switch
+  * ZigbeeGeneric: Add zigbee presence sensors support
+  * ZigbeeHue: Add support for the Hue Wallswitch Module
+
+  [ Simon Stürz ]
+  * GenericThings: add minimal charging current for generic car.
+
+  [ Michael Zanetti ]
+  * Move simulation plugin to nymea-plugins-simulation repository
+
+  [ Jenkins ]
+  * New plugin: Garadget
+
+  [ Michael Zanetti ]
+  * I2CDevices: Add support for the INA219 energy meter
+  * New Plugin: Zigbee remotes
+
+  [ Simon Stürz ]
+  * Fronius: Update to latest interface requirements and add
+    providedInterfaces
+
+  [ Michael Zanetti ]
+  * Hue: Add new providedInterfaces property with light and powersocket
+    to bridge
+  * Update to libnymea-gpio changes
+  * New Plugin: myStrom
+  * New Plugin: mec electronics
+
+  [ Simon Stürz ]
+  * Keba: Update discovery mechanism
+
+  [ Michael Zanetti ]
+  * Shelly: Remove adaptive filtering
+  * Shelly: Add support for the shelly vintage bulb
+  * Nuki: Fix bad if clause guards
+  * Osdomotics: Fix a crash if the plugin fails to load
+
+ -- Jenkins <jenkins@nymea.io>  Wed, 15 Dec 2021 11:53:33 +0100
 
 nymea-plugins (0.29.2) xenial; urgency=medium
 
