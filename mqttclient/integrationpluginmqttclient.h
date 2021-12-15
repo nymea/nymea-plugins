@@ -37,6 +37,8 @@
 #include <QDebug>
 #include <QUdpSocket>
 
+#include "extern-plugininfo.h"
+
 class MqttClient;
 
 class IntegrationPluginMqttClient: public IntegrationPlugin

@@ -51,10 +51,24 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
         client = new MqttClient("nymea-" + thing->id().toString().remove(QRegExp("[{}]")).left(8), this);
         client->setUsername(thing->paramValue(mqttClientThingUsernameParamTypeId).toString());
         client->setPassword(thing->paramValue(mqttClientThingPasswordParamTypeId).toString());
-        client->connectToHost(thing->paramValue(mqttClientThingServerAddressParamTypeId).toString(), thing->paramValue(mqttClientThingServerPortParamTypeId).toInt());
+        QString willTopic = thing->paramValue(mqttClientThingWillTopicParamTypeId).toString();
+        if (!willTopic.isEmpty()) {
+            client->setWillTopic(willTopic);
+            client->setWillMessage(thing->paramValue(mqttClientThingWillMessageParamTypeId).toByteArray());
+            client->setWillQoS(static_cast<Mqtt::QoS>(thing->paramValue(mqttClientThingWillQoSParamTypeId).toInt()));
+            client->setWillRetain(thing->paramValue(mqttClientThingWillRetainParamTypeId).toBool());
+        }
+        client->connectToHost(thing->paramValue(mqttClientThingServerAddressParamTypeId).toString(),
+                              thing->paramValue(mqttClientThingServerPortParamTypeId).toInt(),
+                              true,
+                              thing->paramValue(mqttClientThingUseSslParamTypeId).toBool());
     }
     m_clients.insert(thing, client);
 
+    connect(client, &MqttClient::error, info, [info](QAbstractSocket::SocketError socketError){
+        qCWarning(dcMqttclient()) << "An error happened during setup:" << socketError;
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened connecting to the MQTT broker. Please make sure the login credentials are correct and your user has apprpriate permissions to subscribe to the given topic filter."));
+    });
     connect(client, &MqttClient::connected, this, [this, thing](){
         subscribe(thing);
     });
