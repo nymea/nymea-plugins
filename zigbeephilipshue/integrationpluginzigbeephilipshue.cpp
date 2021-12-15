@@ -40,22 +40,27 @@ IntegrationPluginZigbeePhilipsHue::IntegrationPluginZigbeePhilipsHue()
     m_ieeeAddressParamTypeIds[dimmerSwitchThingClassId] = dimmerSwitchThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[smartButtonThingClassId] = smartButtonThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[motionSensorThingClassId] = motionSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[wallSwitchModuleThingClassId] = wallSwitchModuleThingIeeeAddressParamTypeId;
 
     m_networkUuidParamTypeIds[dimmerSwitchThingClassId] = dimmerSwitchThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[smartButtonThingClassId] = smartButtonThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[motionSensorThingClassId] = motionSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[wallSwitchModuleThingClassId] = wallSwitchModuleThingNetworkUuidParamTypeId;
 
     m_connectedStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchConnectedStateTypeId;
     m_connectedStateTypeIds[smartButtonThingClassId] = smartButtonConnectedStateTypeId;
     m_connectedStateTypeIds[motionSensorThingClassId] = motionSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[wallSwitchModuleThingClassId] = wallSwitchModuleConnectedStateTypeId;
 
     m_signalStrengthStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[smartButtonThingClassId] = smartButtonSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[motionSensorThingClassId] = motionSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[wallSwitchModuleThingClassId] = wallSwitchModuleSignalStrengthStateTypeId;
 
     m_versionStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchVersionStateTypeId;
     m_versionStateTypeIds[smartButtonThingClassId] = smartButtonVersionStateTypeId;
     m_versionStateTypeIds[motionSensorThingClassId] = motionSensorVersionStateTypeId;
+    m_versionStateTypeIds[wallSwitchModuleThingClassId] = wallSwitchModuleVersionStateTypeId;
 }
 
 QString IntegrationPluginZigbeePhilipsHue::name() const
@@ -66,8 +71,10 @@ QString IntegrationPluginZigbeePhilipsHue::name() const
 bool IntegrationPluginZigbeePhilipsHue::handleNode(ZigbeeNode *node, const QUuid &networkUuid)
 {
     // Make sure this is from Philips 0x100b
-    if (node->nodeDescriptor().manufacturerCode != Zigbee::Philips)
+    if (node->nodeDescriptor().manufacturerCode != Zigbee::Philips) {
+        qCDebug(dcZigbeePhilipsHue()) << "Manufacturer code not matching. Ignoring node." << node->nodeDescriptor().manufacturerCode;
         return false;
+    }
 
     if (node->endpoints().count() == 2 && node->hasEndpoint(0x01) && node->hasEndpoint(0x02)) {
         ZigbeeNodeEndpoint *endpointOne = node->getEndpoint(0x01);
@@ -98,8 +105,8 @@ bool IntegrationPluginZigbeePhilipsHue::handleNode(ZigbeeNode *node, const QUuid
         }
     }
 
-    if (node->endpoints().count() == 1 && node->hasEndpoint(0x01)) {
-        ZigbeeNodeEndpoint *endpointOne = node->getEndpoint(0x01);
+    ZigbeeNodeEndpoint *endpointOne = node->getEndpoint(0x01);
+    if (endpointOne) {
 
         // Smart buttton
         if (endpointOne->profile() == Zigbee::ZigbeeProfileHomeAutomation &&
@@ -109,7 +116,18 @@ bool IntegrationPluginZigbeePhilipsHue::handleNode(ZigbeeNode *node, const QUuid
             initSmartButton(node);
             return true;
         }
+
+        // Wall switch module
+        if (endpointOne->profile() == Zigbee::ZigbeeProfileHomeAutomation &&
+                endpointOne->deviceId() == Zigbee::HomeAutomationDeviceNonColourController) {
+            createThing(wallSwitchModuleThingClassId, networkUuid, node);
+            initWallSwitchModule(node);
+            return true;
+        }
     }
+
+    qCWarning(dcZigbeePhilipsHue()) << "Device manufacturer code matches Philips/Signify, but node not handled by plugin:" << node->modelName();
+
     return false;
 }
 
@@ -267,8 +285,8 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
         } else {
             // Only set the initial state if the attribute already exists
             if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(dimmerSwitchBatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(dimmerSwitchBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                thing->setStateValue(smartButtonBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(smartButtonBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
             }
 
             connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
@@ -277,6 +295,82 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
                 thing->setStateValue(smartButtonBatteryCriticalStateTypeId, (percentage < 10.0));
             });
         }
+    }
+
+    if (thing->thingClassId() == wallSwitchModuleThingClassId) {
+        ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x01);
+
+        // Set the version
+        thing->setStateValue(m_versionStateTypeIds.value(thing->thingClassId()), endpointHa->softwareBuildId());
+
+        // Connect to the manufactuer specific cluster
+        ZigbeeClusterManufacturerSpecificPhilips *philipsCluster = endpointHa->inputCluster<ZigbeeClusterManufacturerSpecificPhilips>(ZigbeeClusterLibrary::ClusterIdManufacturerSpecificPhilips);
+        if (!philipsCluster) {
+            qCWarning(dcZigbeePhilipsHue()) << "Could not find Manufacturer Specific (Philips) cluster on" << thing << endpointHa;
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Connecting to manufacturer specific cluster";
+            connect(philipsCluster, &ZigbeeClusterManufacturerSpecificPhilips::buttonPressed, thing, [=](quint8 button, ZigbeeClusterManufacturerSpecificPhilips::Operation operation) {
+                qCDebug(dcZigbeePhilipsHue()) << "Button" << button << operation;
+                switch (operation) {
+                case ZigbeeClusterManufacturerSpecificPhilips::OperationButtonPress:
+                    // Unused (could be used for a bool "pressed" state type)
+                    break;
+                case ZigbeeClusterManufacturerSpecificPhilips::OperationButtonShortRelease:
+                    thing->emitEvent(wallSwitchModulePressedEventTypeId, ParamList() << Param(wallSwitchModulePressedEventButtonNameParamTypeId, QString::number(button)));
+                    break;
+                case ZigbeeClusterManufacturerSpecificPhilips::OperationButtonHold:
+                    thing->emitEvent(wallSwitchModuleLongPressedEventTypeId, ParamList() << Param(wallSwitchModuleLongPressedEventButtonNameParamTypeId, QString::number(button)));
+                    break;
+                case ZigbeeClusterManufacturerSpecificPhilips::OperationButtonLongRelease:
+                    // Release after a longpress. But for longpresses we always seem to get the Hold before, so we'll use that.
+                    break;
+                }
+            });
+        }
+
+        // Get battery level changes
+        ZigbeeClusterPowerConfiguration *powerCluster = endpointHa->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+        if (!powerCluster) {
+            qCWarning(dcZigbeePhilipsHue()) << "Could not find power configuration cluster on" << thing << endpointHa;
+        } else {
+            // Only set the initial state if the attribute already exists
+            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+                thing->setStateValue(wallSwitchModuleBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(wallSwitchModuleBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+            }
+
+            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+                qCDebug(dcZigbeePhilipsHue()) << "Battery percentage changed" << percentage << "%" << thing;
+                thing->setStateValue(wallSwitchModuleBatteryLevelStateTypeId, percentage);
+                thing->setStateValue(wallSwitchModuleBatteryCriticalStateTypeId, (percentage < 10.0));
+            });
+        }
+
+        // Button mode settings
+        connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId, const QVariant &value){
+            if (settingTypeId == wallSwitchModuleSettingsButtonModeParamTypeId) {
+                QHash<quint8, QString> modeMap = {
+                    {0x00, "Single rocker"},
+                    {0x01, "Single push button"},
+                    {0x02, "Dual rocker"},
+                    {0x03, "Dual push button"}
+                };
+                quint8 buttonMode = modeMap.key(value.toString());
+                QList<ZigbeeClusterLibrary::WriteAttributeRecord> attributes;
+                ZigbeeClusterLibrary::WriteAttributeRecord deviceModeAttribute;
+                deviceModeAttribute.attributeId = 0x0034;
+                deviceModeAttribute.dataType = Zigbee::Enum8;
+                deviceModeAttribute.data = ZigbeeDataType(buttonMode).data();
+                attributes.append(deviceModeAttribute);
+
+                qCDebug(dcZigbeePhilipsHue()) << "Setting device mode config to" << value.toString();
+                ZigbeeClusterBasic *basicCluster = endpointHa->inputCluster<ZigbeeClusterBasic>(ZigbeeClusterLibrary::ClusterIdBasic);
+                ZigbeeClusterReply *deviceModeConfigReply = basicCluster->writeAttributes(attributes, Zigbee::Philips);
+                connect(deviceModeConfigReply, &ZigbeeClusterReply::finished, node, [deviceModeConfigReply](){
+                    qCDebug(dcZigbeePhilipsHue()) << "Writing device mode configuration finished:" << deviceModeConfigReply->error();
+                });
+            }
+        });
     }
 
     if (thing->thingClassId() == motionSensorThingClassId) {
@@ -403,66 +497,19 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
 {
     ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x02);
 
-    // Get the current configured bindings for this node
-    ZigbeeReply *reply = node->removeAllBindings();
-    connect(reply, &ZigbeeReply::finished, node, [=](){
-        if (reply->error() != ZigbeeReply::ErrorNoError) {
+    qCDebug(dcZigbeePhilipsHue()) << "Clearing binding table on node" << node;
+    ZigbeeReply *removeBindingsReply = node->removeAllBindings();
+    connect(removeBindingsReply, &ZigbeeReply::finished, node, [=](){
+        if (removeBindingsReply->error() != ZigbeeReply::ErrorNoError) {
             qCWarning(dcZigbeePhilipsHue()) << "Failed to remove all bindings for initialization of" << node;
         } else {
             qCDebug(dcZigbeePhilipsHue()) << "Removed all bindings successfully from" << node;
         }
 
-        // Read battery, bind and configure attribute reporting for battery
-        if (!endpointHa->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
-            qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpointHa;
-            return;
-        }
-
-        qCDebug(dcZigbeePhilipsHue()) << "Reading power configuration cluster attributes" << node;
-        ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
-        connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-            if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                qCWarning(dcZigbeePhilipsHue()) << "Failed to read power cluster attributes" << readAttributeReply->error();
-            } else {
-                qCDebug(dcZigbeePhilipsHue()) << "Reading power configuration cluster attributes finished successfully";
-            }
-        });
-
-
-        // Bind the cluster to the coordinator
-        qCDebug(dcZigbeePhilipsHue()) << "Binding power configuration cluster to coordinator IEEE address";
-        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
-                                                                                          hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                qCWarning(dcZigbeePhilipsHue()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
-            } else {
-                qCDebug(dcZigbeePhilipsHue()) << "Binding power configuration cluster to coordinator finished successfully";
-            }
-
-            // Configure attribute rporting for battery remaining (0.5 % changes = 1)
-            ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-            reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
-            reportingConfig.dataType = Zigbee::Uint8;
-            reportingConfig.minReportingInterval = 300;
-            reportingConfig.maxReportingInterval = 2700;
-            reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
-
-            qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for power configuration cluster to coordinator";
-            ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
-            connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                    qCWarning(dcZigbeePhilipsHue()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
-                } else {
-                    qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
-                }
-            });
-        });
-
-
+        bindBatteryCluster(node, endpointHa);
 
         qCDebug(dcZigbeePhilipsHue()) << "Binding Manufacturer specific cluster to coordinator";
-        zdoReply = node->deviceObject()->requestBindGroupAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdManufacturerSpecificPhilips, 0x0000);
+        ZigbeeDeviceObjectReply *zdoReply = node->deviceObject()->requestBindGroupAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdManufacturerSpecificPhilips, 0x0000);
         connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
             if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
                 qCWarning(dcZigbeePhilipsHue()) << "Failed to bind manufacturer specific cluster to coordinator" << zdoReply->error();
@@ -489,93 +536,151 @@ void IntegrationPluginZigbeePhilipsHue::initSmartButton(ZigbeeNode *node)
 {
     ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
 
-    // Get the current configured bindings for this node
-    ZigbeeReply *reply = node->removeAllBindings();
-    connect(reply, &ZigbeeReply::finished, node, [=](){
-        if (reply->error() != ZigbeeReply::ErrorNoError) {
+    qCDebug(dcZigbeePhilipsHue()) << "Clearing binding table on node" << node;
+    ZigbeeReply *removeBindingsReply = node->removeAllBindings();
+    connect(removeBindingsReply, &ZigbeeReply::finished, node, [=](){
+        if (removeBindingsReply->error() != ZigbeeReply::ErrorNoError) {
             qCWarning(dcZigbeePhilipsHue()) << "Failed to remove all bindings for initialization of" << node;
         } else {
             qCDebug(dcZigbeePhilipsHue()) << "Removed all bindings successfully from" << node;
         }
 
-        // Read battery, bind and configure attribute reporting for battery
-        if (!endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
-            qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpoint;
-            return;
+        bindBatteryCluster(node, endpoint);
+        bindOnOffCluster(node, endpoint);
+        bindLevelControlCluster(node, endpoint);
+        dumpBindingTable(node);
+    });
+}
+
+void IntegrationPluginZigbeePhilipsHue::initWallSwitchModule(ZigbeeNode *node)
+{
+    ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+
+    qCDebug(dcZigbeePhilipsHue()) << "Clearing binding table on node" << node;
+    ZigbeeReply *removeBindingsReply = node->removeAllBindings();
+    connect(removeBindingsReply, &ZigbeeReply::finished, node, [=](){
+        if (removeBindingsReply->error() != ZigbeeReply::ErrorNoError) {
+            qCWarning(dcZigbeePhilipsHue()) << "Failed to remove all bindings for initialization of" << node;
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Removed all bindings successfully from" << node;
         }
 
-        qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes" << node;
-        ZigbeeClusterReply *readAttributeReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
-        connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-            if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                qCWarning(dcZigbeePhilipsHue()) << "Failed to read power cluster attributes" << readAttributeReply->error();
+        qCDebug(dcZigbeePhilipsHue()) << "Binding Manufacturer specific cluster from node" << node;
+        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdManufacturerSpecificPhilips, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                qCWarning(dcZigbeePhilipsHue()) << "Failed to bind manufacturer specific cluster:" << zdoReply->error();
             } else {
-                qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes finished successfully";
+                qCDebug(dcZigbeePhilipsHue()) << "Successfully bound manufacturer specific cluster.";
             }
-
-
-            // Bind the cluster to the coordinator
-            qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator IEEE address";
-            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
-                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                    qCWarning(dcZigbeePhilipsHue()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
-                } else {
-                    qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator finished successfully";
-                }
-
-                // Configure attribute rporting for battery remaining (0.5 % changes = 1)
-                ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-                reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
-                reportingConfig.dataType = Zigbee::Uint8;
-                reportingConfig.minReportingInterval = 300;
-                reportingConfig.maxReportingInterval = 2700;
-                reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
-
-                qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for power configuration cluster to coordinator";
-                ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
-                connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                    if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                        qCWarning(dcZigbeePhilipsHue()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
-                    } else {
-                        qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
-                    }
-
-                    qCDebug(dcZigbeePhilipsHue()) << "Bind on/off cluster to coordinator";
-                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
-                    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
-                        } else {
-                            qCDebug(dcZigbeePhilipsHue()) << "Bind on/off cluster to coordinator finished successfully";
-                        }
-
-                        qCDebug(dcZigbeePhilipsHue()) << "Bind power level cluster to coordinator";
-                        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
-                        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                                qCWarning(dcZigbeePhilipsHue()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
-                            } else {
-                                qCDebug(dcZigbeePhilipsHue()) << "Bind level cluster to coordinator finished successfully";
-                            }
-
-                            qCDebug(dcZigbeePhilipsHue()) << "Read binding table from node" << node;
-                            ZigbeeReply *reply = node->readBindingTableEntries();
-                            connect(reply, &ZigbeeReply::finished, node, [=](){
-                                if (reply->error() != ZigbeeReply::ErrorNoError) {
-                                    qCWarning(dcZigbeePhilipsHue()) << "Failed to read binding table from" << node;
-                                } else {
-                                    foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
-                                        qCDebug(dcZigbeePhilipsHue()) << node << binding;
-                                    }
-                                }
-                            });
-                        });
-                    });
-                });
-            });
         });
+
+
+        qCDebug(dcZigbeePhilipsHue()) << "Configuring device for single rocker mode (default)";
+        //        singlerocker 	0x00
+        //        singlepushbutton 	0x01
+        //        dualrocker 	0x02
+        //        dualpushbutton 	0x03
+
+        QList<ZigbeeClusterLibrary::WriteAttributeRecord> attributes;
+        ZigbeeClusterLibrary::WriteAttributeRecord deviceModeAttribute;
+        deviceModeAttribute.attributeId = 0x0034;
+        deviceModeAttribute.dataType = Zigbee::Enum8;
+        deviceModeAttribute.data = ZigbeeDataType(static_cast<quint8>(0x00)).data();
+        attributes.append(deviceModeAttribute);
+
+        ZigbeeClusterReply *deviceModeConfigReply = endpoint->inputCluster<ZigbeeClusterBasic>(ZigbeeClusterLibrary::ClusterIdBasic)->writeAttributes(attributes, Zigbee::Philips);
+        connect(deviceModeConfigReply, &ZigbeeClusterReply::finished, node, [deviceModeConfigReply](){
+            qCDebug(dcZigbeePhilipsHue()) << "Writing device mode configuration finished:" << deviceModeConfigReply->error();
+        });
+
+
+        bindBatteryCluster(node, endpoint);
+        bindOnOffCluster(node, endpoint);
+        bindLevelControlCluster(node, endpoint);
+
+        dumpBindingTable(node);
+    });
+}
+
+void IntegrationPluginZigbeePhilipsHue::bindBatteryCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Read battery, bind and configure attribute reporting for battery
+    if (!endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
+        qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpoint;
+        return;
+    }
+
+    // Bind the cluster to the coordinator
+    qCDebug(dcZigbeePhilipsHue()) << "Binding power configuration cluster from node" << node;
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
+                                                                                      hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind power cluster" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Successfully bound power configuration cluster.";
+        }
+
+        // Configure attribute reporting for battery remaining (0.5 % changes = 1)
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
+        reportingConfig.dataType = Zigbee::Uint8;
+        reportingConfig.minReportingInterval = 300;
+        reportingConfig.maxReportingInterval = 2700;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeePhilipsHue()) << "Configuring attribute reporting for power configuration cluster on node:" << node;
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeePhilipsHue()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeePhilipsHue::bindOnOffCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    qCDebug(dcZigbeePhilipsHue()) << "Binding on/off cluster from node" << node;
+    ZigbeeDeviceObjectReply * bindOnOffReply = node->deviceObject()->requestBindGroupAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
+    connect(bindOnOffReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (bindOnOffReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind on/off cluster:" << bindOnOffReply->error();
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Successfully bound on/off cluster.";
+        }
+    });
+}
+
+void IntegrationPluginZigbeePhilipsHue::bindLevelControlCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    qCDebug(dcZigbeePhilipsHue()) << "Binding level control cluster from node" << node;
+    ZigbeeDeviceObjectReply * bindLevelControlReply = node->deviceObject()->requestBindGroupAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
+    connect(bindLevelControlReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (bindLevelControlReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind level control cluster:" << bindLevelControlReply->error();
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Successfully bound level control cluster.";
+        }
+    });
+}
+
+void IntegrationPluginZigbeePhilipsHue::dumpBindingTable(ZigbeeNode *node)
+{
+    qCDebug(dcZigbeePhilipsHue()) << "Reading binding table from node" << node;
+    ZigbeeReply *reply = node->readBindingTableEntries();
+    connect(reply, &ZigbeeReply::finished, node, [=](){
+        if (reply->error() != ZigbeeReply::ErrorNoError) {
+            qCWarning(dcZigbeePhilipsHue()) << "Failed to read binding table from" << node;
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Binding table:";
+            foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
+                qCDebug(dcZigbeePhilipsHue()) << node << binding;
+            }
+        }
     });
 }
 

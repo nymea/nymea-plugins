@@ -72,7 +72,13 @@ private:
     void initDimmerSwitch(ZigbeeNode *node);
     void initMotionSensor(ZigbeeNode *node);
     void initSmartButton(ZigbeeNode *node);
+    void initWallSwitchModule(ZigbeeNode *node);
 
+    void bindBatteryCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void bindOnOffCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void bindLevelControlCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    void dumpBindingTable(ZigbeeNode *node);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEPHILIPSHUE_H
