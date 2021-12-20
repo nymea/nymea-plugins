@@ -555,6 +555,8 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
          python3-pip,
+         libffi-dev,
+         libssl-dev,
 Description: nymea.io plugin for neato
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
