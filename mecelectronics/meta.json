@@ -1,6 +1,6 @@
 {
     "title": "mecElectronics",
-    "tagline": "mecMeter",
+    "tagline": "Measure electic energy using the mecmeter smart meter.",
     "icon": "mecelectronics.png",
     "stability": "community",
     "offline": true,
@@ -8,6 +8,6 @@
         "network"
     ],
     "categories": [
-        "energy",
+        "energy"
     ]
 }
