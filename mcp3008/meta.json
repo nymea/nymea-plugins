@@ -5,9 +5,9 @@
     "stability": "consumer",
     "offline": false,
     "technologies": [
-        "SPI"
+        "spi"
     ],
     "categories": [
-        "DYI"
+        "sensor"
     ]
 }
