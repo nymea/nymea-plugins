@@ -34,6 +34,8 @@
 #include "integrations/integrationplugin.h"
 #include "extern-plugininfo.h"
 
+#include "owletserialclient.h"
+
 class ZeroConfServiceBrowser;
 class OwletClient;
 
@@ -57,8 +59,19 @@ private:
     ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
 
     QHash<Thing *, OwletClient *> m_clients;
+    QHash<Thing *, OwletSerialClient *> m_serialClients;
+
     QHash<ThingClassId, ParamTypeId> m_owletIdParamTypeMap;
+
+    // Serial owlets
     QHash<ThingClassId, ParamTypeId> m_owletSerialPortParamTypeMap;
+    QHash<ThingClassId, ParamTypeId> m_owletSerialPinParamTypeMap;
+
+    QHash<ParamTypeId, quint8> m_arduinoMiniProPinMapping;
+    OwletSerialClient::PinMode getPinModeFromSettingsValue(const QString &settingsValue);
+
+    void setupArduinoChildThing(OwletSerialClient *client, quint8 pinId, OwletSerialClient::PinMode pinMode);
+    void configurePin(OwletSerialClient *client, quint8 pinId, OwletSerialClient::PinMode pinMode);
 };
 
 #endif // INTEGRATIONPLUGINOWLET_H

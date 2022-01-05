@@ -27,12 +27,13 @@ OwletSerialTransport::OwletSerialTransport(const QString &serialPortName, uint b
     connect(m_serialPort, &QSerialPort::errorOccurred, this, &OwletSerialTransport::onError);
 #endif
 
-
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setInterval(5000);
     m_reconnectTimer->setSingleShot(false);
     connect(m_reconnectTimer, &QTimer::timeout, this, [=](){
         if (m_serialPort->isOpen()) {
+            // Clear any buffer content
+            m_serialPort->clear();
             m_reconnectTimer->stop();
             return;
         } else {
@@ -48,6 +49,8 @@ bool OwletSerialTransport::connected() const
 
 void OwletSerialTransport::sendData(const QByteArray &data)
 {
+    qCDebug(dcOwlet()) << "UART -->" << data.toHex();
+
     // Stream bytes using SLIP
     QByteArray message;
     QDataStream stream(&message, QIODevice::WriteOnly);
@@ -71,7 +74,8 @@ void OwletSerialTransport::sendData(const QByteArray &data)
     }
     stream << static_cast<quint8>(SlipProtocolEnd);
 
-    qCDebug(dcOwlet()) << "UART -->" << qUtf8Printable(data) << message.toHex();
+    //qCDebug(dcOwlet()) << "UART -->" << message.toHex();
+
     m_serialPort->write(message);
     m_serialPort->flush();
 }
@@ -102,6 +106,7 @@ void OwletSerialTransport::connectTransport()
     if (!m_serialPort->open(QIODevice::ReadWrite)) {
         qCWarning(dcOwlet()) << "Could not open serial port on" << m_serialPortName << m_serialPort->errorString();
         m_reconnectTimer->start();
+        emit error();
         return;
     }
 
@@ -120,7 +125,7 @@ void OwletSerialTransport::disconnectTransport()
 void OwletSerialTransport::onReadyRead()
 {
     QByteArray data = m_serialPort->readAll();
-    qCDebug(dcOwlet()) << "UART <-- raw:" << data.toHex() << qUtf8Printable(data);
+    //qCDebug(dcOwlet()) << "UART <--" << data.toHex();
 
     for (int i = 0; i < data.length(); i++) {
         quint8 receivedByte = data.at(i);
@@ -144,8 +149,8 @@ void OwletSerialTransport::onReadyRead()
         switch (receivedByte) {
         case SlipProtocolEnd:
             // We are done with this package, process it and reset the buffer
-            if (!m_buffer.isEmpty() && m_buffer.length() >= 3) {
-                qCDebug(dcOwlet()) << "UART <--" << m_buffer.toHex() << qUtf8Printable(m_buffer);
+            if (!m_buffer.isEmpty() && m_buffer.length() >= 2) {
+                qCDebug(dcOwlet()) << "UART <--" << m_buffer.toHex();
                 emit dataReceived(m_buffer);
             }
             m_buffer.clear();
@@ -168,6 +173,7 @@ void OwletSerialTransport::onError(QSerialPort::SerialPortError serialPortError)
     if (serialPortError != QSerialPort::NoError && serialPortError != QSerialPort::OpenError && m_serialPort->isOpen()) {
         qCWarning(dcOwlet()) << "Serial port error occured" << serialPortError << m_serialPort->errorString();
         emit error();
+
         m_reconnectTimer->start();
         if (m_serialPort->isOpen()) {
             m_serialPort->close();

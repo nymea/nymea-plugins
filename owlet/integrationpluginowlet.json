@@ -225,7 +225,7 @@
                     "name": "arduinoMiniPro",
                     "displayName": "Arduino Pro Mini Owlet",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["gateway", "connectable"],
+                    "interfaces": ["gateway", "update", "connectable"],
                     "paramTypes": [
                         {
                             "id": "589715a6-aaf7-4ffb-9c34-015ac22d527e",
@@ -252,8 +252,7 @@
                             "allowedValues": [
                                 "None",
                                 "Input",
-                                "Output",
-                                "Interrupt"
+                                "Output"
                             ],
                             "defaultValue": "None"
                         },
@@ -267,7 +266,7 @@
                                 "Input",
                                 "Output",
                                 "PWM",
-                                "Interrupt"
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -292,7 +291,8 @@
                                 "None",
                                 "Input",
                                 "Output",
-                                "PWM"
+                                "PWM",
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -305,7 +305,8 @@
                                 "None",
                                 "Input",
                                 "Output",
-                                "PWM"
+                                "PWM",
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -342,7 +343,8 @@
                                 "None",
                                 "Input",
                                 "Output",
-                                "PWM"
+                                "PWM",
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -355,7 +357,8 @@
                                 "None",
                                 "Input",
                                 "Output",
-                                "PWM"
+                                "PWM",
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -368,7 +371,8 @@
                                 "None",
                                 "Input",
                                 "Output",
-                                "PWM"
+                                "PWM",
+                                "Servo"
                             ],
                             "defaultValue": "None"
                         },
@@ -497,6 +501,228 @@
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
+                        },
+                        {
+                            "id": "f7e86ecd-761b-412e-b5de-a2547f883f76",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "43afe87d-3465-4ced-be0f-170f972afea3",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "8cfbb619-de54-441a-8761-d29c6f0c659a",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
+                    "id": "43aca5c1-3972-49ae-b21f-4d1486942e1f",
+                    "displayName": "Digital GPIO output on owlet",
+                    "name": "digitalOutputSerial",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "power", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "6e17a423-89c0-430b-ac78-1af60a63ce50",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "3da148b9-fe85-4bf1-9005-082b3cf0c014",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "2f7dd16b-c1ee-4b2b-859e-e3eacc679400",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "ioType": "digitalOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "884cb983-3099-4355-a2e6-693f5c1b85e7",
+                    "displayName": "Digital GPIO input on owlet",
+                    "name": "digitalInputSerial",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "6e872f08-9110-425c-9e17-e24d83452b7d",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "112dad0b-9c94-4310-8962-f81e1050c713",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "9fd72a32-a266-4474-b5b1-e6da9835da6d",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Powered changed",
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "c6f3cbd9-1863-430a-9fc2-19f7b57b47d7",
+                    "displayName": "Analog input GPIO on owlet",
+                    "name": "analogInputSerial",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "55b142ab-ae9a-41cd-a23a-5a78ec141013",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "cfdc6cd0-02ae-403c-aab6-8e86306405af",
+                            "name": "refreshRate",
+                            "displayName": "Refresh rate",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 200,
+                            "defaultValue": 500
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b8fdd65e-dd33-451e-b02f-d7cf73a2e4e2",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "5b7b50c8-a3aa-494d-a454-96c38f257836",
+                            "name": "analogValue",
+                            "displayName": "Analog value",
+                            "displayNameEvent": "Analog value changed",
+                            "type": "uint",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1023,
+                            "ioType": "analogInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "ee228a56-9cf2-4401-84c2-8e25f288f136",
+                    "displayName": "PWM on owlet",
+                    "name": "analogOutputSerial",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "e2da646f-003f-495b-8250-28067732973a",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d08ed1bd-0ddf-4bad-9689-cc7730a54b05",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "8c8065f7-b335-41bf-a015-fd2cd7e68e81",
+                            "name": "dutyCycle",
+                            "displayName": "Duty cycle",
+                            "displayNameEvent": "Duty cycle changed",
+                            "displayNameAction": "Set duty cycle",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 255,
+                            "defaultValue": 0,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "66d9725a-b096-4300-b0e1-adc043ee12c3",
+                    "displayName": "Servo on owlet",
+                    "name": "servoSerial",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "4596b43d-93e9-46e4-8831-59f96f998606",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0ae0d6a4-8eb1-4d4f-b093-59ce42355ad7",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "eee4e07a-1cb1-44d1-98d5-d66d2e63f704",
+                            "name": "angle",
+                            "displayName": "Angle",
+                            "displayNameEvent": "Angle changed",
+                            "displayNameAction": "Set angle",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 180,
+                            "defaultValue": 0,
+                            "writable": true,
+                            "ioType": "analogOutput"
                         }
                     ]
                 }
