@@ -221,6 +221,327 @@
                     ]
                 },
                 {
+                    "id": "f38fd38f-9f3c-46a6-ba0f-44c256b7217d",
+                    "name": "arduinoUno",
+                    "displayName": "Arduino Uno Owlet",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["gateway", "update", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "96de936e-4625-4c36-83f3-276bd5af38a1",
+                            "name": "serialPort",
+                            "displayName": "Serial port",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": "/dev/ttyS0"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "00ddd091-08d8-4b5e-877d-b6456c58f009",
+                            "name": "pin0",
+                            "displayName": "Pin 0",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "22b8e5da-dd43-446d-ba01-bd93f09504c9",
+                            "name": "pin1",
+                            "displayName": "Pin 1",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "479252df-1a83-4910-b51f-551b4badcdc3",
+                            "name": "pin2",
+                            "displayName": "Pin 2",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "f2889d55-31c4-4f28-a679-262efa287f73",
+                            "name": "pin3",
+                            "displayName": "Pin 3",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "7e4ea5e4-4c54-4931-a0ee-05b2b466da78",
+                            "name": "pin4",
+                            "displayName": "Pin 4",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "92c0e77a-12a1-4344-871c-01191be023f6",
+                            "name": "pin5",
+                            "displayName": "Pin 5",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "83cecd4b-c028-4bd5-b522-7fb565aeb1eb",
+                            "name": "pin6",
+                            "displayName": "Pin 6",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "99c728ec-4082-4586-8a29-fb217d6e842c",
+                            "name": "pin7",
+                            "displayName": "Pin 7",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "3f3a7559-90e5-40f4-9cc5-7477cce7e39d",
+                            "name": "pin8",
+                            "displayName": "Pin 8",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "cbdfd303-e226-48e0-a3f3-eaea801b13e3",
+                            "name": "pin9",
+                            "displayName": "Pin 9",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "32cf9abd-7d9d-4b1a-807b-68b2cd70ffb1",
+                            "name": "pin10",
+                            "displayName": "Pin 10",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "ec5ea717-0d78-4cc1-98e9-0b14b46888c3",
+                            "name": "pin11",
+                            "displayName": "Pin 11",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "PWM",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "4ae182bb-1e60-4175-b8aa-3d74172bec37",
+                            "name": "pin12",
+                            "displayName": "Pin 12",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "53e1d640-05a8-4333-bd12-951a99f4ba07",
+                            "name": "pin13",
+                            "displayName": "Pin 13 - LED",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "d09383e2-7719-477e-9986-f5ca3ebca319",
+                            "name": "pinA0",
+                            "displayName": "Pin A0",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input",
+                                "Servo"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "e24e88b4-bdd6-4b01-ad75-d1cda5c6cfdc",
+                            "name": "pinA1",
+                            "displayName": "Pin A1",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "3f65703c-50f2-4df8-b269-be8410624cd2",
+                            "name": "pinA2",
+                            "displayName": "Pin A2",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "0568be9d-6d4d-4807-90cd-24a9ef3fd12f",
+                            "name": "pinA3",
+                            "displayName": "Pin A3",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "95286eda-723b-4a1f-98cd-d43a02b81b0a",
+                            "name": "pinA4",
+                            "displayName": "Pin A4",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input"
+                            ],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "a6d211a7-920d-4fb0-b3b8-0920a360b591",
+                            "name": "pinA5",
+                            "displayName": "Pin A5",
+                            "type": "QString",
+                            "allowedValues": [
+                                "None",
+                                "Input",
+                                "Output",
+                                "Analog Input"
+                            ],
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4a779310-5424-4555-879c-565b1ac04d65",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "e142e236-3878-4d04-aac9-e6f0a75b96ed",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5ea46fc9-e7ba-49c4-aa33-55b4d1f1e7df",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "d71b7593-584a-4feb-9c8a-77f169d77286",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "22f216f4-9715-48f9-ab76-f7d7436d49c9",
                     "name": "arduinoMiniPro",
                     "displayName": "Arduino Pro Mini Owlet",
@@ -391,7 +712,7 @@
                         {
                             "id": "4522ce36-ba6f-46b0-a54b-410a93065b34",
                             "name": "pin13",
-                            "displayName": "Pin 13 (LED)",
+                            "displayName": "Pin 13 - LED",
                             "type": "QString",
                             "allowedValues": [
                                 "None",

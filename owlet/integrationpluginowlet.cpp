@@ -54,16 +54,39 @@ void IntegrationPluginOwlet::init()
     m_owletIdParamTypeMap.insert(digitalInputThingClassId, digitalInputThingOwletIdParamTypeId);
     m_owletIdParamTypeMap.insert(ws2812ThingClassId, ws2812ThingOwletIdParamTypeId);
 
+    m_owletSerialPortParamTypeMap.insert(arduinoUnoThingClassId, arduinoUnoThingSerialPortParamTypeId);
     m_owletSerialPortParamTypeMap.insert(arduinoMiniProThingClassId, arduinoMiniProThingSerialPortParamTypeId);
 
     m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_nymea-owlet._tcp");
 
-    // Pin params of thins
+    // Pin params of serial things
     m_owletSerialPinParamTypeMap.insert(digitalOutputSerialThingClassId, digitalOutputSerialThingPinParamTypeId);
     m_owletSerialPinParamTypeMap.insert(digitalInputSerialThingClassId, digitalInputSerialThingPinParamTypeId);
     m_owletSerialPinParamTypeMap.insert(analogOutputSerialThingClassId, analogOutputSerialThingPinParamTypeId);
     m_owletSerialPinParamTypeMap.insert(analogInputSerialThingClassId, analogInputSerialThingPinParamTypeId);
     m_owletSerialPinParamTypeMap.insert(servoSerialThingClassId, servoSerialThingPinParamTypeId);
+
+    // Arduino Uno mapping
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin0ParamTypeId, 0);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin1ParamTypeId, 1);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin2ParamTypeId, 2);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin3ParamTypeId, 3);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin4ParamTypeId, 4);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin5ParamTypeId, 5);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin6ParamTypeId, 6);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin7ParamTypeId, 7);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin8ParamTypeId, 8);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin9ParamTypeId, 9);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin10ParamTypeId, 10);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin11ParamTypeId, 11);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin12ParamTypeId, 12);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPin13ParamTypeId, 13);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA0ParamTypeId, 14);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA1ParamTypeId, 15);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA2ParamTypeId, 16);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA3ParamTypeId, 17);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA4ParamTypeId, 18);
+    m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA5ParamTypeId, 19);
 
     // Arduino Mini Pro mapping
     m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin2ParamTypeId, 2);
@@ -92,9 +115,29 @@ void IntegrationPluginOwlet::discoverThings(ThingDiscoveryInfo *info)
     if (info->thingClassId() == arduinoMiniProThingClassId) {
         // Discover serial ports for arduino bords
         foreach(const QSerialPortInfo &port, QSerialPortInfo::availablePorts()) {
-            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation();
+            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation() << port.description() << port.serialNumber();
             QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
             ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Pro Mini Owlet", description);
+            ParamList parameters;
+
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(m_owletSerialPortParamTypeMap.value(info->thingClassId())).toString() == port.systemLocation()) {
+                    thingDescriptor.setThingId(existingThing->id());
+                    break;
+                }
+            }
+
+            parameters.append(Param(m_owletSerialPortParamTypeMap.value(info->thingClassId()), port.systemLocation()));
+            thingDescriptor.setParams(parameters);
+            info->addThingDescriptor(thingDescriptor);
+        }
+        info->finish(Thing::ThingErrorNoError);
+    } else if (info->thingClassId() == arduinoUnoThingClassId) {
+        // Discover serial ports for arduino bords
+        foreach(const QSerialPortInfo &port, QSerialPortInfo::availablePorts()) {
+            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation() << port.description() << port.serialNumber();
+            QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
+            ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Uno Owlet", description);
             ParamList parameters;
 
             foreach (Thing *existingThing, myThings()) {
@@ -165,6 +208,82 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
             qCDebug(dcOwlet()) << "Arduino Mini Pro settings changed" << paramTypeId << value;
             quint8 pinId = m_arduinoMiniProPinMapping.value(paramTypeId);
+            OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
+
+            // Check if we have a thing for this pin and if we need to remove it before setting up
+            Thing *existingThing = nullptr;
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                int existingPinId = childThing->paramValue(m_owletSerialPinParamTypeMap.value(childThing->thingClassId())).toUInt();
+                if (existingPinId == pinId) {
+                    qCDebug(dcOwlet()) << "Found already configured thing for pin" << pinId;
+                    existingThing = childThing;
+                    break;
+                }
+            }
+
+            if (existingThing) {
+                if ((pinMode == OwletSerialClient::PinModeDigitalOutput && existingThing->thingClassId() == digitalOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeDigitalInput && existingThing->thingClassId() == digitalInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogOutput && existingThing->thingClassId() == analogOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogInput && existingThing->thingClassId() == analogInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeServo && existingThing->thingClassId() == servoSerialThingClassId)) {
+
+                    qCDebug(dcOwlet()) << "Thing for pin" << pinId << "is already configured as" << pinMode;
+                    return;
+                } else {
+                    qCDebug(dcOwlet()) << "Have thing for pin" << pinId << "but should be configured as" << pinMode;
+                    qCDebug(dcOwlet()) << "Remove existing thing before setup a new one";
+                    emit autoThingDisappeared(existingThing->id());
+                }
+            }
+
+            setupArduinoChildThing(client, pinId, pinMode);
+        });
+
+        m_serialClients.insert(thing, client);
+        info->finish(Thing::ThingErrorNoError);
+
+        client->transport()->connectTransport();
+        return;
+    }
+
+
+    if (thing->thingClassId() == arduinoUnoThingClassId) {
+        QString serialPort = thing->paramValue(arduinoUnoThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup arduino uno owlet on" << serialPort;
+        OwletTransport *transport = new OwletSerialTransport(serialPort, 115200, this);
+        OwletSerialClient *client = new OwletSerialClient(transport, transport);
+
+        // During setup
+        connect(client, &OwletSerialClient::connected, info, [=](){
+            qCDebug(dcOwlet()) << "Connected to serial owlet" << client->firmwareVersion();
+            thing->setStateValue("connected", true);
+        });
+
+        connect(client, &OwletSerialClient::error, info, [=](){
+            //info->finish(Thing::ThingErrorHardwareFailure);
+            transport->deleteLater();
+        });
+
+        // Runtime
+        connect(client, &OwletSerialClient::connected, thing, [=](){
+            thing->setStateValue("connected", true);
+            thing->setStateValue(arduinoUnoCurrentVersionStateTypeId, client->firmwareVersion());
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", true);
+            }
+        });
+
+        connect(client, &OwletSerialClient::disconnected, thing, [=](){
+            thing->setStateValue("connected", false);
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", false);
+            }
+        });
+
+        connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+            qCDebug(dcOwlet()) << "Arduino UNO settings changed" << paramTypeId << value;
+            quint8 pinId = m_arduinoUnoPinMapping.value(paramTypeId);
             OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
 
             // Check if we have a thing for this pin and if we need to remove it before setting up
@@ -327,7 +446,7 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
                     qCWarning(dcOwlet()) << "Configure pin request finished with error" << configurationError;
                     return;
                 }
-                quint32 value;
+                quint16 value;
                 stream >> value;
                 qCDebug(dcOwlet()) << "Analog value of" << thing << value;
                 thing->setStateValue(analogInputSerialAnalogValueStateTypeId, value);
@@ -608,12 +727,36 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (!client->ready()) {
+        if (!client->isReady()) {
             qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
         if (info->action().actionTypeId() == arduinoMiniProPerformUpdateActionTypeId) {
+            qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
+            //if (client->firmwareVersion() != )
+
+            // TODO: run upgrade process using avrdude
+
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
+    if (info->thing()->thingClassId() == arduinoUnoThingClassId) {
+        OwletSerialClient *client = m_serialClients.value(info->thing());
+        if (!client) {
+            qCWarning(dcOwlet()) << "Could not execute action. There is no client available for this thing";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        if (!client->isReady()) {
+            qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        if (info->action().actionTypeId() == arduinoUnoPerformUpdateActionTypeId) {
             qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
             //if (client->firmwareVersion() != )
 
@@ -632,7 +775,7 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (!client->ready()) {
+        if (!client->isReady()) {
             qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
@@ -683,7 +826,7 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (!client->ready()) {
+        if (!client->isReady()) {
             qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
@@ -735,7 +878,7 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (!client->ready()) {
+        if (!client->isReady()) {
             qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
@@ -777,8 +920,6 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
         info->finish(Thing::ThingErrorUnsupportedFeature);
         return;
     }
-
-
 
     Q_ASSERT_X(false, "IntegrationPluginOwlet", "Not implemented");
     info->finish(Thing::ThingErrorUnsupportedFeature);
@@ -841,7 +982,7 @@ void IntegrationPluginOwlet::setupArduinoChildThing(OwletSerialClient *client, q
         switch (pinMode) {
         case OwletSerialClient::PinModeDigitalOutput: {
             qCDebug(dcOwlet()) << "Setting up digital output on serial owlet for pin" << pinId;
-            ThingDescriptor descriptor(digitalOutputSerialThingClassId, thingClass(digitalOutputSerialThingClassId).displayName() + " (" + QString::number(pinId) + ")", QString(), parentThing->id());
+            ThingDescriptor descriptor(digitalOutputSerialThingClassId, thingClass(digitalOutputSerialThingClassId).displayName() + " (" + getPinName(parentThing, pinId) + ")", QString(), parentThing->id());
             ParamList params;
             params.append(Param(digitalOutputSerialThingPinParamTypeId, pinId));
             descriptor.setParams(params);
@@ -850,7 +991,7 @@ void IntegrationPluginOwlet::setupArduinoChildThing(OwletSerialClient *client, q
         }
         case OwletSerialClient::PinModeDigitalInput: {
             qCDebug(dcOwlet()) << "Setting up digital input on serial owlet for pin" << pinId;
-            ThingDescriptor descriptor(digitalInputSerialThingClassId, thingClass(digitalInputSerialThingClassId).displayName() + " (" + QString::number(pinId) + ")", QString(), parentThing->id());
+            ThingDescriptor descriptor(digitalInputSerialThingClassId, thingClass(digitalInputSerialThingClassId).displayName() + " (" + getPinName(parentThing, pinId) + ")", QString(), parentThing->id());
             ParamList params;
             params.append(Param(digitalInputSerialThingPinParamTypeId, pinId));
             descriptor.setParams(params);
@@ -859,7 +1000,7 @@ void IntegrationPluginOwlet::setupArduinoChildThing(OwletSerialClient *client, q
         }
         case OwletSerialClient::PinModeAnalogOutput: {
             qCDebug(dcOwlet()) << "Setting up digital output on serial owlet for pin" << pinId;
-            ThingDescriptor descriptor(analogOutputSerialThingClassId, thingClass(analogOutputSerialThingClassId).displayName() + " (" + QString::number(pinId) + ")", QString(), parentThing->id());
+            ThingDescriptor descriptor(analogOutputSerialThingClassId, thingClass(analogOutputSerialThingClassId).displayName() + " (" + getPinName(parentThing, pinId) + ")", QString(), parentThing->id());
             ParamList params;
             params.append(Param(analogOutputSerialThingPinParamTypeId, pinId));
             descriptor.setParams(params);
@@ -868,7 +1009,7 @@ void IntegrationPluginOwlet::setupArduinoChildThing(OwletSerialClient *client, q
         }
         case OwletSerialClient::PinModeAnalogInput: {
             qCDebug(dcOwlet()) << "Setting up analog input on serial owlet for pin" << pinId;
-            ThingDescriptor descriptor(analogInputSerialThingClassId, thingClass(analogInputSerialThingClassId).displayName() + " (" + QString::number(pinId) + ")", QString(), parentThing->id());
+            ThingDescriptor descriptor(analogInputSerialThingClassId, thingClass(analogInputSerialThingClassId).displayName() + " (" + getPinName(parentThing, pinId) + ")", QString(), parentThing->id());
             ParamList params;
             params.append(Param(analogInputSerialThingPinParamTypeId, pinId));
             descriptor.setParams(params);
@@ -877,7 +1018,7 @@ void IntegrationPluginOwlet::setupArduinoChildThing(OwletSerialClient *client, q
         }
         case OwletSerialClient::PinModeServo: {
             qCDebug(dcOwlet()) << "Setting up servo on serial owlet for pin" << pinId;
-            ThingDescriptor descriptor(servoSerialThingClassId, thingClass(servoSerialThingClassId).displayName() + " (" + QString::number(pinId) + ")", QString(), parentThing->id());
+            ThingDescriptor descriptor(servoSerialThingClassId, thingClass(servoSerialThingClassId).displayName() + " (" + getPinName(parentThing, pinId) + ")", QString(), parentThing->id());
             ParamList params;
             params.append(Param(servoSerialThingPinParamTypeId, pinId));
             descriptor.setParams(params);
@@ -913,5 +1054,16 @@ void IntegrationPluginOwlet::configurePin(OwletSerialClient *client, quint8 pinI
 
         qCDebug(dcOwlet()) << "Set pin mode finished successfully" << pinId << pinMode;
     });
+}
+
+QString IntegrationPluginOwlet::getPinName(Thing *parent, quint8 pinId)
+{
+    if (parent->thingClassId() == arduinoUnoThingClassId) {
+        return parent->thingClass().settingsTypes().findById(m_arduinoUnoPinMapping.key(pinId)).displayName();
+    } else if (parent->thingClassId() == arduinoMiniProThingClassId) {
+        return parent->thingClass().settingsTypes().findById(m_arduinoMiniProPinMapping.key(pinId)).displayName();
+    }
+
+    return QString();
 }
 

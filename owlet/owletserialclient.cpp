@@ -17,8 +17,16 @@ OwletSerialClient::OwletSerialClient(OwletTransport *transport, QObject *parent)
             // Clean up queue
             qDeleteAll(m_pendingRequests);
             m_pendingRequests.clear();
+        } else {
+            // Wait for the ready notification
         }
     });
+}
+
+OwletSerialClient::~OwletSerialClient()
+{
+    qCDebug(dcOwlet()) << "Destroy owlet serial client";
+    transport()->disconnectTransport();
 }
 
 OwletTransport *OwletSerialClient::transport() const
@@ -26,7 +34,12 @@ OwletTransport *OwletSerialClient::transport() const
     return m_transport;
 }
 
-bool OwletSerialClient::ready() const
+bool OwletSerialClient::isConnected() const
+{
+    return m_transport->connected();
+}
+
+bool OwletSerialClient::isReady() const
 {
     return m_ready;
 }
@@ -198,7 +211,7 @@ void OwletSerialClient::dataReceived(const QByteArray &data)
                 m_firmwareVersion = QString("%1.%2.%3").arg(major).arg(minor).arg(patch);
                 qCDebug(dcOwlet()) << "Connected successfully to firmware" << m_firmwareVersion;
                 m_ready = true;
-                emit connected();
+                emit readyChanged(m_ready);
             });
             break;
         }

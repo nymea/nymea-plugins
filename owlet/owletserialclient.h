@@ -62,10 +62,14 @@ public:
     Q_ENUM(PinMode)
 
     explicit OwletSerialClient(OwletTransport *transport, QObject *parent = nullptr);
+    ~OwletSerialClient();
 
     OwletTransport *transport() const;
 
-    bool ready() const;
+    bool isConnected() const;
+    bool isReady() const;
+
+    QString firmwareVersion() const;
 
     OwletSerialClientReply *getFirmwareVersion();
     OwletSerialClientReply *configurePin(quint8 pinId, PinMode pinMode);
@@ -75,11 +79,11 @@ public:
     OwletSerialClientReply *readAnalogValue(quint8 pinId);
     OwletSerialClientReply *writeServoValue(quint8 pinId, quint8 angle);
 
-    QString firmwareVersion() const;
 
 signals:
     void connected();
     void disconnected();
+    void readyChanged(bool ready);
     void error();
 
     void pinValueChanged(quint8 pinId, bool power);
