@@ -43,6 +43,7 @@
 
 #include <QColor>
 #include <QTimer>
+#include <QDataStream>
 
 IntegrationPluginOwlet::IntegrationPluginOwlet()
 {
@@ -568,10 +569,32 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
 
     OwletTransport *transport = new OwletTcpTransport(ip, port, this);
 
+    if (m_clients.contains(info->thing())) {
+        delete m_clients.take(info->thing());
+    }
     OwletClient *client = new OwletClient(transport, this);
+
+    connect(client, &OwletClient::error, info, [=](){
+        delete client;
+        info->finish(Thing::ThingErrorHardwareFailure);
+    });
+    connect(info, &ThingSetupInfo::aborted, client, [=](){
+        delete client;
+    });
+
     connect(client, &OwletClient::connected, info, [=](){
         qCDebug(dcOwlet()) << "Connected to owlet";
         m_clients.insert(thing, client);
+        info->finish(Thing::ThingErrorNoError);
+    });
+
+
+    connect(client, &OwletClient::connected, thing, [=](){
+        thing->setStateValue("connected", true);
+
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->setValue("cachedIP", ip.toString());
+        pluginStorage()->endGroup();
 
         if (thing->thingClassId() == digitalOutputThingClassId) {
             QVariantMap params;
@@ -595,19 +618,6 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
             client->sendCommand("GPIO.ConfigurePin", params);
         }
 
-        info->finish(Thing::ThingErrorNoError);
-    });
-
-    connect(client, &OwletClient::error, info, [=](){
-        info->finish(Thing::ThingErrorHardwareFailure);
-    });
-
-    connect(client, &OwletClient::connected, thing, [=](){
-        thing->setStateValue("connected", true);
-
-        pluginStorage()->beginGroup(thing->id().toString());
-        pluginStorage()->setValue("cachedIP", ip.toString());
-        pluginStorage()->endGroup();
 
         qCDebug(dcOwlet()) << "Sending get platform information request...";
         int id = client->sendCommand("Platform.GetInformation");

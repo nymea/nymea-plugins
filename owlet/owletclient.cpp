@@ -9,6 +9,8 @@ OwletClient::OwletClient(OwletTransport *transport, QObject *parent) :
     QObject(parent),
     m_transport(transport)
 {
+    transport->setParent(this);
+
     connect(m_transport, &OwletTransport::dataReceived, this, &OwletClient::dataReceived);
     connect(m_transport, &OwletTransport::error, this, &OwletClient::error);
     connect(m_transport, &OwletTransport::connectedChanged, this, [=](bool isConnected){
