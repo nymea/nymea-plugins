@@ -1422,7 +1422,7 @@
                 },
                 {
                     "id": "c3123967-f741-4fe1-a0d4-9a3e405d7e52",
-                    "name": "smartMeter",
+                    "name": "impulseSmartMeter",
                     "displayName": "Impulse based energy meter",
                     "createMethods": ["user"],
                     "interfaces": ["smartmeterconsumer"],
@@ -1476,6 +1476,37 @@
                             "defaultValue": false,
                             "writable": true,
                             "ioType": "digitalOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "c26478b3-dd64-445f-9859-8ef816025cb9",
+                    "name": "smartMeterConsumer",
+                    "displayName": "Generic smart meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["smartmeterconsumer"],
+                    "stateTypes": [
+                        {
+                            "id": "5a083458-e476-487d-ab8f-75e92cf16489",
+                            "name": "currentPower",
+                            "displayName": "Current Power usage",
+                            "displayNameEvent": "Current Power usage changed",
+                            "displayNameAction": "Set current power usage",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "Watt",
+                            "writable": true
+                        },
+                        {
+                            "id": "ba10ef2c-e41f-4de2-a620-dff2ec5f025a",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy",
+                            "displayNameEvent": "Energy changed",
+                            "displayNameAction": "Set total consumed energy",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "KiloWattHour",
+                            "writable": true
                         }
                     ]
                 },

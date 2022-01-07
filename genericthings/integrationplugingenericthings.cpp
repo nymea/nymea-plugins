@@ -181,26 +181,31 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 }
             }
         });
-    } else if (thing->thingClassId() == smartMeterThingClassId) {
+    } else if (thing->thingClassId() == impulseSmartMeterThingClassId) {
 
         QTimer* smartMeterTimer = new QTimer(this);
-        int timeframe = thing->setting(smartMeterSettingsImpulseTimeframeParamTypeId).toInt();
+        int timeframe = thing->setting(impulseSmartMeterSettingsImpulseTimeframeParamTypeId).toInt();
         smartMeterTimer->setInterval(timeframe * 1000);
         m_smartMeterTimer.insert(thing, smartMeterTimer);
         smartMeterTimer->start();
         connect(thing, &Thing::settingChanged, smartMeterTimer, [smartMeterTimer] (const ParamTypeId &paramTypeId, const QVariant &value) {
-            if (paramTypeId == smartMeterSettingsImpulseTimeframeParamTypeId) {
+            if (paramTypeId == impulseSmartMeterSettingsImpulseTimeframeParamTypeId) {
                 smartMeterTimer->setInterval(value.toInt() * 1000);
             }
         });
 
         connect(smartMeterTimer, &QTimer::timeout, thing, [this, smartMeterTimer, thing] {
-            double impulsePerKwh = thing->setting(smartMeterSettingsImpulsePerKwhParamTypeId).toDouble();
+            double impulsePerKwh = thing->setting(impulseSmartMeterSettingsImpulsePerKwhParamTypeId).toDouble();
             int interval = smartMeterTimer->interval()/1000;
             double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(interval/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
-            thing->setStateValue(smartMeterCurrentPowerStateTypeId, power*1000);
+            thing->setStateValue(impulseSmartMeterCurrentPowerStateTypeId, power*1000);
             m_pulsesPerTimeframe.insert(thing, 0);
         });
+
+    } else if (thing->thingClassId() == smartMeterConsumerThingClassId) {
+
+
+
     } else if (thing->thingClassId() == extendedStatefulGaragedoorThingClassId) {
         uint openingDuration = thing->setting(extendedStatefulGaragedoorSettingsOpeningDurationParamTypeId).toUInt();
         QTimer* timer = new QTimer(this);
@@ -735,18 +740,28 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
-    } else if (thing->thingClassId() == smartMeterThingClassId) {
-        if (action.actionTypeId() == smartMeterImpulseInputActionTypeId) {
-            bool value = info->action().param(smartMeterImpulseInputActionImpulseInputParamTypeId).value().toBool();
-            thing->setStateValue(smartMeterImpulseInputStateTypeId, value);
-            int impulsePerKwh = info->thing()->setting(smartMeterSettingsImpulsePerKwhParamTypeId).toInt();
+    } else if (thing->thingClassId() == impulseSmartMeterThingClassId) {
+        if (action.actionTypeId() == impulseSmartMeterImpulseInputActionTypeId) {
+            bool value = info->action().param(impulseSmartMeterImpulseInputActionImpulseInputParamTypeId).value().toBool();
+            thing->setStateValue(impulseSmartMeterImpulseInputStateTypeId, value);
+            int impulsePerKwh = info->thing()->setting(impulseSmartMeterSettingsImpulsePerKwhParamTypeId).toInt();
             if (value) {
-                double currentEnergy = thing->stateValue(smartMeterTotalEnergyConsumedStateTypeId).toDouble();
-                thing->setStateValue(smartMeterTotalEnergyConsumedStateTypeId ,currentEnergy + (1.00/impulsePerKwh));
+                double currentEnergy = thing->stateValue(impulseSmartMeterTotalEnergyConsumedStateTypeId).toDouble();
+                thing->setStateValue(impulseSmartMeterTotalEnergyConsumedStateTypeId ,currentEnergy + (1.00/impulsePerKwh));
                 m_pulsesPerTimeframe[thing]++;
             }
             info->finish(Thing::ThingErrorNoError);
             return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else if (thing->thingClassId() == smartMeterConsumerThingClassId) {
+        if (action.actionTypeId() == smartMeterConsumerCurrentPowerActionTypeId) {
+            thing->setStateValue(smartMeterConsumerCurrentPowerStateTypeId, action.paramValue(smartMeterConsumerCurrentPowerActionCurrentPowerParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == smartMeterConsumerTotalEnergyConsumedActionTypeId) {
+            thing->setStateValue(smartMeterConsumerTotalEnergyConsumedStateTypeId, action.paramValue(smartMeterConsumerTotalEnergyConsumedActionTotalEnergyConsumedParamTypeId));
+            info->finish(Thing::ThingErrorNoError);
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
@@ -961,9 +976,7 @@ void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
         m_extendedBlindTargetPercentage.remove(thing);
         m_venetianBlindAngleTimer.take(thing)->deleteLater();
         m_venetianBlindTargetAngle.remove(thing);
-    } else if (thing->thingClassId() == smartMeterThingClassId) {
-        m_pulsesPerTimeframe.remove(thing);
-    } else if (thing->thingClassId() == smartMeterThingClassId) {
+    } else if (thing->thingClassId() == impulseSmartMeterThingClassId) {
         m_smartMeterTimer.take(thing)->deleteLater();
         m_pulsesPerTimeframe.remove(thing);
     }
