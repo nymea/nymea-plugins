@@ -671,6 +671,10 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
 {
     if (info->thing()->thingClassId() == digitalOutputThingClassId) {
         OwletClient *client = m_clients.value(info->thing());
+        if (!client->isConnected()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Owlet is not connected."));
+            return;
+        }
         QVariantMap params;
         params.insert("id", info->thing()->paramValue(digitalOutputThingPinParamTypeId).toInt());
         params.insert("power", info->action().paramValue(digitalOutputPowerActionPowerParamTypeId).toBool());
@@ -689,12 +693,19 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
                 info->finish(Thing::ThingErrorHardwareFailure);
             }
         });
-
+        connect(client, &OwletClient::disconnected, info, [=](){
+            qCDebug(dcOwlet()) << "Owlet disconnected during pending action";
+            info->finish(Thing::ThingErrorHardwareFailure);
+        });
         return;
     }
 
     if (info->thing()->thingClassId() == ws2812ThingClassId) {
         OwletClient *client = m_clients.value(info->thing());
+        if (!client->isConnected()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Owlet is not connected."));
+            return;
+        }
         QVariantMap params;
         params.insert("id", info->thing()->paramValue(ws2812ThingPinParamTypeId).toUInt());
 
@@ -721,11 +732,17 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             qCDebug(dcOwlet()) << "reply from owlet:" << params;
             QString error = params.value("error").toString();
             if (error == "GPIOErrorNoError") {
+                info->thing()->setStateValue(info->action().actionTypeId(), info->action().paramValue(info->action().actionTypeId()));
                 info->finish(Thing::ThingErrorNoError);
             } else {
                 info->finish(Thing::ThingErrorHardwareFailure);
             }
         });
+        connect(client, &OwletClient::disconnected, info, [=](){
+            qCDebug(dcOwlet()) << "Owlet disconnected during pending action";
+            info->finish(Thing::ThingErrorHardwareFailure);
+        });
+
         return;
     }
 

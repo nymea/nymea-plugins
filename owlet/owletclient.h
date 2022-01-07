@@ -13,6 +13,8 @@ class OwletClient : public QObject
 public:
     explicit OwletClient(OwletTransport *transport, QObject *parent = nullptr);
 
+    bool isConnected() const;
+
     OwletTransport *transport() const;
 
     int sendCommand(const QString &method, const QVariantMap &params = QVariantMap());

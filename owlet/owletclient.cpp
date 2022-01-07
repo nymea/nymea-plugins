@@ -22,6 +22,11 @@ OwletClient::OwletClient(OwletTransport *transport, QObject *parent) :
     });
 }
 
+bool OwletClient::isConnected() const
+{
+    return m_transport->connected();
+}
+
 OwletTransport *OwletClient::transport() const
 {
     return m_transport;
