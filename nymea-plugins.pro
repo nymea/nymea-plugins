@@ -77,13 +77,6 @@ PLUGIN_DIRS = \
     wakeonlan           \
     wemo                \
     ws2812fx            \
-    zigbeedevelco       \
-    zigbeegeneric       \
-    zigbeegenericlights \
-    zigbeelumi          \
-    zigbeephilipshue    \
-    zigbeeremotes       \
-    zigbeetradfri       \
 
 
 message(============================================)
