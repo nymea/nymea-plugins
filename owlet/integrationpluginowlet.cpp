@@ -47,6 +47,7 @@
 
 IntegrationPluginOwlet::IntegrationPluginOwlet()
 {
+
 }
 
 void IntegrationPluginOwlet::init()
@@ -56,7 +57,9 @@ void IntegrationPluginOwlet::init()
     m_owletIdParamTypeMap.insert(ws2812ThingClassId, ws2812ThingOwletIdParamTypeId);
 
     m_owletSerialPortParamTypeMap.insert(arduinoUnoThingClassId, arduinoUnoThingSerialPortParamTypeId);
-    m_owletSerialPortParamTypeMap.insert(arduinoMiniProThingClassId, arduinoMiniProThingSerialPortParamTypeId);
+    m_owletSerialPortParamTypeMap.insert(arduinoNanoThingClassId, arduinoNanoThingSerialPortParamTypeId);
+    m_owletSerialPortParamTypeMap.insert(arduinoMiniPro5VThingClassId, arduinoMiniPro5VThingSerialPortParamTypeId);
+    m_owletSerialPortParamTypeMap.insert(arduinoMiniPro3VThingClassId, arduinoMiniPro3VThingSerialPortParamTypeId);
 
     m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_nymea-owlet._tcp");
 
@@ -89,36 +92,121 @@ void IntegrationPluginOwlet::init()
     m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA4ParamTypeId, 18);
     m_arduinoUnoPinMapping.insert(arduinoUnoSettingsPinA5ParamTypeId, 19);
 
-    // Arduino Mini Pro mapping
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin2ParamTypeId, 2);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin3ParamTypeId, 3);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin4ParamTypeId, 4);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin5ParamTypeId, 5);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin6ParamTypeId, 6);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin7ParamTypeId, 7);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin8ParamTypeId, 8);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin9ParamTypeId, 9);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin10ParamTypeId, 10);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin11ParamTypeId, 11);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin12ParamTypeId, 12);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPin13ParamTypeId, 13);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA1ParamTypeId, 15);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA2ParamTypeId, 16);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA3ParamTypeId, 17);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA4ParamTypeId, 18);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA5ParamTypeId, 19);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA6ParamTypeId, 20);
-    m_arduinoMiniProPinMapping.insert(arduinoMiniProSettingsPinA7ParamTypeId, 21);
+    // Arduino Mini Pro 5V mapping
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin2ParamTypeId, 2);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin3ParamTypeId, 3);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin4ParamTypeId, 4);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin5ParamTypeId, 5);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin6ParamTypeId, 6);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin7ParamTypeId, 7);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin8ParamTypeId, 8);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin9ParamTypeId, 9);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin10ParamTypeId, 10);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin11ParamTypeId, 11);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin12ParamTypeId, 12);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPin13ParamTypeId, 13);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA1ParamTypeId, 15);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA2ParamTypeId, 16);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA3ParamTypeId, 17);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA4ParamTypeId, 18);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA5ParamTypeId, 19);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA6ParamTypeId, 20);
+    m_arduinoMiniPro5VPinMapping.insert(arduinoMiniPro5VSettingsPinA7ParamTypeId, 21);
+
+    // Arduino Mini Pro 3.3V mapping
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin2ParamTypeId, 2);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin3ParamTypeId, 3);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin4ParamTypeId, 4);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin5ParamTypeId, 5);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin6ParamTypeId, 6);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin7ParamTypeId, 7);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin8ParamTypeId, 8);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin9ParamTypeId, 9);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin10ParamTypeId, 10);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin11ParamTypeId, 11);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin12ParamTypeId, 12);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPin13ParamTypeId, 13);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA1ParamTypeId, 15);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA2ParamTypeId, 16);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA3ParamTypeId, 17);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA4ParamTypeId, 18);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA5ParamTypeId, 19);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA6ParamTypeId, 20);
+    m_arduinoMiniPro3VPinMapping.insert(arduinoMiniPro3VSettingsPinA7ParamTypeId, 21);
+
+    // Arduino Nano
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin0ParamTypeId, 0);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin1ParamTypeId, 1);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin2ParamTypeId, 2);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin3ParamTypeId, 3);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin4ParamTypeId, 4);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin5ParamTypeId, 5);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin6ParamTypeId, 6);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin7ParamTypeId, 7);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin8ParamTypeId, 8);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin9ParamTypeId, 9);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin10ParamTypeId, 10);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin11ParamTypeId, 11);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin12ParamTypeId, 12);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPin13ParamTypeId, 13);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA0ParamTypeId, 14);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA1ParamTypeId, 15);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA2ParamTypeId, 16);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA3ParamTypeId, 17);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA4ParamTypeId, 18);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA5ParamTypeId, 19);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA6ParamTypeId, 20);
+    m_arduinoNanoPinMapping.insert(arduinoNanoSettingsPinA7ParamTypeId, 21);
 }
 
 void IntegrationPluginOwlet::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (info->thingClassId() == arduinoMiniProThingClassId) {
+    if (info->thingClassId() == arduinoMiniPro5VThingClassId) {
         // Discover serial ports for arduino bords
         foreach(const QSerialPortInfo &port, QSerialPortInfo::availablePorts()) {
             qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation() << port.description() << port.serialNumber();
             QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
-            ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Pro Mini Owlet", description);
+            ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Pro Mini 5V Owlet", description);
+            ParamList parameters;
+
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(m_owletSerialPortParamTypeMap.value(info->thingClassId())).toString() == port.systemLocation()) {
+                    thingDescriptor.setThingId(existingThing->id());
+                    break;
+                }
+            }
+
+            parameters.append(Param(m_owletSerialPortParamTypeMap.value(info->thingClassId()), port.systemLocation()));
+            thingDescriptor.setParams(parameters);
+            info->addThingDescriptor(thingDescriptor);
+        }
+        info->finish(Thing::ThingErrorNoError);
+    } else if (info->thingClassId() == arduinoMiniPro3VThingClassId) {
+        // Discover serial ports for arduino bords
+        foreach(const QSerialPortInfo &port, QSerialPortInfo::availablePorts()) {
+            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation() << port.description() << port.serialNumber();
+            QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
+            ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Pro Mini 3.3V Owlet", description);
+            ParamList parameters;
+
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(m_owletSerialPortParamTypeMap.value(info->thingClassId())).toString() == port.systemLocation()) {
+                    thingDescriptor.setThingId(existingThing->id());
+                    break;
+                }
+            }
+
+            parameters.append(Param(m_owletSerialPortParamTypeMap.value(info->thingClassId()), port.systemLocation()));
+            thingDescriptor.setParams(parameters);
+            info->addThingDescriptor(thingDescriptor);
+        }
+        info->finish(Thing::ThingErrorNoError);
+    } else if (info->thingClassId() == arduinoNanoThingClassId) {
+        // Discover serial ports for arduino bords
+        foreach(const QSerialPortInfo &port, QSerialPortInfo::availablePorts()) {
+            qCDebug(dcOwlet()) << "Found serial port" << port.systemLocation() << port.description() << port.serialNumber();
+            QString description = port.systemLocation() + " " + port.manufacturer() + " " + port.description();
+            ThingDescriptor thingDescriptor(info->thingClassId(), "Arduino Nano Owlet", description);
             ParamList parameters;
 
             foreach (Thing *existingThing, myThings()) {
@@ -173,9 +261,9 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (thing->thingClassId() == arduinoMiniProThingClassId) {
-        QString serialPort = thing->paramValue(arduinoMiniProThingSerialPortParamTypeId).toString();
-        qCDebug(dcOwlet()) << "Setup arduino mini pro owlet on" << serialPort;
+    if (thing->thingClassId() == arduinoUnoThingClassId) {
+        QString serialPort = thing->paramValue(arduinoUnoThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup Arduino UNO owlet on" << serialPort;
         OwletTransport *transport = new OwletSerialTransport(serialPort, 115200, this);
         OwletSerialClient *client = new OwletSerialClient(transport, transport);
 
@@ -193,7 +281,7 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         // Runtime
         connect(client, &OwletSerialClient::connected, thing, [=](){
             thing->setStateValue("connected", true);
-            thing->setStateValue(arduinoMiniProCurrentVersionStateTypeId, client->firmwareVersion());
+            thing->setStateValue(arduinoUnoCurrentVersionStateTypeId, client->firmwareVersion());
             foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
                 childThing->setStateValue("connected", true);
             }
@@ -207,8 +295,8 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         });
 
         connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
-            qCDebug(dcOwlet()) << "Arduino Mini Pro settings changed" << paramTypeId << value;
-            quint8 pinId = m_arduinoMiniProPinMapping.value(paramTypeId);
+            qCDebug(dcOwlet()) << "Arduino UNO settings changed" << paramTypeId << value;
+            quint8 pinId = m_arduinoUnoPinMapping.value(paramTypeId);
             OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
 
             // Check if we have a thing for this pin and if we need to remove it before setting up
@@ -248,10 +336,9 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         return;
     }
 
-
-    if (thing->thingClassId() == arduinoUnoThingClassId) {
-        QString serialPort = thing->paramValue(arduinoUnoThingSerialPortParamTypeId).toString();
-        qCDebug(dcOwlet()) << "Setup arduino uno owlet on" << serialPort;
+    if (thing->thingClassId() == arduinoNanoThingClassId) {
+        QString serialPort = thing->paramValue(arduinoNanoThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup Arduino Nano owlet on" << serialPort;
         OwletTransport *transport = new OwletSerialTransport(serialPort, 115200, this);
         OwletSerialClient *client = new OwletSerialClient(transport, transport);
 
@@ -269,7 +356,7 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         // Runtime
         connect(client, &OwletSerialClient::connected, thing, [=](){
             thing->setStateValue("connected", true);
-            thing->setStateValue(arduinoUnoCurrentVersionStateTypeId, client->firmwareVersion());
+            thing->setStateValue(arduinoNanoCurrentVersionStateTypeId, client->firmwareVersion());
             foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
                 childThing->setStateValue("connected", true);
             }
@@ -283,8 +370,158 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
         });
 
         connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
-            qCDebug(dcOwlet()) << "Arduino UNO settings changed" << paramTypeId << value;
-            quint8 pinId = m_arduinoUnoPinMapping.value(paramTypeId);
+            qCDebug(dcOwlet()) << "Arduino Nano settings changed" << paramTypeId << value;
+            quint8 pinId = m_arduinoNanoPinMapping.value(paramTypeId);
+            OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
+
+            // Check if we have a thing for this pin and if we need to remove it before setting up
+            Thing *existingThing = nullptr;
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                int existingPinId = childThing->paramValue(m_owletSerialPinParamTypeMap.value(childThing->thingClassId())).toUInt();
+                if (existingPinId == pinId) {
+                    qCDebug(dcOwlet()) << "Found already configured thing for pin" << pinId;
+                    existingThing = childThing;
+                    break;
+                }
+            }
+
+            if (existingThing) {
+                if ((pinMode == OwletSerialClient::PinModeDigitalOutput && existingThing->thingClassId() == digitalOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeDigitalInput && existingThing->thingClassId() == digitalInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogOutput && existingThing->thingClassId() == analogOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogInput && existingThing->thingClassId() == analogInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeServo && existingThing->thingClassId() == servoSerialThingClassId)) {
+
+                    qCDebug(dcOwlet()) << "Thing for pin" << pinId << "is already configured as" << pinMode;
+                    return;
+                } else {
+                    qCDebug(dcOwlet()) << "Have thing for pin" << pinId << "but should be configured as" << pinMode;
+                    qCDebug(dcOwlet()) << "Remove existing thing before setup a new one";
+                    emit autoThingDisappeared(existingThing->id());
+                }
+            }
+
+            setupArduinoChildThing(client, pinId, pinMode);
+        });
+
+        m_serialClients.insert(thing, client);
+        info->finish(Thing::ThingErrorNoError);
+
+        client->transport()->connectTransport();
+        return;
+    }
+
+    if (thing->thingClassId() == arduinoMiniPro5VThingClassId) {
+        QString serialPort = thing->paramValue(arduinoMiniPro5VThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup Arduino Mini Pro 5V owlet on" << serialPort;
+        OwletTransport *transport = new OwletSerialTransport(serialPort, 115200, this);
+        OwletSerialClient *client = new OwletSerialClient(transport, transport);
+
+        // During setup
+        connect(client, &OwletSerialClient::connected, info, [=](){
+            qCDebug(dcOwlet()) << "Connected to serial owlet" << client->firmwareVersion();
+            thing->setStateValue("connected", true);
+        });
+
+        connect(client, &OwletSerialClient::error, info, [=](){
+            //info->finish(Thing::ThingErrorHardwareFailure);
+            transport->deleteLater();
+        });
+
+        // Runtime
+        connect(client, &OwletSerialClient::connected, thing, [=](){
+            thing->setStateValue("connected", true);
+            thing->setStateValue(arduinoMiniPro5VCurrentVersionStateTypeId, client->firmwareVersion());
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", true);
+            }
+        });
+
+        connect(client, &OwletSerialClient::disconnected, thing, [=](){
+            thing->setStateValue("connected", false);
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", false);
+            }
+        });
+
+        connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+            qCDebug(dcOwlet()) << "Arduino Mini Pro 5V settings changed" << paramTypeId << value;
+            quint8 pinId = m_arduinoMiniPro5VPinMapping.value(paramTypeId);
+            OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
+
+            // Check if we have a thing for this pin and if we need to remove it before setting up
+            Thing *existingThing = nullptr;
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                int existingPinId = childThing->paramValue(m_owletSerialPinParamTypeMap.value(childThing->thingClassId())).toUInt();
+                if (existingPinId == pinId) {
+                    qCDebug(dcOwlet()) << "Found already configured thing for pin" << pinId;
+                    existingThing = childThing;
+                    break;
+                }
+            }
+
+            if (existingThing) {
+                if ((pinMode == OwletSerialClient::PinModeDigitalOutput && existingThing->thingClassId() == digitalOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeDigitalInput && existingThing->thingClassId() == digitalInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogOutput && existingThing->thingClassId() == analogOutputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeAnalogInput && existingThing->thingClassId() == analogInputSerialThingClassId) ||
+                        (pinMode == OwletSerialClient::PinModeServo && existingThing->thingClassId() == servoSerialThingClassId)) {
+
+                    qCDebug(dcOwlet()) << "Thing for pin" << pinId << "is already configured as" << pinMode;
+                    return;
+                } else {
+                    qCDebug(dcOwlet()) << "Have thing for pin" << pinId << "but should be configured as" << pinMode;
+                    qCDebug(dcOwlet()) << "Remove existing thing before setup a new one";
+                    emit autoThingDisappeared(existingThing->id());
+                }
+            }
+
+            setupArduinoChildThing(client, pinId, pinMode);
+        });
+
+        m_serialClients.insert(thing, client);
+        info->finish(Thing::ThingErrorNoError);
+
+        client->transport()->connectTransport();
+        return;
+    }
+
+    if (thing->thingClassId() == arduinoMiniPro3VThingClassId) {
+        QString serialPort = thing->paramValue(arduinoMiniPro3VThingSerialPortParamTypeId).toString();
+        qCDebug(dcOwlet()) << "Setup Arduino Mini Pro 3.3V owlet on" << serialPort;
+        OwletTransport *transport = new OwletSerialTransport(serialPort, 115200, this);
+        OwletSerialClient *client = new OwletSerialClient(transport, transport);
+
+        // During setup
+        connect(client, &OwletSerialClient::connected, info, [=](){
+            qCDebug(dcOwlet()) << "Connected to serial owlet" << client->firmwareVersion();
+            thing->setStateValue("connected", true);
+        });
+
+        connect(client, &OwletSerialClient::error, info, [=](){
+            //info->finish(Thing::ThingErrorHardwareFailure);
+            transport->deleteLater();
+        });
+
+        // Runtime
+        connect(client, &OwletSerialClient::connected, thing, [=](){
+            thing->setStateValue("connected", true);
+            thing->setStateValue(arduinoMiniPro3VCurrentVersionStateTypeId, client->firmwareVersion());
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", true);
+            }
+        });
+
+        connect(client, &OwletSerialClient::disconnected, thing, [=](){
+            thing->setStateValue("connected", false);
+            foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                childThing->setStateValue("connected", false);
+            }
+        });
+
+        connect(thing, &Thing::settingChanged, thing, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+            qCDebug(dcOwlet()) << "Arduino Mini Pro 3.3V settings changed" << paramTypeId << value;
+            quint8 pinId = m_arduinoMiniPro3VPinMapping.value(paramTypeId);
             OwletSerialClient::PinMode pinMode = getPinModeFromSettingsValue(value.toString());
 
             // Check if we have a thing for this pin and if we need to remove it before setting up
@@ -746,30 +983,6 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (info->thing()->thingClassId() == arduinoMiniProThingClassId) {
-        OwletSerialClient *client = m_serialClients.value(info->thing());
-        if (!client) {
-            qCWarning(dcOwlet()) << "Could not execute action. There is no client available for this thing";
-            info->finish(Thing::ThingErrorHardwareFailure);
-            return;
-        }
-
-        if (!client->isReady()) {
-            qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
-            info->finish(Thing::ThingErrorHardwareNotAvailable);
-            return;
-        }
-        if (info->action().actionTypeId() == arduinoMiniProPerformUpdateActionTypeId) {
-            qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
-            //if (client->firmwareVersion() != )
-
-            // TODO: run upgrade process using avrdude
-
-            info->finish(Thing::ThingErrorNoError);
-            return;
-        }
-    }
-
     if (info->thing()->thingClassId() == arduinoUnoThingClassId) {
         OwletSerialClient *client = m_serialClients.value(info->thing());
         if (!client) {
@@ -784,6 +997,78 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
             return;
         }
         if (info->action().actionTypeId() == arduinoUnoPerformUpdateActionTypeId) {
+            qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
+            //if (client->firmwareVersion() != )
+
+            // TODO: run upgrade process using avrdude
+
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
+    if (info->thing()->thingClassId() == arduinoNanoThingClassId) {
+        OwletSerialClient *client = m_serialClients.value(info->thing());
+        if (!client) {
+            qCWarning(dcOwlet()) << "Could not execute action. There is no client available for this thing";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        if (!client->isReady()) {
+            qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        if (info->action().actionTypeId() == arduinoNanoPerformUpdateActionTypeId) {
+            qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
+            //if (client->firmwareVersion() != )
+
+            // TODO: run upgrade process using avrdude
+
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
+    if (info->thing()->thingClassId() == arduinoMiniPro5VThingClassId) {
+        OwletSerialClient *client = m_serialClients.value(info->thing());
+        if (!client) {
+            qCWarning(dcOwlet()) << "Could not execute action. There is no client available for this thing";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        if (!client->isReady()) {
+            qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        if (info->action().actionTypeId() == arduinoMiniPro5VPerformUpdateActionTypeId) {
+            qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
+            //if (client->firmwareVersion() != )
+
+            // TODO: run upgrade process using avrdude
+
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
+    if (info->thing()->thingClassId() == arduinoMiniPro3VThingClassId) {
+        OwletSerialClient *client = m_serialClients.value(info->thing());
+        if (!client) {
+            qCWarning(dcOwlet()) << "Could not execute action. There is no client available for this thing";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        if (!client->isReady()) {
+            qCWarning(dcOwlet()) << "Could not execute action. The serial client is not ready or connected.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        if (info->action().actionTypeId() == arduinoMiniPro3VPerformUpdateActionTypeId) {
             qCDebug(dcOwlet()) << "Perform firmware update on" << info->thing();
             //if (client->firmwareVersion() != )
 
@@ -954,7 +1239,13 @@ void IntegrationPluginOwlet::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginOwlet::thingRemoved(Thing *thing)
 {
-    if (thing->thingClassId() == arduinoMiniProThingClassId && m_serialClients.contains(thing)) {
+    if (thing->thingClassId() == arduinoMiniPro5VThingClassId && m_serialClients.contains(thing)) {
+        m_serialClients.take(thing)->deleteLater();
+    } else if (thing->thingClassId() == arduinoMiniPro3VThingClassId && m_serialClients.contains(thing)) {
+        m_serialClients.take(thing)->deleteLater();
+    } else if (thing->thingClassId() == arduinoUnoThingClassId && m_serialClients.contains(thing)) {
+        m_serialClients.take(thing)->deleteLater();
+    } else if (thing->thingClassId() == arduinoNanoThingClassId && m_serialClients.contains(thing)) {
         m_serialClients.take(thing)->deleteLater();
     }
 }
@@ -1087,8 +1378,12 @@ QString IntegrationPluginOwlet::getPinName(Thing *parent, quint8 pinId)
 {
     if (parent->thingClassId() == arduinoUnoThingClassId) {
         return parent->thingClass().settingsTypes().findById(m_arduinoUnoPinMapping.key(pinId)).displayName();
-    } else if (parent->thingClassId() == arduinoMiniProThingClassId) {
-        return parent->thingClass().settingsTypes().findById(m_arduinoMiniProPinMapping.key(pinId)).displayName();
+    } else if (parent->thingClassId() == arduinoMiniPro5VThingClassId) {
+        return parent->thingClass().settingsTypes().findById(m_arduinoMiniPro5VPinMapping.key(pinId)).displayName();
+    } else if (parent->thingClassId() == arduinoMiniPro3VThingClassId) {
+        return parent->thingClass().settingsTypes().findById(m_arduinoMiniPro3VPinMapping.key(pinId)).displayName();
+    } else if (parent->thingClassId() == arduinoNanoThingClassId) {
+        return parent->thingClass().settingsTypes().findById(m_arduinoNanoPinMapping.key(pinId)).displayName();
     }
 
     return QString();

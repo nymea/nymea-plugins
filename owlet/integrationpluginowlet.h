@@ -68,7 +68,9 @@ private:
     QHash<ThingClassId, ParamTypeId> m_owletSerialPinParamTypeMap;
 
     QHash<ParamTypeId, quint8> m_arduinoUnoPinMapping;
-    QHash<ParamTypeId, quint8> m_arduinoMiniProPinMapping;
+    QHash<ParamTypeId, quint8> m_arduinoMiniPro5VPinMapping;
+    QHash<ParamTypeId, quint8> m_arduinoMiniPro3VPinMapping;
+    QHash<ParamTypeId, quint8> m_arduinoNanoPinMapping;
     OwletSerialClient::PinMode getPinModeFromSettingsValue(const QString &settingsValue);
 
     void setupArduinoChildThing(OwletSerialClient *client, quint8 pinId, OwletSerialClient::PinMode pinMode);
