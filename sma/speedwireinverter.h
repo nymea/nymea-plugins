@@ -184,7 +184,7 @@ private:
     void processInverterStatusResponse(const QByteArray &response);
 
     void readUntilEndOfMeasurement(QDataStream &stream);
-    double readValue(quint32 value, double divisor);
+    double readValue(quint32 value, double divisor = 1.0);
 
     void setReachable(bool reachable);
 

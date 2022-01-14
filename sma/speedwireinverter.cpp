@@ -739,7 +739,7 @@ void SpeedwireInverter::processAcTotalPowerResponse(const QByteArray &response)
         if (measurementId == 0x263f00 && measurmentNumber == 0x01) {
             quint32 totalAcPower;
             stream >> totalAcPower;
-            m_totalAcPower = readValue(totalAcPower, 1000.0);
+            m_totalAcPower = readValue(totalAcPower);
             qCDebug(dcSma()) << "Inverter: Total AC power" << m_totalAcPower << "W";
             readUntilEndOfMeasurement(stream);
         }
@@ -788,13 +788,13 @@ void SpeedwireInverter::processDcPowerResponse(const QByteArray &response)
         if (measurementId == 0x251e00 && measurmentNumber == 0x01) {
             quint32 powerMpp1;
             stream >> powerMpp1;
-            m_powerDcMpp1 = readValue(powerMpp1, 1000.0);
+            m_powerDcMpp1 = readValue(powerMpp1);
             qCDebug(dcSma()) << "Inverter: DC power MPP1" << m_powerDcMpp1 << "W";
             readUntilEndOfMeasurement(stream);
         } else if (measurementId == 0x251e00 && measurmentNumber == 0x02) {
             quint32 powerMpp2;
             stream >> powerMpp2;
-            m_powerDcMpp2 = readValue(powerMpp2, 1000.0);
+            m_powerDcMpp2 = readValue(powerMpp2);
             qCDebug(dcSma()) << "Inverter: DC power MPP2" << m_powerDcMpp2 << "W";
             readUntilEndOfMeasurement(stream);
         }
