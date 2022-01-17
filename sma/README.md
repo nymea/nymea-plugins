@@ -5,6 +5,10 @@ nymea plug-in for SMA solar equipment.
 ## Supported Things
 
 * Sunny WebBox
+* SMA speedwire Meters
+* SMA speedwire Inverters
+
+> Note: the SMA battery equipment is still missing due to testing possibilities. Will be added as soon someone can with the apropriate setup.
 
 ## Requirements
 
