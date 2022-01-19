@@ -105,9 +105,6 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     if (thing->thingClassId() == goeHomeThingClassId) {
-
-        // TODO: handle reconfigure
-
         QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [=](){
@@ -129,6 +126,13 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
             QVariantMap statusMap = jsonDoc.toVariant().toMap();
             if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+
+                // Handle reconfigure
+                if (m_channels.contains(thing)) {
+                    hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
+                    // Continue with normal setup
+                }
+
                 // Verify mqtt client and set it up
                 qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
                 QHostAddress address = QHostAddress(thing->paramValue(goeHomeThingIpAddressParamTypeId).toString());
@@ -151,13 +155,11 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == goeHomeThingClassId) {
         // Set up refresh timer if needed and if we are not using mqtt
-        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
-            if (!m_refreshTimer) {
-                m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(4);
-                connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
-                m_refreshTimer->start();
-                qCDebug(dcGoECharger()) << "Enable HTTP refresh timer...";
-            }
+        if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool() && !m_refreshTimer) {
+            qCDebug(dcGoECharger()) << "Enabling HTTP refresh timer...";
+            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(4);
+            connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
+            m_refreshTimer->start();
         }
     }
 }
@@ -167,6 +169,11 @@ void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
     // Cleanup mqtt channels if set up
     if (m_channels.contains(thing)) {
         hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
+    }
+
+    // Cleanup possible pending replies
+    if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing)) {
+        m_pendingReplies.take(thing)->abort();
     }
 
     // Clean up refresh timer if set up
@@ -210,36 +217,30 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         qCDebug(dcGoECharger()) << "Setting max charging current to" << maxChargingCurrent << "A";
         // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
         // Maybe check if the user sets it or a automatism
-        // Set the allow value
         QString configuration = QString("amp=%1").arg(maxChargingCurrent);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeAbsoluteMaxAmpereActionTypeId) {
         uint maxAmpere = action.paramValue(goeHomeAbsoluteMaxAmpereActionAbsoluteMaxAmpereParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Setting absolute maximal charging amperes to" << maxAmpere << "A";
-        // TODO: use amx if available
-        // Set the allow value
         QString configuration = QString("ama=%1").arg(maxAmpere);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeCloudActionTypeId) {
         bool enabled = action.paramValue(goeHomeCloudActionCloudParamTypeId).toBool();
         qCDebug(dcGoECharger()) << "Set cloud" << (enabled ? "enabled" : "disabled");
-        // Set the allow value
         QString configuration = QString("cdi=%1").arg(enabled ? 1: 0);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeLedBrightnessActionTypeId) {
         quint8 brightness = action.paramValue(goeHomeLedBrightnessActionLedBrightnessParamTypeId).toUInt();
         qCDebug(dcGoECharger()) << "Set led brightnss to" << brightness << "/" << 255;
-        // Set the allow value
         QString configuration = QString("lbr=%1").arg(brightness);
         sendActionRequest(thing, info, configuration);
         return;
     } else if (action.actionTypeId() == goeHomeLedEnergySaveActionTypeId) {
         bool enabled = action.paramValue(goeHomeLedEnergySaveActionLedEnergySaveParamTypeId).toBool();
         qCDebug(dcGoECharger()) << "Set led energy saving" << (enabled ? "enabled" : "disabled");
-        // Set the allow value
         QString configuration = QString("lse=%1").arg(enabled ? 1: 0);
         sendActionRequest(thing, info, configuration);
         return;
@@ -682,10 +683,20 @@ void IntegrationPluginGoECharger::refreshHttp()
 
         // Poll thing which if not using mqtt
         if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+
+            // Make sure there is not a request pending for this thing, otherwise wait for the next refresh
+            if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing))
+                continue;
+
             qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing;
             QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+            m_pendingReplies.insert(thing, reply);
+
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, thing, [=](){
+                // We are done with this thing reply
+                m_pendingReplies.remove(thing);
+
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
                     thing->setStateValue(goeHomeConnectedStateTypeId, false);
