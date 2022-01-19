@@ -107,7 +107,8 @@
                             "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": ""
                         },
                         {
                             "id": "7c81a0c5-9bc6-43bb-a01a-4de5fe656bba",
@@ -115,7 +116,8 @@
                             "displayName": "Serial number",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": ""
                         },
                         {
                             "id": "abdc114d-1fac-4454-8b82-871ed5cdf28c",
@@ -123,7 +125,8 @@
                             "displayName": "Model ID",
                             "type": "uint",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
@@ -328,7 +331,8 @@
                             "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": ""
                         },
                         {
                             "id": "e42242b4-2811-47f9-b42b-b150ed233217",
@@ -336,7 +340,8 @@
                             "displayName": "Serial number",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": ""
                         },
                         {
                             "id": "d9892f74-5b93-4c98-8da2-72aca033273a",
@@ -344,7 +349,8 @@
                             "displayName": "Model ID",
                             "type": "uint",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": 0
                         }
                     ],
                     "stateTypes": [
