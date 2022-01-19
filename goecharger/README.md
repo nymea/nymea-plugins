@@ -2,8 +2,11 @@
 
 nymea plugin for go-eCharger smart wallbox for electic vehicles.
 
-Once you connect to the go-eCharger, nymea will configure the wallbox to use MQTT and send information to nymea.
-Please make sure no other service is using the custom MQTT server in the local network, otherwise they will exclude each other, depending who comes first.
+If you are using other services like the original goe app to communicate with the wallbox, disable MQTT during the setup in order to make sure 
+all services are able to communicate with the wallbox. There is no support for multiple MQTT clients on the device and therefore nymea defaults to HTTP
+to prevent constant reconfiguration trough the clients.
+
+The prefered way of communicating would be MQTT, default is HTTP. 
 
 ## Supported Things
 
