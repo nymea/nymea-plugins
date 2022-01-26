@@ -35,6 +35,8 @@
 
 #include "extern-plugininfo.h"
 
+#include <QHostAddress>
+
 class ZeroConfServiceBrowser;
 class PluginTimer;
 
@@ -55,6 +57,7 @@ public:
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
@@ -64,16 +67,18 @@ private slots:
     void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
 
     void updateStatus();
+    void reconfigureUnconnected();
 
 private:
     void setupShellyGateway(ThingSetupInfo *info);
     void setupShellyChild(ThingSetupInfo *info);
 
-    QString getIP(Thing *thing) const;
+    QHostAddress getIP(Thing *thing) const;
 
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
-    PluginTimer *m_timer = nullptr;
+    PluginTimer *m_statusUpdateTimer = nullptr;
+    PluginTimer *m_reconfigureTimer = nullptr;
 
     QHash<Thing*, MqttChannel*> m_mqttChannels;
 };
