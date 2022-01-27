@@ -1,8 +1,8 @@
 {
     "title": "Command Launcher",
-    "tagline": "Launch local commands or bash scripts.",
+    "tagline": "Launch local commands or scripts.",
     "icon": "commandlauncher.svg",
-    "stability": "consumer",
+    "stability": "community",
     "offline": true,
     "technologies": [
     ],

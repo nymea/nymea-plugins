@@ -3,9 +3,10 @@
     "tagline": "Calculate the current angle to the sun",
     "icon": "sunpos.svg",
     "stability": "consumer",
-    "offline": false,
+    "offline": true,
     "technologies": [
     ],
     "categories": [
+        "tool"
     ]
 }

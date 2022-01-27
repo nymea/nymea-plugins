@@ -5,9 +5,9 @@
     "stability": "community",
     "offline": true,
     "technologies": [
+        "gpio"
     ],
     "categories": [
-        "sensor",
-        "tool"
+        "diy"
     ]
 }

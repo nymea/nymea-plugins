@@ -1,6 +1,6 @@
 {
     "title": "myStrom",
-    "tagline": "myStrom",
+    "tagline": "Use myStrom smart plugs to measure power consumption of devices.",
     "icon": "myStrom.png",
     "stability": "consumer",
     "offline": true,
@@ -8,7 +8,7 @@
         "network"
     ],
     "categories": [
-        "sensor",
-        "socket"
+        "energy",
+        "socket",
     ]
 }

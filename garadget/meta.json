@@ -1,6 +1,6 @@
 {
     "title": "Garadget",
-    "tagline": "Garadget",
+    "tagline": "Use Garadget garage door controllers with nymea.",
     "icon": "garadget.svg",
     "stability": "community",
     "offline": true,

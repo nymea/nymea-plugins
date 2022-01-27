@@ -1,6 +1,6 @@
 {
     "title": "LIFX",
-    "tagline": "Control LIFX light bulbs.",
+    "tagline": "Control LIFX light bulbs with nymea.",
     "icon": "lifx.png",
     "stability": "consumer",
     "offline": false,

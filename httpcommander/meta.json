@@ -1,6 +1,6 @@
 {
     "title": "HTTP Commander",
-    "tagline": "Send raw HTTP commands.",
+    "tagline": "Send HTTP commands to a 3rd party API or web service.",
     "icon": "httpcommander.svg",
     "stability": "consumer",
     "offline": true,

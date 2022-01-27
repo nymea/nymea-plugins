@@ -1,6 +1,6 @@
 {
     "title": "Philips Hue",
-    "tagline": "Connect and control Philips Hue devices.",
+    "tagline": "Connect and control Philips Hue devices via the Hue bridge.",
     "icon": "philipshue.png",
     "stability": "consumer",
     "offline": true,

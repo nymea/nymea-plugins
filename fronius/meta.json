@@ -2,7 +2,7 @@
     "title": "Fronius",
     "tagline": "Connect to Fronius Solar devices.",
     "icon": "fronius.png",
-    "stability": "community",
+    "stability": "consumer",
     "offline": true,
     "technologies": [
         "network"

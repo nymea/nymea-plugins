@@ -1,6 +1,6 @@
 {
     "title": "Bose",
-    "tagline": "Connect to Bose speaker.",
+    "tagline": "Connect to Bose speakers.",
     "icon": "bose.svg",
     "stability": "consumer",
     "offline": true,

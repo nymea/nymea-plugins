@@ -1,6 +1,6 @@
 {
     "title": "System Monitor",
-    "tagline": "Monitor nymea's resource consumption.",
+    "tagline": "Monitor nymeas resource consumption.",
     "icon": "systemmonitor.svg",
     "stability": "community",
     "offline": true,

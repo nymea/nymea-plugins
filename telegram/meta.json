@@ -1,8 +1,8 @@
 {
     "title": "Telegram",
-    "tagline": "Send notifictions to Telegram.",
+    "tagline": "Send messages to Telegram via a Telegram bot.",
     "icon": "telegram.svg",
-    "stability": "consumer",
+    "stability": "community",
     "offline": false,
     "technologies": [
         "cloud"

@@ -2,7 +2,7 @@
     "title": "mecElectronics",
     "tagline": "Measure electic energy using the mecmeter smart meter.",
     "icon": "mecelectronics.png",
-    "stability": "community",
+    "stability": "consumer",
     "offline": true,
     "technologies": [
         "network"

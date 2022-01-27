@@ -1,6 +1,6 @@
 {
     "title": "Keba",
-    "tagline": "Control Keba wallbox.",
+    "tagline": "Control wallboxes made by Keba.",
     "icon": "keba.svg",
     "stability": "consumer",
     "offline": true,

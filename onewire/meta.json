@@ -1,6 +1,6 @@
 {
     "title": "One-Wire",
-    "tagline": "Connect one-wire temperature sensors and switches.",
+    "tagline": "Connect one-wire based temperature sensors and switches.",
     "icon": "onewire.png",
     "stability": "community",
     "offline": true,
@@ -8,6 +8,7 @@
         "one-wire"
     ],
     "categories": [
-        "sensor"
+        "sensor",
+        "diy"
     ]
 }

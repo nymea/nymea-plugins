@@ -1,6 +1,6 @@
 {
     "title": "OpenUV",
-    "tagline": "Get UV data for your location",
+    "tagline": "Get UV data for your location.",
     "icon": "openuv.png",
     "stability": "consumer",
     "offline": false,

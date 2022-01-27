@@ -1,6 +1,6 @@
 {
     "title": "Remote SSH",
-    "tagline": "Get SSH access over a reverse SSH proxy.",
+    "tagline": "Shell access to the machine running nymea from anywhere via a reverse SSH proxy.",
     "icon": "remotessh.svg",
     "stability": "community",
     "offline": false,

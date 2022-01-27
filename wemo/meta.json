@@ -1,6 +1,6 @@
 {
     "title": "WeMo",
-    "tagline": "Control WeMo devices.",
+    "tagline": "Control WeMo power sockets devices.",
     "icon": "wemo.svg",
     "stability": "consumer",
     "offline": true,

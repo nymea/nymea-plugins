@@ -1,6 +1,6 @@
 {
     "title": "Where the ISS at",
-    "tagline": "Monitors the current ISS position.",
+    "tagline": "Monitor the current ISS position.",
     "icon": "iss.svg",
     "stability": "consumer",
     "offline": true,

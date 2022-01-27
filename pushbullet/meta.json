@@ -1,6 +1,6 @@
 {
     "title": "Pushbullet",
-    "tagline": "Send notifictions over Pushbullet.",
+    "tagline": "Send notifictions via Pushbullet.",
     "icon": "pushbullet.png",
     "stability": "consumer",
     "offline": false,

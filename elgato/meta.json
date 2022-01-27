@@ -1,6 +1,6 @@
 {
     "title": "Elgato",
-    "tagline": "Connect to Elgato devices.",
+    "tagline": "Connect to Elgato light bulbs.",
     "icon": "avea.png",
     "stability": "community",
     "offline": true,

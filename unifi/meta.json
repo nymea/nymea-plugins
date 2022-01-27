@@ -1,6 +1,6 @@
 {
     "title": "UniFi",
-    "tagline": "Connect to the UniFi controller.",
+    "tagline": "Connect to the UniFi controller and monitor connected devices.",
     "icon": "unifi.png",
     "stability": "consumer",
     "offline": true,

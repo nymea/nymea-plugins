@@ -1,6 +1,6 @@
 {
     "title": "Mail Notification",
-    "tagline": "Send E-Mails.",
+    "tagline": "Send notification E-Mails from nymea.",
     "icon": "mailnotification.svg",
     "stability": "consumer",
     "offline": false,

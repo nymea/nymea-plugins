@@ -1,6 +1,6 @@
 {
     "title": "Senic",
-    "tagline": "Connect to Nuimo over Bluetooth.",
+    "tagline": "Connect to the Senic Nuimo via Bluetooth.",
     "icon": "senic.png",
     "stability": "consumer",
     "offline": true,

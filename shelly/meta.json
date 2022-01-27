@@ -1,14 +1,18 @@
 {
     "title": "Shelly",
-    "tagline": "Control Shelly devices.",
+    "tagline": "USe Shelly devices with nymea.",
     "icon": "shelly.png",
     "stability": "consumer",
     "offline": true,
     "technologies": [
-        "network"
+        "network",
+        "mqtt"
     ],
     "categories": [
         "socket",
-        "relay"
+        "switch",
+        "light",
+        "sensor",
+        "energy"
     ]
 }

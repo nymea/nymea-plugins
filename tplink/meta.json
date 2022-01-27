@@ -1,6 +1,6 @@
 {
-    "title": "TP-Link",
-    "tagline": "TP-Link",
+    "title": "TP-Link Kasa",
+    "tagline": "Use TP-Link Kasa power sockets and switches with nymea.",
     "icon": "tplink.png",
     "stability": "community",
     "offline": true,
@@ -8,8 +8,8 @@
         "network"
     ],
     "categories": [
-        "sensor",
         "switch",
-        "socket"
+        "socket",
+        "energy"
     ]
 }

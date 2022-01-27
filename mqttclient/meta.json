@@ -1,14 +1,15 @@
 {
     "title": "MQTT client",
-    "tagline": "Send and receive raw MQTT messages",
+    "tagline": "Subscribe to the internal or an external MQTT broker and send and receive MQTT messages.",
     "icon": "mqtt.svg",
-    "stability": "consumer",
+    "stability": "community",
     "offline": true,
     "technologies": [
         "network",
         "mqtt"
     ],
     "categories": [
-        "tool"
+        "tool",
+        "diy"
     ]
 }

@@ -1,6 +1,6 @@
 {
     "title": "Tado",
-    "tagline": "Connect to you Tado account.",
+    "tagline": "Connect to your Tado account to interact with the heating setup.",
     "icon": "tado.png",
     "stability": "community",
     "offline": false,

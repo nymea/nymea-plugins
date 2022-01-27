@@ -1,6 +1,6 @@
 {
     "title": "dweet.io",
-    "tagline": "Get and push data to dweet.io",
+    "tagline": "Get data from and push data to dweet.io",
     "icon": "dweetio.png",
     "stability": "consumer",
     "offline": false,

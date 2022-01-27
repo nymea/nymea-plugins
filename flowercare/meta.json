@@ -1,6 +1,6 @@
 {
     "title": "Flower Care",
-    "tagline": "Flower Care.",
+    "tagline": "Use the Xiaomi Flower Care sensor with nymea.",
     "icon": "xiaomi.svg",
     "stability": "community",
     "offline": true,
