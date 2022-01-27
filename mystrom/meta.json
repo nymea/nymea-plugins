@@ -1,7 +1,7 @@
 {
     "title": "myStrom",
     "tagline": "myStrom",
-    "icon": "mystrom.png",
+    "icon": "myStrom.png",
     "stability": "consumer",
     "offline": true,
     "technologies": [
