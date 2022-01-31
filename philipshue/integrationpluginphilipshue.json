@@ -11,7 +11,7 @@
                 {
                     "id": "642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7",
                     "name": "bridge",
-                    "displayName": "Hue gateway",
+                    "displayName": "Philips Hue Bridge",
                     "interfaces": ["gateway", "update"],
                     "providedInterfaces": ["light", "button", "presencesensor", "powersocket"],
                     "createMethods": ["discovery"],
