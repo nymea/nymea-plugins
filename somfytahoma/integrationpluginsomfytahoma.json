@@ -91,7 +91,9 @@
                             "displayNameEvent": "Percentage changed",
                             "writable": true,
                             "displayNameAction": "Set percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "fa9446ba-da30-4d49-8fb6-f410ecc7dba0",
@@ -163,7 +165,9 @@
                             "displayNameEvent": "Percentage changed",
                             "writable": true,
                             "displayNameAction": "Set percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "079c7a80-8a1c-4fd7-b40c-6800120c70fb",
@@ -248,7 +252,9 @@
                             "displayNameEvent": "Percentage changed",
                             "writable": true,
                             "displayNameAction": "Set percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "07175175-f95d-4cd9-a398-9aab8232c2a9",
@@ -329,7 +335,9 @@
                             "displayNameEvent": "Percentage changed",
                             "writable": true,
                             "displayNameAction": "Set percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "2507ac5a-9658-42cb-80f6-73f673c32771",
