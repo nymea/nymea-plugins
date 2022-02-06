@@ -65,7 +65,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "68bf3780-8f7f-4ecb-8498-830e257c192c",
@@ -163,7 +164,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "a290c9ad-356c-4387-9d82-2bf522643e16",
@@ -206,7 +208,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         }
                     ],
                     "actionTypes": [
@@ -279,7 +282,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "0e47815d-0084-4a30-957a-f73ed100bed5",
@@ -322,7 +326,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         }
                     ],
                     "actionTypes": [
@@ -400,7 +405,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "8f544e5f-f200-47aa-82c4-46aa9838c96e",
@@ -503,7 +509,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "0f03f1f3-5575-4375-9889-499a172c66c4",
@@ -622,7 +629,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "d813b35f-e11e-4783-b3b3-dbecb956ffb5",
@@ -651,7 +659,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "ccec3806-cc48-42cf-94d7-811ff569d407",
@@ -738,7 +747,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "14abcd30-9db2-4065-ae81-501a55fbb145",
@@ -791,7 +801,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         },
                         {
                             "id": "3d22110c-db53-4420-8e0f-314555484926",
@@ -878,7 +889,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "e4a6ac87-31fb-4516-9cf3-f135621e902c",
@@ -910,7 +922,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         },
                         {
                             "id": "8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e",
@@ -1036,7 +1049,8 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "unit": "Percentage",
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "338355e5-9506-48b1-be86-757d69b34755",
@@ -1199,7 +1213,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "61e98cc9-4449-4fb2-818e-692303244ce2",
@@ -1371,7 +1386,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "15914ad5-816b-471c-996b-00160100f2bc",
@@ -1477,7 +1493,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "20f74d88-0683-4d3a-9513-6b29b5112b7b",
@@ -1542,7 +1559,8 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "unit": "Percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "67050a5a-cc78-4d11-a7d9-a9db528029ff",
@@ -1569,7 +1587,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "432ba180-936d-4700-907e-766264bfdd35",
@@ -1578,7 +1597,8 @@
                             "displayNameEvent": "Power usage (Phase A) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "50be490b-ba5d-4b1f-806c-9e15b915c1eb",
@@ -1586,7 +1606,8 @@
                             "displayName": "Power factor (Phase A)",
                             "displayNameEvent": "Power factor (Phase A) changed",
                             "type": "double",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "5fa79319-756b-4b2c-87b1-59ff996b8435",
@@ -1595,7 +1616,8 @@
                             "displayNameEvent": "Current (Phase A) changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "5977ffab-cdcf-409c-940b-aa0a59de84a5",
@@ -1604,7 +1626,9 @@
                             "displayNameEvent": "Voltage (Phase A) changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "ba25ef68-bb52-4e96-a8fb-137aae966104",
@@ -1631,7 +1655,8 @@
                             "displayNameEvent": "Power usage (Phase B) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "f56504bb-0c6c-4425-831c-771b23aadf19",
@@ -1639,7 +1664,8 @@
                             "displayName": "Power factor (Phase B)",
                             "displayNameEvent": "Power factor (Phase B) changed",
                             "type": "double",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "a4151601-fe77-418a-a2c1-6376e32da3bd",
@@ -1648,7 +1674,8 @@
                             "displayNameEvent": "Current (Phase B) changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "7c846993-fb06-48ef-987c-7b35d9671070",
@@ -1657,7 +1684,9 @@
                             "displayNameEvent": "Voltage (Phase B) changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "6636e6a0-e3ca-4654-9506-4302c4e8eed7",
@@ -1684,7 +1713,8 @@
                             "displayNameEvent": "Power usage (Phase C) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "2e2c622f-1575-4d0b-a0c0-78bc03748c1e",
@@ -1692,7 +1722,8 @@
                             "displayName": "Power factor (Phase C)",
                             "displayNameEvent": "Power factor (Phase C) changed",
                             "type": "double",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "ab78aa9c-aa73-4f5d-8d21-38c83c5e9e7c",
@@ -1701,7 +1732,8 @@
                             "displayNameEvent": "Current (Phase C) changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "cd7af1b2-d5f0-4c2e-b85c-84f23ae1fbb9",
@@ -1710,7 +1742,9 @@
                             "displayNameEvent": "Voltage (Phase C) changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "452c2159-aa2f-4217-80e5-4b492b69671e",
@@ -1851,7 +1885,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },                        {
                             "id": "a604a66c-3143-45ce-a6e3-17a339f428ab",
                             "name": "updateStatus",
@@ -1949,7 +1984,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "72d7dbba-757c-4b03-a092-1d3f374fa961",
@@ -2008,7 +2044,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "bd9480af-eec2-42d7-ab17-15715ee2e8e0",
@@ -2036,7 +2073,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         }
                     ]
                 },
@@ -2084,7 +2122,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "2ee5bfab-271e-4b95-9464-122a5208f1a5",
@@ -2142,7 +2181,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "e77d1c75-e856-46bc-9f38-36e59ed7849d",
@@ -2170,7 +2210,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         }
                     ]
                 },
@@ -2218,7 +2259,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "51e897b3-dd17-4df3-aa42-52b9bb5f0df8",
@@ -2276,7 +2318,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "d6adeab6-c91d-44ba-8d01-9b5b9b7368be",
@@ -2304,7 +2347,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         }
                     ]
                 },
@@ -2342,7 +2386,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "a7d88654-7503-474d-9a7c-02150d61a6dc",
@@ -2360,7 +2405,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "cached": false
                         },
                         {
                             "id": "2729d4e0-c38c-47b8-a0e8-26959090fe74",
