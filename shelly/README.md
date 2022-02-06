@@ -12,6 +12,7 @@ The currently supported devices are:
 * Shelly RGBW2
 * Shelly Dimmer / Dimmer 2
 * Shelly Button 1
+* Shelly EM
 * Shelly 3EM
 * Shelly H+T
 * Shelly i3
