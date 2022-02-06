@@ -51,6 +51,7 @@ def setupThing(info):
 def thingRemoved(thing):
     if len(myThings()) is 0:
         global pollTimer
+        del pollTimer
         pollTimer = None
 
 
