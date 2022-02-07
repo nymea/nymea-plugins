@@ -44,7 +44,7 @@
 
 #include "plugintimer.h"
 
-#include "math.h"
+#include "qmath.h"
 
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "platform/platformzeroconfcontroller.h"
@@ -335,7 +335,7 @@ static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
     {shellyGenericPMPowerActionTypeId, shellyGenericPMThingClassId},
     {shellyLightPMPowerActionTypeId, shellyLightPMThingClassId},
     {shellySocketPMPowerActionTypeId, shellySocketPMThingClassId},
-    {shellyEmPowerActionTypeId, shellyEmThingClassId}, // move power to switch child?
+    {shellyEmPowerActionTypeId, shellyEmThingClassId},
     {shellyEm3PowerActionTypeId, shellyEm3ThingClassId},
 };
 
@@ -350,7 +350,7 @@ static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
     {shellyGenericPMPowerActionTypeId, shellyGenericPMPowerActionPowerParamTypeId},
     {shellyLightPMPowerActionTypeId, shellyLightPMPowerActionPowerParamTypeId},
     {shellySocketPMPowerActionTypeId, shellySocketPMPowerActionPowerParamTypeId},
-    {shellyEmPowerActionTypeId, shellyEmPowerActionPowerParamTypeId}, // move power to switch child?
+    {shellyEmPowerActionTypeId, shellyEmPowerActionPowerParamTypeId},
     {shellyEm3PowerActionTypeId, shellyEm3PowerActionPowerParamTypeId},
 };
 
@@ -1140,7 +1140,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                     }
                     double power = child->stateValue(shellyEmChannelCurrentPowerPhaseAStateTypeId).toDouble();
                     double reactivePower = child->stateValue(shellyEmChannelReactivePowerPhaseAStateTypeId).toDouble();
-                    double root = sqrt(power*power + reactivePower*reactivePower);
+                    double root = qsqrt(power*power + reactivePower*reactivePower);
                     if (qFuzzyCompare(root, 0) == false) {
                         double calcPf = power/root;
                         child->setStateValue(shellyEmChannelPowerFactorPhaseAStateTypeId, calcPf);
@@ -1357,9 +1357,6 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 
             // Create 2 measurement channels for shelly em --> create separate switch child as well?
             if (info->thing()->thingClassId() == shellyEmThingClassId) {
-                /*ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
-                switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
-                autoChilds.append(switchChild);*/
                 ThingDescriptor channelChild(shellyEmChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
                 channelChild.setParams(ParamList() << Param(shellyEmChannelThingChannelParamTypeId, 1));
                 autoChilds.append(channelChild);
