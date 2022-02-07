@@ -337,6 +337,8 @@ static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
     {shellySocketPMPowerActionTypeId, shellySocketPMThingClassId},
     {shellyEmPowerActionTypeId, shellyEmThingClassId},
     {shellyEm3PowerActionTypeId, shellyEm3ThingClassId},
+    {shelly25Channel1ActionTypeId, shelly25ThingClassId},
+    {shelly25Channel2ActionTypeId, shelly25ThingClassId}
 };
 
 static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
@@ -352,6 +354,8 @@ static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
     {shellySocketPMPowerActionTypeId, shellySocketPMPowerActionPowerParamTypeId},
     {shellyEmPowerActionTypeId, shellyEmPowerActionPowerParamTypeId},
     {shellyEm3PowerActionTypeId, shellyEm3PowerActionPowerParamTypeId},
+    {shelly25Channel1ActionTypeId, shelly25Channel1ActionChannel1ParamTypeId},
+    {shelly25Channel2ActionTypeId, shelly25Channel2ActionChannel2ParamTypeId}
 };
 
 static QHash<ActionTypeId, ThingClassId> colorPowerActionTypesMap = {
@@ -431,6 +435,18 @@ static QHash<ActionTypeId, ThingClassId> updateActionTypesMap = {
     {shellyMotionPerformUpdateActionTypeId, shellyMotionThingClassId}
 };
 
+// Settings
+static QHash<ThingClassId, ParamTypeId> longpushMinDurationSettingIds = {
+    {shellyI3ThingClassId, shellyI3SettingsLongpushMinDurationParamTypeId}
+};
+static QHash<ThingClassId, ParamTypeId> longpushMaxDurationSettingIds = {
+    {shellyButton1ThingClassId, shellyButton1SettingsLongpushMaxDurationParamTypeId},
+    {shellyI3ThingClassId, shellyI3SettingsLongpushMaxDurationParamTypeId}
+};
+static QHash<ThingClassId, ParamTypeId> multipushTimeBetweenPushesSettingIds = {
+    {shellyButton1ThingClassId, shellyButton1SettingsMultipushTimeBetweenPushesParamTypeId},
+    {shellyI3ThingClassId, shellyI3SettingsMultipushTimeBetweenPushesParamTypeId}
+};
 
 IntegrationPluginShelly::IntegrationPluginShelly()
 {
@@ -461,7 +477,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
-            namePattern = QRegExp("^shellydimmer(2)?-[0-9A-Z]+$");
+            namePattern = QRegExp("^(shellydimmer(2)?|ShellyVintage)-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly2ThingClassId) {
             namePattern = QRegExp("^shellyswitch-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly25ThingClassId) {
@@ -569,8 +585,14 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
         QString shellyId = parentDevice->paramValue(idParamTypeMap.value(parentDevice->thingClassId())).toString();
         int relay = 1;
+        QHash<ActionTypeId, int> actionChannelMap = {
+            {shelly25Channel1ActionTypeId, 1},
+            {shelly25Channel2ActionTypeId, 2}
+        };
         if (channelParamTypeMap.contains(thing->thingClassId())) {
             relay = thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt();
+        } else if (actionChannelMap.contains(action.actionTypeId())) {
+            relay = actionChannelMap.value(action.actionTypeId());
         }
         ParamTypeId powerParamTypeId = powerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(powerParamTypeId).value().toBool();
@@ -761,7 +783,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         return;
     }
 
-    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic;
+    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic << payload;
 
     QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
     if (topic == "shellies/" + shellyId + "/info") {
@@ -772,7 +794,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << qUtf8Printable(payload);
             return;
         }
-        //        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap data = jsonDoc.toVariant().toMap();
 
         // Wifi signal strength
@@ -792,6 +813,36 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         thing->setStateValue(currentVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("old_version").toString());
         thing->setStateValue(availableVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("new_version").toString());
 
+        if (data.contains("longpush_duration_ms")) {
+            if (longpushMinDurationSettingIds.contains(thing->thingClassId())) {
+                thing->setSettingValue(longpushMinDurationSettingIds.value(thing->thingClassId()), data.value("longpush_duration_ms").toMap().value("min").toUInt());
+            }
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                if (longpushMinDurationSettingIds.contains(child->thingClassId())) {
+                    thing->setSettingValue(longpushMinDurationSettingIds.value(thing->thingClassId()), data.value("longpush_duration_ms").toMap().value("min").toUInt());
+                }
+            }
+            if (longpushMaxDurationSettingIds.contains(thing->thingClassId())) {
+                thing->setSettingValue(longpushMaxDurationSettingIds.value(thing->thingClassId()), data.value("longpush_duration_ms").toMap().value("max").toUInt());
+            }
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                if (longpushMaxDurationSettingIds.contains(child->thingClassId())) {
+                    thing->setSettingValue(longpushMaxDurationSettingIds.value(thing->thingClassId()), data.value("longpush_duration_ms").toMap().value("max").toUInt());
+                }
+            }
+        }
+        if (data.contains("multipush_time_between_pushes_ms")) {
+            if (multipushTimeBetweenPushesSettingIds.contains(thing->thingClassId())) {
+                thing->setSettingValue(multipushTimeBetweenPushesSettingIds.value(thing->thingClassId()), data.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
+            }
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                if (multipushTimeBetweenPushesSettingIds.contains(child->thingClassId())) {
+                    thing->setSettingValue(multipushTimeBetweenPushesSettingIds.value(thing->thingClassId()), data.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
+                }
+            }
+        }
+
+
         // While we normally use the specific topics instead of the "info" object, the Shell H&T posts it very rarely
         // and in combination with its power safe mode let's use this one to get temp/humidity
         if (thing->thingClassId() == shellyHTThingClassId) {
@@ -806,27 +857,17 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
 
     if (topic.startsWith("shellies/" + shellyId + "/input/")) {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         int channel = topic.split("/").last().toInt();
         // "1" or "0"
         // Emit event button pressed
         bool on = payload == "1";
         if (thing->thingClassId() == shellyI3ThingClassId) {
             if (channel == 0) {
-                if (thing->stateValue(shellyI3Input1StateTypeId).toBool() != on) {
-                    thing->setStateValue(shellyI3Input1StateTypeId, on);
-                    emit emitEvent(Event(shellyI3Input1EventTypeId, thing->id()));
-                }
+                thing->setStateValue(shellyI3Input1StateTypeId, on);
             } else if (channel == 1) {
-                if (thing->stateValue(shellyI3Input2StateTypeId).toBool() != on) {
-                    thing->setStateValue(shellyI3Input2StateTypeId, on);
-                    emit emitEvent(Event(shellyI3Input2EventTypeId, thing->id()));
-                }
+                thing->setStateValue(shellyI3Input2StateTypeId, on);
             } else {
-                if (thing->stateValue(shellyI3Input3StateTypeId).toBool() != on) {
-                    thing->setStateValue(shellyI3Input3StateTypeId, on);
-                    emit emitEvent(Event(shellyI3Input3EventTypeId, thing->id()));
-                }
+                thing->setStateValue(shellyI3Input3StateTypeId, on);
             }
             return;
         }
@@ -842,7 +883,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     QRegExp topicMatcher = QRegExp("shellies/" + shellyId + "/relay/[0-1]");
     if (topicMatcher.exactMatch(topic)) {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         bool on = payload == "on";
@@ -851,6 +891,15 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         if (powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
         }
+        // If the shelly main thing has multiple channels (e.g. Shelly 2.5)
+        if (thing->thingClassId() == shelly25ThingClassId) {
+            QHash<int, StateTypeId> powerChannelStateTypesMap = {
+                {0, shelly25Channel1StateTypeId},
+                {1, shelly25Channel2StateTypeId}
+            };
+            thing->setStateValue(powerChannelStateTypesMap.value(channel), on);
+        }
+
         // And switch all childs of this shelly too
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
             if (powerStateTypeMap.contains(child->thingClassId())) {
@@ -860,11 +909,11 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 }
             }
         }
+
     }
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/power");
     if (topicMatcher.exactMatch(topic)) {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         double power = payload.toDouble();
@@ -883,7 +932,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/energy");
     if (topicMatcher.exactMatch(topic)) {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         // W/min => kW/h
@@ -902,7 +950,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0") {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
@@ -910,7 +957,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0/status") {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -933,7 +979,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0") {
-        //        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(powerStateTypeMap.value(thing->thingClassId()), on);
@@ -988,6 +1033,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic.startsWith("shellies/" + shellyId + "/input_event/")) {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         if (thing->thingClassId() == shellyButton1ThingClassId) {  // it can be only at channel 0
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
@@ -1012,28 +1058,26 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 qCWarning(dcShelly()) << "Failed to parse JSON from shelly:" << error.errorString() << qUtf8Printable(payload);
                 return;
             }
+
+            QString buttonName = QString::number(channel + 1);
             QString event = jsonDoc.toVariant().toMap().value("event").toString();
-            if (event.isEmpty()) {
-                return;
-            }
-            QString param = "";
-            EventTypeId eventTypeId = shellyI3LongPressedEventTypeId;
-            ParamTypeId paramTypeId = shellyI3LongPressedEventButtonNameParamTypeId;
-            ParamTypeId param2TypeId = shellyI3LongPressedEventOriginParamTypeId;
-            if (event == "L") {
-                param = "1";
+            if (event == "S") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+            } else if (event == "L") {
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
+            } else if (event == "SS") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 2));
+            } else if (event == "SSS") {
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 3));
             } else if (event == "SL") {
-                param = "2";
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
             } else if (event == "LS") {
-                param = "3";
-            } else { // short press
-                param = QString::number(event.length());
-                eventTypeId = shellyI3PressedEventTypeId;
-                paramTypeId = shellyI3PressedEventButtonNameParamTypeId;
-                param2TypeId = shellyI3PressedEventOriginParamTypeId;
+                thing->emitEvent(shellyI3LongPressedEventTypeId, ParamList() << Param(shellyI3LongPressedEventButtonNameParamTypeId, buttonName));
+                thing->emitEvent(shellyI3PressedEventTypeId, ParamList() << Param(shellyI3PressedEventButtonNameParamTypeId, buttonName) << Param(shellyI3PressedEventCountParamTypeId, 1));
+            } else {
+                qCDebug(dcShelly()) << "Invalid button code from shelly I3:" << event;
             }
-            QString usedSwitch = QString::number(channel + 1);
-            thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param) << Param(param2TypeId, usedSwitch));
         }
     }
 
@@ -1140,7 +1184,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                     }
                     double power = child->stateValue(shellyEmChannelCurrentPowerPhaseAStateTypeId).toDouble();
                     double reactivePower = child->stateValue(shellyEmChannelReactivePowerPhaseAStateTypeId).toDouble();
-                    double root = qsqrt(power*power + reactivePower*reactivePower);
+                    double root = qSqrt(power*power + reactivePower*reactivePower);
                     if (qFuzzyCompare(root, 0) == false) {
                         double calcPf = power/root;
                         child->setStateValue(shellyEmChannelPowerFactorPhaseAStateTypeId, calcPf);
@@ -1248,12 +1292,13 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     }
 
     MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(shellyId, QHostAddress(address), {"shellies"});
-    m_mqttChannels.insert(info->thing(), channel);
 
     if (!channel) {
         qCWarning(dcShelly()) << "Failed to create MQTT channel.";
         return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));
     }
+
+    m_mqttChannels.insert(info->thing(), channel);
     connect(channel, &MqttChannel::clientConnected, this, &IntegrationPluginShelly::onClientConnected);
     connect(channel, &MqttChannel::clientDisconnected, this, &IntegrationPluginShelly::onClientDisconnected);
     connect(channel, &MqttChannel::publishReceived, this, &IntegrationPluginShelly::onPublishReceived);
@@ -1327,7 +1372,11 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             info->thing()->setSettingValue(shellyButton1SettingsRemainAwakeParamTypeId, settingsMap.value("remain_awake").toInt());
             info->thing()->setSettingValue(shellyButton1SettingsStatusLedEnabledParamTypeId, !settingsMap.value("led_status_disable").toBool());
             info->thing()->setSettingValue(shellyButton1SettingsLongpushMaxDurationParamTypeId, settingsMap.value("longpush_duration_ms").toMap().value("max").toUInt());
-            info->thing()->setSettingValue(shellyButton1SettingsMultipressIntervalParamTypeId, settingsMap.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
+            info->thing()->setSettingValue(shellyButton1SettingsMultipushTimeBetweenPushesParamTypeId, settingsMap.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
+        } else  if (info->thing()->thingClassId() == shellyI3ThingClassId) {
+            info->thing()->setSettingValue(shellyI3SettingsLongpushMinDurationParamTypeId, settingsMap.value("longpush_duration_ms").toMap().value("min").toUInt());
+            info->thing()->setSettingValue(shellyI3SettingsLongpushMaxDurationParamTypeId, settingsMap.value("longpush_duration_ms").toMap().value("max").toUInt());
+            info->thing()->setSettingValue(shellyI3SettingsMultipushTimeBetweenPushesParamTypeId, settingsMap.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
         }
 
         ThingDescriptors autoChilds;
@@ -1336,17 +1385,17 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
         if (myThings().filterByParentId(info->thing()->id()).isEmpty()) {
             // Always create the switch thing if we don't have one yet for shellies with input (1, 1pm etc)
             if (info->thing()->thingClassId() == shelly1ThingClassId
-                    || info->thing()->thingClassId() == shelly1pmThingClassId
-                    || info->thing()->thingClassId() == shelly1lThingClassId) {
+                    || info->thing()->thingClassId() == shelly1pmThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
             }
 
-            // Create 2 switches for shelly 2.5
+            // Create 2 switches for some that have 2
             if (info->thing()->thingClassId() == shelly2ThingClassId
                     || info->thing()->thingClassId() == shelly25ThingClassId
-                    || info->thing()->thingClassId() == shellyDimmerThingClassId) {
+                    || (info->thing()->thingClassId() == shellyDimmerThingClassId && info->thing()->paramValue(shellyDimmerThingIdParamTypeId).toString().startsWith("shellydimmer")) // Don't create chids for shelly vintage
+                    || info->thing()->thingClassId() == shelly1lThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
@@ -1491,7 +1540,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 
     // Handle thing settings of gateway devices
     if (info->thing()->thingClassId() == shellyPlugThingClassId ||
-            info->thing()->thingClassId() == shellyButton1ThingClassId) {
+            info->thing()->thingClassId() == shellyButton1ThingClassId ||
+            info->thing()->thingClassId() == shellyI3ThingClassId) {
         connect(info->thing(), &Thing::settingChanged, this, [this, thing, shellyId](const ParamTypeId &settingTypeId, const QVariant &value) {
 
             pluginStorage()->beginGroup(thing->id().toString());
@@ -1515,14 +1565,23 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             } else if (settingTypeId == shellyButton1SettingsStatusLedEnabledParamTypeId) {
                 url.setPath("/settings");
                 query.addQueryItem("led_status_disable", value.toBool() ? "false" : "true");
-            } else if (settingTypeId == shellyButton1SettingsLongpushMaxDurationParamTypeId) {
+            } else if (settingTypeId == shellyI3SettingsLongpushMinDurationParamTypeId) {
+                url.setPath("/settings");
+                query.addQueryItem("longpush_duration_ms_min", value.toString());
+            } else if (settingTypeId == shellyButton1SettingsLongpushMaxDurationParamTypeId
+                       || settingTypeId == shellyI3SettingsLongpushMaxDurationParamTypeId) {
                 url.setPath("/settings");
                 query.addQueryItem("longpush_duration_ms_max", value.toString());
+            } else if (settingTypeId == shellyButton1SettingsMultipushTimeBetweenPushesParamTypeId
+                       || settingTypeId == shellyI3SettingsMultipushTimeBetweenPushesParamTypeId) {
+                url.setPath("/settings");
+                query.addQueryItem("multipush_time_between_pushes_ms_max", value.toString());
             }
 
             url.setQuery(query);
 
             QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+            qCDebug(dcShelly()) << "Setting configuration:" << url.toString();
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         });
     }
@@ -1562,7 +1621,7 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
         url.setScheme("http");
         url.setHost(address);
         url.setPort(80);
-        url.setPath("/settings/relay/0");
+        url.setPath(QString("/settings/relay/%1").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() + 1));
         url.setUserName(parentDevice->paramValue(usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
         url.setPassword(parentDevice->paramValue(passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
 

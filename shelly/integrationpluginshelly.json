@@ -206,8 +206,7 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         }
                     ],
                     "actionTypes": [
@@ -323,8 +322,7 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         }
                     ],
                     "actionTypes": [
@@ -531,6 +529,28 @@
                             "displayNameEvent": "Available firmware version changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "118d572c-cc12-4037-82d8-7d8f6fb4a364",
+                            "name": "channel1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Channel 1 turned on or off",
+                            "displayNameAction": "Turn channel 1 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "7952aec0-cd27-4ef9-87a6-c499564bc1d4",
+                            "name": "channel2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Channel 2 turned on or off",
+                            "displayNameAction": "Turn channel 2 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ],
                     "actionTypes": [
@@ -631,8 +651,7 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "ccec3806-cc48-42cf-94d7-811ff569d407",
@@ -772,8 +791,7 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         },
                         {
                             "id": "3d22110c-db53-4420-8e0f-314555484926",
@@ -817,7 +835,7 @@
                 {
                     "id": "3a1d6fc1-c623-4b45-9c81-1573fcc15f99",
                     "name": "shellyDimmer",
-                    "displayName": "Shelly Dimmer / Dimmer 2",
+                    "displayName": "Shelly Dimmer (2) / Vintage",
                     "createMethods": ["discovery"],
                     "interfaces": ["dimmablelight", "wirelessconnectable", "update"],
                     "paramTypes": [
@@ -892,8 +910,7 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         },
                         {
                             "id": "8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e",
@@ -991,9 +1008,10 @@
                         },
                         {
                             "id": "b1f5a911-76ec-42e5-ac64-17f85d82b875",
-                            "name": "multipressInterval",
+                            "name": "multipushTimeBetweenPushes",
                             "displayName": "Max time between multiple presses",
                             "type": "uint",
+                            "unit": "MilliSeconds",
                             "minValue": 200,
                             "maxValue": 2000,
                             "defaultValue": 500
@@ -1130,6 +1148,38 @@
                             "type": "QString"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "a04fda4b-f187-477c-b7a8-b56613bf9264",
+                            "name": "longpushMinDuration",
+                            "displayName": "Minimum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 2900,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "6485685e-0097-48db-958b-43126c6fb5a6",
+                            "name": "longpushMaxDuration",
+                            "displayName": "Maximum longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 200,
+                            "maxValue": 6000,
+                            "defaultValue": 3000
+                        },
+                        {
+                            "id": "52699a1b-3526-4f60-83ec-f35faa863597",
+                            "name": "multipushTimeBetweenPushes",
+                            "displayName": "Max time between multiple presses",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 100,
+                            "maxValue": 500,
+                            "defaultValue": 500
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "9b17b10d-07ee-4a3d-813f-ef37e79e7241",
@@ -1213,16 +1263,17 @@
                                 {
                                     "id": "146313a1-cfb6-4732-a1be-86ec575bcbdb",
                                     "name": "buttonName",
-                                    "displayName": "Count",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 },
                                 {
                                     "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
-                                    "name": "origin",
-                                    "displayName": "Switch",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
+                                    "name": "count",
+                                    "displayName": "Press count",
+                                    "type": "uint",
+                                    "minValue": 1,
+                                    "maxValue": 3
                                  }
                             ]
                         },
@@ -1234,14 +1285,7 @@
                                 {
                                     "id": "99683cf9-930e-4f10-94f2-73bb32092639",
                                     "name": "buttonName",
-                                    "displayName": "Count",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
-                                },
-                                {
-                                    "id": "866d6db6-e989-4b19-93c3-cc4aa7453c9e",
-                                    "name": "origin",
-                                    "displayName": "Switch",
+                                    "displayName": "Button name",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
                                 }
@@ -1525,8 +1569,7 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "432ba180-936d-4700-907e-766264bfdd35",
@@ -1535,8 +1578,7 @@
                             "displayNameEvent": "Power usage (Phase A) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "50be490b-ba5d-4b1f-806c-9e15b915c1eb",
@@ -1553,8 +1595,7 @@
                             "displayNameEvent": "Current (Phase A) changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "5977ffab-cdcf-409c-940b-aa0a59de84a5",
@@ -1590,8 +1631,7 @@
                             "displayNameEvent": "Power usage (Phase B) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "f56504bb-0c6c-4425-831c-771b23aadf19",
@@ -1644,8 +1684,7 @@
                             "displayNameEvent": "Power usage (Phase C) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive"
+                            "defaultValue": 0
                         },
                         {
                             "id": "2e2c622f-1575-4d0b-a0c0-78bc03748c1e",
@@ -2251,8 +2290,7 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         }
                     ]
                 },
@@ -2386,8 +2424,7 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         }
                     ]
                 },
@@ -2521,8 +2558,7 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         }
                     ]
                 },
@@ -2578,8 +2614,7 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt",
-                            "filter": "adaptive"
+                            "unit": "Watt"
                         },
                         {
                             "id": "2729d4e0-c38c-47b8-a0e8-26959090fe74",
