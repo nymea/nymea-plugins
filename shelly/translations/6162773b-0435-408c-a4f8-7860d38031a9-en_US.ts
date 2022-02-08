@@ -4,38 +4,38 @@
 <context>
     <name>IntegrationPluginShelly</name>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1173"/>
+        <location filename="../integrationpluginshelly.cpp" line="1258"/>
         <source>Unable to find the thing in the network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1184"/>
+        <location filename="../integrationpluginshelly.cpp" line="1269"/>
         <source>Roller shutter mode can&apos;t be mixed with relay mode. Please configure both connected devices to control a shutter or relays.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1189"/>
-        <location filename="../integrationpluginshelly.cpp" line="1194"/>
+        <location filename="../integrationpluginshelly.cpp" line="1274"/>
+        <location filename="../integrationpluginshelly.cpp" line="1279"/>
         <source>For using a roller shutter, one channel must be set to up, the other to down.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1206"/>
+        <location filename="../integrationpluginshelly.cpp" line="1291"/>
         <source>Error creating MQTT channel. Please check MQTT server settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1258"/>
+        <location filename="../integrationpluginshelly.cpp" line="1343"/>
         <source>Username and password not set correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1260"/>
+        <location filename="../integrationpluginshelly.cpp" line="1345"/>
         <source>Error connecting to Shelly device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="1269"/>
+        <location filename="../integrationpluginshelly.cpp" line="1354"/>
         <source>Unexpected data received from Shelly device.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -43,36 +43,42 @@
 <context>
     <name>shelly</name>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="654"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="657"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="660"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="663"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="666"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="669"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="672"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="675"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="678"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="681"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="684"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="687"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="690"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="693"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="696"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="699"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="702"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="705"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="708"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="711"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="714"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="717"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="720"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="723"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="726"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="729"/>
+        <location filename="../builddir/plugininfo.h" line="710"/>
+        <location filename="../builddir/plugininfo.h" line="713"/>
+        <location filename="../builddir/plugininfo.h" line="716"/>
+        <location filename="../builddir/plugininfo.h" line="719"/>
+        <location filename="../builddir/plugininfo.h" line="722"/>
+        <location filename="../builddir/plugininfo.h" line="725"/>
+        <location filename="../builddir/plugininfo.h" line="728"/>
+        <location filename="../builddir/plugininfo.h" line="731"/>
+        <location filename="../builddir/plugininfo.h" line="734"/>
+        <location filename="../builddir/plugininfo.h" line="737"/>
+        <location filename="../builddir/plugininfo.h" line="740"/>
+        <location filename="../builddir/plugininfo.h" line="743"/>
+        <location filename="../builddir/plugininfo.h" line="746"/>
+        <location filename="../builddir/plugininfo.h" line="749"/>
+        <location filename="../builddir/plugininfo.h" line="752"/>
+        <location filename="../builddir/plugininfo.h" line="755"/>
+        <location filename="../builddir/plugininfo.h" line="758"/>
+        <location filename="../builddir/plugininfo.h" line="761"/>
+        <location filename="../builddir/plugininfo.h" line="764"/>
+        <location filename="../builddir/plugininfo.h" line="767"/>
+        <location filename="../builddir/plugininfo.h" line="770"/>
+        <location filename="../builddir/plugininfo.h" line="773"/>
+        <location filename="../builddir/plugininfo.h" line="776"/>
+        <location filename="../builddir/plugininfo.h" line="779"/>
+        <location filename="../builddir/plugininfo.h" line="782"/>
+        <location filename="../builddir/plugininfo.h" line="785"/>
+        <location filename="../builddir/plugininfo.h" line="788"/>
+        <location filename="../builddir/plugininfo.h" line="791"/>
         <source>Available firmware version</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: availableVersion, ID: {0c9e8da4-1b1c-4047-8e9d-c5c580bcf43f})
 ----------
 The name of the StateType ({0c9e8da4-1b1c-4047-8e9d-c5c580bcf43f}) of ThingClass shellyMotion
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: availableVersion, ID: {97ab36bb-355b-4559-838a-fe49a9cbd13e})
+----------
+The name of the StateType ({97ab36bb-355b-4559-838a-fe49a9cbd13e}) of ThingClass shellyEm
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: availableVersion, ID: {27f1e394-642f-4a90-88bf-1ef9ba88b10b})
 ----------
@@ -124,21 +130,24 @@ The name of the StateType ({6e794011-d184-4ab2-9c3a-3b2205880cbc}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="732"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="735"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="738"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="741"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="744"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="747"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="750"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="753"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="756"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="759"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="762"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="765"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="768"/>
+        <location filename="../builddir/plugininfo.h" line="794"/>
+        <location filename="../builddir/plugininfo.h" line="797"/>
+        <location filename="../builddir/plugininfo.h" line="800"/>
+        <location filename="../builddir/plugininfo.h" line="803"/>
+        <location filename="../builddir/plugininfo.h" line="806"/>
+        <location filename="../builddir/plugininfo.h" line="809"/>
+        <location filename="../builddir/plugininfo.h" line="812"/>
+        <location filename="../builddir/plugininfo.h" line="815"/>
+        <location filename="../builddir/plugininfo.h" line="818"/>
+        <location filename="../builddir/plugininfo.h" line="821"/>
+        <location filename="../builddir/plugininfo.h" line="824"/>
+        <location filename="../builddir/plugininfo.h" line="827"/>
+        <location filename="../builddir/plugininfo.h" line="830"/>
+        <location filename="../builddir/plugininfo.h" line="833"/>
         <source>Available firmware version changed</source>
         <extracomment>The name of the EventType ({0c9e8da4-1b1c-4047-8e9d-c5c580bcf43f}) of ThingClass shellyMotion
+----------
+The name of the EventType ({97ab36bb-355b-4559-838a-fe49a9cbd13e}) of ThingClass shellyEm
 ----------
 The name of the EventType ({27f1e394-642f-4a90-88bf-1ef9ba88b10b}) of ThingClass shellyEm3
 ----------
@@ -166,8 +175,8 @@ The name of the EventType ({6e794011-d184-4ab2-9c3a-3b2205880cbc}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="771"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="774"/>
+        <location filename="../builddir/plugininfo.h" line="836"/>
+        <location filename="../builddir/plugininfo.h" line="839"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the EventType ({56053726-92dc-4a80-b05e-a9a857c02bc1}) of ThingClass shellyHT
 ----------
@@ -175,18 +184,18 @@ The name of the EventType ({18edddee-1b30-48e4-b233-1e3b68bd6ff1}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="777"/>
+        <location filename="../builddir/plugininfo.h" line="842"/>
         <source>Battery entered critical state</source>
         <extracomment>The name of the EventType ({1d03941e-9c41-446b-b698-f8dff335bf11}) of ThingClass shellyMotion</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="780"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="783"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="786"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="789"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="792"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="795"/>
+        <location filename="../builddir/plugininfo.h" line="845"/>
+        <location filename="../builddir/plugininfo.h" line="848"/>
+        <location filename="../builddir/plugininfo.h" line="851"/>
+        <location filename="../builddir/plugininfo.h" line="854"/>
+        <location filename="../builddir/plugininfo.h" line="857"/>
+        <location filename="../builddir/plugininfo.h" line="860"/>
         <source>Battery level</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: batteryLevel, ID: {f6d89aa6-7dba-4bb0-89cf-36d85208933f})
 ----------
@@ -202,9 +211,9 @@ The name of the StateType ({338355e5-9506-48b1-be86-757d69b34755}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="798"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="801"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="804"/>
+        <location filename="../builddir/plugininfo.h" line="863"/>
+        <location filename="../builddir/plugininfo.h" line="866"/>
+        <location filename="../builddir/plugininfo.h" line="869"/>
         <source>Battery level changed</source>
         <extracomment>The name of the EventType ({f6d89aa6-7dba-4bb0-89cf-36d85208933f}) of ThingClass shellyMotion
 ----------
@@ -214,12 +223,12 @@ The name of the EventType ({338355e5-9506-48b1-be86-757d69b34755}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="807"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="810"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="813"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="816"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="819"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="822"/>
+        <location filename="../builddir/plugininfo.h" line="872"/>
+        <location filename="../builddir/plugininfo.h" line="875"/>
+        <location filename="../builddir/plugininfo.h" line="878"/>
+        <location filename="../builddir/plugininfo.h" line="881"/>
+        <location filename="../builddir/plugininfo.h" line="884"/>
+        <location filename="../builddir/plugininfo.h" line="887"/>
         <source>Battery level critical</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: batteryCritical, ID: {1d03941e-9c41-446b-b698-f8dff335bf11})
 ----------
@@ -235,12 +244,12 @@ The name of the StateType ({18edddee-1b30-48e4-b233-1e3b68bd6ff1}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="825"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="828"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="831"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="834"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="837"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="840"/>
+        <location filename="../builddir/plugininfo.h" line="890"/>
+        <location filename="../builddir/plugininfo.h" line="893"/>
+        <location filename="../builddir/plugininfo.h" line="896"/>
+        <location filename="../builddir/plugininfo.h" line="899"/>
+        <location filename="../builddir/plugininfo.h" line="902"/>
+        <location filename="../builddir/plugininfo.h" line="905"/>
         <source>Brightness</source>
         <extracomment>The name of the ParamType (ThingClass: shellyDimmer, ActionType: brightness, ID: {f41c93ac-6911-45fc-9221-7dd26bf65fd0})
 ----------
@@ -256,8 +265,8 @@ The name of the StateType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="843"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="846"/>
+        <location filename="../builddir/plugininfo.h" line="908"/>
+        <location filename="../builddir/plugininfo.h" line="911"/>
         <source>Brightness changed</source>
         <extracomment>The name of the EventType ({f41c93ac-6911-45fc-9221-7dd26bf65fd0}) of ThingClass shellyDimmer
 ----------
@@ -265,8 +274,8 @@ The name of the EventType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="849"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="852"/>
+        <location filename="../builddir/plugininfo.h" line="914"/>
+        <location filename="../builddir/plugininfo.h" line="917"/>
         <source>Button name</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: longPressed, ID: {99683cf9-930e-4f10-94f2-73bb32092639})
 ----------
@@ -274,26 +283,27 @@ The name of the ParamType (ThingClass: shellyI3, EventType: pressed, ID: {146313
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="855"/>
+        <location filename="../builddir/plugininfo.h" line="920"/>
         <source>Button type</source>
         <extracomment>The name of the ParamType (ThingClass: shellySwitch, Type: settings, ID: {ce9f1650-5e12-40f4-97de-27af86afa40b})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="858"/>
+        <location filename="../builddir/plugininfo.h" line="923"/>
         <source>Calibrate</source>
         <extracomment>The name of the ActionType ({4e2d8a7b-821e-4ee8-9f9b-f774d631845f}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="861"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="864"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="867"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="870"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="873"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="876"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="879"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="882"/>
+        <location filename="../builddir/plugininfo.h" line="926"/>
+        <location filename="../builddir/plugininfo.h" line="929"/>
+        <location filename="../builddir/plugininfo.h" line="932"/>
+        <location filename="../builddir/plugininfo.h" line="935"/>
+        <location filename="../builddir/plugininfo.h" line="938"/>
+        <location filename="../builddir/plugininfo.h" line="941"/>
+        <location filename="../builddir/plugininfo.h" line="944"/>
+        <location filename="../builddir/plugininfo.h" line="947"/>
+        <location filename="../builddir/plugininfo.h" line="950"/>
         <source>Channel</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, Type: thing, ID: {281385a5-5084-4ded-80a4-66c0dc1096a8})
 ----------
@@ -309,31 +319,33 @@ The name of the ParamType (ThingClass: shellyGenericPM, Type: thing, ID: {5e7c6e
 ----------
 The name of the ParamType (ThingClass: shellyGeneric, Type: thing, ID: {c08b1272-6eb2-4fed-80ad-06566a521b95})
 ----------
+The name of the ParamType (ThingClass: shellyEmChannel, Type: thing, ID: {e8865f9d-2601-4e02-9ff1-780332f1f18f})
+----------
 The name of the ParamType (ThingClass: shellySwitch, Type: thing, ID: {be6bdd43-cbf0-4d16-b789-ccad16e23788})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="885"/>
+        <location filename="../builddir/plugininfo.h" line="953"/>
         <source>Channel 1 turned on or off</source>
         <extracomment>The name of the EventType ({118d572c-cc12-4037-82d8-7d8f6fb4a364}) of ThingClass shelly25</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="888"/>
+        <location filename="../builddir/plugininfo.h" line="956"/>
         <source>Channel 2 turned on or off</source>
         <extracomment>The name of the EventType ({7952aec0-cd27-4ef9-87a6-c499564bc1d4}) of ThingClass shelly25</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="891"/>
+        <location filename="../builddir/plugininfo.h" line="959"/>
         <source>Close</source>
         <extracomment>The name of the ActionType ({87eb0290-615e-4c98-9ec8-a21104fcf05d}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="894"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="897"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="900"/>
+        <location filename="../builddir/plugininfo.h" line="962"/>
+        <location filename="../builddir/plugininfo.h" line="965"/>
+        <location filename="../builddir/plugininfo.h" line="968"/>
         <source>Color</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRgbw2, ActionType: color, ID: {6ef7c686-350d-4069-9c41-9b90b3906748})
 ----------
@@ -343,15 +355,15 @@ The name of the StateType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="903"/>
+        <location filename="../builddir/plugininfo.h" line="971"/>
         <source>Color changed</source>
         <extracomment>The name of the EventType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass shellyRgbw2</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="906"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="909"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="912"/>
+        <location filename="../builddir/plugininfo.h" line="974"/>
+        <location filename="../builddir/plugininfo.h" line="977"/>
+        <location filename="../builddir/plugininfo.h" line="980"/>
         <source>Color temperature</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRgbw2, ActionType: colorTemperature, ID: {a32a457f-fdc0-46ce-9106-6f9d4f4a6b16})
 ----------
@@ -361,54 +373,58 @@ The name of the StateType ({a32a457f-fdc0-46ce-9106-6f9d4f4a6b16}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="915"/>
+        <location filename="../builddir/plugininfo.h" line="983"/>
         <source>Color temperature changed</source>
         <extracomment>The name of the EventType ({a32a457f-fdc0-46ce-9106-6f9d4f4a6b16}) of ThingClass shellyRgbw2</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="918"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="921"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="924"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="927"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="930"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="933"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="936"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="939"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="942"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="945"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="948"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="951"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="954"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="957"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="960"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="963"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="966"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="969"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="972"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="975"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="978"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="981"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="984"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="987"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="990"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="993"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="996"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="999"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1002"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1005"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1008"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1011"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1014"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1017"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1020"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1023"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1026"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1029"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1032"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1035"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1038"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1041"/>
+        <location filename="../builddir/plugininfo.h" line="986"/>
+        <location filename="../builddir/plugininfo.h" line="989"/>
+        <location filename="../builddir/plugininfo.h" line="992"/>
+        <location filename="../builddir/plugininfo.h" line="995"/>
+        <location filename="../builddir/plugininfo.h" line="998"/>
+        <location filename="../builddir/plugininfo.h" line="1001"/>
+        <location filename="../builddir/plugininfo.h" line="1004"/>
+        <location filename="../builddir/plugininfo.h" line="1007"/>
+        <location filename="../builddir/plugininfo.h" line="1010"/>
+        <location filename="../builddir/plugininfo.h" line="1013"/>
+        <location filename="../builddir/plugininfo.h" line="1016"/>
+        <location filename="../builddir/plugininfo.h" line="1019"/>
+        <location filename="../builddir/plugininfo.h" line="1022"/>
+        <location filename="../builddir/plugininfo.h" line="1025"/>
+        <location filename="../builddir/plugininfo.h" line="1028"/>
+        <location filename="../builddir/plugininfo.h" line="1031"/>
+        <location filename="../builddir/plugininfo.h" line="1034"/>
+        <location filename="../builddir/plugininfo.h" line="1037"/>
+        <location filename="../builddir/plugininfo.h" line="1040"/>
+        <location filename="../builddir/plugininfo.h" line="1043"/>
+        <location filename="../builddir/plugininfo.h" line="1046"/>
+        <location filename="../builddir/plugininfo.h" line="1049"/>
+        <location filename="../builddir/plugininfo.h" line="1052"/>
+        <location filename="../builddir/plugininfo.h" line="1055"/>
+        <location filename="../builddir/plugininfo.h" line="1058"/>
+        <location filename="../builddir/plugininfo.h" line="1061"/>
+        <location filename="../builddir/plugininfo.h" line="1064"/>
+        <location filename="../builddir/plugininfo.h" line="1067"/>
+        <location filename="../builddir/plugininfo.h" line="1070"/>
+        <location filename="../builddir/plugininfo.h" line="1073"/>
+        <location filename="../builddir/plugininfo.h" line="1076"/>
+        <location filename="../builddir/plugininfo.h" line="1079"/>
+        <location filename="../builddir/plugininfo.h" line="1082"/>
+        <location filename="../builddir/plugininfo.h" line="1085"/>
+        <location filename="../builddir/plugininfo.h" line="1088"/>
+        <location filename="../builddir/plugininfo.h" line="1091"/>
+        <location filename="../builddir/plugininfo.h" line="1094"/>
+        <location filename="../builddir/plugininfo.h" line="1097"/>
+        <location filename="../builddir/plugininfo.h" line="1100"/>
+        <location filename="../builddir/plugininfo.h" line="1103"/>
+        <location filename="../builddir/plugininfo.h" line="1106"/>
+        <location filename="../builddir/plugininfo.h" line="1109"/>
+        <location filename="../builddir/plugininfo.h" line="1112"/>
+        <location filename="../builddir/plugininfo.h" line="1115"/>
+        <location filename="../builddir/plugininfo.h" line="1118"/>
+        <location filename="../builddir/plugininfo.h" line="1121"/>
         <source>Connected</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, EventType: connected, ID: {d446719d-628e-477d-882c-a84210c85869})
 ----------
@@ -441,6 +457,14 @@ The name of the StateType ({4a141674-faa6-4953-8272-5b4a4da84d31}) of ThingClass
 The name of the ParamType (ThingClass: shellyMotion, EventType: connected, ID: {9ed997fa-1ec8-44d2-ac44-c99d4e259dae})
 ----------
 The name of the StateType ({9ed997fa-1ec8-44d2-ac44-c99d4e259dae}) of ThingClass shellyMotion
+----------
+The name of the ParamType (ThingClass: shellyEmChannel, EventType: connected, ID: {d96d7505-f270-49ad-abb2-4f29ac11fb84})
+----------
+The name of the StateType ({d96d7505-f270-49ad-abb2-4f29ac11fb84}) of ThingClass shellyEmChannel
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: connected, ID: {75f1a571-b21c-43c2-b4a3-ab8e9d7ef08c})
+----------
+The name of the StateType ({75f1a571-b21c-43c2-b4a3-ab8e9d7ef08c}) of ThingClass shellyEm
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: connected, ID: {08bd7743-af98-4328-bbca-64280afc5a87})
 ----------
@@ -496,13 +520,13 @@ The name of the StateType ({e5d41e05-2296-457e-97d8-98a5ac0de615}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1044"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1047"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1050"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1053"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1056"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1059"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1062"/>
+        <location filename="../builddir/plugininfo.h" line="1124"/>
+        <location filename="../builddir/plugininfo.h" line="1127"/>
+        <location filename="../builddir/plugininfo.h" line="1130"/>
+        <location filename="../builddir/plugininfo.h" line="1133"/>
+        <location filename="../builddir/plugininfo.h" line="1136"/>
+        <location filename="../builddir/plugininfo.h" line="1139"/>
+        <location filename="../builddir/plugininfo.h" line="1142"/>
         <source>Connected changed</source>
         <extracomment>The name of the EventType ({9b17b10d-07ee-4a3d-813f-ef37e79e7241}) of ThingClass shellyI3
 ----------
@@ -520,8 +544,8 @@ The name of the EventType ({e5d41e05-2296-457e-97d8-98a5ac0de615}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1065"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1068"/>
+        <location filename="../builddir/plugininfo.h" line="1145"/>
+        <location filename="../builddir/plugininfo.h" line="1148"/>
         <source>Connected device 1</source>
         <extracomment>The name of the ParamType (ThingClass: shelly25, Type: thing, ID: {dc8a02fb-baa4-40bf-9e00-684b17794287})
 ----------
@@ -529,8 +553,8 @@ The name of the ParamType (ThingClass: shelly2, Type: thing, ID: {84e60831-0a2c-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1071"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1074"/>
+        <location filename="../builddir/plugininfo.h" line="1151"/>
+        <location filename="../builddir/plugininfo.h" line="1154"/>
         <source>Connected device 2</source>
         <extracomment>The name of the ParamType (ThingClass: shelly25, Type: thing, ID: {1e6925f8-1613-4fe4-8234-e4a4e973ef83})
 ----------
@@ -538,17 +562,19 @@ The name of the ParamType (ThingClass: shelly2, Type: thing, ID: {0becaa77-b927-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1077"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1080"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1083"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1086"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1089"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1092"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1095"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1098"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1101"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1104"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1107"/>
+        <location filename="../builddir/plugininfo.h" line="1157"/>
+        <location filename="../builddir/plugininfo.h" line="1160"/>
+        <location filename="../builddir/plugininfo.h" line="1163"/>
+        <location filename="../builddir/plugininfo.h" line="1166"/>
+        <location filename="../builddir/plugininfo.h" line="1169"/>
+        <location filename="../builddir/plugininfo.h" line="1172"/>
+        <location filename="../builddir/plugininfo.h" line="1175"/>
+        <location filename="../builddir/plugininfo.h" line="1178"/>
+        <location filename="../builddir/plugininfo.h" line="1181"/>
+        <location filename="../builddir/plugininfo.h" line="1184"/>
+        <location filename="../builddir/plugininfo.h" line="1187"/>
+        <location filename="../builddir/plugininfo.h" line="1190"/>
+        <location filename="../builddir/plugininfo.h" line="1193"/>
         <source>Connected or disconnected</source>
         <extracomment>The name of the EventType ({d446719d-628e-477d-882c-a84210c85869}) of ThingClass shellyRoller
 ----------
@@ -566,6 +592,10 @@ The name of the EventType ({4a141674-faa6-4953-8272-5b4a4da84d31}) of ThingClass
 ----------
 The name of the EventType ({9ed997fa-1ec8-44d2-ac44-c99d4e259dae}) of ThingClass shellyMotion
 ----------
+The name of the EventType ({d96d7505-f270-49ad-abb2-4f29ac11fb84}) of ThingClass shellyEmChannel
+----------
+The name of the EventType ({75f1a571-b21c-43c2-b4a3-ab8e9d7ef08c}) of ThingClass shellyEm
+----------
 The name of the EventType ({08bd7743-af98-4328-bbca-64280afc5a87}) of ThingClass shellyEm3
 ----------
 The name of the EventType ({0c233312-7b8f-4ca3-880d-523cab9b3ccb}) of ThingClass shellySwitch
@@ -574,9 +604,9 @@ The name of the EventType ({b35ace90-8afb-49f1-924d-899bf1c03c3a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1110"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1113"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1116"/>
+        <location filename="../builddir/plugininfo.h" line="1196"/>
+        <location filename="../builddir/plugininfo.h" line="1199"/>
+        <location filename="../builddir/plugininfo.h" line="1202"/>
         <source>Connected/disconnected</source>
         <extracomment>The name of the EventType ({d23e25a1-f723-4de1-806a-83fb073f01f4}) of ThingClass shellyButton1
 ----------
@@ -586,14 +616,14 @@ The name of the EventType ({98b6e1ba-8d5c-4cb1-82a0-2d06c71cdba6}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1119"/>
+        <location filename="../builddir/plugininfo.h" line="1205"/>
         <source>Consumed energy changed</source>
         <extracomment>The name of the EventType ({962fec29-6be0-452e-87c5-5ff71435c40f}) of ThingClass shellyPlug</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1122"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1125"/>
+        <location filename="../builddir/plugininfo.h" line="1208"/>
+        <location filename="../builddir/plugininfo.h" line="1211"/>
         <source>Count</source>
         <extracomment>The name of the ParamType (ThingClass: shellyButton1, EventType: longPressed, ID: {f8b5f587-d266-4fd3-9f01-941d0dcedc1f})
 ----------
@@ -601,8 +631,17 @@ The name of the ParamType (ThingClass: shellyButton1, EventType: pressed, ID: {a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1128"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1131"/>
+        <location filename="../builddir/plugininfo.h" line="1214"/>
+        <location filename="../builddir/plugininfo.h" line="1217"/>
+        <source>Current</source>
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: currentPhaseA, ID: {1d457f50-0951-4ba5-8d8e-b79ea5a75535})
+----------
+The name of the StateType ({1d457f50-0951-4ba5-8d8e-b79ea5a75535}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1220"/>
+        <location filename="../builddir/plugininfo.h" line="1223"/>
         <source>Current (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPhaseA, ID: {5fa79319-756b-4b2c-87b1-59ff996b8435})
 ----------
@@ -610,14 +649,14 @@ The name of the StateType ({5fa79319-756b-4b2c-87b1-59ff996b8435}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1134"/>
+        <location filename="../builddir/plugininfo.h" line="1226"/>
         <source>Current (Phase A) changed</source>
         <extracomment>The name of the EventType ({5fa79319-756b-4b2c-87b1-59ff996b8435}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1137"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1140"/>
+        <location filename="../builddir/plugininfo.h" line="1229"/>
+        <location filename="../builddir/plugininfo.h" line="1232"/>
         <source>Current (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPhaseB, ID: {a4151601-fe77-418a-a2c1-6376e32da3bd})
 ----------
@@ -625,14 +664,14 @@ The name of the StateType ({a4151601-fe77-418a-a2c1-6376e32da3bd}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1143"/>
+        <location filename="../builddir/plugininfo.h" line="1235"/>
         <source>Current (Phase B) changed</source>
         <extracomment>The name of the EventType ({a4151601-fe77-418a-a2c1-6376e32da3bd}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1146"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1149"/>
+        <location filename="../builddir/plugininfo.h" line="1238"/>
+        <location filename="../builddir/plugininfo.h" line="1241"/>
         <source>Current (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPhaseC, ID: {ab78aa9c-aa73-4f5d-8d21-38c83c5e9e7c})
 ----------
@@ -640,24 +679,36 @@ The name of the StateType ({ab78aa9c-aa73-4f5d-8d21-38c83c5e9e7c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1152"/>
+        <location filename="../builddir/plugininfo.h" line="1244"/>
         <source>Current (Phase C) changed</source>
         <extracomment>The name of the EventType ({ab78aa9c-aa73-4f5d-8d21-38c83c5e9e7c}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1155"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1158"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1161"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1164"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1167"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1170"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1173"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1176"/>
+        <location filename="../builddir/plugininfo.h" line="1247"/>
+        <source>Current changed</source>
+        <extracomment>The name of the EventType ({1d457f50-0951-4ba5-8d8e-b79ea5a75535}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1250"/>
+        <location filename="../builddir/plugininfo.h" line="1253"/>
+        <location filename="../builddir/plugininfo.h" line="1256"/>
+        <location filename="../builddir/plugininfo.h" line="1259"/>
+        <location filename="../builddir/plugininfo.h" line="1262"/>
+        <location filename="../builddir/plugininfo.h" line="1265"/>
+        <location filename="../builddir/plugininfo.h" line="1268"/>
+        <location filename="../builddir/plugininfo.h" line="1271"/>
+        <location filename="../builddir/plugininfo.h" line="1274"/>
+        <location filename="../builddir/plugininfo.h" line="1277"/>
         <source>Current firmware version</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: currentVersion, ID: {e2d98172-5833-454b-9b4b-04693c6b9232})
 ----------
 The name of the StateType ({e2d98172-5833-454b-9b4b-04693c6b9232}) of ThingClass shellyMotion
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: currentVersion, ID: {f5f03ab2-fec6-4502-8a47-100211878a8a})
+----------
+The name of the StateType ({f5f03ab2-fec6-4502-8a47-100211878a8a}) of ThingClass shellyEm
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: currentVersion, ID: {f9ddb9f1-1251-484e-bdce-531d584d8f6a})
 ----------
@@ -673,12 +724,15 @@ The name of the StateType ({b17a7df2-952b-4cdd-8d28-a8e8582b49d4}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1179"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1182"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1185"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1188"/>
+        <location filename="../builddir/plugininfo.h" line="1280"/>
+        <location filename="../builddir/plugininfo.h" line="1283"/>
+        <location filename="../builddir/plugininfo.h" line="1286"/>
+        <location filename="../builddir/plugininfo.h" line="1289"/>
+        <location filename="../builddir/plugininfo.h" line="1292"/>
         <source>Current firmware version changed</source>
         <extracomment>The name of the EventType ({e2d98172-5833-454b-9b4b-04693c6b9232}) of ThingClass shellyMotion
+----------
+The name of the EventType ({f5f03ab2-fec6-4502-8a47-100211878a8a}) of ThingClass shellyEm
 ----------
 The name of the EventType ({f9ddb9f1-1251-484e-bdce-531d584d8f6a}) of ThingClass shellyEm3
 ----------
@@ -688,37 +742,46 @@ The name of the EventType ({b17a7df2-952b-4cdd-8d28-a8e8582b49d4}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1191"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1194"/>
+        <location filename="../builddir/plugininfo.h" line="1295"/>
+        <location filename="../builddir/plugininfo.h" line="1298"/>
+        <location filename="../builddir/plugininfo.h" line="1301"/>
+        <location filename="../builddir/plugininfo.h" line="1304"/>
         <source>Current power</source>
-        <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPower, ID: {3fc2a87f-cd33-4d1f-b7a6-75ffcb4e7cc4})
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: currentPower, ID: {a85041e8-a19e-4695-8404-3e3a06b1e92a})
+----------
+The name of the StateType ({a85041e8-a19e-4695-8404-3e3a06b1e92a}) of ThingClass shellyEmChannel
+----------
+The name of the ParamType (ThingClass: shellyEm3, EventType: currentPower, ID: {3fc2a87f-cd33-4d1f-b7a6-75ffcb4e7cc4})
 ----------
 The name of the StateType ({3fc2a87f-cd33-4d1f-b7a6-75ffcb4e7cc4}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1197"/>
+        <location filename="../builddir/plugininfo.h" line="1307"/>
+        <location filename="../builddir/plugininfo.h" line="1310"/>
         <source>Current power changed</source>
-        <extracomment>The name of the EventType ({3fc2a87f-cd33-4d1f-b7a6-75ffcb4e7cc4}) of ThingClass shellyEm3</extracomment>
+        <extracomment>The name of the EventType ({a85041e8-a19e-4695-8404-3e3a06b1e92a}) of ThingClass shellyEmChannel
+----------
+The name of the EventType ({3fc2a87f-cd33-4d1f-b7a6-75ffcb4e7cc4}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1200"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1203"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1206"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1209"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1212"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1215"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1218"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1221"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1224"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1227"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1230"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1233"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1236"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1239"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1242"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1245"/>
+        <location filename="../builddir/plugininfo.h" line="1313"/>
+        <location filename="../builddir/plugininfo.h" line="1316"/>
+        <location filename="../builddir/plugininfo.h" line="1319"/>
+        <location filename="../builddir/plugininfo.h" line="1322"/>
+        <location filename="../builddir/plugininfo.h" line="1325"/>
+        <location filename="../builddir/plugininfo.h" line="1328"/>
+        <location filename="../builddir/plugininfo.h" line="1331"/>
+        <location filename="../builddir/plugininfo.h" line="1334"/>
+        <location filename="../builddir/plugininfo.h" line="1337"/>
+        <location filename="../builddir/plugininfo.h" line="1340"/>
+        <location filename="../builddir/plugininfo.h" line="1343"/>
+        <location filename="../builddir/plugininfo.h" line="1346"/>
+        <location filename="../builddir/plugininfo.h" line="1349"/>
+        <location filename="../builddir/plugininfo.h" line="1352"/>
+        <location filename="../builddir/plugininfo.h" line="1355"/>
+        <location filename="../builddir/plugininfo.h" line="1358"/>
         <source>Current power consumption</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, EventType: currentPower, ID: {0d7cb1cf-3fff-4d0b-96c2-c02e9a92af57})
 ----------
@@ -754,10 +817,10 @@ The name of the StateType ({3ec03053-7cf5-44fb-ad92-041eed9edd9a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1248"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1251"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1254"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1257"/>
+        <location filename="../builddir/plugininfo.h" line="1361"/>
+        <location filename="../builddir/plugininfo.h" line="1364"/>
+        <location filename="../builddir/plugininfo.h" line="1367"/>
+        <location filename="../builddir/plugininfo.h" line="1370"/>
         <source>Current power consumption changed</source>
         <extracomment>The name of the EventType ({b3336ca6-1577-4230-8708-98875148606e}) of ThingClass shellyDimmer
 ----------
@@ -769,13 +832,13 @@ The name of the EventType ({3ec03053-7cf5-44fb-ad92-041eed9edd9a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1260"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1263"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1266"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1269"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1272"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1275"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1278"/>
+        <location filename="../builddir/plugininfo.h" line="1373"/>
+        <location filename="../builddir/plugininfo.h" line="1376"/>
+        <location filename="../builddir/plugininfo.h" line="1379"/>
+        <location filename="../builddir/plugininfo.h" line="1382"/>
+        <location filename="../builddir/plugininfo.h" line="1385"/>
+        <location filename="../builddir/plugininfo.h" line="1388"/>
+        <location filename="../builddir/plugininfo.h" line="1391"/>
         <source>Default state</source>
         <extracomment>The name of the ParamType (ThingClass: shellySocketPM, Type: settings, ID: {9880a51b-57da-4b65-a0ec-23eb0fdcb8ac})
 ----------
@@ -793,8 +856,8 @@ The name of the ParamType (ThingClass: shellyPlug, Type: settings, ID: {40f251db
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1281"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1284"/>
+        <location filename="../builddir/plugininfo.h" line="1394"/>
+        <location filename="../builddir/plugininfo.h" line="1397"/>
         <source>Firmware update status</source>
         <extracomment>The name of the ParamType (ThingClass: shellyDimmer, EventType: updateStatus, ID: {8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e})
 ----------
@@ -802,30 +865,30 @@ The name of the StateType ({8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1287"/>
+        <location filename="../builddir/plugininfo.h" line="1400"/>
         <source>Firmware update status changed</source>
         <extracomment>The name of the EventType ({8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e}) of ThingClass shellyDimmer</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1290"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1293"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1296"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1299"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1302"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1305"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1308"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1311"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1314"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1317"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1320"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1323"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1326"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1329"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1332"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1335"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1338"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1341"/>
+        <location filename="../builddir/plugininfo.h" line="1403"/>
+        <location filename="../builddir/plugininfo.h" line="1406"/>
+        <location filename="../builddir/plugininfo.h" line="1409"/>
+        <location filename="../builddir/plugininfo.h" line="1412"/>
+        <location filename="../builddir/plugininfo.h" line="1415"/>
+        <location filename="../builddir/plugininfo.h" line="1418"/>
+        <location filename="../builddir/plugininfo.h" line="1421"/>
+        <location filename="../builddir/plugininfo.h" line="1424"/>
+        <location filename="../builddir/plugininfo.h" line="1427"/>
+        <location filename="../builddir/plugininfo.h" line="1430"/>
+        <location filename="../builddir/plugininfo.h" line="1433"/>
+        <location filename="../builddir/plugininfo.h" line="1436"/>
+        <location filename="../builddir/plugininfo.h" line="1439"/>
+        <location filename="../builddir/plugininfo.h" line="1442"/>
+        <location filename="../builddir/plugininfo.h" line="1445"/>
+        <location filename="../builddir/plugininfo.h" line="1448"/>
+        <location filename="../builddir/plugininfo.h" line="1451"/>
+        <location filename="../builddir/plugininfo.h" line="1454"/>
         <source>Firmware version</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: currentVersion, ID: {33e7d186-7c6b-4c4e-89c3-80362ef76615})
 ----------
@@ -865,15 +928,15 @@ The name of the StateType ({e033cca0-03fa-4b2e-9d7b-d4a2c8ffbb8c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1344"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1347"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1350"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1353"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1356"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1359"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1362"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1365"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1368"/>
+        <location filename="../builddir/plugininfo.h" line="1457"/>
+        <location filename="../builddir/plugininfo.h" line="1460"/>
+        <location filename="../builddir/plugininfo.h" line="1463"/>
+        <location filename="../builddir/plugininfo.h" line="1466"/>
+        <location filename="../builddir/plugininfo.h" line="1469"/>
+        <location filename="../builddir/plugininfo.h" line="1472"/>
+        <location filename="../builddir/plugininfo.h" line="1475"/>
+        <location filename="../builddir/plugininfo.h" line="1478"/>
+        <location filename="../builddir/plugininfo.h" line="1481"/>
         <source>Firmware version changed</source>
         <extracomment>The name of the EventType ({33e7d186-7c6b-4c4e-89c3-80362ef76615}) of ThingClass shellyI3
 ----------
@@ -895,8 +958,8 @@ The name of the EventType ({e033cca0-03fa-4b2e-9d7b-d4a2c8ffbb8c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1371"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1374"/>
+        <location filename="../builddir/plugininfo.h" line="1484"/>
+        <location filename="../builddir/plugininfo.h" line="1487"/>
         <source>Humidity</source>
         <extracomment>The name of the ParamType (ThingClass: shellyHT, EventType: humidity, ID: {18a3c71b-f4ef-45d8-a5db-58f533fb6e19})
 ----------
@@ -904,14 +967,14 @@ The name of the StateType ({18a3c71b-f4ef-45d8-a5db-58f533fb6e19}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1377"/>
+        <location filename="../builddir/plugininfo.h" line="1490"/>
         <source>Humidity changed</source>
         <extracomment>The name of the EventType ({18a3c71b-f4ef-45d8-a5db-58f533fb6e19}) of ThingClass shellyHT</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1380"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1383"/>
+        <location filename="../builddir/plugininfo.h" line="1493"/>
+        <location filename="../builddir/plugininfo.h" line="1496"/>
         <source>Input 1</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: input1, ID: {61e98cc9-4449-4fb2-818e-692303244ce2})
 ----------
@@ -919,14 +982,14 @@ The name of the StateType ({61e98cc9-4449-4fb2-818e-692303244ce2}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1386"/>
+        <location filename="../builddir/plugininfo.h" line="1499"/>
         <source>Input 1 changed</source>
         <extracomment>The name of the EventType ({61e98cc9-4449-4fb2-818e-692303244ce2}) of ThingClass shellyI3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1389"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1392"/>
+        <location filename="../builddir/plugininfo.h" line="1502"/>
+        <location filename="../builddir/plugininfo.h" line="1505"/>
         <source>Input 2</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: input2, ID: {04497ff2-a231-4d3d-adeb-66275a3b128b})
 ----------
@@ -934,14 +997,14 @@ The name of the StateType ({04497ff2-a231-4d3d-adeb-66275a3b128b}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1395"/>
+        <location filename="../builddir/plugininfo.h" line="1508"/>
         <source>Input 2 changed</source>
         <extracomment>The name of the EventType ({04497ff2-a231-4d3d-adeb-66275a3b128b}) of ThingClass shellyI3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1398"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1401"/>
+        <location filename="../builddir/plugininfo.h" line="1511"/>
+        <location filename="../builddir/plugininfo.h" line="1514"/>
         <source>Input 3</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: input3, ID: {5895fc2d-19a4-40c2-8522-7c4462e55a3e})
 ----------
@@ -949,20 +1012,20 @@ The name of the StateType ({5895fc2d-19a4-40c2-8522-7c4462e55a3e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1404"/>
+        <location filename="../builddir/plugininfo.h" line="1517"/>
         <source>Input 3 changed</source>
         <extracomment>The name of the EventType ({5895fc2d-19a4-40c2-8522-7c4462e55a3e}) of ThingClass shellyI3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1407"/>
+        <location filename="../builddir/plugininfo.h" line="1520"/>
         <source>Invert button</source>
         <extracomment>The name of the ParamType (ThingClass: shellySwitch, Type: settings, ID: {f31eb52b-9aaf-409d-8bba-badda7c1a249})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1410"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1413"/>
+        <location filename="../builddir/plugininfo.h" line="1523"/>
+        <location filename="../builddir/plugininfo.h" line="1526"/>
         <source>Light intensity</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: lightIntensity, ID: {a1e12487-ebab-4993-a075-78275aac7b0d})
 ----------
@@ -970,32 +1033,32 @@ The name of the StateType ({a1e12487-ebab-4993-a075-78275aac7b0d}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1416"/>
+        <location filename="../builddir/plugininfo.h" line="1529"/>
         <source>Light intensity changed</source>
         <extracomment>The name of the EventType ({a1e12487-ebab-4993-a075-78275aac7b0d}) of ThingClass shellyMotion</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1419"/>
+        <location filename="../builddir/plugininfo.h" line="1532"/>
         <source>Long Pressed</source>
         <extracomment>The name of the EventType ({bb966833-a7a6-4ad7-b5f5-057b38ebb036}) of ThingClass shellyI3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1422"/>
+        <location filename="../builddir/plugininfo.h" line="1535"/>
         <source>Longpress duration</source>
         <extracomment>The name of the ParamType (ThingClass: shellyButton1, Type: settings, ID: {b98423a8-c758-4dae-b979-e22446d06b22})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1425"/>
+        <location filename="../builddir/plugininfo.h" line="1538"/>
         <source>Longpressed</source>
         <extracomment>The name of the EventType ({47cab6b6-eed3-4628-b3ad-2ceda26d6f84}) of ThingClass shellyButton1</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1428"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1431"/>
+        <location filename="../builddir/plugininfo.h" line="1541"/>
+        <location filename="../builddir/plugininfo.h" line="1544"/>
         <source>Max time between multiple presses</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, Type: settings, ID: {52699a1b-3526-4f60-83ec-f35faa863597})
 ----------
@@ -1003,20 +1066,20 @@ The name of the ParamType (ThingClass: shellyButton1, Type: settings, ID: {b1f5a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1434"/>
+        <location filename="../builddir/plugininfo.h" line="1547"/>
         <source>Maximum longpress duration</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, Type: settings, ID: {6485685e-0097-48db-958b-43126c6fb5a6})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1437"/>
+        <location filename="../builddir/plugininfo.h" line="1550"/>
         <source>Minimum longpress duration</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, Type: settings, ID: {a04fda4b-f187-477c-b7a8-b56613bf9264})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1440"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1443"/>
+        <location filename="../builddir/plugininfo.h" line="1553"/>
+        <location filename="../builddir/plugininfo.h" line="1556"/>
         <source>Moving</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, EventType: moving, ID: {2729d4e0-c38c-47b8-a0e8-26959090fe74})
 ----------
@@ -1024,18 +1087,18 @@ The name of the StateType ({2729d4e0-c38c-47b8-a0e8-26959090fe74}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1446"/>
+        <location filename="../builddir/plugininfo.h" line="1559"/>
         <source>Moving changed</source>
         <extracomment>The name of the EventType ({2729d4e0-c38c-47b8-a0e8-26959090fe74}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1449"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1452"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1455"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1458"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1461"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1464"/>
+        <location filename="../builddir/plugininfo.h" line="1562"/>
+        <location filename="../builddir/plugininfo.h" line="1565"/>
+        <location filename="../builddir/plugininfo.h" line="1568"/>
+        <location filename="../builddir/plugininfo.h" line="1571"/>
+        <location filename="../builddir/plugininfo.h" line="1574"/>
+        <location filename="../builddir/plugininfo.h" line="1577"/>
         <source>On</source>
         <extracomment>The name of the ParamType (ThingClass: shellyDimmer, ActionType: power, ID: {e4a6ac87-31fb-4516-9cf3-f135621e902c})
 ----------
@@ -1051,8 +1114,8 @@ The name of the StateType ({14abcd30-9db2-4065-ae81-501a55fbb145}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1467"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1470"/>
+        <location filename="../builddir/plugininfo.h" line="1580"/>
+        <location filename="../builddir/plugininfo.h" line="1583"/>
         <source>On/Off</source>
         <extracomment>The name of the ParamType (ThingClass: shellySwitch, EventType: power, ID: {20f74d88-0683-4d3a-9513-6b29b5112b7b})
 ----------
@@ -1060,33 +1123,36 @@ The name of the StateType ({20f74d88-0683-4d3a-9513-6b29b5112b7b}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1473"/>
+        <location filename="../builddir/plugininfo.h" line="1586"/>
         <source>On/Off toggled</source>
         <extracomment>The name of the EventType ({20f74d88-0683-4d3a-9513-6b29b5112b7b}) of ThingClass shellySwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1476"/>
+        <location filename="../builddir/plugininfo.h" line="1589"/>
         <source>Open</source>
         <extracomment>The name of the ActionType ({b96a8f85-c39e-499b-abbd-40b18788e907}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1479"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1482"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1485"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1488"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1491"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1494"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1497"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1500"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1503"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1506"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1509"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1512"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1515"/>
+        <location filename="../builddir/plugininfo.h" line="1592"/>
+        <location filename="../builddir/plugininfo.h" line="1595"/>
+        <location filename="../builddir/plugininfo.h" line="1598"/>
+        <location filename="../builddir/plugininfo.h" line="1601"/>
+        <location filename="../builddir/plugininfo.h" line="1604"/>
+        <location filename="../builddir/plugininfo.h" line="1607"/>
+        <location filename="../builddir/plugininfo.h" line="1610"/>
+        <location filename="../builddir/plugininfo.h" line="1613"/>
+        <location filename="../builddir/plugininfo.h" line="1616"/>
+        <location filename="../builddir/plugininfo.h" line="1619"/>
+        <location filename="../builddir/plugininfo.h" line="1622"/>
+        <location filename="../builddir/plugininfo.h" line="1625"/>
+        <location filename="../builddir/plugininfo.h" line="1628"/>
+        <location filename="../builddir/plugininfo.h" line="1631"/>
         <source>Password (optional)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, Type: thing, ID: {b6a48fc4-5016-47d9-8454-c64686120ee1})
+----------
+The name of the ParamType (ThingClass: shellyEm, Type: thing, ID: {66c1cd5d-c1c4-4d23-8e83-d5f5563abb8e})
 ----------
 The name of the ParamType (ThingClass: shellyEm3, Type: thing, ID: {29aee8f6-ed40-41c5-83c9-32c8aa89c7ea})
 ----------
@@ -1114,8 +1180,8 @@ The name of the ParamType (ThingClass: shelly1, Type: thing, ID: {d29b8399-bfa6-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1518"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1521"/>
+        <location filename="../builddir/plugininfo.h" line="1634"/>
+        <location filename="../builddir/plugininfo.h" line="1637"/>
         <source>Person is present</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: isPresent, ID: {45c0cc07-0e13-449c-86a7-ab65d5cdf637})
 ----------
@@ -1123,9 +1189,9 @@ The name of the StateType ({45c0cc07-0e13-449c-86a7-ab65d5cdf637}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1524"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1527"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1530"/>
+        <location filename="../builddir/plugininfo.h" line="1640"/>
+        <location filename="../builddir/plugininfo.h" line="1643"/>
+        <location filename="../builddir/plugininfo.h" line="1646"/>
         <source>Position</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, ActionType: percentage, ID: {86270b8b-bce4-4d8a-9bc9-d72af36b991c})
 ----------
@@ -1135,30 +1201,30 @@ The name of the StateType ({86270b8b-bce4-4d8a-9bc9-d72af36b991c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1533"/>
+        <location filename="../builddir/plugininfo.h" line="1649"/>
         <source>Position changed</source>
         <extracomment>The name of the EventType ({86270b8b-bce4-4d8a-9bc9-d72af36b991c}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1536"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1539"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1542"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1545"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1548"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1551"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1554"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1557"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1560"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1563"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1566"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1569"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1572"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1575"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1578"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1581"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1584"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1587"/>
+        <location filename="../builddir/plugininfo.h" line="1652"/>
+        <location filename="../builddir/plugininfo.h" line="1655"/>
+        <location filename="../builddir/plugininfo.h" line="1658"/>
+        <location filename="../builddir/plugininfo.h" line="1661"/>
+        <location filename="../builddir/plugininfo.h" line="1664"/>
+        <location filename="../builddir/plugininfo.h" line="1667"/>
+        <location filename="../builddir/plugininfo.h" line="1670"/>
+        <location filename="../builddir/plugininfo.h" line="1673"/>
+        <location filename="../builddir/plugininfo.h" line="1676"/>
+        <location filename="../builddir/plugininfo.h" line="1679"/>
+        <location filename="../builddir/plugininfo.h" line="1682"/>
+        <location filename="../builddir/plugininfo.h" line="1685"/>
+        <location filename="../builddir/plugininfo.h" line="1688"/>
+        <location filename="../builddir/plugininfo.h" line="1691"/>
+        <location filename="../builddir/plugininfo.h" line="1694"/>
+        <location filename="../builddir/plugininfo.h" line="1697"/>
+        <location filename="../builddir/plugininfo.h" line="1700"/>
+        <location filename="../builddir/plugininfo.h" line="1703"/>
         <source>Power</source>
         <extracomment>The name of the ParamType (ThingClass: shellySocketPM, ActionType: power, ID: {d6adeab6-c91d-44ba-8d01-9b5b9b7368be})
 ----------
@@ -1198,9 +1264,9 @@ The name of the StateType ({72d7dbba-757c-4b03-a092-1d3f374fa961}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1590"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1593"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1596"/>
+        <location filename="../builddir/plugininfo.h" line="1706"/>
+        <location filename="../builddir/plugininfo.h" line="1709"/>
+        <location filename="../builddir/plugininfo.h" line="1712"/>
         <source>Power channel 1</source>
         <extracomment>The name of the ParamType (ThingClass: shelly25, ActionType: channel1, ID: {118d572c-cc12-4037-82d8-7d8f6fb4a364})
 ----------
@@ -1210,9 +1276,9 @@ The name of the StateType ({118d572c-cc12-4037-82d8-7d8f6fb4a364}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1599"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1602"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1605"/>
+        <location filename="../builddir/plugininfo.h" line="1715"/>
+        <location filename="../builddir/plugininfo.h" line="1718"/>
+        <location filename="../builddir/plugininfo.h" line="1721"/>
         <source>Power channel 2</source>
         <extracomment>The name of the ParamType (ThingClass: shelly25, ActionType: channel2, ID: {7952aec0-cd27-4ef9-87a6-c499564bc1d4})
 ----------
@@ -1222,8 +1288,8 @@ The name of the StateType ({7952aec0-cd27-4ef9-87a6-c499564bc1d4}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1608"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1611"/>
+        <location filename="../builddir/plugininfo.h" line="1724"/>
+        <location filename="../builddir/plugininfo.h" line="1727"/>
         <source>Power consumption</source>
         <extracomment>The name of the ParamType (ThingClass: shellyPlug, EventType: currentPower, ID: {202ea409-650e-48b2-9aae-d4ebe9d505fd})
 ----------
@@ -1231,11 +1297,11 @@ The name of the StateType ({202ea409-650e-48b2-9aae-d4ebe9d505fd}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1614"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1617"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1620"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1623"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1626"/>
+        <location filename="../builddir/plugininfo.h" line="1730"/>
+        <location filename="../builddir/plugininfo.h" line="1733"/>
+        <location filename="../builddir/plugininfo.h" line="1736"/>
+        <location filename="../builddir/plugininfo.h" line="1739"/>
+        <location filename="../builddir/plugininfo.h" line="1742"/>
         <source>Power consumption changed</source>
         <extracomment>The name of the EventType ({0d7cb1cf-3fff-4d0b-96c2-c02e9a92af57}) of ThingClass shellyRoller
 ----------
@@ -1249,8 +1315,17 @@ The name of the EventType ({202ea409-650e-48b2-9aae-d4ebe9d505fd}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1629"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1632"/>
+        <location filename="../builddir/plugininfo.h" line="1745"/>
+        <location filename="../builddir/plugininfo.h" line="1748"/>
+        <source>Power factor</source>
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: powerFactorPhaseA, ID: {fd5898ce-c8c9-422d-a32a-996d4004ca15})
+----------
+The name of the StateType ({fd5898ce-c8c9-422d-a32a-996d4004ca15}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1751"/>
+        <location filename="../builddir/plugininfo.h" line="1754"/>
         <source>Power factor (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: powerFactorPhaseA, ID: {50be490b-ba5d-4b1f-806c-9e15b915c1eb})
 ----------
@@ -1258,14 +1333,14 @@ The name of the StateType ({50be490b-ba5d-4b1f-806c-9e15b915c1eb}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1635"/>
+        <location filename="../builddir/plugininfo.h" line="1757"/>
         <source>Power factor (Phase A) changed</source>
         <extracomment>The name of the EventType ({50be490b-ba5d-4b1f-806c-9e15b915c1eb}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1638"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1641"/>
+        <location filename="../builddir/plugininfo.h" line="1760"/>
+        <location filename="../builddir/plugininfo.h" line="1763"/>
         <source>Power factor (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: powerFactorPhaseB, ID: {f56504bb-0c6c-4425-831c-771b23aadf19})
 ----------
@@ -1273,14 +1348,14 @@ The name of the StateType ({f56504bb-0c6c-4425-831c-771b23aadf19}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1644"/>
+        <location filename="../builddir/plugininfo.h" line="1766"/>
         <source>Power factor (Phase B) changed</source>
         <extracomment>The name of the EventType ({f56504bb-0c6c-4425-831c-771b23aadf19}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1647"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1650"/>
+        <location filename="../builddir/plugininfo.h" line="1769"/>
+        <location filename="../builddir/plugininfo.h" line="1772"/>
         <source>Power factor (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: powerFactorPhaseC, ID: {2e2c622f-1575-4d0b-a0c0-78bc03748c1e})
 ----------
@@ -1288,14 +1363,20 @@ The name of the StateType ({2e2c622f-1575-4d0b-a0c0-78bc03748c1e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1653"/>
+        <location filename="../builddir/plugininfo.h" line="1775"/>
         <source>Power factor (Phase C) changed</source>
         <extracomment>The name of the EventType ({2e2c622f-1575-4d0b-a0c0-78bc03748c1e}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1656"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1659"/>
+        <location filename="../builddir/plugininfo.h" line="1778"/>
+        <source>Power factor changed</source>
+        <extracomment>The name of the EventType ({fd5898ce-c8c9-422d-a32a-996d4004ca15}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1781"/>
+        <location filename="../builddir/plugininfo.h" line="1784"/>
         <source>Power usage (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPowerPhaseA, ID: {432ba180-936d-4700-907e-766264bfdd35})
 ----------
@@ -1303,14 +1384,14 @@ The name of the StateType ({432ba180-936d-4700-907e-766264bfdd35}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1662"/>
+        <location filename="../builddir/plugininfo.h" line="1787"/>
         <source>Power usage (Phase A) changed</source>
         <extracomment>The name of the EventType ({432ba180-936d-4700-907e-766264bfdd35}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1665"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1668"/>
+        <location filename="../builddir/plugininfo.h" line="1790"/>
+        <location filename="../builddir/plugininfo.h" line="1793"/>
         <source>Power usage (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPowerPhaseB, ID: {02edeedb-8a93-41f8-8bc5-09031b7d2d4d})
 ----------
@@ -1318,14 +1399,14 @@ The name of the StateType ({02edeedb-8a93-41f8-8bc5-09031b7d2d4d}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1671"/>
+        <location filename="../builddir/plugininfo.h" line="1796"/>
         <source>Power usage (Phase B) changed</source>
         <extracomment>The name of the EventType ({02edeedb-8a93-41f8-8bc5-09031b7d2d4d}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1674"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1677"/>
+        <location filename="../builddir/plugininfo.h" line="1799"/>
+        <location filename="../builddir/plugininfo.h" line="1802"/>
         <source>Power usage (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: currentPowerPhaseC, ID: {82277a4e-49cc-45f4-8b29-470ce99333b6})
 ----------
@@ -1333,29 +1414,38 @@ The name of the StateType ({82277a4e-49cc-45f4-8b29-470ce99333b6}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1680"/>
+        <location filename="../builddir/plugininfo.h" line="1805"/>
         <source>Power usage (Phase C) changed</source>
         <extracomment>The name of the EventType ({82277a4e-49cc-45f4-8b29-470ce99333b6}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1683"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1686"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1689"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1692"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1695"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1698"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1701"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1704"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1707"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1710"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1713"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1716"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1719"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1722"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1725"/>
+        <location filename="../builddir/plugininfo.h" line="1808"/>
+        <location filename="../builddir/plugininfo.h" line="1811"/>
+        <location filename="../builddir/plugininfo.h" line="1814"/>
+        <location filename="../builddir/plugininfo.h" line="1817"/>
+        <location filename="../builddir/plugininfo.h" line="1820"/>
+        <location filename="../builddir/plugininfo.h" line="1823"/>
+        <location filename="../builddir/plugininfo.h" line="1826"/>
+        <location filename="../builddir/plugininfo.h" line="1829"/>
+        <location filename="../builddir/plugininfo.h" line="1832"/>
+        <location filename="../builddir/plugininfo.h" line="1835"/>
+        <location filename="../builddir/plugininfo.h" line="1838"/>
+        <location filename="../builddir/plugininfo.h" line="1841"/>
+        <location filename="../builddir/plugininfo.h" line="1844"/>
+        <location filename="../builddir/plugininfo.h" line="1847"/>
+        <location filename="../builddir/plugininfo.h" line="1850"/>
+        <location filename="../builddir/plugininfo.h" line="1853"/>
+        <location filename="../builddir/plugininfo.h" line="1856"/>
+        <location filename="../builddir/plugininfo.h" line="1859"/>
         <source>Powered</source>
-        <extracomment>The name of the ParamType (ThingClass: shellyEm3, ActionType: power, ID: {639dda4c-e354-43ca-a785-fbe6806986e2})
+        <extracomment>The name of the ParamType (ThingClass: shellyEm, ActionType: power, ID: {9a2c6304-91d6-45fc-8ef7-75355457eca5})
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: power, ID: {9a2c6304-91d6-45fc-8ef7-75355457eca5})
+----------
+The name of the StateType ({9a2c6304-91d6-45fc-8ef7-75355457eca5}) of ThingClass shellyEm
+----------
+The name of the ParamType (ThingClass: shellyEm3, ActionType: power, ID: {639dda4c-e354-43ca-a785-fbe6806986e2})
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: power, ID: {639dda4c-e354-43ca-a785-fbe6806986e2})
 ----------
@@ -1387,20 +1477,20 @@ The name of the StateType ({5b7eeb6c-6113-41f3-a61b-3076d087c9fe}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1728"/>
+        <location filename="../builddir/plugininfo.h" line="1862"/>
         <source>Presence detected</source>
         <extracomment>The name of the EventType ({45c0cc07-0e13-449c-86a7-ab65d5cdf637}) of ThingClass shellyMotion</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1731"/>
+        <location filename="../builddir/plugininfo.h" line="1865"/>
         <source>Press count</source>
         <extracomment>The name of the ParamType (ThingClass: shellyI3, EventType: pressed, ID: {0ed31339-7457-443c-b6e3-3b8ce3fc2bd8})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1734"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1737"/>
+        <location filename="../builddir/plugininfo.h" line="1868"/>
+        <location filename="../builddir/plugininfo.h" line="1871"/>
         <source>Pressed</source>
         <extracomment>The name of the EventType ({41498655-1943-4b46-ac36-adea7bafab87}) of ThingClass shellySwitch
 ----------
@@ -1408,15 +1498,30 @@ The name of the EventType ({25955cb9-dc0e-48dc-91b1-ba27e30a3a3f}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1740"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1743"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1746"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1749"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1752"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1755"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1758"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1761"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1764"/>
+        <location filename="../builddir/plugininfo.h" line="1874"/>
+        <location filename="../builddir/plugininfo.h" line="1877"/>
+        <source>Reactive power</source>
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: reactivePowerPhaseA, ID: {abdb5b38-05d3-4c12-aed2-f7c560d6b4e8})
+----------
+The name of the StateType ({abdb5b38-05d3-4c12-aed2-f7c560d6b4e8}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1880"/>
+        <source>Reactive power changed</source>
+        <extracomment>The name of the EventType ({abdb5b38-05d3-4c12-aed2-f7c560d6b4e8}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1883"/>
+        <location filename="../builddir/plugininfo.h" line="1886"/>
+        <location filename="../builddir/plugininfo.h" line="1889"/>
+        <location filename="../builddir/plugininfo.h" line="1892"/>
+        <location filename="../builddir/plugininfo.h" line="1895"/>
+        <location filename="../builddir/plugininfo.h" line="1898"/>
+        <location filename="../builddir/plugininfo.h" line="1901"/>
+        <location filename="../builddir/plugininfo.h" line="1904"/>
+        <location filename="../builddir/plugininfo.h" line="1907"/>
         <source>Reboot</source>
         <extracomment>The name of the ActionType ({162e7791-6890-4075-8e57-a4c15b9359bb}) of ThingClass shellyI3
 ----------
@@ -1438,20 +1543,23 @@ The name of the ActionType ({b4067d54-36c5-4d30-bbc3-c8c712d6fd32}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1767"/>
+        <location filename="../builddir/plugininfo.h" line="1910"/>
         <source>Remain awake</source>
         <extracomment>The name of the ParamType (ThingClass: shellyButton1, Type: settings, ID: {45d4628d-7d8c-43b6-ac86-6232caa5816f})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1770"/>
+        <location filename="../builddir/plugininfo.h" line="1913"/>
+        <location filename="../builddir/plugininfo.h" line="1916"/>
         <source>Reset data</source>
-        <extracomment>The name of the ActionType ({87772e43-1bf7-496b-b8be-46db39f71700}) of ThingClass shellyEm3</extracomment>
+        <extracomment>The name of the ActionType ({09f6d675-4c22-4a9f-b9f2-3349ab947529}) of ThingClass shellyEm
+----------
+The name of the ActionType ({87772e43-1bf7-496b-b8be-46db39f71700}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1773"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1776"/>
+        <location filename="../builddir/plugininfo.h" line="1919"/>
+        <location filename="../builddir/plugininfo.h" line="1922"/>
         <source>Set brightness</source>
         <extracomment>The name of the ActionType ({f41c93ac-6911-45fc-9221-7dd26bf65fd0}) of ThingClass shellyDimmer
 ----------
@@ -1459,26 +1567,26 @@ The name of the ActionType ({3f74eb92-d95b-48c2-8ac6-29bea9f65ce3}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1779"/>
+        <location filename="../builddir/plugininfo.h" line="1925"/>
         <source>Set color</source>
         <extracomment>The name of the ActionType ({6ef7c686-350d-4069-9c41-9b90b3906748}) of ThingClass shellyRgbw2</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1782"/>
+        <location filename="../builddir/plugininfo.h" line="1928"/>
         <source>Set color temperature</source>
         <extracomment>The name of the ActionType ({a32a457f-fdc0-46ce-9106-6f9d4f4a6b16}) of ThingClass shellyRgbw2</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1785"/>
+        <location filename="../builddir/plugininfo.h" line="1931"/>
         <source>Set position</source>
         <extracomment>The name of the ActionType ({86270b8b-bce4-4d8a-9bc9-d72af36b991c}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1788"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1791"/>
+        <location filename="../builddir/plugininfo.h" line="1934"/>
+        <location filename="../builddir/plugininfo.h" line="1937"/>
         <source>Shelly</source>
         <extracomment>The name of the vendor ({d8e45fc2-90af-492e-8305-50baa1ec4c18})
 ----------
@@ -1486,75 +1594,93 @@ The name of the plugin shelly ({6162773b-0435-408c-a4f8-7860d38031a9})</extracom
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1794"/>
+        <location filename="../builddir/plugininfo.h" line="1940"/>
         <source>Shelly 1</source>
         <extracomment>The name of the ThingClass ({f810b66a-7177-4397-9771-4229abaabbb6})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1797"/>
+        <location filename="../builddir/plugininfo.h" line="1943"/>
         <source>Shelly 1L</source>
         <extracomment>The name of the ThingClass ({20754114-1591-48b5-af2f-8c9966adb7c4})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1800"/>
+        <location filename="../builddir/plugininfo.h" line="1946"/>
         <source>Shelly 1PM</source>
         <extracomment>The name of the ThingClass ({30e74e9f-57f4-4bbc-b0df-f2c4f28b2f06})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1803"/>
+        <location filename="../builddir/plugininfo.h" line="1949"/>
         <source>Shelly 2</source>
         <extracomment>The name of the ThingClass ({f277d3a3-62e0-49c1-90b2-4108578e80bf})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1806"/>
+        <location filename="../builddir/plugininfo.h" line="1952"/>
         <source>Shelly 2.5</source>
         <extracomment>The name of the ThingClass ({465efb0d-da68-4177-a040-940c7f451e29})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1809"/>
+        <location filename="../builddir/plugininfo.h" line="1955"/>
         <source>Shelly 3EM</source>
         <extracomment>The name of the ThingClass ({ba293550-d2af-4463-b973-e1812ab67b96})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1812"/>
-        <source>Shelly Dimmer / Dimmer 2</source>
+        <location filename="../builddir/plugininfo.h" line="1958"/>
+        <source>Shelly Dimmer (2) / Vintage</source>
         <extracomment>The name of the ThingClass ({3a1d6fc1-c623-4b45-9c81-1573fcc15f99})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1815"/>
+        <location filename="../builddir/plugininfo.h" line="1961"/>
+        <source>Shelly EM</source>
+        <extracomment>The name of the ThingClass ({bcc7326d-555a-4763-80ce-7354e67cc700})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1964"/>
+        <source>Shelly EM Channel</source>
+        <extracomment>The name of the ThingClass ({67ccc046-c8b5-4584-8f7f-6fe0a0c6a860})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="1967"/>
         <source>Shelly H&amp;T</source>
         <extracomment>The name of the ThingClass ({cc75be5c-8e34-4f72-a55d-c96e4c85d4be})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1818"/>
+        <location filename="../builddir/plugininfo.h" line="1970"/>
         <source>Shelly I3</source>
         <extracomment>The name of the ThingClass ({a4557bcc-bdae-4178-b774-5881a8ae490a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1821"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1824"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1827"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1830"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1833"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1836"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1839"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1842"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1845"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1848"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1851"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1854"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1857"/>
+        <location filename="../builddir/plugininfo.h" line="1973"/>
+        <location filename="../builddir/plugininfo.h" line="1976"/>
+        <location filename="../builddir/plugininfo.h" line="1979"/>
+        <location filename="../builddir/plugininfo.h" line="1982"/>
+        <location filename="../builddir/plugininfo.h" line="1985"/>
+        <location filename="../builddir/plugininfo.h" line="1988"/>
+        <location filename="../builddir/plugininfo.h" line="1991"/>
+        <location filename="../builddir/plugininfo.h" line="1994"/>
+        <location filename="../builddir/plugininfo.h" line="1997"/>
+        <location filename="../builddir/plugininfo.h" line="2000"/>
+        <location filename="../builddir/plugininfo.h" line="2003"/>
+        <location filename="../builddir/plugininfo.h" line="2006"/>
+        <location filename="../builddir/plugininfo.h" line="2009"/>
+        <location filename="../builddir/plugininfo.h" line="2012"/>
+        <location filename="../builddir/plugininfo.h" line="2015"/>
         <source>Shelly ID</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, Type: thing, ID: {b92fe8ba-8bfb-4d9a-9fb9-8d55ace8cfb4})
+----------
+The name of the ParamType (ThingClass: shellyEmChannel, Type: thing, ID: {b9b85416-0d48-4e71-9471-03385f8fc619})
+----------
+The name of the ParamType (ThingClass: shellyEm, Type: thing, ID: {e44d6880-4e54-44b0-85f5-4e035179402e})
 ----------
 The name of the ParamType (ThingClass: shellyEm3, Type: thing, ID: {a80894d2-dfba-4699-892d-081702b0f1f5})
 ----------
@@ -1582,38 +1708,38 @@ The name of the ParamType (ThingClass: shelly1, Type: thing, ID: {1d301dc0-5e48-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1860"/>
+        <location filename="../builddir/plugininfo.h" line="2018"/>
         <source>Shelly Motion</source>
         <extracomment>The name of the ThingClass ({a82737bb-f2d6-442e-a468-5acc0a2e4cd7})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1863"/>
+        <location filename="../builddir/plugininfo.h" line="2021"/>
         <source>Shelly Plug/PlugS</source>
         <extracomment>The name of the ThingClass ({22229a6d-2af8-44e0-bea9-310a0f2769ef})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1866"/>
+        <location filename="../builddir/plugininfo.h" line="2024"/>
         <source>Shelly RGBW2</source>
         <extracomment>The name of the ThingClass ({17f24cec-e6ed-4abd-9d42-60999f391dba})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1869"/>
+        <location filename="../builddir/plugininfo.h" line="2027"/>
         <source>Shelly button 1</source>
         <extracomment>The name of the ThingClass ({3eba6b29-f634-4ade-80a3-2159803373cc})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1872"/>
+        <location filename="../builddir/plugininfo.h" line="2030"/>
         <source>Shelly connected Roller Shutter</source>
         <extracomment>The name of the ThingClass ({d681a4cb-481a-4469-a49a-e6bbb11eb9c9})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1875"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1878"/>
+        <location filename="../builddir/plugininfo.h" line="2033"/>
+        <location filename="../builddir/plugininfo.h" line="2036"/>
         <source>Shelly connected device</source>
         <extracomment>The name of the ThingClass ({3bd614e0-72c4-4fbe-8c70-ce6c48d04bce})
 ----------
@@ -1621,8 +1747,8 @@ The name of the ThingClass ({512c3c7d-d6a6-4d2a-bccd-83147e5f9a25})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1881"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1884"/>
+        <location filename="../builddir/plugininfo.h" line="2039"/>
+        <location filename="../builddir/plugininfo.h" line="2042"/>
         <source>Shelly connected light</source>
         <extracomment>The name of the ThingClass ({5ab05c19-71aa-4a85-a02f-a108f039a69a})
 ----------
@@ -1630,8 +1756,8 @@ The name of the ThingClass ({62a2d6b8-d70d-45fc-ba8c-1c680282a399})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1887"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1890"/>
+        <location filename="../builddir/plugininfo.h" line="2045"/>
+        <location filename="../builddir/plugininfo.h" line="2048"/>
         <source>Shelly connected power socket</source>
         <extracomment>The name of the ThingClass ({ae6e55fe-1a0b-43bc-bdfb-605661b96905})
 ----------
@@ -1639,60 +1765,64 @@ The name of the ThingClass ({3e13206c-a6cd-49a0-b653-2ccb5bb4bbc1})</extracommen
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1893"/>
+        <location filename="../builddir/plugininfo.h" line="2051"/>
         <source>Shelly switch</source>
         <extracomment>The name of the ThingClass ({6de35a17-0f54-4397-894d-4321b64c53d1})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1896"/>
+        <location filename="../builddir/plugininfo.h" line="2054"/>
         <source>Short Pressed</source>
         <extracomment>The name of the EventType ({79648810-b2f4-4aa5-902f-2875242e7bf8}) of ThingClass shellyI3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1899"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1902"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1905"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1908"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1911"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1914"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1917"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1920"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1923"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1926"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1929"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1932"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1935"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1938"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1941"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1944"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1947"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1950"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1953"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1956"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1959"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1962"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1965"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1968"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1971"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1974"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1977"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1980"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1983"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1986"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1989"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1992"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1995"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="1998"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2001"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2004"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2007"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2010"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2013"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2016"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2019"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2022"/>
+        <location filename="../builddir/plugininfo.h" line="2057"/>
+        <location filename="../builddir/plugininfo.h" line="2060"/>
+        <location filename="../builddir/plugininfo.h" line="2063"/>
+        <location filename="../builddir/plugininfo.h" line="2066"/>
+        <location filename="../builddir/plugininfo.h" line="2069"/>
+        <location filename="../builddir/plugininfo.h" line="2072"/>
+        <location filename="../builddir/plugininfo.h" line="2075"/>
+        <location filename="../builddir/plugininfo.h" line="2078"/>
+        <location filename="../builddir/plugininfo.h" line="2081"/>
+        <location filename="../builddir/plugininfo.h" line="2084"/>
+        <location filename="../builddir/plugininfo.h" line="2087"/>
+        <location filename="../builddir/plugininfo.h" line="2090"/>
+        <location filename="../builddir/plugininfo.h" line="2093"/>
+        <location filename="../builddir/plugininfo.h" line="2096"/>
+        <location filename="../builddir/plugininfo.h" line="2099"/>
+        <location filename="../builddir/plugininfo.h" line="2102"/>
+        <location filename="../builddir/plugininfo.h" line="2105"/>
+        <location filename="../builddir/plugininfo.h" line="2108"/>
+        <location filename="../builddir/plugininfo.h" line="2111"/>
+        <location filename="../builddir/plugininfo.h" line="2114"/>
+        <location filename="../builddir/plugininfo.h" line="2117"/>
+        <location filename="../builddir/plugininfo.h" line="2120"/>
+        <location filename="../builddir/plugininfo.h" line="2123"/>
+        <location filename="../builddir/plugininfo.h" line="2126"/>
+        <location filename="../builddir/plugininfo.h" line="2129"/>
+        <location filename="../builddir/plugininfo.h" line="2132"/>
+        <location filename="../builddir/plugininfo.h" line="2135"/>
+        <location filename="../builddir/plugininfo.h" line="2138"/>
+        <location filename="../builddir/plugininfo.h" line="2141"/>
+        <location filename="../builddir/plugininfo.h" line="2144"/>
+        <location filename="../builddir/plugininfo.h" line="2147"/>
+        <location filename="../builddir/plugininfo.h" line="2150"/>
+        <location filename="../builddir/plugininfo.h" line="2153"/>
+        <location filename="../builddir/plugininfo.h" line="2156"/>
+        <location filename="../builddir/plugininfo.h" line="2159"/>
+        <location filename="../builddir/plugininfo.h" line="2162"/>
+        <location filename="../builddir/plugininfo.h" line="2165"/>
+        <location filename="../builddir/plugininfo.h" line="2168"/>
+        <location filename="../builddir/plugininfo.h" line="2171"/>
+        <location filename="../builddir/plugininfo.h" line="2174"/>
+        <location filename="../builddir/plugininfo.h" line="2177"/>
+        <location filename="../builddir/plugininfo.h" line="2180"/>
+        <location filename="../builddir/plugininfo.h" line="2183"/>
+        <location filename="../builddir/plugininfo.h" line="2186"/>
+        <location filename="../builddir/plugininfo.h" line="2189"/>
+        <location filename="../builddir/plugininfo.h" line="2192"/>
         <source>Signal strength</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, EventType: signalStrength, ID: {f46c52ce-58dd-4d07-bb69-e8b8719c41bc})
 ----------
@@ -1725,6 +1855,14 @@ The name of the StateType ({e48d19f1-e04b-4c5d-b515-15bb22060607}) of ThingClass
 The name of the ParamType (ThingClass: shellyMotion, EventType: signalStrength, ID: {ecc61ce2-cb66-47ce-a65c-3b9e43ce6fdc})
 ----------
 The name of the StateType ({ecc61ce2-cb66-47ce-a65c-3b9e43ce6fdc}) of ThingClass shellyMotion
+----------
+The name of the ParamType (ThingClass: shellyEmChannel, EventType: signalStrength, ID: {d1928e72-73e6-4009-846e-149f80ad5899})
+----------
+The name of the StateType ({d1928e72-73e6-4009-846e-149f80ad5899}) of ThingClass shellyEmChannel
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: signalStrength, ID: {87664175-4b84-4cfe-9bee-5d1bcf2566f8})
+----------
+The name of the StateType ({87664175-4b84-4cfe-9bee-5d1bcf2566f8}) of ThingClass shellyEm
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: signalStrength, ID: {0f147c29-aefd-4926-a979-35dfeaec12c0})
 ----------
@@ -1780,27 +1918,29 @@ The name of the StateType ({74c631ed-fc3d-49e8-9dec-99cafa70c559}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2025"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2028"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2031"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2034"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2037"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2040"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2043"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2046"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2049"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2052"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2055"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2058"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2061"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2064"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2067"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2070"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2073"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2076"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2079"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2082"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2085"/>
+        <location filename="../builddir/plugininfo.h" line="2195"/>
+        <location filename="../builddir/plugininfo.h" line="2198"/>
+        <location filename="../builddir/plugininfo.h" line="2201"/>
+        <location filename="../builddir/plugininfo.h" line="2204"/>
+        <location filename="../builddir/plugininfo.h" line="2207"/>
+        <location filename="../builddir/plugininfo.h" line="2210"/>
+        <location filename="../builddir/plugininfo.h" line="2213"/>
+        <location filename="../builddir/plugininfo.h" line="2216"/>
+        <location filename="../builddir/plugininfo.h" line="2219"/>
+        <location filename="../builddir/plugininfo.h" line="2222"/>
+        <location filename="../builddir/plugininfo.h" line="2225"/>
+        <location filename="../builddir/plugininfo.h" line="2228"/>
+        <location filename="../builddir/plugininfo.h" line="2231"/>
+        <location filename="../builddir/plugininfo.h" line="2234"/>
+        <location filename="../builddir/plugininfo.h" line="2237"/>
+        <location filename="../builddir/plugininfo.h" line="2240"/>
+        <location filename="../builddir/plugininfo.h" line="2243"/>
+        <location filename="../builddir/plugininfo.h" line="2246"/>
+        <location filename="../builddir/plugininfo.h" line="2249"/>
+        <location filename="../builddir/plugininfo.h" line="2252"/>
+        <location filename="../builddir/plugininfo.h" line="2255"/>
+        <location filename="../builddir/plugininfo.h" line="2258"/>
+        <location filename="../builddir/plugininfo.h" line="2261"/>
         <source>Signal strength changed</source>
         <extracomment>The name of the EventType ({f46c52ce-58dd-4d07-bb69-e8b8719c41bc}) of ThingClass shellyRoller
 ----------
@@ -1817,6 +1957,10 @@ The name of the EventType ({46cd6c28-b59a-4e20-b706-f202c0848b93}) of ThingClass
 The name of the EventType ({e48d19f1-e04b-4c5d-b515-15bb22060607}) of ThingClass shellyGeneric
 ----------
 The name of the EventType ({ecc61ce2-cb66-47ce-a65c-3b9e43ce6fdc}) of ThingClass shellyMotion
+----------
+The name of the EventType ({d1928e72-73e6-4009-846e-149f80ad5899}) of ThingClass shellyEmChannel
+----------
+The name of the EventType ({87664175-4b84-4cfe-9bee-5d1bcf2566f8}) of ThingClass shellyEm
 ----------
 The name of the EventType ({0f147c29-aefd-4926-a979-35dfeaec12c0}) of ThingClass shellyEm3
 ----------
@@ -1846,12 +1990,15 @@ The name of the EventType ({74c631ed-fc3d-49e8-9dec-99cafa70c559}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2088"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2091"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2094"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2097"/>
+        <location filename="../builddir/plugininfo.h" line="2264"/>
+        <location filename="../builddir/plugininfo.h" line="2267"/>
+        <location filename="../builddir/plugininfo.h" line="2270"/>
+        <location filename="../builddir/plugininfo.h" line="2273"/>
+        <location filename="../builddir/plugininfo.h" line="2276"/>
         <source>Start firmware update</source>
         <extracomment>The name of the ActionType ({17327674-f160-44e1-8a3d-fc2b6e1ee319}) of ThingClass shellyMotion
+----------
+The name of the ActionType ({6a30f435-2b35-4df5-8a20-ef3dbec817c9}) of ThingClass shellyEm
 ----------
 The name of the ActionType ({f230d689-53f8-4542-9b20-9993b1c2eb27}) of ThingClass shellyEm3
 ----------
@@ -1861,14 +2008,14 @@ The name of the ActionType ({87b24064-5db7-4590-a9d8-f6d8fd02ed6e}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2100"/>
+        <location filename="../builddir/plugininfo.h" line="2279"/>
         <source>Status LED enabled</source>
         <extracomment>The name of the ParamType (ThingClass: shellyButton1, Type: settings, ID: {420298a7-bcf8-4970-951e-f6ee5efa1013})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2103"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2106"/>
+        <location filename="../builddir/plugininfo.h" line="2282"/>
+        <location filename="../builddir/plugininfo.h" line="2285"/>
         <source>Temperature</source>
         <extracomment>The name of the ParamType (ThingClass: shellyHT, EventType: temperature, ID: {507e7ca7-e1ab-4e7c-8097-4aedf924f797})
 ----------
@@ -1876,23 +2023,29 @@ The name of the StateType ({507e7ca7-e1ab-4e7c-8097-4aedf924f797}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2109"/>
+        <location filename="../builddir/plugininfo.h" line="2288"/>
         <source>Temperature changed</source>
         <extracomment>The name of the EventType ({507e7ca7-e1ab-4e7c-8097-4aedf924f797}) of ThingClass shellyHT</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2112"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2115"/>
+        <location filename="../builddir/plugininfo.h" line="2291"/>
+        <location filename="../builddir/plugininfo.h" line="2294"/>
+        <location filename="../builddir/plugininfo.h" line="2297"/>
+        <location filename="../builddir/plugininfo.h" line="2300"/>
         <source>Total consumed energy</source>
-        <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: totalEnergyConsumed, ID: {67050a5a-cc78-4d11-a7d9-a9db528029ff})
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: totalEnergyConsumed, ID: {4ce53fa0-d6b7-4c1b-87d9-edcaeedb640e})
+----------
+The name of the StateType ({4ce53fa0-d6b7-4c1b-87d9-edcaeedb640e}) of ThingClass shellyEmChannel
+----------
+The name of the ParamType (ThingClass: shellyEm3, EventType: totalEnergyConsumed, ID: {67050a5a-cc78-4d11-a7d9-a9db528029ff})
 ----------
 The name of the StateType ({67050a5a-cc78-4d11-a7d9-a9db528029ff}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2118"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2121"/>
+        <location filename="../builddir/plugininfo.h" line="2303"/>
+        <location filename="../builddir/plugininfo.h" line="2306"/>
         <source>Total consumed energy (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyConsumedPhaseA, ID: {ba25ef68-bb52-4e96-a8fb-137aae966104})
 ----------
@@ -1900,14 +2053,14 @@ The name of the StateType ({ba25ef68-bb52-4e96-a8fb-137aae966104}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2124"/>
+        <location filename="../builddir/plugininfo.h" line="2309"/>
         <source>Total consumed energy (Phase A) changed</source>
         <extracomment>The name of the EventType ({ba25ef68-bb52-4e96-a8fb-137aae966104}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2127"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2130"/>
+        <location filename="../builddir/plugininfo.h" line="2312"/>
+        <location filename="../builddir/plugininfo.h" line="2315"/>
         <source>Total consumed energy (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyConsumedPhaseB, ID: {6636e6a0-e3ca-4654-9506-4302c4e8eed7})
 ----------
@@ -1915,14 +2068,14 @@ The name of the StateType ({6636e6a0-e3ca-4654-9506-4302c4e8eed7}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2133"/>
+        <location filename="../builddir/plugininfo.h" line="2318"/>
         <source>Total consumed energy (Phase B) changed</source>
         <extracomment>The name of the EventType ({6636e6a0-e3ca-4654-9506-4302c4e8eed7}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2136"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2139"/>
+        <location filename="../builddir/plugininfo.h" line="2321"/>
+        <location filename="../builddir/plugininfo.h" line="2324"/>
         <source>Total consumed energy (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyConsumedPhaseC, ID: {452c2159-aa2f-4217-80e5-4b492b69671e})
 ----------
@@ -1930,17 +2083,20 @@ The name of the StateType ({452c2159-aa2f-4217-80e5-4b492b69671e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2142"/>
+        <location filename="../builddir/plugininfo.h" line="2327"/>
         <source>Total consumed energy (Phase C) changed</source>
         <extracomment>The name of the EventType ({452c2159-aa2f-4217-80e5-4b492b69671e}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2145"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2148"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2151"/>
+        <location filename="../builddir/plugininfo.h" line="2330"/>
+        <location filename="../builddir/plugininfo.h" line="2333"/>
+        <location filename="../builddir/plugininfo.h" line="2336"/>
+        <location filename="../builddir/plugininfo.h" line="2339"/>
         <source>Total consumed energy changed</source>
-        <extracomment>The name of the EventType ({67050a5a-cc78-4d11-a7d9-a9db528029ff}) of ThingClass shellyEm3
+        <extracomment>The name of the EventType ({4ce53fa0-d6b7-4c1b-87d9-edcaeedb640e}) of ThingClass shellyEmChannel
+----------
+The name of the EventType ({67050a5a-cc78-4d11-a7d9-a9db528029ff}) of ThingClass shellyEm3
 ----------
 The name of the EventType ({0f879e7b-2124-4d98-9828-e5bbd1b344ce}) of ThingClass shelly1l
 ----------
@@ -1948,10 +2104,10 @@ The name of the EventType ({23594959-1cd4-4e23-a7ae-b0b7fbd29daa}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2154"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2157"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2160"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2163"/>
+        <location filename="../builddir/plugininfo.h" line="2342"/>
+        <location filename="../builddir/plugininfo.h" line="2345"/>
+        <location filename="../builddir/plugininfo.h" line="2348"/>
+        <location filename="../builddir/plugininfo.h" line="2351"/>
         <source>Total energy changed</source>
         <extracomment>The name of the EventType ({a7d88654-7503-474d-9a7c-02150d61a6dc}) of ThingClass shellyRoller
 ----------
@@ -1963,20 +2119,20 @@ The name of the EventType ({54b0b02e-1dfe-4172-bdfd-8129709e5d9f}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2166"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2169"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2172"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2175"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2178"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2181"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2184"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2187"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2190"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2193"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2196"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2199"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2202"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2205"/>
+        <location filename="../builddir/plugininfo.h" line="2354"/>
+        <location filename="../builddir/plugininfo.h" line="2357"/>
+        <location filename="../builddir/plugininfo.h" line="2360"/>
+        <location filename="../builddir/plugininfo.h" line="2363"/>
+        <location filename="../builddir/plugininfo.h" line="2366"/>
+        <location filename="../builddir/plugininfo.h" line="2369"/>
+        <location filename="../builddir/plugininfo.h" line="2372"/>
+        <location filename="../builddir/plugininfo.h" line="2375"/>
+        <location filename="../builddir/plugininfo.h" line="2378"/>
+        <location filename="../builddir/plugininfo.h" line="2381"/>
+        <location filename="../builddir/plugininfo.h" line="2384"/>
+        <location filename="../builddir/plugininfo.h" line="2387"/>
+        <location filename="../builddir/plugininfo.h" line="2390"/>
+        <location filename="../builddir/plugininfo.h" line="2393"/>
         <source>Total energy consumed</source>
         <extracomment>The name of the ParamType (ThingClass: shellyRoller, EventType: totalEnergyConsumed, ID: {a7d88654-7503-474d-9a7c-02150d61a6dc})
 ----------
@@ -2008,17 +2164,23 @@ The name of the StateType ({23594959-1cd4-4e23-a7ae-b0b7fbd29daa}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2208"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2211"/>
+        <location filename="../builddir/plugininfo.h" line="2396"/>
+        <location filename="../builddir/plugininfo.h" line="2399"/>
+        <location filename="../builddir/plugininfo.h" line="2402"/>
+        <location filename="../builddir/plugininfo.h" line="2405"/>
         <source>Total returned energy</source>
-        <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: totalEnergyProduced, ID: {088cb7df-9187-4206-ae5b-18a00e4f1969})
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: totalEnergyProduced, ID: {7fe88e8f-a1c4-4e8d-a1de-9135b80bc7e3})
+----------
+The name of the StateType ({7fe88e8f-a1c4-4e8d-a1de-9135b80bc7e3}) of ThingClass shellyEmChannel
+----------
+The name of the ParamType (ThingClass: shellyEm3, EventType: totalEnergyProduced, ID: {088cb7df-9187-4206-ae5b-18a00e4f1969})
 ----------
 The name of the StateType ({088cb7df-9187-4206-ae5b-18a00e4f1969}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2214"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2217"/>
+        <location filename="../builddir/plugininfo.h" line="2408"/>
+        <location filename="../builddir/plugininfo.h" line="2411"/>
         <source>Total returned energy (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyProducedPhaseA, ID: {34562cd3-b178-4f68-903d-a01e20d0ad76})
 ----------
@@ -2026,14 +2188,14 @@ The name of the StateType ({34562cd3-b178-4f68-903d-a01e20d0ad76}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2220"/>
+        <location filename="../builddir/plugininfo.h" line="2414"/>
         <source>Total returned energy (Phase A) changed</source>
         <extracomment>The name of the EventType ({34562cd3-b178-4f68-903d-a01e20d0ad76}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2223"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2226"/>
+        <location filename="../builddir/plugininfo.h" line="2417"/>
+        <location filename="../builddir/plugininfo.h" line="2420"/>
         <source>Total returned energy (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyProducedPhaseB, ID: {d70a0d1a-cac1-4250-85fa-4859ad2dc947})
 ----------
@@ -2041,14 +2203,14 @@ The name of the StateType ({d70a0d1a-cac1-4250-85fa-4859ad2dc947}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2229"/>
+        <location filename="../builddir/plugininfo.h" line="2423"/>
         <source>Total returned energy (Phase B) changed</source>
         <extracomment>The name of the EventType ({d70a0d1a-cac1-4250-85fa-4859ad2dc947}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2232"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2235"/>
+        <location filename="../builddir/plugininfo.h" line="2426"/>
+        <location filename="../builddir/plugininfo.h" line="2429"/>
         <source>Total returned energy (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: energyProducedPhaseC, ID: {de248e26-b617-4d22-9175-752e2d695274})
 ----------
@@ -2056,40 +2218,44 @@ The name of the StateType ({de248e26-b617-4d22-9175-752e2d695274}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2238"/>
+        <location filename="../builddir/plugininfo.h" line="2432"/>
         <source>Total returned energy (Phase C) changed</source>
         <extracomment>The name of the EventType ({de248e26-b617-4d22-9175-752e2d695274}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2241"/>
+        <location filename="../builddir/plugininfo.h" line="2435"/>
+        <location filename="../builddir/plugininfo.h" line="2438"/>
         <source>Total returned energy changed</source>
-        <extracomment>The name of the EventType ({088cb7df-9187-4206-ae5b-18a00e4f1969}) of ThingClass shellyEm3</extracomment>
+        <extracomment>The name of the EventType ({7fe88e8f-a1c4-4e8d-a1de-9135b80bc7e3}) of ThingClass shellyEmChannel
+----------
+The name of the EventType ({088cb7df-9187-4206-ae5b-18a00e4f1969}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2244"/>
+        <location filename="../builddir/plugininfo.h" line="2441"/>
         <source>Turn channel 1 on or off</source>
         <extracomment>The name of the ActionType ({118d572c-cc12-4037-82d8-7d8f6fb4a364}) of ThingClass shelly25</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2247"/>
+        <location filename="../builddir/plugininfo.h" line="2444"/>
         <source>Turn channel 2 on or off</source>
         <extracomment>The name of the ActionType ({7952aec0-cd27-4ef9-87a6-c499564bc1d4}) of ThingClass shelly25</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2250"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2253"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2256"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2259"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2262"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2265"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2268"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2271"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2274"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2277"/>
+        <location filename="../builddir/plugininfo.h" line="2447"/>
+        <location filename="../builddir/plugininfo.h" line="2450"/>
+        <location filename="../builddir/plugininfo.h" line="2453"/>
+        <location filename="../builddir/plugininfo.h" line="2456"/>
+        <location filename="../builddir/plugininfo.h" line="2459"/>
+        <location filename="../builddir/plugininfo.h" line="2462"/>
+        <location filename="../builddir/plugininfo.h" line="2465"/>
+        <location filename="../builddir/plugininfo.h" line="2468"/>
+        <location filename="../builddir/plugininfo.h" line="2471"/>
+        <location filename="../builddir/plugininfo.h" line="2474"/>
+        <location filename="../builddir/plugininfo.h" line="2477"/>
         <source>Turn on or off</source>
         <extracomment>The name of the ActionType ({d6adeab6-c91d-44ba-8d01-9b5b9b7368be}) of ThingClass shellySocketPM
 ----------
@@ -2103,6 +2269,8 @@ The name of the ActionType ({bd9480af-eec2-42d7-ab17-15715ee2e8e0}) of ThingClas
 ----------
 The name of the ActionType ({72d7dbba-757c-4b03-a092-1d3f374fa961}) of ThingClass shellyGeneric
 ----------
+The name of the ActionType ({9a2c6304-91d6-45fc-8ef7-75355457eca5}) of ThingClass shellyEm
+----------
 The name of the ActionType ({639dda4c-e354-43ca-a785-fbe6806986e2}) of ThingClass shellyEm3
 ----------
 The name of the ActionType ({e4a6ac87-31fb-4516-9cf3-f135621e902c}) of ThingClass shellyDimmer
@@ -2113,9 +2281,9 @@ The name of the ActionType ({d813b35f-e11e-4783-b3b3-dbecb956ffb5}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2280"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2283"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2286"/>
+        <location filename="../builddir/plugininfo.h" line="2480"/>
+        <location filename="../builddir/plugininfo.h" line="2483"/>
+        <location filename="../builddir/plugininfo.h" line="2486"/>
         <source>Turn on/off</source>
         <extracomment>The name of the ActionType ({94276bb9-ef68-47ab-8e74-34ebe54b411f}) of ThingClass shelly1l
 ----------
@@ -2125,16 +2293,17 @@ The name of the ActionType ({5b7eeb6c-6113-41f3-a61b-3076d087c9fe}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2289"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2292"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2295"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2298"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2301"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2304"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2307"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2310"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2313"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2316"/>
+        <location filename="../builddir/plugininfo.h" line="2489"/>
+        <location filename="../builddir/plugininfo.h" line="2492"/>
+        <location filename="../builddir/plugininfo.h" line="2495"/>
+        <location filename="../builddir/plugininfo.h" line="2498"/>
+        <location filename="../builddir/plugininfo.h" line="2501"/>
+        <location filename="../builddir/plugininfo.h" line="2504"/>
+        <location filename="../builddir/plugininfo.h" line="2507"/>
+        <location filename="../builddir/plugininfo.h" line="2510"/>
+        <location filename="../builddir/plugininfo.h" line="2513"/>
+        <location filename="../builddir/plugininfo.h" line="2516"/>
+        <location filename="../builddir/plugininfo.h" line="2519"/>
         <source>Turned on or off</source>
         <extracomment>The name of the EventType ({d6adeab6-c91d-44ba-8d01-9b5b9b7368be}) of ThingClass shellySocketPM
 ----------
@@ -2148,6 +2317,8 @@ The name of the EventType ({bd9480af-eec2-42d7-ab17-15715ee2e8e0}) of ThingClass
 ----------
 The name of the EventType ({72d7dbba-757c-4b03-a092-1d3f374fa961}) of ThingClass shellyGeneric
 ----------
+The name of the EventType ({9a2c6304-91d6-45fc-8ef7-75355457eca5}) of ThingClass shellyEm
+----------
 The name of the EventType ({639dda4c-e354-43ca-a785-fbe6806986e2}) of ThingClass shellyEm3
 ----------
 The name of the EventType ({e4a6ac87-31fb-4516-9cf3-f135621e902c}) of ThingClass shellyDimmer
@@ -2158,9 +2329,9 @@ The name of the EventType ({d813b35f-e11e-4783-b3b3-dbecb956ffb5}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2319"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2322"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2325"/>
+        <location filename="../builddir/plugininfo.h" line="2522"/>
+        <location filename="../builddir/plugininfo.h" line="2525"/>
+        <location filename="../builddir/plugininfo.h" line="2528"/>
         <source>Turned on/off</source>
         <extracomment>The name of the EventType ({94276bb9-ef68-47ab-8e74-34ebe54b411f}) of ThingClass shelly1l
 ----------
@@ -2170,15 +2341,15 @@ The name of the EventType ({5b7eeb6c-6113-41f3-a61b-3076d087c9fe}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2328"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2331"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2334"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2337"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2340"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2343"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2346"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2349"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2352"/>
+        <location filename="../builddir/plugininfo.h" line="2531"/>
+        <location filename="../builddir/plugininfo.h" line="2534"/>
+        <location filename="../builddir/plugininfo.h" line="2537"/>
+        <location filename="../builddir/plugininfo.h" line="2540"/>
+        <location filename="../builddir/plugininfo.h" line="2543"/>
+        <location filename="../builddir/plugininfo.h" line="2546"/>
+        <location filename="../builddir/plugininfo.h" line="2549"/>
+        <location filename="../builddir/plugininfo.h" line="2552"/>
+        <location filename="../builddir/plugininfo.h" line="2555"/>
         <source>Update firmware</source>
         <extracomment>The name of the ActionType ({1c677ecb-c54e-4c95-a3f7-e68fabeeda08}) of ThingClass shellyI3
 ----------
@@ -2200,34 +2371,40 @@ The name of the ActionType ({6f814339-9a48-4027-a3f8-760742ff22ba}) of ThingClas
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2355"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2358"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2361"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2364"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2367"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2370"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2373"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2376"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2379"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2382"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2385"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2388"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2391"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2394"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2397"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2400"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2403"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2406"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2409"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2412"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2415"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2418"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2421"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2424"/>
+        <location filename="../builddir/plugininfo.h" line="2558"/>
+        <location filename="../builddir/plugininfo.h" line="2561"/>
+        <location filename="../builddir/plugininfo.h" line="2564"/>
+        <location filename="../builddir/plugininfo.h" line="2567"/>
+        <location filename="../builddir/plugininfo.h" line="2570"/>
+        <location filename="../builddir/plugininfo.h" line="2573"/>
+        <location filename="../builddir/plugininfo.h" line="2576"/>
+        <location filename="../builddir/plugininfo.h" line="2579"/>
+        <location filename="../builddir/plugininfo.h" line="2582"/>
+        <location filename="../builddir/plugininfo.h" line="2585"/>
+        <location filename="../builddir/plugininfo.h" line="2588"/>
+        <location filename="../builddir/plugininfo.h" line="2591"/>
+        <location filename="../builddir/plugininfo.h" line="2594"/>
+        <location filename="../builddir/plugininfo.h" line="2597"/>
+        <location filename="../builddir/plugininfo.h" line="2600"/>
+        <location filename="../builddir/plugininfo.h" line="2603"/>
+        <location filename="../builddir/plugininfo.h" line="2606"/>
+        <location filename="../builddir/plugininfo.h" line="2609"/>
+        <location filename="../builddir/plugininfo.h" line="2612"/>
+        <location filename="../builddir/plugininfo.h" line="2615"/>
+        <location filename="../builddir/plugininfo.h" line="2618"/>
+        <location filename="../builddir/plugininfo.h" line="2621"/>
+        <location filename="../builddir/plugininfo.h" line="2624"/>
+        <location filename="../builddir/plugininfo.h" line="2627"/>
+        <location filename="../builddir/plugininfo.h" line="2630"/>
+        <location filename="../builddir/plugininfo.h" line="2633"/>
         <source>Update status</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: updateStatus, ID: {a604a66c-3143-45ce-a6e3-17a339f428ab})
 ----------
 The name of the StateType ({a604a66c-3143-45ce-a6e3-17a339f428ab}) of ThingClass shellyMotion
+----------
+The name of the ParamType (ThingClass: shellyEm, EventType: updateStatus, ID: {ad5d523e-9a4d-47d2-912c-c8ec5081f9ff})
+----------
+The name of the StateType ({ad5d523e-9a4d-47d2-912c-c8ec5081f9ff}) of ThingClass shellyEm
 ----------
 The name of the ParamType (ThingClass: shellyEm3, EventType: updateStatus, ID: {8e25bbc2-54d8-4aa1-8ca5-f61b5f17a03b})
 ----------
@@ -2275,20 +2452,23 @@ The name of the StateType ({68bf3780-8f7f-4ecb-8498-830e257c192c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2427"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2430"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2433"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2436"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2439"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2442"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2445"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2448"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2451"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2454"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2457"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2460"/>
+        <location filename="../builddir/plugininfo.h" line="2636"/>
+        <location filename="../builddir/plugininfo.h" line="2639"/>
+        <location filename="../builddir/plugininfo.h" line="2642"/>
+        <location filename="../builddir/plugininfo.h" line="2645"/>
+        <location filename="../builddir/plugininfo.h" line="2648"/>
+        <location filename="../builddir/plugininfo.h" line="2651"/>
+        <location filename="../builddir/plugininfo.h" line="2654"/>
+        <location filename="../builddir/plugininfo.h" line="2657"/>
+        <location filename="../builddir/plugininfo.h" line="2660"/>
+        <location filename="../builddir/plugininfo.h" line="2663"/>
+        <location filename="../builddir/plugininfo.h" line="2666"/>
+        <location filename="../builddir/plugininfo.h" line="2669"/>
+        <location filename="../builddir/plugininfo.h" line="2672"/>
         <source>Update status changed</source>
         <extracomment>The name of the EventType ({a604a66c-3143-45ce-a6e3-17a339f428ab}) of ThingClass shellyMotion
+----------
+The name of the EventType ({ad5d523e-9a4d-47d2-912c-c8ec5081f9ff}) of ThingClass shellyEm
 ----------
 The name of the EventType ({8e25bbc2-54d8-4aa1-8ca5-f61b5f17a03b}) of ThingClass shellyEm3
 ----------
@@ -2314,21 +2494,24 @@ The name of the EventType ({68bf3780-8f7f-4ecb-8498-830e257c192c}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2463"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2466"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2469"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2472"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2475"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2478"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2481"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2484"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2487"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2490"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2493"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2496"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2499"/>
+        <location filename="../builddir/plugininfo.h" line="2675"/>
+        <location filename="../builddir/plugininfo.h" line="2678"/>
+        <location filename="../builddir/plugininfo.h" line="2681"/>
+        <location filename="../builddir/plugininfo.h" line="2684"/>
+        <location filename="../builddir/plugininfo.h" line="2687"/>
+        <location filename="../builddir/plugininfo.h" line="2690"/>
+        <location filename="../builddir/plugininfo.h" line="2693"/>
+        <location filename="../builddir/plugininfo.h" line="2696"/>
+        <location filename="../builddir/plugininfo.h" line="2699"/>
+        <location filename="../builddir/plugininfo.h" line="2702"/>
+        <location filename="../builddir/plugininfo.h" line="2705"/>
+        <location filename="../builddir/plugininfo.h" line="2708"/>
+        <location filename="../builddir/plugininfo.h" line="2711"/>
+        <location filename="../builddir/plugininfo.h" line="2714"/>
         <source>Username (optional)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, Type: thing, ID: {ea210ec8-37ed-4479-9454-48cc06a1df88})
+----------
+The name of the ParamType (ThingClass: shellyEm, Type: thing, ID: {61957e60-4b77-4aa7-893f-e94559cac15c})
 ----------
 The name of the ParamType (ThingClass: shellyEm3, Type: thing, ID: {21e11417-b862-44e6-828f-d65207328630})
 ----------
@@ -2356,8 +2539,8 @@ The name of the ParamType (ThingClass: shelly1, Type: thing, ID: {fa1aa0f6-93b2-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2502"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2505"/>
+        <location filename="../builddir/plugininfo.h" line="2717"/>
+        <location filename="../builddir/plugininfo.h" line="2720"/>
         <source>Vibration</source>
         <extracomment>The name of the ParamType (ThingClass: shellyMotion, EventType: vibration, ID: {76438c2d-9742-4680-9139-d4b4e988cfd2})
 ----------
@@ -2365,14 +2548,23 @@ The name of the StateType ({76438c2d-9742-4680-9139-d4b4e988cfd2}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2508"/>
+        <location filename="../builddir/plugininfo.h" line="2723"/>
         <source>Vibration detected</source>
         <extracomment>The name of the EventType ({76438c2d-9742-4680-9139-d4b4e988cfd2}) of ThingClass shellyMotion</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2511"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2514"/>
+        <location filename="../builddir/plugininfo.h" line="2726"/>
+        <location filename="../builddir/plugininfo.h" line="2729"/>
+        <source>Voltage</source>
+        <extracomment>The name of the ParamType (ThingClass: shellyEmChannel, EventType: voltagePhaseA, ID: {d6cb777f-c9af-46d8-845a-883ac05c206a})
+----------
+The name of the StateType ({d6cb777f-c9af-46d8-845a-883ac05c206a}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="2732"/>
+        <location filename="../builddir/plugininfo.h" line="2735"/>
         <source>Voltage (Phase A)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: voltagePhaseA, ID: {5977ffab-cdcf-409c-940b-aa0a59de84a5})
 ----------
@@ -2380,14 +2572,14 @@ The name of the StateType ({5977ffab-cdcf-409c-940b-aa0a59de84a5}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2517"/>
+        <location filename="../builddir/plugininfo.h" line="2738"/>
         <source>Voltage (Phase A) changed</source>
         <extracomment>The name of the EventType ({5977ffab-cdcf-409c-940b-aa0a59de84a5}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2520"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2523"/>
+        <location filename="../builddir/plugininfo.h" line="2741"/>
+        <location filename="../builddir/plugininfo.h" line="2744"/>
         <source>Voltage (Phase B)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: voltagePhaseB, ID: {7c846993-fb06-48ef-987c-7b35d9671070})
 ----------
@@ -2395,14 +2587,14 @@ The name of the StateType ({7c846993-fb06-48ef-987c-7b35d9671070}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2526"/>
+        <location filename="../builddir/plugininfo.h" line="2747"/>
         <source>Voltage (Phase B) changed</source>
         <extracomment>The name of the EventType ({7c846993-fb06-48ef-987c-7b35d9671070}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2529"/>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2532"/>
+        <location filename="../builddir/plugininfo.h" line="2750"/>
+        <location filename="../builddir/plugininfo.h" line="2753"/>
         <source>Voltage (Phase C)</source>
         <extracomment>The name of the ParamType (ThingClass: shellyEm3, EventType: voltagePhaseC, ID: {cd7af1b2-d5f0-4c2e-b85c-84f23ae1fbb9})
 ----------
@@ -2410,13 +2602,19 @@ The name of the StateType ({cd7af1b2-d5f0-4c2e-b85c-84f23ae1fbb9}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2535"/>
+        <location filename="../builddir/plugininfo.h" line="2756"/>
         <source>Voltage (Phase C) changed</source>
         <extracomment>The name of the EventType ({cd7af1b2-d5f0-4c2e-b85c-84f23ae1fbb9}) of ThingClass shellyEm3</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="2538"/>
+        <location filename="../builddir/plugininfo.h" line="2759"/>
+        <source>Voltage changed</source>
+        <extracomment>The name of the EventType ({d6cb777f-c9af-46d8-845a-883ac05c206a}) of ThingClass shellyEmChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../builddir/plugininfo.h" line="2762"/>
         <source>stop</source>
         <extracomment>The name of the ActionType ({2266303c-df0c-4eae-b15e-6a86e73c9699}) of ThingClass shellyRoller</extracomment>
         <translation type="unfinished"></translation>
