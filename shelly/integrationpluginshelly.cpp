@@ -1145,11 +1145,11 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         QString stateName = topic.split('/').at(4);
         QVariant value = payload;
         QHash<QString, StateTypeId> stateTypeIdMap;
-        stateTypeIdMap["power"] = shellyEmChannelCurrentPowerPhaseAStateTypeId;
+        stateTypeIdMap["power"] = shellyEmChannelCurrentPowerStateTypeId;
         stateTypeIdMap["reactive_power"] = shellyEmChannelReactivePowerPhaseAStateTypeId;
         stateTypeIdMap["voltage"] = shellyEmChannelVoltagePhaseAStateTypeId;
-        stateTypeIdMap["total"] = shellyEmChannelEnergyConsumedPhaseAStateTypeId;
-        stateTypeIdMap["total_returned"] = shellyEmChannelEnergyProducedPhaseAStateTypeId;
+        stateTypeIdMap["total"] = shellyEmChannelTotalEnergyConsumedStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEmChannelTotalEnergyProducedStateTypeId;
         StateTypeId stateTypeId = stateTypeIdMap.value(stateName);
         if (stateTypeId.isNull()) {
             qCWarning(dcShelly()) << "Unhandled emeter value for channel" << channel << stateName;
@@ -1163,7 +1163,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("energymeter")) {
             ParamTypeId channelParamTypeId = channelParamTypeMap.value(child->thingClassId());
             if (child->paramValue(channelParamTypeId).toInt() == channel + 1) {
-                //child->setStateValue(currentPowerStateTypeMap.value(child->thingClassId()), power);
                 child->setStateValue(stateTypeId, value.toDouble() * factor);
             }
         }
@@ -1175,14 +1174,14 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("energymeter")) {
                 ParamTypeId channelParamTypeId = channelParamTypeMap.value(child->thingClassId());
                 if (child->paramValue(channelParamTypeId).toInt() == channel + 1) {
+                    double power = child->stateValue(shellyEmChannelCurrentPowerStateTypeId).toDouble();
                     double voltage = child->stateValue(shellyEmChannelVoltagePhaseAStateTypeId).toDouble();
                     if (qFuzzyCompare(voltage, 0) == false) {
-                        double calcCurrent = child->stateValue(shellyEmChannelCurrentPowerPhaseAStateTypeId).toDouble()/voltage;
+                        double calcCurrent = power/voltage;
                         child->setStateValue(shellyEmChannelCurrentPhaseAStateTypeId, calcCurrent);
                     } else {
                         child->setStateValue(shellyEmChannelCurrentPhaseAStateTypeId, 0);
                     }
-                    double power = child->stateValue(shellyEmChannelCurrentPowerPhaseAStateTypeId).toDouble();
                     double reactivePower = child->stateValue(shellyEmChannelReactivePowerPhaseAStateTypeId).toDouble();
                     double root = qSqrt(power*power + reactivePower*reactivePower);
                     if (qFuzzyCompare(root, 0) == false) {
@@ -1191,12 +1190,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                     } else {
                         child->setStateValue(shellyEmChannelPowerFactorPhaseAStateTypeId, 0);
                     }
-                    double grandTotal = child->stateValue(shellyEmChannelEnergyConsumedPhaseAStateTypeId).toDouble();
-                    child->setStateValue(shellyEmChannelTotalEnergyConsumedStateTypeId, grandTotal);
-                    double grandTotalReturned = child->stateValue(shellyEmChannelEnergyProducedPhaseAStateTypeId).toDouble();
-                    child->setStateValue(shellyEmChannelTotalEnergyProducedStateTypeId, grandTotalReturned);
-                    double totalPower = child->stateValue(shellyEmChannelCurrentPowerPhaseAStateTypeId).toDouble();
-                    child->setStateValue(shellyEmChannelCurrentPowerStateTypeId, totalPower);
                 }
             }
 
@@ -1404,7 +1397,7 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
                 autoChilds.append(switch2Child);
             }
 
-            // Create 2 measurement channels for shelly em --> create separate switch child as well?
+            // Create 2 measurement channels for shelly em
             if (info->thing()->thingClassId() == shellyEmThingClassId) {
                 ThingDescriptor channelChild(shellyEmChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
                 channelChild.setParams(ParamList() << Param(shellyEmChannelThingChannelParamTypeId, 1));

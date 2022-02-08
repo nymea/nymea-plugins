@@ -1785,7 +1785,8 @@
                     "name": "shellyEm",
                     "displayName": "Shelly EM",
                     "createMethods": ["discovery"],
-                    "interfaces": ["gateway", "wirelessconnectable", "update"],
+                    "interfaces": ["gateway", "wirelessconnectable", "power", "update"],
+                    "providedInterfaces": ["energymeter"],
                     "paramTypes": [
                         {
                             "id": "e44d6880-4e54-44b0-85f5-4e035179402e",
@@ -1888,7 +1889,7 @@
                     "name": "shellyEmChannel",
                     "displayName": "Shelly EM Channel",
                     "createMethods": ["auto"],
-                    "interfaces": ["energymeter"],
+                    "interfaces": ["wirelessconnectable", "energymeter"],
                     "paramTypes": [
                         {
                             "id": "b9b85416-0d48-4e71-9471-03385f8fc619",
@@ -1935,7 +1936,7 @@
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0,
-                            "cached": false
+                            "cached": true
                         },
                         {
                             "id": "7fe88e8f-a1c4-4e8d-a1de-9135b80bc7e3",
@@ -1945,7 +1946,7 @@
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0,
-                            "cached": false
+                            "cached": true
                         },
                         {
                             "id": "a85041e8-a19e-4695-8404-3e3a06b1e92a",
@@ -1955,18 +1956,6 @@
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0,
-                            "filter": "adaptive",
-                            "cached": false
-                        },
-                        {
-                            "id": "18b17662-43bc-45d4-9e33-35912b57bfb1",
-                            "name": "currentPowerPhaseA",
-                            "displayName": "Current power",
-                            "displayNameEvent": "Current power changed",
-                            "type": "double",
-                            "unit": "Watt",
-                            "defaultValue": 0,
-                            "filter": "adaptive",
                             "cached": false
                         },
                         {
@@ -2008,26 +1997,6 @@
                             "unit": "Volt",
                             "defaultValue": 0,
                             "filter": "adaptive",
-                            "cached": false
-                        },
-                        {
-                            "id": "cb28c99c-2f64-4b8b-83ca-e9809ecd992a",
-                            "name": "energyConsumedPhaseA",
-                            "displayName": "Total consumed energy",
-                            "displayNameEvent": "Total consumed energy changed",
-                            "type": "double",
-                            "unit": "KiloWattHour",
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "3c254d08-ca5a-4caa-a6fb-7f9d0e3ac6d6",
-                            "name": "energyProducedPhaseA",
-                            "displayName": "Total returned energy",
-                            "displayNameEvent": "Total returned energy changed",
-                            "type": "double",
-                            "unit": "KiloWattHour",
-                            "defaultValue": 0,
                             "cached": false
                         }
                     ],
