@@ -49,7 +49,8 @@
                             "displayNameEvent": "Power AC changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "e4183a70-c848-447a-962a-f19dc5974140",
@@ -58,7 +59,8 @@
                             "displayNameEvent": "Power DC changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "7dc46b2e-5fba-4cc6-a159-09472cdfac62",
@@ -67,7 +69,8 @@
                             "displayNameEvent": "AC voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "bb891a05-59d8-4a3b-a0ea-b63af58558f7",
@@ -76,7 +79,8 @@
                             "displayNameEvent": "DC voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8",
@@ -130,7 +134,8 @@
                             "displayNameEvent": "Current total power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "40ff1d14-a5d2-4fdb-919c-58dfbcdca123",

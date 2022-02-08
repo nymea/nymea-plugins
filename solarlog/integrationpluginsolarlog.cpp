@@ -125,7 +125,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
 
         QVariantMap map = data.toVariant().toMap().value("801").toMap().value("170").toMap();
         thing->setStateValue(solarlogLastupdateStateTypeId, map.value(QString::number(JsonObjectNumbers::LastUpdateTime)));
-        thing->setStateValue(solarlogTotalPowerEventTypeId, (map.value(QString::number(JsonObjectNumbers::Pac)).toDouble()/1000.00));
+        thing->setStateValue(solarlogCurrentPowerStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pac)).toDouble()/1000.00));
         thing->setStateValue(solarlogPdcStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pdc)).toDouble()/1000.00));
         thing->setStateValue(solarlogUacStateTypeId, map.value(QString::number(JsonObjectNumbers::Uac)));
         thing->setStateValue(solarlogDcVoltageStateTypeId, map.value(QString::number(JsonObjectNumbers::DCVoltage)));
