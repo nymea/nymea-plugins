@@ -164,7 +164,8 @@
                             "displayNameEvent": "Voltage phase A changed",
                             "type": "int",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "c8344ca5-21ac-4cd1-8f4b-e5ed202c5862",
@@ -173,7 +174,8 @@
                             "displayNameEvent": "Voltage phase B changed",
                             "type": "int",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "5f01e86c-0943-4849-a01a-db441916ebd5",
@@ -182,7 +184,8 @@
                             "displayNameEvent": "Voltage phase C changed",
                             "type": "int",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "31ec17b0-11e3-4332-92b0-fea821cf024f",
@@ -192,7 +195,8 @@
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
@@ -202,7 +206,8 @@
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
@@ -212,7 +217,8 @@
                             "type": "double",
                             "unit": "Ampere",
                             "defaultValue": 0.00,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "7af9e93b-099d-4d9d-a480-9c0f66aecd8b",
@@ -222,7 +228,8 @@
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0.00,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "889c3c9a-96b4-4408-bd9a-d79e36ed9296",
@@ -231,7 +238,8 @@
                             "displayNameEvent": "Power factor changed",
                             "type": "double",
                             "unit": "Percentage",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "1d30ce60-2ea0-450f-817e-5c88f59ebfbf",
@@ -248,7 +256,8 @@
                             "displayNameEvent": "Session time changed",
                             "type": "int",
                             "unit": "Minutes",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "8e277efe-21ef-4536-bfc0-901b32d44d7c",
@@ -258,7 +267,8 @@
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "41e179b3-29a2-43ec-b537-023a527081e8",
@@ -295,7 +305,8 @@
                             "displayNameEvent": "Uptime changed",
                             "type": "int",
                             "unit": "Minutes",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
@@ -303,7 +314,8 @@
                             "displayName": "Error 1",
                             "displayNameEvent": "Error 1 changed",
                             "type": "int",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
@@ -311,7 +323,8 @@
                             "displayName": "Error 2",
                             "displayNameEvent": "Error 2 changed",
                             "type": "int",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "f1758c5c-2c02-41cb-93ec-b778a3c78d28",
