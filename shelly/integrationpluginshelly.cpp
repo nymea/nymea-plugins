@@ -1146,6 +1146,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         QVariant value = payload;
         QHash<QString, StateTypeId> stateTypeIdMap;
         stateTypeIdMap["power"] = shellyEmChannelCurrentPowerStateTypeId;
+        stateTypeIdMap["pf"] = shellyEmChannelPowerFactorPhaseAStateTypeId;
         stateTypeIdMap["reactive_power"] = shellyEmChannelReactivePowerPhaseAStateTypeId;
         stateTypeIdMap["voltage"] = shellyEmChannelVoltagePhaseAStateTypeId;
         stateTypeIdMap["total"] = shellyEmChannelTotalEnergyConsumedStateTypeId;
@@ -1182,14 +1183,14 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                     } else {
                         child->setStateValue(shellyEmChannelCurrentPhaseAStateTypeId, 0);
                     }
-                    double reactivePower = child->stateValue(shellyEmChannelReactivePowerPhaseAStateTypeId).toDouble();
+                    /*double reactivePower = child->stateValue(shellyEmChannelReactivePowerPhaseAStateTypeId).toDouble();
                     double root = qSqrt(power*power + reactivePower*reactivePower);
                     if (qFuzzyCompare(root, 0) == false) {
                         double calcPf = power/root;
                         child->setStateValue(shellyEmChannelPowerFactorPhaseAStateTypeId, calcPf);
                     } else {
                         child->setStateValue(shellyEmChannelPowerFactorPhaseAStateTypeId, 0);
-                    }
+                    }*/
                 }
             }
 
