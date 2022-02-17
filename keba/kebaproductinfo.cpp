@@ -35,7 +35,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     m_productString(productString)
 {
     qCDebug(dcKeba()) << "Parsing product information from" << productString.count() << productString;
-    if (m_productString.count() != 22) {
+    if (m_productString.count() < 19) {
         qCWarning(dcKeba()) << "Invalid product information string size for" << productString << ". Cannot parse.";
         m_isValid = false;
         return;
