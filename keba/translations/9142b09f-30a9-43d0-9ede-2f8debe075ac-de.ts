@@ -4,28 +4,33 @@
 <context>
     <name>IntegrationPluginKeba</name>
     <message>
-        <location filename="../integrationpluginkeba.cpp" line="61"/>
+        <location filename="../integrationpluginkeba.cpp" line="60"/>
         <source>The communication could not be established.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginkeba.cpp" line="68"/>
+        <location filename="../integrationpluginkeba.cpp" line="67"/>
         <source>The network discovery is not available. Please enter the IP address manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginkeba.cpp" line="132"/>
+        <location filename="../integrationpluginkeba.cpp" line="131"/>
         <source>Error opening network port.</source>
         <translation>Fehler beim Öffnen des Netzwerkports.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginkeba.cpp" line="142"/>
+        <location filename="../integrationpluginkeba.cpp" line="141"/>
         <source>Already configured for this IP address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginkeba.cpp" line="173"/>
+        <location filename="../integrationpluginkeba.cpp" line="184"/>
         <source>The required communication interface is not enabled on this wallbox. Please make sure the DIP switch 1.3 is switched on and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginkeba.cpp" line="209"/>
+        <source>This model does not support communication with smart devices.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
