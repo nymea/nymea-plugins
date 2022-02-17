@@ -66,7 +66,7 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
                 continue;
 
             // Hostname or MAC manufacturer must include Fronius
-            if (!(networkDeviceInfo.macAddressManufacturer().toLower().contains("fronius") || networkDeviceInfo.hostName().toLower().contains("fronius")))
+            if (!networkDeviceInfo.macAddressManufacturer().toLower().contains("fronius") && !networkDeviceInfo.hostName().toLower().contains("fronius"))
                 continue;
 
             QString title;
@@ -170,7 +170,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
         Thing *loggerThing = myThings().findById(thing->parentId());
         if (!loggerThing) {
             qCWarning(dcFronius()) << "Could not find Logger Thing for thing " << thing->name();
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
+            return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Please try again"));
         }
 
         if (!loggerThing->setupComplete()) {
