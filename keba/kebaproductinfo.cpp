@@ -52,8 +52,8 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         m_connector = ConnectorSocket;
         qCDebug(dcKeba()) << "Connector: Socket";
     } else if (connectorValue.toLower() == QChar('c')) {
-        m_connector = ConnectorCabel;
-        qCDebug(dcKeba()) << "Connector: Cabel";
+        m_connector = ConnectorCable;
+        qCDebug(dcKeba()) << "Connector: Cable";
     } else {
         m_isValid = false;
         return;
@@ -89,19 +89,19 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
 
     qCDebug(dcKeba()) << "Current:" << m_current;
 
-    QString cabelValue = m_productString.mid(11, 2);
-    if (cabelValue == "00") {
-        m_cabel = NoCabel;
-        qCDebug(dcKeba()) << "Cabel: No cabel";
-    } else if (cabelValue == "01") {
-        m_cabel = Cabel4m;
-        qCDebug(dcKeba()) << "Cabel: 4 meter";
-    } else if (cabelValue == "04") {
-        m_cabel = Cabel6m;
-        qCDebug(dcKeba()) << "Cabel: 6 meter";
-    } else if (cabelValue == "07") {
-        m_cabel = Cabel5p5m;
-        qCDebug(dcKeba()) << "Cabel: 5.5 meter";
+    QString cableValue = m_productString.mid(11, 2);
+    if (cableValue == "00") {
+        m_cable = NoCable;
+        qCDebug(dcKeba()) << "Cable: No cable";
+    } else if (cableValue == "01") {
+        m_cable = Cable4m;
+        qCDebug(dcKeba()) << "Cable: 4 meter";
+    } else if (cableValue == "04") {
+        m_cable = Cable6m;
+        qCDebug(dcKeba()) << "Cable: 6 meter";
+    } else if (cableValue == "07") {
+        m_cable = Cable5p5m;
+        qCDebug(dcKeba()) << "Cable: 5.5 meter";
     } else {
         m_isValid = false;
         return;
@@ -223,9 +223,9 @@ KebaProductInfo::ConnectorCurrent KebaProductInfo::current() const
     return m_current;
 }
 
-KebaProductInfo::Cabel KebaProductInfo::cabel() const
+KebaProductInfo::Cable KebaProductInfo::cable() const
 {
-    return m_cabel;
+    return m_cable;
 }
 
 KebaProductInfo::Series KebaProductInfo::series() const

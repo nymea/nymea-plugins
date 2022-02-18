@@ -40,7 +40,7 @@ class KebaProductInfo
 public:
     enum Connector {
         ConnectorSocket,
-        ConnectorCabel
+        ConnectorCable
     };
     Q_ENUM(Connector)
 
@@ -59,13 +59,13 @@ public:
     };
     Q_ENUM(ConnectorCurrent)
 
-    enum Cabel {
-        NoCabel = 0,
-        Cabel4m = 1,
-        Cabel6m = 4,
-        Cabel5p5m = 7
+    enum Cable {
+        NoCable = 0,
+        Cable4m = 1,
+        Cable6m = 4,
+        Cable5p5m = 7
     };
-    Q_ENUM(Cabel)
+    Q_ENUM(Cable)
 
     enum Series {
         SeriesE,
@@ -104,10 +104,10 @@ public:
     // Porperties in the string
     QString model() const; // KC-P30
     QString countryCode() const; // E
-    Connector connector() const; // Socket / Cabel
+    Connector connector() const; // Socket / Cable
     ConnectorType connectorType() const; // Type 1 / Type 2
     ConnectorCurrent current() const; // 13A, 16A ...
-    Cabel cabel() const; // 4m, 6m...
+    Cable cable() const; // 4m, 6m...
     Series series() const; // x, c, a...
     int phaseCount() const; // 1 or 3
     Meter meter() const; // No meter, Calibrated, ...
@@ -122,7 +122,7 @@ private:
     Connector m_connector;
     ConnectorType m_connectorType;
     ConnectorCurrent m_current;
-    Cabel m_cabel;
+    Cable m_cable;
     Series m_series;
     int m_phaseCount;
     Meter m_meter;

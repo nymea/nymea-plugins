@@ -211,7 +211,6 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 }
             }
 
-
             m_kebaDevices.insert(thing->id(), keba);
             info->finish(Thing::ThingErrorNoError);
             qCDebug(dcKeba()) << "Setup finsihed successfully for" << thing << thing->params();
