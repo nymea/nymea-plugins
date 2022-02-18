@@ -315,6 +315,7 @@
                     "name": "speedwireInverter",
                     "displayName": "SMA Inverter",
                     "createMethods": ["discovery", "user"],
+                    "setupMethod": "EnterPin",
                     "interfaces": [ "solarinverter" ],
                     "paramTypes": [
                         {

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -39,11 +39,9 @@ SpeedwireInverter::SpeedwireInverter(const QHostAddress &address, quint16 modelI
     m_modelId(modelId),
     m_serialNumber(serialNumber)
 {
-
     qCDebug(dcSma()) << "Inverter: setup interface on" << m_address.toString();
     m_interface = new SpeedwireInterface(m_address, false, this);
     connect(m_interface, &SpeedwireInterface::dataReceived, this, &SpeedwireInverter::processData);
-
 }
 
 bool SpeedwireInverter::initialize()
@@ -197,7 +195,7 @@ SpeedwireInverterReply *SpeedwireInverter::sendLoginRequest(const QString &passw
         encodedPassword[i] = (passwordData.at(i) + (loginAsUser ? 0x88 : 0xBB) % 0xff);
     }
 
-    // Add endoced password
+    // Add encoded password
     for (int i = 0; i < encodedPassword.count(); i++) {
         stream << static_cast<quint8>(encodedPassword.at(i));
     }
@@ -326,6 +324,12 @@ SpeedwireInverterReply *SpeedwireInverter::sendDeviceTypeRequest()
     request.setCommand(command);
     request.setRequestData(datagram);
     return createReply(request);
+}
+
+void SpeedwireInverter::startConnecting(const QString &password)
+{
+    m_password = password;
+    refresh();
 }
 
 void SpeedwireInverter::refresh()
@@ -1082,10 +1086,16 @@ void SpeedwireInverter::setState(State state)
             if (reply->error() != SpeedwireInverterReply::ErrorNoError) {
                 if (reply->error() == SpeedwireInverterReply::ErrorTimeout) {
                     qCWarning(dcSma()) << "Inverter: Failed to query data from inverter:" << reply->request().command() << reply->error();
+
+                    // TODO: try to send identify request and retry 3 times before giving up,
+                    // still need to figure out why the inverter stops responding sometimes and how we can
+                    // make it communicative again, a reconfugre always fixes this issue...somehow...
+
                     setState(StateDisconnected);
                     return;
                 }
 
+                // Reachable, but received an inverter error, probably not logged
                 if (reply->error() == SpeedwireInverterReply::ErrorInverterError) {
                     qCDebug(dcSma()) << "Inverter: Query data request finished with inverter error. Try to login...";
                     setState(StateLogin);
@@ -1093,10 +1103,14 @@ void SpeedwireInverter::setState(State state)
                 }
             }
 
+            // We where able to read data...emit the signal for the setup just incase
+            emit loginFinished(true);
+
             qCDebug(dcSma()) << "Inverter: Query request finished successfully" << reply->request().command();
             processAcPowerResponse(reply->responseData());
 
-            if (deviceInformationFetched) {
+
+            if (m_deviceInformationFetched) {
                 setState(StateQueryData);
             } else {
                 setState(StateGetInformation);
@@ -1104,18 +1118,18 @@ void SpeedwireInverter::setState(State state)
         });
         break;
     }
-
     case StateLogin: {
-        setState(StateLogin);
-        SpeedwireInverterReply *loginReply = sendLoginRequest();
+        SpeedwireInverterReply *loginReply = sendLoginRequest(m_password);
         connect(loginReply, &SpeedwireInverterReply::finished, this, [=](){
             if (loginReply->error() != SpeedwireInverterReply::ErrorNoError) {
                 qCWarning(dcSma()) << "Inverter: Failed to login to inverter:" << loginReply->error();
+                emit loginFinished(false);
                 setState(StateDisconnected);
                 return;
             }
 
             qCDebug(dcSma()) << "Inverter: Login request finished successfully.";
+            emit loginFinished(true);
             setReachable(true);
 
             // Logged in successfully, reinit the data fetch process
@@ -1145,7 +1159,7 @@ void SpeedwireInverter::setState(State state)
 
                 qCDebug(dcSma()) << "Inverter: Get device information finished successfully.";
                 processDeviceTypeResponse(deviceTypeReply->responsePayload());
-                deviceInformationFetched = true;
+                m_deviceInformationFetched = true;
                 setState(StateQueryData);
             });
         });

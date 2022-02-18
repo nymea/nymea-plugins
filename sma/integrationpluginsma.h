@@ -48,6 +48,10 @@ public:
 
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
+
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;

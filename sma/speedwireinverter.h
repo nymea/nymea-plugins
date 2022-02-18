@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -101,19 +101,22 @@ public:
     SpeedwireInverterReply *sendDeviceTypeRequest();
 
     // Start connecting
-    void startConnecting();
+    void startConnecting(const QString &password = "0000");
 
 public slots:
     void refresh();
 
 signals:
     void reachableChanged(bool reachable);
+    void loginFinished(bool success);
     void stateChanged(State state);
     void valuesUpdated();
 
 private:
     SpeedwireInterface *m_interface = nullptr;
     QHostAddress m_address;
+    QString m_password;
+
     bool m_initialized = false;
     quint16 m_modelId = 0;
     quint32 m_serialNumber = 0;
@@ -122,7 +125,7 @@ private:
     State m_state = StateDisconnected;
     quint16 m_packetId = 1;
 
-    bool deviceInformationFetched = false;
+    bool m_deviceInformationFetched = false;
 
     SpeedwireInverterReply *m_currentReply = nullptr;
     QQueue<SpeedwireInverterReply *> m_replyQueue;

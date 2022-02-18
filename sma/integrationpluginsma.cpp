@@ -177,6 +177,32 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
     }
 }
 
+void IntegrationPluginSma::startPairing(ThingPairingInfo *info)
+{
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the password of your inverter. If no password has been explicitly set, leave it empty to use the default password for SMA inverters."));
+}
+
+void IntegrationPluginSma::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
+{
+    Q_UNUSED(username)
+
+    // Init with the default password
+    QString password = "0000";
+    if (!secret.isEmpty()) {
+        qCDebug(dcSma()) << "Pairing: Using password" << secret;
+        password = secret;
+    } else {
+        qCDebug(dcSma()) << "Pairing: Secret is empty. Using default password" << password;
+    }
+
+    // Just store details, we'll test the login in setupDevice
+    pluginStorage()->beginGroup(info->thingId().toString());
+    pluginStorage()->setValue("password", password);
+    pluginStorage()->endGroup();
+
+    info->finish(Thing::ThingErrorNoError);
+}
+
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
@@ -213,7 +239,9 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
         });
+
     } else if (thing->thingClassId() == speedwireMeterThingClassId) {
+
         QHostAddress address = QHostAddress(thing->paramValue(speedwireMeterThingHostParamTypeId).toString());
         quint32 serialNumber = static_cast<quint32>(thing->paramValue(speedwireMeterThingSerialNumberParamTypeId).toUInt());
         quint16 modelId = static_cast<quint16>(thing->paramValue(speedwireMeterThingModelIdParamTypeId).toUInt());
@@ -258,7 +286,9 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
         m_speedwireMeters.insert(thing, meter);
         info->finish(Thing::ThingErrorNoError);
+
     } else if (thing->thingClassId() == speedwireInverterThingClassId) {
+
         QHostAddress address = QHostAddress(thing->paramValue(speedwireInverterThingHostParamTypeId).toString());
         quint32 serialNumber = static_cast<quint32>(thing->paramValue(speedwireInverterThingSerialNumberParamTypeId).toUInt());
         quint16 modelId = static_cast<quint16>(thing->paramValue(speedwireInverterThingModelIdParamTypeId).toUInt());
@@ -276,6 +306,31 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
         qCDebug(dcSma()) << "Inverter: Interface initialized successfully.";
 
+        QString password;
+        pluginStorage()->beginGroup(info->thing()->id().toString());
+        password = pluginStorage()->value("password", "0000").toString();
+        pluginStorage()->endGroup();
+
+        // Connection exists only as long info exists
+        connect(inverter, &SpeedwireInverter::loginFinished, info, [=](bool success){
+            if (!success) {
+                qCWarning(dcSma()) << "Failed to set up inverter. Wrong password.";
+                delete inverter;
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to log in with the given password. Please try again."));
+                return;
+            }
+
+            qCDebug(dcSma()) << "Inverter set up successfully.";
+            m_speedwireInverters.insert(thing, inverter);
+            info->finish(Thing::ThingErrorNoError);
+            // Note: the data is already refreshing here
+        });
+
+        // Make sure an aborted setup will clean up the object
+        connect(info, &ThingSetupInfo::aborted, inverter, &SpeedwireInverter::deleteLater);
+
+
+        // Runtime connections
         connect(inverter, &SpeedwireInverter::reachableChanged, this, [=](bool reachable){
             thing->setStateValue(speedwireInverterConnectedStateTypeId, reachable);
         });
@@ -296,14 +351,11 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
             thing->setStateValue(speedwireInverterCurrentPowerMpp1StateTypeId, inverter->powerDcMpp1());
             thing->setStateValue(speedwireInverterCurrentPowerMpp2StateTypeId, inverter->powerDcMpp2());
-
         });
 
-        m_speedwireInverters.insert(thing, inverter);
-        info->finish(Thing::ThingErrorNoError);
+        qCDebug(dcSma()) << "Inverter: Start connecting using password" << password;
+        inverter->startConnecting(password);
 
-        // Initial refresh data
-        inverter->refresh();
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
