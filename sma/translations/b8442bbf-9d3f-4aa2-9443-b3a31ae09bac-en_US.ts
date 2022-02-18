@@ -14,6 +14,16 @@
         <source>Unable to discover the network.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../integrationpluginsma.cpp" line="182"/>
+        <source>Please enter the password of your inverter. If no password has been explicitly set, leave it empty to use the default password for SMA inverters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginsma.cpp" line="319"/>
+        <source>Failed to log in with the given password. Please try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>sma</name>
