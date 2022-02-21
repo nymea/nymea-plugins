@@ -186,13 +186,19 @@ void IntegrationPluginSma::confirmPairing(ThingPairingInfo *info, const QString 
 {
     Q_UNUSED(username)
 
+    // On speedwire the password length has a maximum of 12 characters
+    if (secret.count() > 12) {
+        info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The password can not be longer than 12 characters."));
+        return;
+    }
+
     // Init with the default password
     QString password = "0000";
     if (!secret.isEmpty()) {
         qCDebug(dcSma()) << "Pairing: Using password" << secret;
         password = secret;
     } else {
-        qCDebug(dcSma()) << "Pairing: Secret is empty. Using default password" << password;
+        qCDebug(dcSma()) << "Pairing: The given password is empty. Using default password" << password;
     }
 
     // Just store details, we'll test the login in setupDevice
@@ -315,6 +321,12 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
         connect(inverter, &SpeedwireInverter::loginFinished, info, [=](bool success){
             if (!success) {
                 qCWarning(dcSma()) << "Failed to set up inverter. Wrong password.";
+
+                // Remove invalid password from settings
+                pluginStorage()->beginGroup(info->thing()->id().toString());
+                pluginStorage()->remove("");
+                pluginStorage()->endGroup();
+
                 delete inverter;
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to log in with the given password. Please try again."));
                 return;
@@ -328,7 +340,6 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
         // Make sure an aborted setup will clean up the object
         connect(info, &ThingSetupInfo::aborted, inverter, &SpeedwireInverter::deleteLater);
-
 
         // Runtime connections
         connect(inverter, &SpeedwireInverter::reachableChanged, thing, [=](bool reachable){
@@ -410,6 +421,7 @@ void IntegrationPluginSma::onConnectedChanged(bool connected)
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)
         return;
+
     thing->setStateValue(sunnyWebBoxConnectedStateTypeId, connected);
 }
 
@@ -446,6 +458,7 @@ void IntegrationPluginSma::setupRefreshTimer()
         }
 
         foreach (SpeedwireInverter *inverter, m_speedwireInverters) {
+            // Note: refresh will not be triggered if there is already a refresh process running
             inverter->refresh();
         }
     });
