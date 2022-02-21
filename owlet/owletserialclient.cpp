@@ -212,6 +212,7 @@ void OwletSerialClient::dataReceived(const QByteArray &data)
                 qCDebug(dcOwlet()) << "Connected successfully to firmware" << m_firmwareVersion;
                 m_ready = true;
                 emit readyChanged(m_ready);
+                emit connected();
             });
             break;
         }
