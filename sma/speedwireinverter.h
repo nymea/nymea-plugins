@@ -169,7 +169,7 @@ private:
 
     // Request builder function
     void buildDefaultHeader(QDataStream &stream, quint16 payloadSize = 38, quint8 control = 0xa0);
-    void buildPackage(QDataStream &stream, quint32 command, quint16 packetId);
+    void buildPacket(QDataStream &stream, quint32 command, quint16 packetId);
 
     // Send generic request for internal use
     SpeedwireInverterReply *sendQueryRequest(Speedwire::Command command, quint32 firstWord, quint32 secondWord);

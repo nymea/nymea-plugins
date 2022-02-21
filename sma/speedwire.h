@@ -95,7 +95,7 @@ public:
         }
     };
 
-    typedef struct InverterPackage {
+    typedef struct InverterPacket {
         quint8 wordCount = 0;
         quint8 control = 0;
         quint16 destinationModelId = 0;
@@ -108,7 +108,7 @@ public:
         quint16 fragmentId = 0;
         quint16 packetId = 0;
         quint32 command = 0;
-    } InverterPackage;
+    } InverterPacket;
 
     Speedwire() = default;
 
@@ -259,23 +259,23 @@ public:
         return header;
     };
 
-    static Speedwire::InverterPackage parseInverterPackage(QDataStream &stream) {
+    static Speedwire::InverterPacket parseInverterPacket(QDataStream &stream) {
         // Make sure the data stream is little endian
         stream.setByteOrder(QDataStream::LittleEndian);
-        InverterPackage package;
-        stream >> package.wordCount;
-        stream >> package.control;
-        stream >> package.destinationModelId;
-        stream >> package.destinationSerialNumber;
-        stream >> package.destinationControl;
-        stream >> package.sourceModelId;
-        stream >> package.sourceSerialNumber;
-        stream >> package.sourceControl;
-        stream >> package.errorCode;
-        stream >> package.fragmentId;
-        stream >> package.packetId;
-        stream >> package.command;
-        return package;
+        InverterPacket packet;
+        stream >> packet.wordCount;
+        stream >> packet.control;
+        stream >> packet.destinationModelId;
+        stream >> packet.destinationSerialNumber;
+        stream >> packet.destinationControl;
+        stream >> packet.sourceModelId;
+        stream >> packet.sourceSerialNumber;
+        stream >> packet.sourceControl;
+        stream >> packet.errorCode;
+        stream >> packet.fragmentId;
+        stream >> packet.packetId;
+        stream >> packet.command;
+        return packet;
     };
 };
 
@@ -285,14 +285,14 @@ inline QDebug operator<<(QDebug debug, const Speedwire::Header &header)
     return debug.maybeSpace();
 }
 
-inline QDebug operator<<(QDebug debug, const Speedwire::InverterPackage &package)
+inline QDebug operator<<(QDebug debug, const Speedwire::InverterPacket &packet)
 {
-    debug.nospace() << "InverterPackage(" << package.sourceSerialNumber;
-    debug.nospace() << ", Model ID: " << package.sourceModelId;
-    debug.nospace() << ", command: " << package.command;
-    debug.nospace() << ", error: " << package.errorCode;
-    debug.nospace() << ", fragment: " << package.fragmentId;
-    debug.nospace() << ", package ID: " << package.fragmentId;
+    debug.nospace() << "InverterPacket(" << packet.sourceSerialNumber;
+    debug.nospace() << ", Model ID: " << packet.sourceModelId;
+    debug.nospace() << ", command: " << packet.command;
+    debug.nospace() << ", error: " << packet.errorCode;
+    debug.nospace() << ", fragment: " << packet.fragmentId;
+    debug.nospace() << ", packet ID: " << packet.fragmentId;
     debug.nospace()  << ")";
     return debug.maybeSpace();
 }

@@ -294,9 +294,9 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
         m_results[senderAddress].modelId = modelId;
         m_results[senderAddress].serialNumber = serialNumber;
     } else if (header.protocolId == Speedwire::ProtocolIdInverter) {
-        Speedwire::InverterPackage inverterPackage = Speedwire::parseInverterPackage(stream);
+        Speedwire::InverterPacket inverterPacket = Speedwire::parseInverterPacket(stream);
         // Response from inverter 534d4100 0004 02a0 0000 0001 004e 0010 6065 1390 7d00 52be283a 0000 b500 c2c12e12 0000 0000 00000 1800102000000000000000000000003000000ff0000ecd5ff1f0100b500c2c12e1200000a000c00000000000000030000000101000000000000
-        qCDebug(dcSma()) << "SpeedwireDiscovery:" << inverterPackage;
+        qCDebug(dcSma()) << "SpeedwireDiscovery:" << inverterPacket;
 
         if (!m_results.contains(senderAddress)) {
             SpeedwireDiscoveryResult result;
@@ -309,8 +309,8 @@ void SpeedwireDiscovery::processDatagram(const QHostAddress &senderAddress, quin
             m_results[senderAddress].networkDeviceInfo = m_networkDeviceInfos.get(senderAddress);
         }
 
-        m_results[senderAddress].modelId = inverterPackage.sourceModelId;
-        m_results[senderAddress].serialNumber = inverterPackage.sourceSerialNumber;
+        m_results[senderAddress].modelId = inverterPacket.sourceModelId;
+        m_results[senderAddress].serialNumber = inverterPacket.sourceSerialNumber;
     } else {
         qCWarning(dcSma()) << "SpeedwireDiscovery: Unhandled data received" << datagram.toHex();
         return;

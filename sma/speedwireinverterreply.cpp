@@ -62,9 +62,9 @@ Speedwire::Header SpeedwireInverterReply::responseHeader() const
     return m_responseHeader;
 }
 
-Speedwire::InverterPackage SpeedwireInverterReply::responsePackage() const
+Speedwire::InverterPacket SpeedwireInverterReply::responsePacket() const
 {
-    return m_responsePackage;
+    return m_responsePacket;
 }
 
 QByteArray SpeedwireInverterReply::responsePayload() const

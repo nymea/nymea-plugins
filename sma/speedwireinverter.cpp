@@ -177,7 +177,7 @@ SpeedwireInverterReply *SpeedwireInverter::sendLoginRequest(const QString &passw
     Speedwire::Command command = Speedwire::CommandLogin;
 
     // The payload is little endian encoded
-    buildPackage(stream, command, packetId);
+    buildPacket(stream, command, packetId);
 
     // User type: 7 = user, a = installer
     stream << (loginAsUser ? static_cast<quint32>(0x00000007) : static_cast<quint32>(0x0000000a));
@@ -279,7 +279,7 @@ SpeedwireInverterReply *SpeedwireInverter::sendSoftwareVersionRequest()
     Speedwire::Command command = Speedwire::CommandQueryDevice;
 
     // The payload is little endian encoded
-    buildPackage(stream, command, packetId);
+    buildPacket(stream, command, packetId);
 
     // First and last word
     stream << static_cast<quint32>(0x00823400);
@@ -309,7 +309,7 @@ SpeedwireInverterReply *SpeedwireInverter::sendDeviceTypeRequest()
     Speedwire::Command command = Speedwire::CommandQueryDevice;
 
     // The payload is little endian encoded
-    buildPackage(stream, command, packetId);
+    buildPacket(stream, command, packetId);
 
     // 2 words
     stream << static_cast<quint32>(0x00821e00);
@@ -354,7 +354,7 @@ void SpeedwireInverter::sendNextReply()
 
     // Pick the next reply and send request
     m_currentReply = m_replyQueue.dequeue();
-    qCDebug(dcSma()) << "Inverter: --> Sending" << m_currentReply->request().command() << "package ID:" << m_currentReply->request().packetId();
+    qCDebug(dcSma()) << "Inverter: --> Sending" << m_currentReply->request().command() << "packet ID:" << m_currentReply->request().packetId();
     m_interface->sendData(m_currentReply->request().requestData());
     m_currentReply->startWaiting();
 }
@@ -403,9 +403,9 @@ void SpeedwireInverter::buildDefaultHeader(QDataStream &stream, quint16 payloadS
     stream << control;
 }
 
-void SpeedwireInverter::buildPackage(QDataStream &stream, quint32 command, quint16 packetId)
+void SpeedwireInverter::buildPacket(QDataStream &stream, quint32 command, quint16 packetId)
 {
-    // ========= package header (little endian)
+    // ========= packet header (little endian)
     // == 7a01842a71b30001
 
     // 7a01 : destination model id
@@ -492,7 +492,7 @@ SpeedwireInverterReply *SpeedwireInverter::sendQueryRequest(Speedwire::Command c
     quint16 packetId = m_packetId++ | 0x8000;
 
     // The payload is little endian encoded
-    buildPackage(stream, command, packetId);
+    buildPacket(stream, command, packetId);
 
     // First and second word
     stream << firstWord;
@@ -995,19 +995,19 @@ void SpeedwireInverter::processData(const QByteArray &data)
         return;
     }
 
-    Speedwire::InverterPackage package = Speedwire::parseInverterPackage(stream);
-    if (package.sourceModelId != m_modelId || package.sourceSerialNumber != m_serialNumber) {
-        qCWarning(dcSma()) << "Inverter: Received datagram from different inverter" << package.sourceSerialNumber << "Ignoring data...";
+    Speedwire::InverterPacket packet = Speedwire::parseInverterPacket(stream);
+    if (packet.sourceModelId != m_modelId || packet.sourceSerialNumber != m_serialNumber) {
+        qCWarning(dcSma()) << "Inverter: Received datagram from different inverter" << packet.sourceSerialNumber << "Ignoring data...";
         return;
     }
 
-    qCDebug(dcSma()) << "Inverter: <-- Received" << static_cast<Speedwire::Command>(package.command) << "Packet ID:" << package.packetId;
+    qCDebug(dcSma()) << "Inverter: <-- Received" << static_cast<Speedwire::Command>(packet.command) << "Packet ID:" << packet.packetId;
     //qCDebug(dcSma()) << "Inverter:" << data.toHex();
-    if (m_currentReply && m_currentReply->request().packetId() == package.packetId) {
+    if (m_currentReply && m_currentReply->request().packetId() == packet.packetId) {
         qCDebug(dcSma()) << "Inverter: Received response for current reply" << static_cast<Speedwire::Command>(m_currentReply->request().command()) << "Packet ID:" << m_currentReply->request().packetId();
         m_currentReply->m_responseData = data;
         m_currentReply->m_responseHeader = header;
-        m_currentReply->m_responsePackage = package;
+        m_currentReply->m_responsePacket = packet;
         // Set the payload
         while (!stream.atEnd()) {
             quint8 byte;
@@ -1015,7 +1015,7 @@ void SpeedwireInverter::processData(const QByteArray &data)
             m_currentReply->m_responsePayload.append(byte);
         }
 
-        if (package.errorCode != 0) {
+        if (packet.errorCode != 0) {
             m_currentReply->finishReply(SpeedwireInverterReply::ErrorInverterError);
         } else {
             m_currentReply->finishReply(SpeedwireInverterReply::ErrorNoError);
@@ -1027,7 +1027,7 @@ void SpeedwireInverter::processData(const QByteArray &data)
             qCWarning(dcSma()) << "Inverter: Received unexpected data: not waiting for any response.";
         }
         qCWarning(dcSma()) << "Inverter:" << header;
-        qCWarning(dcSma()) << "Inverter:" << package;
+        qCWarning(dcSma()) << "Inverter:" << packet;
         qCWarning(dcSma()) << "Inverter:" << data.toHex();
     }
 }

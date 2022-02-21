@@ -58,7 +58,7 @@ public:
     // Response
     QByteArray responseData() const;
     Speedwire::Header responseHeader() const;
-    Speedwire::InverterPackage responsePackage() const;
+    Speedwire::InverterPacket responsePacket() const;
     QByteArray responsePayload() const;
 
 signals:
@@ -77,7 +77,7 @@ private:
 
     QByteArray m_responseData;
     Speedwire::Header m_responseHeader;
-    Speedwire::InverterPackage m_responsePackage;
+    Speedwire::InverterPacket m_responsePacket;
     QByteArray m_responsePayload;
 
 

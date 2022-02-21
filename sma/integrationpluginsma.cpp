@@ -257,11 +257,11 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             return;
         }
 
-        connect(meter, &SpeedwireMeter::reachableChanged, this, [=](bool reachable){
+        connect(meter, &SpeedwireMeter::reachableChanged, thing, [=](bool reachable){
             thing->setStateValue(speedwireMeterConnectedStateTypeId, reachable);
         });
 
-        connect(meter, &SpeedwireMeter::valuesUpdated, this, [=](){
+        connect(meter, &SpeedwireMeter::valuesUpdated, thing, [=](){
             thing->setStateValue(speedwireMeterConnectedStateTypeId, true);
             thing->setStateValue(speedwireMeterCurrentPowerStateTypeId, meter->currentPower());
             thing->setStateValue(speedwireMeterCurrentPowerPhaseAStateTypeId, meter->currentPowerPhaseA());
@@ -331,11 +331,11 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
 
         // Runtime connections
-        connect(inverter, &SpeedwireInverter::reachableChanged, this, [=](bool reachable){
+        connect(inverter, &SpeedwireInverter::reachableChanged, thing, [=](bool reachable){
             thing->setStateValue(speedwireInverterConnectedStateTypeId, reachable);
         });
 
-        connect(inverter, &SpeedwireInverter::valuesUpdated, this, [=](){
+        connect(inverter, &SpeedwireInverter::valuesUpdated, thing, [=](){
             thing->setStateValue(speedwireInverterTotalEnergyProducedStateTypeId, inverter->totalEnergyProduced());
             thing->setStateValue(speedwireInverterEnergyProducedTodayStateTypeId, inverter->todayEnergyProduced());
             thing->setStateValue(speedwireInverterCurrentPowerStateTypeId, -inverter->totalAcPower());
