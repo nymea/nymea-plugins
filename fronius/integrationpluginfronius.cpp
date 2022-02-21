@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,16 +29,16 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "plugininfo.h"
-#include "integrationpluginfronius.h"
 #include "plugintimer.h"
+#include "integrationpluginfronius.h"
 #include "network/networkaccessmanager.h"
 #include "network/networkdevicediscovery.h"
 
 #include <QUrl>
+#include <QDebug>
+#include <QPointer>
 #include <QUrlQuery>
 #include <QJsonDocument>
-#include <QPointer>
-#include <QDebug>
 
 // Notes: Test IPs: 93.82.221.82 | 88.117.152.99
 
@@ -83,18 +83,18 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
                 description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
             }
 
-            ThingDescriptor descriptor(dataloggerThingClassId, title, description);
+            ThingDescriptor descriptor(connectionThingClassId, title, description);
 
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(dataloggerThingLoggerMacParamTypeId, networkDeviceInfo.macAddress());
+            Things existingThings = myThings().filterByParam(connectionThingMacParamTypeId, networkDeviceInfo.macAddress());
             if (existingThings.count() == 1) {
                 qCDebug(dcFronius()) << "This thing already exists in the system." << existingThings.first() << networkDeviceInfo;
                 descriptor.setThingId(existingThings.first()->id());
             }
 
             ParamList params;
-            params << Param(dataloggerThingLoggerHostParamTypeId, networkDeviceInfo.address().toString());
-            params << Param(dataloggerThingLoggerMacParamTypeId, networkDeviceInfo.macAddress());
+            params << Param(connectionThingAddressParamTypeId, networkDeviceInfo.address().toString());
+            params << Param(connectionThingMacParamTypeId, networkDeviceInfo.macAddress());
             descriptor.setParams(params);
             info->addThingDescriptor(descriptor);
         }
@@ -104,36 +104,22 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 {
-    qCDebug(dcFronius()) << "Setting up a new thing:" << info->thing()->name();
-
     Thing *thing = info->thing();
+    qCDebug(dcFronius()) << "Setting up" << thing;
 
-    if (thing->thingClassId() == dataloggerThingClassId) {
-        //check if a data logger is already added with this IPv4Address
-        foreach(FroniusLogger *logger, m_froniusLoggers.keys()){
-            if(logger->hostAddress() == thing->paramValue(dataloggerThingLoggerHostParamTypeId).toString()){
-                //this logger at this IPv4 address is already added
-                qCWarning(dcFronius()) << "thing at " << thing->paramValue(dataloggerThingLoggerHostParamTypeId).toString() << " already added!";
-                info->finish(Thing::ThingErrorThingInUse);
-                return;
-            }
-        }
+    if (thing->thingClassId() == connectionThingClassId) {
 
-        // Perform a HTTP request on the given IPv4Address to find things
-        QUrl requestUrl;
-        requestUrl.setScheme("http");
-        requestUrl.setHost(thing->paramValue(dataloggerThingLoggerHostParamTypeId).toString());
-        requestUrl.setPath("/solar_api/GetAPIVersion.cgi");
+        QHostAddress address(thing->paramValue(connectionThingAddressParamTypeId).toString());
+        FroniusSolarConnection *connection = new FroniusSolarConnection(hardwareManager()->networkManager(), address, thing);
 
-        qCDebug(dcFronius()) << "Search at address" << requestUrl.toString();
-
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [this, info, thing, reply] {
-            QByteArray data = reply->readAll();
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->url();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Device not reachable"));
+        // Verify the version
+        FroniusNetworkReply *reply = connection->getVersion();
+        connect(reply, &FroniusNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &FroniusNetworkReply::finished, info, [=] {
+            QByteArray data = reply->networkReply()->readAll();
+            if (reply->networkReply()->error() != QNetworkReply::NoError) {
+                qCWarning(dcFronius()) << "Network request error:" << reply->networkReply()->error() << reply->networkReply()->errorString() << reply->networkReply()->url();
+                info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device is not reachable"));
                 return;
             }
 
@@ -142,11 +128,12 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString() << data;
-                info->finish(Thing::ThingErrorHardwareFailure, tr("Please try again"));
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to read the data. Please try again."));
                 return;
             }
 
             QVariantMap versionResponseMap = jsonDoc.toVariant().toMap();
+            qCDebug(dcFronius()) << "Compatibility version" << versionResponseMap.value("CompatibilityRange").toString();
 
             // Knwon version with broken JSON API
             if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
@@ -155,34 +142,47 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
                 return;
             }
 
-            FroniusLogger *newLogger = new FroniusLogger(thing, this);
-            newLogger->setBaseUrl(versionResponseMap.value("BaseURL").toString());
-            newLogger->setHostAddress(thing->paramValue(dataloggerThingLoggerHostParamTypeId).toString());
-            m_froniusLoggers.insert(newLogger, thing);
-
+            m_froniusConnections.insert(connection, thing);
             info->finish(Thing::ThingErrorNoError);
+
+            // Update the already known states
+            thing->setStateValue("connected", true);
+            thing->setStateValue(connectionVersionStateTypeId, versionResponseMap.value("CompatibilityRange").toString());
         });
 
-    } else if ((thing->thingClassId() == inverterThingClassId) ||
-               (thing->thingClassId() == meterThingClassId)    ||
-               (thing->thingClassId() == storageThingClassId)) {
+        connect(connection, &FroniusSolarConnection::availableChanged, this, [=](bool available){
+            qCDebug(dcFronius()) << thing << "Available changed" << available;
+            thing->setStateValue("connected", available);
 
-        Thing *loggerThing = myThings().findById(thing->parentId());
-        if (!loggerThing) {
-            qCWarning(dcFronius()) << "Could not find Logger Thing for thing " << thing->name();
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
-        }
-
-        if (!loggerThing->setupComplete()) {
-            //wait for the parent to finish the setup process
-            connect(loggerThing, &Thing::setupStatusChanged, info, [this, info, loggerThing] {
-                if (loggerThing->setupComplete()) {
-                    setupChild(info, loggerThing);
+            if (!available) {
+                // Update all child things, they will be set to available once the connection starts working again
+                foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                    childThing->setStateValue("connected", false);
                 }
-            });
+            }
+        });
+
+    } else if ((thing->thingClassId() == inverterThingClassId ||
+                thing->thingClassId() == meterThingClassId ||
+                thing->thingClassId() == storageThingClassId)) {
+
+        // Verify the parent connection
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (!parentThing) {
+            qCWarning(dcFronius()) << "Could not find the parent for" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
-        setupChild(info, loggerThing);
+
+        FroniusSolarConnection *connection = m_froniusConnections.key(parentThing);
+        if (!connection) {
+            qCWarning(dcFronius()) << "Could not find the parent connection for" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        info->finish(Thing::ThingErrorNoError);
+
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -192,206 +192,69 @@ void IntegrationPluginFronius::postSetupThing(Thing *thing)
 {
     qCDebug(dcFronius()) << "Post setup" << thing->name();
 
-    if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
-        connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
-            foreach (Thing *logger, m_froniusLoggers)
-                updateThingStates(logger);
+    if (thing->thingClassId() == connectionThingClassId) {
 
-            foreach (Thing *inverter, m_froniusInverters)
-                updateThingStates(inverter);
+        // Create a refresh timer for monitoring the active devices
+        if (!m_connectionRefreshTimer) {
+            m_connectionRefreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
+            connect(m_connectionRefreshTimer, &PluginTimer::timeout, this, [this]() {
+                foreach (FroniusSolarConnection *connection, m_froniusConnections.keys()) {
+                    refreshConnection(connection);
+                }
+            });
 
-            foreach (Thing *meter, m_froniusMeters)
-                updateThingStates(meter);
+            m_connectionRefreshTimer->start();
+        }
 
-            foreach (Thing *storage, m_froniusStorages)
-                updateThingStates(storage);
-        });
-    }
-
-    if (thing->thingClassId() == dataloggerThingClassId) {
-        searchNewThings(m_froniusLoggers.key(thing));
-        thing->setStateValue(dataloggerConnectedStateTypeId, true);
-        updateThingStates(thing);
-    } else if ((thing->thingClassId() == inverterThingClassId) ||
-               (thing->thingClassId() == meterThingClassId)    ||
-               (thing->thingClassId() == storageThingClassId)) {
-        updateThingStates(thing);
-    } else {
-        Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+        // Refresh now
+        FroniusSolarConnection *connection = m_froniusConnections.key(thing);
+        if (connection) {
+            refreshConnection(connection);
+        }
     }
 }
 
 void IntegrationPluginFronius::thingRemoved(Thing *thing)
 {
-    if (thing->thingClassId() == dataloggerThingClassId) {
-        FroniusLogger *logger = m_froniusLoggers.key(thing);
-        m_froniusLoggers.remove(logger);
-        logger->deleteLater();
-    } else if (thing->thingClassId() == inverterThingClassId) {
-        FroniusInverter *inverter = m_froniusInverters.key(thing);
-        m_froniusInverters.remove(inverter);
-        inverter->deleteLater();
-    } else if (thing->thingClassId() == meterThingClassId) {
-        FroniusMeter *meter = m_froniusMeters.key(thing);
-        m_froniusMeters.remove(meter);
-        meter->deleteLater();
-    } else if (thing->thingClassId() == storageThingClassId) {
-        FroniusStorage *storage = m_froniusStorages.key(thing);
-        m_froniusStorages.remove(storage);
-        storage->deleteLater();
-    } else {
-        Q_ASSERT_X(false, "thingRemoved", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+    if (thing->thingClassId() == connectionThingClassId) {
+        FroniusSolarConnection *connection = m_froniusConnections.key(thing);
+        m_froniusConnections.remove(connection);
+        connection->deleteLater();
     }
 
-    if (myThings().isEmpty()) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-        m_pluginTimer = nullptr;
+    if (myThings().filterByThingClassId(connectionThingClassId).isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_connectionRefreshTimer);
+        m_connectionRefreshTimer = nullptr;
     }
 }
 
 
 void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 {
-    Action action = info->action();
-    Thing *thing = info->thing();
-    qCDebug(dcFronius()) << "Execute action" << thing->name() << action.actionTypeId().toString();
-
-    if (thing->thingClassId() == dataloggerThingClassId) {
-        if (action.actionTypeId() == dataloggerSearchDevicesActionTypeId) {
-            searchNewThings(m_froniusLoggers.key(thing));
-            info->finish(Thing::ThingErrorNoError);
-        } else {
-            Q_ASSERT_X(false, "executeAction", QString("Unhandled action: %1").arg(action.actionTypeId().toString()).toUtf8());
-        }
-    } else {
-        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
-    }
+    Q_UNUSED(info)
 }
 
-void IntegrationPluginFronius::updateThingStates(Thing *thing)
+void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)
 {
-    qCDebug(dcFronius()) << "Update thing values for" << thing->name();
-
-    if (thing->thingClassId() == inverterThingClassId) {
-        qCDebug(dcFronius()) << "Update inverter" << m_froniusInverters.key(thing)->updateUrl();
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->updateUrl()));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
-                return;
-            }
-            QByteArray data = reply->readAll();
-            if (m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusInverters.key(thing)->updateThingInfo(data);
-            }
-        });
-        QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->activityUrl()));
-        connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, thing, [this, thing, next_reply] {
-            if (next_reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
-                return;
-            }
-            QByteArray data = next_reply->readAll();
-            if (m_froniusInverters.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusInverters.key(thing)->updateActivityInfo(data);
-            }
-        });
-    } else if (thing->thingClassId() == dataloggerThingClassId) {
-        qCDebug(dcFronius()) << "Update logger" << m_froniusLoggers.key(thing)->updateUrl();
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusLoggers.key(thing)->updateUrl()));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
-                return;
-            }
-            QByteArray data = reply->readAll();
-            if (m_froniusLoggers.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusLoggers.key(thing)->updateThingInfo(data);
-            }
-        });
-
-    } else if (thing->thingClassId() == meterThingClassId) {
-        qCDebug(dcFronius()) << "Update meter" << m_froniusMeters.key(thing)->updateUrl();
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusMeters.key(thing)->updateUrl()));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
-                return;
-            }
-            QByteArray data = reply->readAll();
-            if (m_froniusMeters.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusMeters.key(thing)->updateThingInfo(data);
-            }
-        });
-
-    } else if (thing->thingClassId() == storageThingClassId) {
-        qCDebug(dcFronius()) << "Update storage" << m_froniusStorages.key(thing)->updateUrl();
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->updateUrl()));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
-                return;
-            }
-            QByteArray data = reply->readAll();
-            if (m_froniusStorages.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusStorages.key(thing)->updateThingInfo(data);
-            }
-        });
-        QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->activityUrl()));
-        connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, thing, [this, thing, next_reply]() {
-
-            if (next_reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
-                return;
-            }
-            QByteArray data = next_reply->readAll();
-            if(m_froniusStorages.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusStorages.key(thing)->updateActivityInfo(data);
-            }
-        });
-    } else {
-        Q_ASSERT_X(false, "updateThingState", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+    if (!connection->busy()) {
+        qCWarning(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
+        return;
     }
-}
 
-void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
-{
-    QUrl url; QUrlQuery query;
-    query.addQueryItem("DeviceClass", "System");
-    url.setScheme("http");
-    url.setHost(logger->hostAddress());
-    url.setPath(logger->baseUrl() + "GetActiveDeviceInfo.cgi");
-    url.setQuery(query);
-
-    qCDebug(dcFronius()) << "Searching new things at address" << url.toString();
-    QNetworkRequest request = QNetworkRequest(url);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, logger, [this, logger, reply]() {
-
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
+    // Note: this call will be used to monitor the available state of the connection internally
+    FroniusNetworkReply *reply = connection->getActiveDevices();
+    connect(reply, &FroniusNetworkReply::finished, this, [=]() {
+        if (reply->networkReply()->error() != QNetworkReply::NoError) {
+            // Note: the connection warns about any errors if available changed
             return;
         }
 
-        Thing *loggerThing = m_froniusLoggers.value(logger);
-        if (!loggerThing)
+        Thing *connectionThing = m_froniusConnections.value(connection);
+        if (!connectionThing)
             return;
 
-        // Convert the rawdata to a json document
-        QByteArray data = reply->readAll();
+        QByteArray data = reply->networkReply()->readAll();
+
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -402,70 +265,62 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         // Parse the data for thing information
         QList<ThingDescriptor> thingDescriptors;
 
-        // Check reply information
         QVariantMap bodyMap = jsonDoc.toVariant().toMap().value("Body").toMap();
-        qCDebug(dcFronius()) << "System:" << qUtf8Printable(QJsonDocument::fromVariant(bodyMap).toJson(QJsonDocument::Indented));
+        //qCDebug(dcFronius()) << "System:" << qUtf8Printable(QJsonDocument::fromVariant(bodyMap).toJson());
 
-        // Parse reply for inverters at the host address
+        // Check if there are new inverters
         QVariantMap inverterMap = bodyMap.value("Data").toMap().value("Inverter").toMap();
         foreach (const QString &inverterId, inverterMap.keys()) {
-            //check if thing already connected to logger
-            if (!thingExists(inverterThingIdParamTypeId, inverterId)) {
-                QString thingDescription = loggerThing->name();
-                ThingDescriptor descriptor(inverterThingClassId, "Fronius Solar Inverter", thingDescription, loggerThing->id());
+            QVariantMap inverterInfo = inverterMap.value(inverterId).toMap();
+            const QString serialNumber = inverterInfo.value("Serial").toString();
+
+            // Note: we use the id to identify for backwards compatibility
+            if (myThings().filterByParam(inverterThingIdParamTypeId, inverterId).isEmpty()) {
+                QString thingDescription = connectionThing->name();
+                ThingDescriptor descriptor(inverterThingClassId, "Fronius Solar Inverter", thingDescription, connectionThing->id());
                 ParamList params;
                 params.append(Param(inverterThingIdParamTypeId, inverterId));
+                params.append(Param(inverterThingSerialNumberParamTypeId, serialNumber));
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
         }
 
-        // parse reply for meter things at the host address
+        // Check if there are new meters
         QVariantMap meterMap = bodyMap.value("Data").toMap().value("Meter").toMap();
         foreach (const QString &meterId, meterMap.keys()) {
-            //check if thing already connected to logger
-            if (!thingExists(meterThingIdParamTypeId, meterId)) {
-                // get meter infos
-                ///solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=0
-                QUrl requestUrl;
-                requestUrl.setScheme("http");
-                requestUrl.setHost(logger->hostAddress());
-                requestUrl.setPath(logger->baseUrl() + "GetMeterRealtimeData.cgi");
-                QUrlQuery query;
-                query.addQueryItem("Scope", "Device");
-                query.addQueryItem("DeviceId", meterId);
-                requestUrl.setQuery(query);
-
-                qCDebug(dcFronius()) << "Get meter information before setup";
-                QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-                connect(reply, &QNetworkReply::finished, this, [=]() {
-                    if (reply->error() != QNetworkReply::NoError) {
-                        qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString();
+            // Note: we use the id to identify for backwards compatibility
+            if (myThings().filterByParam(meterThingIdParamTypeId, meterId).isEmpty()) {
+                // Get the meter realtime data for details
+                FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId.toInt());
+                connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                         return;
                     }
 
-                    QByteArray data = reply->readAll();
+                    QByteArray data = realtimeDataReply->networkReply()->readAll();
+
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                     if (error.error != QJsonParseError::NoError) {
-                        qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
+                        qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
                         return;
                     }
 
+                    // Parse the data and update the states of our device
                     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-
                     QString thingName;
                     QString serialNumber;
+
                     if (dataMap.contains("Details")) {
                         QVariantMap details = dataMap.value("Details").toMap();
                         thingName = details.value("Manufacturer", "Fronius").toString() + " " + details.value("Model", "Smart Meter").toString();
                         serialNumber = details.value("Serial").toString();
                     } else {
-                        thingName = loggerThing->name() + " Meter " + meterId;
+                        thingName = connectionThing->name() + " Meter " + meterId;
                     }
 
-                    ThingDescriptor descriptor(meterThingClassId, thingName, QString(), loggerThing->id());
+                    ThingDescriptor descriptor(meterThingClassId, thingName, QString(), connectionThing->id());
                     ParamList params;
                     params.append(Param(meterThingIdParamTypeId, meterId));
                     params.append(Param(meterThingSerialNumberParamTypeId, serialNumber));
@@ -475,40 +330,30 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
             }
         }
 
-        // parse reply for storage things at the host address
+        // Check if there are new energy storages
         QVariantMap storageMap = bodyMap.value("Data").toMap().value("Storage").toMap();
         foreach (const QString &storageId, storageMap.keys()) {
-            //check if thing already connected to logger
-            if (!thingExists(storageThingIdParamTypeId, storageId)) {
-                QUrlQuery query;
-                QUrl requestUrl;
-                requestUrl.setScheme("http");
-                requestUrl.setHost(logger->hostAddress());
-                requestUrl.setPath(logger->baseUrl() + "GetStorageRealtimeData.cgi");
-                query.addQueryItem("Scope","Device");
-                query.addQueryItem("DeviceId", storageId);
-                requestUrl.setQuery(query);
+            // Note: we use the id to identify for backwards compatibility
+            if (myThings().filterByParam(storageThingIdParamTypeId, storageId).isEmpty()) {
 
-                qCDebug(dcFronius()) << "Get storage information before setup" << requestUrl.toString();
-                QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-                connect(reply, &QNetworkReply::finished, this, [=]() {
-                    if (reply->error() != QNetworkReply::NoError) {
-                        qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString();
+                // Get the meter realtime data for details
+                FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId.toInt());
+                connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                         return;
                     }
 
-                    // Convert the rawdata to a json document
-                    QByteArray data = reply->readAll();
+                    QByteArray data = realtimeDataReply->networkReply()->readAll();
+
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                     if (error.error != QJsonParseError::NoError) {
-                        qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
+                        qCWarning(dcFronius()) << "Storage: Failed to parse JSON data" << data << ":" << error.errorString();
                         return;
                     }
 
-                    QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap().value("Controller").toMap();
-
+                    // Parse the data and update the states of our device
+                    QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
                     QString thingName;
                     QString serialNumber;
                     if (dataMap.contains("Details")) {
@@ -516,20 +361,20 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
                         thingName = details.value("Manufacturer", "Fronius").toString() + " " + details.value("Model", "Energy Storage").toString();
                         serialNumber = details.value("Serial").toString();
                     } else {
-                        thingName = loggerThing->name() + " Storage " + storageId;
+                        thingName = connectionThing->name() + " Storage " + storageId;
                     }
 
-                    ThingDescriptor descriptor(storageThingClassId, thingName, QString(), loggerThing->id());
+                    ThingDescriptor descriptor(storageThingClassId, thingName, QString(), connectionThing->id());
                     ParamList params;
                     params.append(Param(storageThingIdParamTypeId, storageId));
                     params.append(Param(storageThingSerialNumberParamTypeId, serialNumber));
                     descriptor.setParams(params);
                     emit autoThingsAppeared(ThingDescriptors() << descriptor);
-
                 });
             }
         }
 
+        // Inform about unhandled devices
         QVariantMap ohmpilotMap = bodyMap.value("Data").toMap().value("Ohmpilot").toMap();
         foreach (QString ohmpilotId, ohmpilotMap.keys()) {
             qCDebug(dcFronius()) << "Unhandled device Ohmpilot" << ohmpilotId;
@@ -549,84 +394,251 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
             emit autoThingsAppeared(thingDescriptors);
             thingDescriptors.clear();
         }
+
+        // Update the inverters
+        updateInverters(connection);
+        updateMeters(connection);
+        updateStorages(connection);
     });
 }
 
-bool IntegrationPluginFronius::thingExists(const ParamTypeId &thingParamId, QString thingId)
+void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connection)
 {
-    foreach (Thing *thing, myThings()) {
-        if (thing->paramValue(thingParamId).toString() == thingId) {
-            return true;
-        }
-    }
-    return false;
-}
+    Thing *parentThing = m_froniusConnections.value(connection);
+    foreach (Thing *inverterThing, myThings().filterByParentId(parentThing->id()).filterByThingClassId(inverterThingClassId)) {
+        int inverterId = inverterThing->paramValue(inverterThingIdParamTypeId).toInt();
 
-void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThing)
-{
-    Thing *thing = info->thing();
-    if (thing->thingClassId() == inverterThingClassId) {
-        FroniusInverter *newInverter = new FroniusInverter(thing,this);
-        newInverter->setDeviceId(thing->paramValue(inverterThingIdParamTypeId).toString());
-        newInverter->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
-        newInverter->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
-
-        // Get inverter unique ID
-        QUrl requestUrl;
-        requestUrl.setScheme("http");
-        requestUrl.setHost(newInverter->hostAddress());
-        requestUrl.setPath(newInverter->baseUrl() + "GetInverterInfo.cgi");
-
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [this, info, newInverter, reply]() {
-
-            QByteArray data = reply->readAll();
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, "Device not reachable");
+        // Get the inverter realtime data
+        FroniusNetworkReply *realtimeDataReply = connection->getInverterRealtimeData(inverterId);
+        connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                // Thing does not seem to be reachable
+                inverterThing->setStateValue("connected", false);
                 return;
             }
 
-            // Convert the rawdata to a json document
+            QByteArray data = realtimeDataReply->networkReply()->readAll();
+
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
+                qCWarning(dcFronius()) << "Inverter: Failed to parse JSON data" << data << ":" << error.errorString();
+                inverterThing->setStateValue("connected", false);
                 return;
             }
 
-            // Check reply information
+            // Parse the data and update the states of our device
             QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-            // check for thing id in reply
-            if (dataMap.contains(newInverter->deviceId())) {
-                qCDebug(dcFronius()) << "Found Thing with unique:" << dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString();
-                newInverter->setUniqueId(dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString());
-                qCDebug(dcFronius()) << "Stored unique ID:" << newInverter->uniqueId();
+            //qCDebug(dcFronius()) << "Inverter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+            // Set the inverter device state
+            if (dataMap.contains("PAC")) {
+                QVariantMap map = dataMap.value("PAC").toMap();
+                if (map.value("Unit") == "W") {
+                    inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - map.value("Value").toDouble());
+                }
             }
 
-            m_froniusInverters.insert(newInverter, info->thing());
-            info->finish(Thing::ThingErrorNoError);
+            if (dataMap.contains("DAY_ENERGY")) {
+                QVariantMap map = dataMap.value("DAY_ENERGY").toMap();
+                if (map.value("Unit") == "Wh") {
+                    inverterThing->setStateValue(inverterEnergyDayStateTypeId, map.value("Value").toDouble() / 1000);
+                }
+            }
+
+            if (dataMap.contains("YEAR_ENERGY")) {
+                QVariantMap map = dataMap.value("YEAR_ENERGY").toMap();
+                if (map.value("Unit") == "Wh") {
+                    inverterThing->setStateValue(inverterEnergyYearStateTypeId, map.value("Value").toDouble() / 1000);
+                }
+            }
+
+            if (dataMap.contains("TOTAL_ENERGY")) {
+                QVariantMap map = dataMap.value("TOTAL_ENERGY").toMap();
+                if (map.value("Unit") == "Wh") {
+                    inverterThing->setStateValue(inverterTotalEnergyProducedStateTypeId, map.value("Value").toDouble() / 1000);
+                }
+            }
+
+            inverterThing->setStateValue("connected", true);
+        });
+    }
+}
+
+void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
+{
+    Thing *parentThing = m_froniusConnections.value(connection);
+    foreach (Thing *meterThing, myThings().filterByParentId(parentThing->id()).filterByThingClassId(meterThingClassId)) {
+        int meterId = meterThing->paramValue(inverterThingIdParamTypeId).toInt();
+
+        // Get the inverter realtime data
+        FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId);
+        connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                // Thing does not seem to be reachable
+                meterThing->setStateValue("connected", false);
+                return;
+            }
+
+            QByteArray data = realtimeDataReply->networkReply()->readAll();
+
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
+                meterThing->setStateValue("connected", false);
+                return;
+            }
+
+            // Parse the data and update the states of our device
+            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+            //qCDebug(dcFronius()) << "Meter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+            // Power
+            if (dataMap.contains("PowerReal_P_Sum")) {
+                meterThing->setStateValue(meterCurrentPowerStateTypeId, dataMap.value("PowerReal_P_Sum").toDouble());
+            }
+
+            if (dataMap.contains("PowerReal_P_Phase_1")) {
+                meterThing->setStateValue(meterCurrentPowerPhaseAStateTypeId, dataMap.value("PowerReal_P_Phase_1").toDouble());
+            }
+
+            if (dataMap.contains("PowerReal_P_Phase_2")) {
+                meterThing->setStateValue(meterCurrentPowerPhaseBStateTypeId, dataMap.value("PowerReal_P_Phase_2").toDouble());
+            }
+
+            if (dataMap.contains("PowerReal_P_Phase_3")) {
+                meterThing->setStateValue(meterCurrentPowerPhaseCStateTypeId, dataMap.value("PowerReal_P_Phase_3").toDouble());
+            }
+
+            // Current
+            if (dataMap.contains("Current_AC_Phase_1")) {
+                meterThing->setStateValue(meterCurrentPhaseAStateTypeId, dataMap.value("Current_AC_Phase_1").toDouble());
+            }
+
+            if (dataMap.contains("Current_AC_Phase_2")) {
+                meterThing->setStateValue(meterCurrentPhaseBStateTypeId, dataMap.value("Current_AC_Phase_2").toDouble());
+            }
+
+            if (dataMap.contains("Current_AC_Phase_3")) {
+                meterThing->setStateValue(meterCurrentPhaseCStateTypeId, dataMap.value("Current_AC_Phase_3").toDouble());
+            }
+
+            // Voltage
+            if (dataMap.contains("Voltage_AC_Phase_1")) {
+                meterThing->setStateValue(meterVoltagePhaseAStateTypeId, dataMap.value("Voltage_AC_Phase_1").toDouble());
+            }
+
+            if (dataMap.contains("Voltage_AC_Phase_2")) {
+                meterThing->setStateValue(meterVoltagePhaseBStateTypeId, dataMap.value("Voltage_AC_Phase_2").toDouble());
+            }
+
+            if (dataMap.contains("Voltage_AC_Phase_3")) {
+                meterThing->setStateValue(meterVoltagePhaseCStateTypeId, dataMap.value("Voltage_AC_Phase_3").toDouble());
+            }
+
+            // Total energy
+            if (dataMap.contains("EnergyReal_WAC_Sum_Produced")) {
+                meterThing->setStateValue(meterTotalEnergyProducedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Produced").toInt()/1000.00);
+            }
+
+            if (dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
+                meterThing->setStateValue(meterTotalEnergyConsumedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Consumed").toInt()/1000.00);
+            }
+
+            // Frequency
+            if (dataMap.contains("Frequency_Phase_Average")) {
+                meterThing->setStateValue(meterFrequencyStateTypeId, dataMap.value("Frequency_Phase_Average").toDouble());
+            }
+
+            meterThing->setStateValue("connected", true);
+        });
+    }
+}
+
+void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection)
+{
+    Thing *parentThing = m_froniusConnections.value(connection);
+    foreach (Thing *storageThing, myThings().filterByParentId(parentThing->id()).filterByThingClassId(storageThingClassId)) {
+        int storageId = storageThing->paramValue(storageThingIdParamTypeId).toInt();
+
+        // Get power flow realtime data
+        FroniusNetworkReply *powerFlowReply = connection->getPowerFlowRealtimeData();
+        connect(powerFlowReply, &FroniusNetworkReply::finished, this, [=]() {
+            if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError) {
+                // Thing does not seem to be reachable
+                storageThing->setStateValue("connected", false);
+                return;
+            }
+
+            QByteArray data = powerFlowReply->networkReply()->readAll();
+
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
+                storageThing->setStateValue("connected", false);
+                return;
+            }
+
+            // Parse the data and update the states of our device
+            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+            //qCDebug(dcFronius()) << "Power flow data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+            float charge_akku = dataMap.value("Site").toMap().value("P_Akku").toFloat();
+            storageThing->setStateValue(storageCurrentPowerStateTypeId, charge_akku);
+            if (charge_akku < 0) {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "discharging");
+            } else if (charge_akku > 0) {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "charging");
+            } else {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "idle");
+            }
         });
 
-    } else if (thing->thingClassId() == meterThingClassId) {
-        FroniusMeter *newMeter = new FroniusMeter(thing, this);;
-        newMeter->setDeviceId(thing->paramValue(meterThingIdParamTypeId).toString());
-        newMeter->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
-        newMeter->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
+        // Get the storage realtime data
+        FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId);
+        connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                // Thing does not seem to be reachable
+                storageThing->setStateValue("connected", false);
+                return;
+            }
 
-        m_froniusMeters.insert(newMeter, thing);
-        info->finish(Thing::ThingErrorNoError);
+            QByteArray data = realtimeDataReply->networkReply()->readAll();
 
-    } else if (thing->thingClassId() == storageThingClassId) {
-        FroniusStorage *newStorage = new FroniusStorage(thing, this);
-        newStorage->setDeviceId(thing->paramValue(storageThingIdParamTypeId).toString());
-        newStorage->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
-        newStorage->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
+                storageThing->setStateValue("connected", false);
+                return;
+            }
 
-        m_froniusStorages.insert(newStorage, info->thing());
-        info->finish(Thing::ThingErrorNoError);
+            // Parse the data and update the states of our device
+            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+            //qCDebug(dcFronius()) << "Storage data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+            QVariantMap storageInfoMap = dataMap.value("Controller").toMap();
+
+            // copy retrieved information to thing states
+            if (storageInfoMap.contains("StateOfCharge_Relative")) {
+                storageThing->setStateValue(storageBatteryLevelStateTypeId, storageInfoMap.value("StateOfCharge_Relative").toInt());
+                if (storageThing->stateValue(storageChargingStateStateTypeId).toString() == "charging" && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
+                    storageThing->setStateValue(storageBatteryCriticalStateTypeId, true);
+                } else {
+                    storageThing->setStateValue(storageBatteryCriticalStateTypeId, false);
+                }
+            }
+
+            if (storageInfoMap.contains("Temperature_Cell"))
+                storageThing->setStateValue(storageCellTemperatureStateTypeId, storageInfoMap.value("Temperature_Cell").toDouble());
+
+            if (storageInfoMap.contains("Capacity_Maximum"))
+                storageThing->setStateValue(storageCapacityStateTypeId, storageInfoMap.value("Capacity_Maximum").toDouble());
+
+
+            storageThing->setStateValue("connected", true);
+        });
     }
 }

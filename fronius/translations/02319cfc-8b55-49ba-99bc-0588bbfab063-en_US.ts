@@ -60,30 +60,30 @@ The name of the StateType ({e5396312-b50e-4d6f-b628-5b51448971d3}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="183"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="186"/>
         <source>CO2 factor</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: co2factor, ID: {8ab01225-7be5-4482-a99b-314108ae0e2b})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: co2factor, ID: {8ab01225-7be5-4482-a99b-314108ae0e2b})
 ----------
-The name of the StateType ({8ab01225-7be5-4482-a99b-314108ae0e2b}) of ThingClass datalogger</extracomment>
+The name of the StateType ({8ab01225-7be5-4482-a99b-314108ae0e2b}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="189"/>
         <source>CO2 factor changed</source>
-        <extracomment>The name of the EventType ({8ab01225-7be5-4482-a99b-314108ae0e2b}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({8ab01225-7be5-4482-a99b-314108ae0e2b}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="192"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="195"/>
         <source>CO2 unit</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: co2unit, ID: {b0e655f8-27d0-4add-918b-461cadc8efcc})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: co2unit, ID: {b0e655f8-27d0-4add-918b-461cadc8efcc})
 ----------
-The name of the StateType ({b0e655f8-27d0-4add-918b-461cadc8efcc}) of ThingClass datalogger</extracomment>
+The name of the StateType ({b0e655f8-27d0-4add-918b-461cadc8efcc}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="198"/>
         <source>CO2 unit changed</source>
-        <extracomment>The name of the EventType ({b0e655f8-27d0-4add-918b-461cadc8efcc}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({b0e655f8-27d0-4add-918b-461cadc8efcc}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -104,31 +104,31 @@ The name of the StateType ({3b163deb-67a2-41d1-8441-b2d53ad846ef}) of ThingClass
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="210"/>
         <source>Cash Currency changed</source>
-        <extracomment>The name of the EventType ({84da30c8-a7fb-49c6-884c-9521f9f62bbc}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({84da30c8-a7fb-49c6-884c-9521f9f62bbc}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="213"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="216"/>
         <source>Cash currency</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: cashcurrency, ID: {84da30c8-a7fb-49c6-884c-9521f9f62bbc})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: cashcurrency, ID: {84da30c8-a7fb-49c6-884c-9521f9f62bbc})
 ----------
-The name of the StateType ({84da30c8-a7fb-49c6-884c-9521f9f62bbc}) of ThingClass datalogger</extracomment>
+The name of the StateType ({84da30c8-a7fb-49c6-884c-9521f9f62bbc}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="219"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="222"/>
         <source>Cash factor</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: cashfactor, ID: {bc18595b-17c7-4a1f-8002-b908a3d9239d})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: cashfactor, ID: {bc18595b-17c7-4a1f-8002-b908a3d9239d})
 ----------
-The name of the StateType ({bc18595b-17c7-4a1f-8002-b908a3d9239d}) of ThingClass datalogger</extracomment>
+The name of the StateType ({bc18595b-17c7-4a1f-8002-b908a3d9239d}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="225"/>
         <source>Cash factor changed</source>
-        <extracomment>The name of the EventType ({bc18595b-17c7-4a1f-8002-b908a3d9239d}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({bc18595b-17c7-4a1f-8002-b908a3d9239d}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -282,15 +282,15 @@ The name of the StateType ({788accbc-b86e-471b-b37f-14c9c6411526}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="327"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="330"/>
         <source>Default language</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: defaultlang, ID: {18b250e2-080a-4991-b368-177c4da83eca})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: defaultlang, ID: {18b250e2-080a-4991-b368-177c4da83eca})
 ----------
-The name of the StateType ({18b250e2-080a-4991-b368-177c4da83eca}) of ThingClass datalogger</extracomment>
+The name of the StateType ({18b250e2-080a-4991-b368-177c4da83eca}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="333"/>
         <source>Default language changed</source>
-        <extracomment>The name of the EventType ({18b250e2-080a-4991-b368-177c4da83eca}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({18b250e2-080a-4991-b368-177c4da83eca}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -444,21 +444,21 @@ The name of the plugin fronius ({02319cfc-8b55-49ba-99bc-0588bbfab063})</extraco
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="417"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="420"/>
         <source>Hardware version</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: hwversion, ID: {3b4206e5-74c7-4708-96b8-2abfab0c41d6})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: hwversion, ID: {3b4206e5-74c7-4708-96b8-2abfab0c41d6})
 ----------
-The name of the StateType ({3b4206e5-74c7-4708-96b8-2abfab0c41d6}) of ThingClass datalogger</extracomment>
+The name of the StateType ({3b4206e5-74c7-4708-96b8-2abfab0c41d6}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="423"/>
         <source>Hardware version changed</source>
-        <extracomment>The name of the EventType ({3b4206e5-74c7-4708-96b8-2abfab0c41d6}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({3b4206e5-74c7-4708-96b8-2abfab0c41d6}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="426"/>
         <source>Host address</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, Type: thing, ID: {52da0197-4b78-4fec-aa72-70f949e26edc})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: connection, Type: thing, ID: {52da0197-4b78-4fec-aa72-70f949e26edc})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -479,67 +479,67 @@ The name of the StateType ({e763baa7-5eaf-438c-83f0-4fa6c0f7eeb0}) of ThingClass
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="438"/>
         <source>MAC address</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, Type: thing, ID: {2237972e-385b-4458-b5d3-1d1fb4ae8756})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: connection, Type: thing, ID: {2237972e-385b-4458-b5d3-1d1fb4ae8756})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="441"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="444"/>
         <source>Platform ID</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: platformid, ID: {65c068e6-4a0b-4672-9724-ae95216c4c9c})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: platformid, ID: {65c068e6-4a0b-4672-9724-ae95216c4c9c})
 ----------
-The name of the StateType ({65c068e6-4a0b-4672-9724-ae95216c4c9c}) of ThingClass datalogger</extracomment>
+The name of the StateType ({65c068e6-4a0b-4672-9724-ae95216c4c9c}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="447"/>
         <source>Platform ID changed</source>
-        <extracomment>The name of the EventType ({65c068e6-4a0b-4672-9724-ae95216c4c9c}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({65c068e6-4a0b-4672-9724-ae95216c4c9c}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="450"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="453"/>
         <source>Power management relay</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: powerManagmentRelay, ID: {b217acf6-0c5e-4a3e-a50c-4c0133c871c2})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: powerManagmentRelay, ID: {b217acf6-0c5e-4a3e-a50c-4c0133c871c2})
 ----------
-The name of the StateType ({b217acf6-0c5e-4a3e-a50c-4c0133c871c2}) of ThingClass datalogger</extracomment>
+The name of the StateType ({b217acf6-0c5e-4a3e-a50c-4c0133c871c2}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="456"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="459"/>
         <source>Power management relay reason</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: powerManagmentRelayReason, ID: {5650ce9b-0d7d-4c52-b410-ea618889b4bb})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: powerManagmentRelayReason, ID: {5650ce9b-0d7d-4c52-b410-ea618889b4bb})
 ----------
-The name of the StateType ({5650ce9b-0d7d-4c52-b410-ea618889b4bb}) of ThingClass datalogger</extracomment>
+The name of the StateType ({5650ce9b-0d7d-4c52-b410-ea618889b4bb}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="462"/>
         <source>Power management relay reason changed</source>
-        <extracomment>The name of the EventType ({5650ce9b-0d7d-4c52-b410-ea618889b4bb}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({5650ce9b-0d7d-4c52-b410-ea618889b4bb}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="465"/>
         <source>Power management relay status changed</source>
-        <extracomment>The name of the EventType ({b217acf6-0c5e-4a3e-a50c-4c0133c871c2}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({b217acf6-0c5e-4a3e-a50c-4c0133c871c2}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="468"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="471"/>
         <source>Product ID</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: productid, ID: {b22052ef-14da-43d2-982b-f2c2d8c03206})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: productid, ID: {b22052ef-14da-43d2-982b-f2c2d8c03206})
 ----------
-The name of the StateType ({b22052ef-14da-43d2-982b-f2c2d8c03206}) of ThingClass datalogger</extracomment>
+The name of the StateType ({b22052ef-14da-43d2-982b-f2c2d8c03206}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="474"/>
         <source>Product ID changed</source>
-        <extracomment>The name of the EventType ({b22052ef-14da-43d2-982b-f2c2d8c03206}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({b22052ef-14da-43d2-982b-f2c2d8c03206}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -564,9 +564,9 @@ The name of the ParamType (ThingClass: inverter, EventType: connected, ID: {eda2
 ----------
 The name of the StateType ({eda29c50-73ac-40e0-9c92-26fee352e688}) of ThingClass inverter
 ----------
-The name of the ParamType (ThingClass: datalogger, EventType: connected, ID: {98e4476f-e745-4a7f-b795-19269cb70c40})
+The name of the ParamType (ThingClass: connection, EventType: connected, ID: {98e4476f-e745-4a7f-b795-19269cb70c40})
 ----------
-The name of the StateType ({98e4476f-e745-4a7f-b795-19269cb70c40}) of ThingClass datalogger</extracomment>
+The name of the StateType ({98e4476f-e745-4a7f-b795-19269cb70c40}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -584,7 +584,7 @@ The name of the EventType ({eda29c50-73ac-40e0-9c92-26fee352e688}) of ThingClass
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="510"/>
         <source>Search new devices</source>
-        <extracomment>The name of the ActionType ({c217fdc1-de18-41dc-b5d8-8072f84e7b6c}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the ActionType ({c217fdc1-de18-41dc-b5d8-8072f84e7b6c}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -600,15 +600,15 @@ The name of the ParamType (ThingClass: meter, Type: thing, ID: {dfc2eeef-38b2-40
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="519"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="522"/>
         <source>Software version</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: swversion, ID: {31743ca5-4353-4f26-b2ad-5da43e5b9d86})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: swversion, ID: {31743ca5-4353-4f26-b2ad-5da43e5b9d86})
 ----------
-The name of the StateType ({31743ca5-4353-4f26-b2ad-5da43e5b9d86}) of ThingClass datalogger</extracomment>
+The name of the StateType ({31743ca5-4353-4f26-b2ad-5da43e5b9d86}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="525"/>
         <source>Software version changed</source>
-        <extracomment>The name of the EventType ({31743ca5-4353-4f26-b2ad-5da43e5b9d86}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({31743ca5-4353-4f26-b2ad-5da43e5b9d86}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -630,30 +630,30 @@ The name of the StateType ({d6dbb879-4cbc-4db3-830e-b92ba91a13e5}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="528"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="531"/>
         <source>Time zone</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: tzone, ID: {6bdfeeda-7a47-4043-a011-5eb96308a7d6})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: tzone, ID: {6bdfeeda-7a47-4043-a011-5eb96308a7d6})
 ----------
-The name of the StateType ({6bdfeeda-7a47-4043-a011-5eb96308a7d6}) of ThingClass datalogger</extracomment>
+The name of the StateType ({6bdfeeda-7a47-4043-a011-5eb96308a7d6}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="534"/>
         <source>Time zone changed</source>
-        <extracomment>The name of the EventType ({6bdfeeda-7a47-4043-a011-5eb96308a7d6}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({6bdfeeda-7a47-4043-a011-5eb96308a7d6}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="537"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="540"/>
         <source>Timezone location</source>
-        <extracomment>The name of the ParamType (ThingClass: datalogger, EventType: tzoneloc, ID: {d034f59d-dc34-450a-a6f3-68264767a3e4})
+        <extracomment>The name of the ParamType (ThingClass: connection, EventType: tzoneloc, ID: {d034f59d-dc34-450a-a6f3-68264767a3e4})
 ----------
-The name of the StateType ({d034f59d-dc34-450a-a6f3-68264767a3e4}) of ThingClass datalogger</extracomment>
+The name of the StateType ({d034f59d-dc34-450a-a6f3-68264767a3e4}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="543"/>
         <source>Timezone location changed</source>
-        <extracomment>The name of the EventType ({d034f59d-dc34-450a-a6f3-68264767a3e4}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({d034f59d-dc34-450a-a6f3-68264767a3e4}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -704,7 +704,7 @@ The name of the StateType ({8037557b-40dc-411b-8937-bcd1695f898a}) of ThingClass
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/fronius/plugininfo.h" line="582"/>
         <source>logger reachable changed</source>
-        <extracomment>The name of the EventType ({98e4476f-e745-4a7f-b795-19269cb70c40}) of ThingClass datalogger</extracomment>
+        <extracomment>The name of the EventType ({98e4476f-e745-4a7f-b795-19269cb70c40}) of ThingClass connection</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

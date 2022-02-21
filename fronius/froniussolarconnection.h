@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,27 +28,53 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef FRONIUSMETER_H
-#define FRONIUSMETER_H
+#ifndef FRONIUSSOLARCONNECTION_H
+#define FRONIUSSOLARCONNECTION_H
 
 #include <QObject>
-#include "froniusthing.h"
 
-class FroniusMeter : public FroniusThing
+#include <QQueue>
+#include <QHostAddress>
+
+#include <network/networkaccessmanager.h>
+
+#include "froniusnetworkreply.h"
+
+class FroniusSolarConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit FroniusMeter(Thing* thing, QObject *parent = 0);
+    explicit FroniusSolarConnection(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent = nullptr);
 
-    QString activity() const;
-    void setActivity(const QString &activity);
+    QHostAddress address() const;
 
-    QUrl updateUrl();
-    void updateThingInfo(const QByteArray &data);
-    QUrl activityUrl();
+    bool available() const;
+
+    bool busy() const;
+
+    FroniusNetworkReply *getVersion();
+    FroniusNetworkReply *getActiveDevices();
+    FroniusNetworkReply *getPowerFlowRealtimeData();
+
+    FroniusNetworkReply *getInverterRealtimeData(int inverterId);
+    FroniusNetworkReply *getMeterRealtimeData(int meterId);
+    FroniusNetworkReply *getStorageRealtimeData(int meterId);
+
+signals:
+    void availableChanged(bool available);
 
 private:
-    QString m_activity;
+    NetworkAccessManager *m_networkManager = nullptr;
+    QHostAddress m_address;
+
+    bool m_available = false;
+
+    // Request queue to prevent overloading the device with requests
+    FroniusNetworkReply *m_currentReply = nullptr;
+    QQueue<FroniusNetworkReply *> m_requestQueue;
+
+    void sendNextRequest();
+
 };
 
-#endif // FRONIUSMETER_H
+#endif // FRONIUSSOLARCONNECTION_H

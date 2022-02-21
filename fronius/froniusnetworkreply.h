@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,29 +28,36 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef FRONIUSSTORAGE_H
-#define FRONIUSSTORAGE_H
+#ifndef FRONIUSNETWORKREPLY_H
+#define FRONIUSNETWORKREPLY_H
 
 #include <QObject>
-#include "froniusthing.h"
+#include <QNetworkReply>
 
-class FroniusStorage : public FroniusThing
+class FroniusNetworkReply : public QObject
 {
     Q_OBJECT
 
+    friend class FroniusSolarConnection;
+
 public:
-    explicit FroniusStorage(Thing *thing, QObject *parent = 0);
+    ~FroniusNetworkReply();
 
-    QString charging_state() const;
-    void setChargingState(const QString &charging_state);
+    QUrl requestUrl() const;
 
-    QUrl updateUrl();
-    void updateThingInfo(const QByteArray &data);
-    QUrl activityUrl();
-    void updateActivityInfo(const QByteArray &data);
+    QNetworkRequest request() const;
+    QNetworkReply *networkReply() const;
+
+signals:
+    void finished();
 
 private:
-    QString  m_charging_state;
-    int m_charge;
+    explicit FroniusNetworkReply(const QNetworkRequest &request, QObject *parent = nullptr);
+
+    QNetworkRequest m_request;
+    QNetworkReply *m_networkReply = nullptr;
+
+    void setNetworkReply(QNetworkReply *networkReply);
 };
-#endif // FRONIUSSTORAGE_H
+
+#endif // FRONIUSNETWORKREPLY_H

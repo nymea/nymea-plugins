@@ -5,9 +5,8 @@ nymea plug-in for Fronius solar devices.
 ## Supported Things
 
 * PV-Inverter
-* Storage
-* Data Logger
 * Smart Meter
+* Storage
 
 ## Requirements
 

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -32,7 +32,7 @@
 #define INTEGRATIONPLUGINFRONIUS_H
 
 #include "integrations/integrationplugin.h"
-#include "froniuslogger.h"
+#include "froniussolarconnection.h"
 
 #include <QHash>
 #include <QNetworkReply>
@@ -57,21 +57,16 @@ public:
     void thingRemoved(Thing* thing) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_connectionRefreshTimer = nullptr;
 
-    QHash<FroniusLogger *, Thing *> m_froniusLoggers;
-    QHash<FroniusInverter *, Thing *> m_froniusInverters;
-    QHash<FroniusMeter *, Thing *> m_froniusMeters;
-    QHash<FroniusStorage *, Thing *> m_froniusStorages;
+    QHash<FroniusSolarConnection *, Thing *> m_froniusConnections;
 
-    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    void refreshConnection(FroniusSolarConnection *connection);
 
-    void updateThingStates(Thing *thing);
+    void updateInverters(FroniusSolarConnection *connection);
+    void updateMeters(FroniusSolarConnection *connection);
+    void updateStorages(FroniusSolarConnection *connection);
 
-    void searchNewThings(FroniusLogger *logger);
-    bool thingExists(const ParamTypeId &thingParamId, QString thingId);
-
-    void setupChild(ThingSetupInfo *info, Thing *parentThing);
 };
 
 #endif // INTEGRATIONPLUGINFRONIUS_H
