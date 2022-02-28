@@ -754,6 +754,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
+         python3-setuptools,
          python3-pip,
 Description: nymea.io plugin for smartcar
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
