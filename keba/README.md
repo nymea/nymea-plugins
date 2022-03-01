@@ -21,7 +21,7 @@ on KEBA home page to verify your models capabilities.
 * The package "nymea-plugin-keba" must be installed.
 * KeContact P20 Charging station with network connection (LSA+  socket). Firmware version: `2.5` or higher.
 * KeContact P30 Charging station or BMW  wallbox. Firmware version `3.05` of higher.
-* **Enabled UDP function with DIP-switch `DWS1.3 = ON`.**
+* **Enabled UDP function with DIP-switch `DSW1.3 = ON`.**
 
 ## More information
 
