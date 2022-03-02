@@ -63,6 +63,7 @@ private:
 
     void refreshConnection(FroniusSolarConnection *connection);
 
+    void updatePowerFlow(FroniusSolarConnection *connection);
     void updateInverters(FroniusSolarConnection *connection);
     void updateMeters(FroniusSolarConnection *connection);
     void updateStorages(FroniusSolarConnection *connection);

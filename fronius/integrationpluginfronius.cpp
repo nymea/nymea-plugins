@@ -394,12 +394,67 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
             thingDescriptors.clear();
         }
 
-        // Update the inverters
+        // All devices
+        updatePowerFlow(connection);
         updateInverters(connection);
         updateMeters(connection);
         updateStorages(connection);
     });
 }
+
+void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connection)
+{
+    Thing *parentThing = m_froniusConnections.value(connection);
+
+    // Get power flow realtime data and update storage and pv power values according to the total values
+    // The inverter details inform about the PV production after feeding the storage, but we should use the total
+    // to make sure the sum is correct. Battery seems to be feeded DC to DC before the AC power convertion
+    FroniusNetworkReply *powerFlowReply = connection->getPowerFlowRealtimeData();
+    connect(powerFlowReply, &FroniusNetworkReply::finished, this, [=]() {
+        if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError) {
+            return;
+        }
+
+        QByteArray data = powerFlowReply->networkReply()->readAll();
+
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
+            return;
+        }
+
+        // Parse the data and update the states of our device
+        QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+        //qCDebug(dcFronius()) << "Power flow data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+        // Find the inverter for this connection and set the total power
+        Things availableInverters = myThings().filterByParentId(parentThing->id()).filterByThingClassId(inverterThingClassId);
+        if (availableInverters.count() == 1) {
+            Thing *inverterThing = availableInverters.first();
+            double pvPower = dataMap.value("Site").toMap().value("P_PV").toDouble();
+            inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - pvPower);
+        }
+
+        // Find the storage for this connection and update the current power
+        Things availableStorages = myThings().filterByParentId(parentThing->id()).filterByThingClassId(storageThingClassId);
+        if (availableStorages.count() == 1) {
+            Thing *storageThing = availableStorages.first();
+            // Note: negative (charge), positiv (discharge)
+            double akkuPower = - dataMap.value("Site").toMap().value("P_Akku").toDouble();
+            storageThing->setStateValue(storageCurrentPowerStateTypeId, akkuPower);
+            if (akkuPower < 0) {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "discharging");
+            } else if (akkuPower > 0) {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "charging");
+            } else {
+                storageThing->setStateValue(storageChargingStateStateTypeId, "idle");
+            }
+        }
+
+    });
+}
+
 
 void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connection)
 {
@@ -430,14 +485,15 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
             QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
             //qCDebug(dcFronius()) << "Inverter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
 
-            // Set the inverter device state
-            if (dataMap.contains("PAC")) {
-                QVariantMap map = dataMap.value("PAC").toMap();
-                if (map.value("Unit") == "W") {
-                    inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - map.value("Value").toDouble());
-                }
-            }
+            // Note: this is the PV power after feeding the battery, we have to use the total PV production from the power flow
+            //if (dataMap.contains("PAC")) {
+            //    QVariantMap map = dataMap.value("PAC").toMap();
+            //    if (map.value("Unit") == "W") {
+            //        inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - map.value("Value").toDouble());
+            //    }
+            //}
 
+            // Set the inverter device state
             if (dataMap.contains("DAY_ENERGY")) {
                 QVariantMap map = dataMap.value("DAY_ENERGY").toMap();
                 if (map.value("Unit") == "Wh") {
@@ -560,40 +616,6 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
     Thing *parentThing = m_froniusConnections.value(connection);
     foreach (Thing *storageThing, myThings().filterByParentId(parentThing->id()).filterByThingClassId(storageThingClassId)) {
         int storageId = storageThing->paramValue(storageThingIdParamTypeId).toInt();
-
-        // Get power flow realtime data
-        FroniusNetworkReply *powerFlowReply = connection->getPowerFlowRealtimeData();
-        connect(powerFlowReply, &FroniusNetworkReply::finished, this, [=]() {
-            if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError) {
-                // Thing does not seem to be reachable
-                storageThing->setStateValue("connected", false);
-                return;
-            }
-
-            QByteArray data = powerFlowReply->networkReply()->readAll();
-
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-            if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
-                storageThing->setStateValue("connected", false);
-                return;
-            }
-
-            // Parse the data and update the states of our device
-            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-            //qCDebug(dcFronius()) << "Power flow data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
-
-            float charge_akku = dataMap.value("Site").toMap().value("P_Akku").toFloat();
-            storageThing->setStateValue(storageCurrentPowerStateTypeId, charge_akku);
-            if (charge_akku < 0) {
-                storageThing->setStateValue(storageChargingStateStateTypeId, "discharging");
-            } else if (charge_akku > 0) {
-                storageThing->setStateValue(storageChargingStateStateTypeId, "charging");
-            } else {
-                storageThing->setStateValue(storageChargingStateStateTypeId, "idle");
-            }
-        });
 
         // Get the storage realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId);
