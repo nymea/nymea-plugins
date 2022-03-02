@@ -114,7 +114,6 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
         // Verify the version
         FroniusNetworkReply *reply = connection->getVersion();
-        connect(reply, &FroniusNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &FroniusNetworkReply::finished, info, [=] {
             QByteArray data = reply->networkReply()->readAll();
             if (reply->networkReply()->error() != QNetworkReply::NoError) {
@@ -236,7 +235,7 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)
 {
-    if (!connection->busy()) {
+    if (connection->busy()) {
         qCWarning(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
         return;
     }
