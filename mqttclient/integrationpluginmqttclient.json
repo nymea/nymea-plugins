@@ -115,6 +115,13 @@
                             "defaultValue": ""
                         },
                         {
+                            "id": "621f9054-2b64-4de9-93d2-65bba96a14a3",
+                            "name": "clientId",
+                            "displayName": "Client Id",
+                            "type": "QString",
+                            "defaultValue": "nymea"
+                        },
+                        {
                             "id": "d8211599-52f7-46f6-a741-a7204b987309",
                             "name": "password",
                             "displayName": "Password",

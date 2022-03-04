@@ -45,10 +45,13 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     MqttClient *client = nullptr;
+    if (m_clients.contains(thing)) {
+        delete m_clients.take(thing);
+    }
     if (thing->thingClassId() == internalMqttClientThingClassId) {
         client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
     } else if (thing->thingClassId() == mqttClientThingClassId){
-        client = new MqttClient("nymea-" + thing->id().toString().remove(QRegExp("[{}]")).left(8), this);
+        client = new MqttClient(thing->paramValue(mqttClientThingClientIdParamTypeId).toString(), this);
         client->setUsername(thing->paramValue(mqttClientThingUsernameParamTypeId).toString());
         client->setPassword(thing->paramValue(mqttClientThingPasswordParamTypeId).toString());
         QString willTopic = thing->paramValue(mqttClientThingWillTopicParamTypeId).toString();
