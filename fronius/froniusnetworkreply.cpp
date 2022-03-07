@@ -71,7 +71,7 @@ void FroniusNetworkReply::setNetworkReply(QNetworkReply *networkReply)
 {
     m_networkReply = networkReply;
 
-    // The QNetworkReply will be deleted in the constructor if set
+    // The QNetworkReply will be deleted in the destructor if set
     connect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::finished);
 }
 

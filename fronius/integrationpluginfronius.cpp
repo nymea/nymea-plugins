@@ -110,6 +110,15 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == connectionThingClassId) {
 
         QHostAddress address(thing->paramValue(connectionThingAddressParamTypeId).toString());
+
+        // Handle reconfigure
+        if (m_froniusConnections.values().contains(thing)) {
+            FroniusSolarConnection *oldConnection = m_froniusConnections.key(thing);
+            m_froniusConnections.remove(oldConnection);
+            oldConnection->deleteLater();
+        }
+
+        // Create the connection
         FroniusSolarConnection *connection = new FroniusSolarConnection(hardwareManager()->networkManager(), address, thing);
 
         // Verify the version
