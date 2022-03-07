@@ -113,9 +113,9 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
         // Handle reconfigure
         if (m_froniusConnections.values().contains(thing)) {
-            FroniusSolarConnection *oldConnection = m_froniusConnections.key(thing);
-            m_froniusConnections.remove(oldConnection);
-            oldConnection->deleteLater();
+            FroniusSolarConnection *connection = m_froniusConnections.key(thing);
+            m_froniusConnections.remove(connection);
+            connection->deleteLater();
         }
 
         // Create the connection

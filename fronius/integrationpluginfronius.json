@@ -92,7 +92,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b6af1bf5-753d-47b6-a151-e4d801fe6ff8",
@@ -101,8 +102,7 @@
                             "displayNameEvent": "Energy produced today changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0,
-                            "cached": false
+                            "defaultValue": 0
                         },
                         {
                             "id": "7fd2fa28-9bcc-4f01-a823-459437d185f6",
@@ -111,8 +111,7 @@
                             "displayNameEvent": "Energy produced changed",
                             "type": "int",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0,
-                            "cached": false
+                            "defaultValue": 0
                         },
                         {
                             "id": "d6dbb879-4cbc-4db3-830e-b92ba91a13e5",
@@ -166,7 +165,8 @@
                             "displayNameEvent": "Current power usage changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": "0"
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "267bc59f-1113-4aff-a502-4618a591aa16",
@@ -235,8 +235,7 @@
                             "displayNameEvent": "Energy production changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0",
-                            "cached": false
+                            "defaultValue": 0
                         },
                         {
                             "id": "f3451818-48d2-42a5-94fd-ad094c06967f",
@@ -245,8 +244,7 @@
                             "displayNameEvent": "Energy consumption changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0",
-                            "cached": false
+                            "defaultValue": 0
                         },
                         {
                             "id": "6dbbb062-447b-47d6-b2e4-dceac9aff795",
@@ -331,8 +329,7 @@
                             "displayNameEvent": "Charging state changed",
                             "type": "QString",
                             "possibleValues": ["idle", "charging", "discharging"],
-                            "defaultValue": "idle",
-                            "cached": false
+                            "defaultValue": "idle"
                         },
                         {
                             "id": "5a89cd3f-3abf-4f51-ab2b-4039f1d211d9",
@@ -351,8 +348,7 @@
                             "displayNameEvent": "Capacity changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0,
-                            "cached": false
+                            "defaultValue": 0
                         },
                         {
                             "id": "5c6da672-9662-41bc-8c8c-aa0f32481251",
@@ -363,8 +359,7 @@
                             "unit": "Percentage",
                             "defaultValue": "0",
                             "minValue": 0,
-                            "maxValue": 100,
-                            "cached": false
+                            "maxValue": 100
                         },
                         {
                             "id": "4417499c-1757-4309-868a-be5cf3455c4a",
@@ -382,8 +377,7 @@
                             "displayName": "Battery level critical",
                             "displayNameEvent": "Battery level critical changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
+                            "defaultValue": false
                         }
                     ]
                 }
