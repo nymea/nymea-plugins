@@ -352,7 +352,8 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                     }
 
                     // Parse the data and update the states of our device
-                    QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+                    QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap().value("Controller").toMap();
+
                     QString thingName;
                     QString serialNumber;
                     if (dataMap.contains("Details")) {
