@@ -1,0 +1,13 @@
+{
+    "title": "USB-RLY82",
+    "tagline": "Control relays connected over USB and read digital and analog inputs.",
+    "icon": "robotelectronics.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "usb"
+    ],
+    "categories": [
+        "diy"
+    ]
+}
