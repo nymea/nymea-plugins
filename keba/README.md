@@ -13,7 +13,7 @@ This plugin allows to control Keba KeContact EV-Charging stations.
 
 Please make sure that your model supports communication through the UDP protocol.
 Only `c-series` and `x-series` have this ability (by March 2022) with the excemption of `Deutschland Edition` and `Green Edition`. 
-You can check the [product overview](https://www.keba.com/download/x/21634787f7/kecontact-p30_productoverview_en.pdf) on KEBA home page to verify your models capabilities.
+The [product overview](https://www.keba.com/download/x/21634787f7/kecontact-p30_productoverview_en.pdf) helps to verify about your models capabilities.
 
 ## Requirements
 
