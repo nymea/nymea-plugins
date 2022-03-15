@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QQueue>
+#include <QHash>
 #include <QSerialPort>
 
 class UsbRly82Reply : public QObject
@@ -44,12 +45,17 @@ public:
     explicit UsbRly82(QObject *parent = nullptr);
 
     bool available() const;
+    QString serialNumber() const;
+    QString softwareVersion() const;
 
     bool powerRelay1() const;
     UsbRly82Reply *setRelay1Power(bool power);
 
     bool powerRelay2() const;
     UsbRly82Reply *setRelay2Power(bool power);
+
+    uint analogRefreshRate() const;
+    void setAnlalogRefreshRate(uint analogRefreshRate);
 
     quint8 digitalInputs() const;
 
@@ -66,7 +72,6 @@ public:
 
     static bool checkBit(quint8 byte, uint bitNumber);
 
-
 signals:
     void availableChanged(bool available);
 
@@ -76,12 +81,16 @@ signals:
     void digitalInputsChanged();
 
 private:
-    QTimer m_refreshTimer;
+    QTimer m_digitalRefreshTimer;
+    QTimer m_analogRefreshTimer;
     QSerialPort *m_serialPort = nullptr;
+
     bool m_available = false;
 
     QString m_serialNumber;
     QString m_softwareVersion;
+
+    uint m_analogRefreshRate = 1000;
 
     bool m_powerRelay1 = false;
     bool m_powerRelay2 = false;
@@ -89,18 +98,21 @@ private:
     UsbRly82Reply *m_currentReply = nullptr;
     QQueue<UsbRly82Reply *> m_replyQueue;
 
+    UsbRly82Reply *m_updateDigitalInputsReply = nullptr;
+    UsbRly82Reply *m_updateAnalogInputsReply = nullptr;
+
     UsbRly82Reply *createReply(const QByteArray &requestData, bool expectsResponse = true);
     void sendNextRequest();
 
-
     quint8 m_digitalInputs = 0x00;
+    QHash<int, quint16> m_analogValues;
 
 private slots:
     void onReadyRead();
     void onError(QSerialPort::SerialPortError error);
 
-    void poll();
-
+    void updateDigitalInputs();
+    void updateAnalogInputs();
 };
 
 #endif // USBRLY82_H

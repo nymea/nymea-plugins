@@ -24,6 +24,16 @@
                             "defaultValue": ""
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "e426f3b1-e9bf-4bef-bc01-2aba6326d265",
+                            "name": "analogRefreshRate",
+                            "displayName": "Analog refresh interval",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "defaultValue": 1000
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "b482b0ea-1901-4437-a309-be43833a1ad5",
@@ -231,8 +241,8 @@
                             "name": "version",
                             "displayName": "Version",
                             "displayNameEvent": "Version changed",
-                            "type": "bool",
-                            "defaultValue": false
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 }

@@ -1,6 +1,7 @@
-#include "usbrly82.h"
+﻿#include "usbrly82.h"
 #include "extern-plugininfo.h"
 
+#include <QDataStream>
 
 UsbRly82Reply::Error UsbRly82Reply::error() const
 {
@@ -27,19 +28,32 @@ UsbRly82Reply::UsbRly82Reply(QObject *parent)  : QObject(parent)
     });
 }
 
-
-
 UsbRly82::UsbRly82(QObject *parent) : QObject(parent)
 {
     qRegisterMetaType<QSerialPort::SerialPortError>();
-    m_refreshTimer.setInterval(100);
-    m_refreshTimer.setSingleShot(false);
-    connect(&m_refreshTimer, &QTimer::timeout, this, &UsbRly82::poll);
+
+    m_digitalRefreshTimer.setInterval(50);
+    m_digitalRefreshTimer.setSingleShot(false);
+    connect(&m_digitalRefreshTimer, &QTimer::timeout, this, &UsbRly82::updateDigitalInputs);
+
+    m_analogRefreshTimer.setInterval(m_analogRefreshRate);
+    m_analogRefreshTimer.setSingleShot(false);
+    connect(&m_analogRefreshTimer, &QTimer::timeout, this, &UsbRly82::updateAnalogInputs);
 }
 
 bool UsbRly82::available() const
 {
     return m_available;
+}
+
+QString UsbRly82::serialNumber() const
+{
+    return m_serialNumber;
+}
+
+QString UsbRly82::softwareVersion() const
+{
+    return m_softwareVersion;
 }
 
 bool UsbRly82::powerRelay1() const
@@ -76,6 +90,25 @@ UsbRly82Reply *UsbRly82::setRelay2Power(bool power)
     reply->m_expectsResponse = false;
     sendNextRequest();
     return reply;
+}
+
+uint UsbRly82::analogRefreshRate() const
+{
+    return m_analogRefreshRate;
+}
+
+void UsbRly82::setAnlalogRefreshRate(uint analogRefreshRate)
+{
+    m_analogRefreshRate = analogRefreshRate;
+    if (m_analogRefreshRate == 0) {
+        qCDebug(dcUsbRly82()) << "Refresh rate set to 0. Auto refreshing analog inputs disabled.";
+        m_analogRefreshTimer.stop();
+    } else {
+        m_analogRefreshTimer.setInterval(m_analogRefreshRate);
+        if (m_available) {
+            m_analogRefreshTimer.start();
+        }
+    }
 }
 
 quint8 UsbRly82::digitalInputs() const
@@ -155,10 +188,33 @@ bool UsbRly82::connectRelay(const QString &serialPort)
                 qCDebug(dcUsbRly82()) << "Relay 1:" << m_powerRelay1;
                 qCDebug(dcUsbRly82()) << "Relay 2:" << m_powerRelay2;
 
-                m_available = true;
-                emit availableChanged(m_available);
+                UsbRly82Reply *reply = getDigitalInputs();
+                connect(reply, &UsbRly82Reply::finished, this, [=](){
+                    if (reply->error() != UsbRly82Reply::ErrorNoError) {
+                        qCWarning(dcUsbRly82()) << "Reading digital inputs finished with error" << reply->error();
+                        return;
+                    }
 
-                m_refreshTimer.start();
+                    if (reply->responseData().isEmpty())
+                        return;
+
+                    quint8 digitalInputs = reply->responseData().at(0);
+                    if (m_digitalInputs != digitalInputs) {
+                        qCDebug(dcUsbRly82()) << "Digital inputs changed";
+                        m_digitalInputs = digitalInputs;
+                        emit digitalInputsChanged();
+                    }
+
+                    m_available = true;
+                    emit availableChanged(m_available);
+
+                    m_digitalRefreshTimer.start();
+                    if (m_analogRefreshRate != 0) {
+                        m_analogRefreshTimer.start(m_analogRefreshRate);
+                    } else {
+                        qCDebug(dcUsbRly82()) << "Refresh rate set to 0. Auto refreshing analog inputs disabled.";
+                    }
+                });
             });
         });
     });
@@ -175,7 +231,8 @@ void UsbRly82::disconnectRelay()
         m_serialPort = nullptr;
     }
 
-    m_refreshTimer.stop();
+    m_digitalRefreshTimer.stop();
+    m_analogRefreshTimer.stop();
 
     m_available = false;
     emit availableChanged(m_available);
@@ -241,7 +298,7 @@ UsbRly82Reply *UsbRly82::createReply(const QByteArray &requestData, bool expects
     if (!expectsResponse) {
         m_replyQueue.enqueue(reply);
     } else {
-        // Priorize requests without response (like switching the relay)
+        // Prioritize requests without response (like switching the relay)
         m_replyQueue.prepend(reply);
     }
     return reply;
@@ -256,7 +313,7 @@ void UsbRly82::sendNextRequest()
         return;
 
     m_currentReply = m_replyQueue.dequeue();
-    qCDebug(dcUsbRly82()) << "-->" << m_currentReply->requestData().toHex();
+    //qCDebug(dcUsbRly82()) << "-->" << m_currentReply->requestData().toHex();
     m_serialPort->write(m_currentReply->requestData());
     if (m_currentReply->m_expectsResponse) {
         m_currentReply->m_timer.start(1000);
@@ -274,7 +331,7 @@ bool UsbRly82::checkBit(quint8 byte, uint bitNumber)
 void UsbRly82::onReadyRead()
 {
     QByteArray data = m_serialPort->readAll();
-    qCDebug(dcUsbRly82()) << "<--" << data.toHex();
+    //qCDebug(dcUsbRly82()) << "<--" << data.toHex();
 
     if (m_currentReply) {
         m_currentReply->m_responseData = data;
@@ -297,37 +354,67 @@ void UsbRly82::onError(QSerialPort::SerialPortError error)
     }
 }
 
-void UsbRly82::poll()
+void UsbRly82::updateDigitalInputs()
 {
-    if (m_replyQueue.count() > 10)
+    // Make sure the queue does not overflow
+    if (m_updateDigitalInputsReply)
         return;
 
-    UsbRly82Reply *reply = getDigitalInputs();
-    connect(reply, &UsbRly82Reply::finished, this, [=](){
-        if (reply->error() != UsbRly82Reply::ErrorNoError) {
-            qCWarning(dcUsbRly82()) << "Reading digital inputs finished with error" << reply->error();
+    m_updateDigitalInputsReply = getDigitalInputs();
+    connect(m_updateDigitalInputsReply, &UsbRly82Reply::finished, this, [=](){
+
+        if (m_updateDigitalInputsReply->error() != UsbRly82Reply::ErrorNoError) {
+            qCWarning(dcUsbRly82()) << "Reading digital inputs finished with error" << m_updateDigitalInputsReply->error();
+            m_updateDigitalInputsReply = nullptr;
             return;
         }
 
-        if (reply->responseData().isEmpty())
+        if (m_updateDigitalInputsReply->responseData().isEmpty()) {
+            m_updateDigitalInputsReply = nullptr;
             return;
+        }
 
-        quint8 digitalInputs = reply->responseData().at(0);
+        quint8 digitalInputs = m_updateDigitalInputsReply->responseData().at(0);
         if (m_digitalInputs != digitalInputs) {
-            qCDebug(dcUsbRly82()) << "Digital inputs changed";
             m_digitalInputs = digitalInputs;
             emit digitalInputsChanged();
         }
+
+        m_updateDigitalInputsReply = nullptr;
     });
+}
 
+void UsbRly82::updateAnalogInputs()
+{
+    // Make sure the queue does not overflow
+    if (m_updateAnalogInputsReply)
+        return;
 
-    reply = getAdcValues();
-    connect(reply, &UsbRly82Reply::finished, this, [=](){
-        if (reply->error() != UsbRly82Reply::ErrorNoError) {
-            qCWarning(dcUsbRly82()) << "Reading analog inputs finished with error" << reply->error();
+    m_updateAnalogInputsReply = getAdcValues();
+    connect(m_updateAnalogInputsReply, &UsbRly82Reply::finished, this, [=](){
+
+        if (m_updateAnalogInputsReply->error() != UsbRly82Reply::ErrorNoError) {
+            qCWarning(dcUsbRly82()) << "Reading analog inputs finished with error" << m_updateAnalogInputsReply->error();
+            m_updateAnalogInputsReply = nullptr;
             return;
         }
 
-        qCDebug(dcUsbRly82()) << "Analog inputs";
+        if (m_updateAnalogInputsReply->responseData().count() != 16) {
+            qCWarning(dcUsbRly82()) << "Reading analog inputs response returned invalid size" << m_updateAnalogInputsReply->responseData().count() << "(should be 16)";
+            m_updateAnalogInputsReply = nullptr;
+            return;
+        }
+
+        qCDebug(dcUsbRly82()) << "Analog inputs" << m_updateAnalogInputsReply->responseData().toHex();
+        QDataStream stream(m_updateAnalogInputsReply->responseData());
+        quint16 value = 0;
+        for (int i = 0; i < 8; i++) {
+            stream >> value;
+            m_analogValues.insert(i, value);
+            qCDebug(dcUsbRly82()) << "Channel" << i << ":" << value;
+        }
+
+        m_updateAnalogInputsReply = nullptr;
     });
 }
+
