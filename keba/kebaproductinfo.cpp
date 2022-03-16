@@ -186,6 +186,8 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         return;
     }
 
+    m_germanEdition = m_productString.toUpper().endsWith("DE");
+    qCDebug(dcKeba()) << "German Edition:" << m_germanEdition;
 }
 
 bool KebaProductInfo::isValid() const
@@ -246,4 +248,9 @@ KebaProductInfo::Meter KebaProductInfo::meter() const
 KebaProductInfo::Authorization KebaProductInfo::authorization() const
 {
     return m_authorization;
+}
+
+bool KebaProductInfo::germanEdition() const
+{
+    return m_germanEdition;
 }

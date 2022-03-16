@@ -112,6 +112,7 @@ public:
     int phaseCount() const; // 1 or 3
     Meter meter() const; // No meter, Calibrated, ...
     Authorization authorization() const;
+    bool germanEdition() const;
 
 private:
     bool m_isValid = true;
@@ -127,6 +128,7 @@ private:
     int m_phaseCount;
     Meter m_meter;
     Authorization m_authorization;
+    bool m_germanEdition = false;
 };
 
 #endif // KEBAPRODUCTINFO_H

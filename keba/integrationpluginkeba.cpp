@@ -185,12 +185,32 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 return;
             }
 
-            // Parse the product code and check if the model actually supports the communication
-            // Only series X and C support UDP/Modbus
+            // Parse the product code and check if the model actually supports the UDP/Modbus communication
+            // Supported are:
+            // - The A series (german edition), no meter DE440 (green edition)
+            // - The B series (german edition), no meter DE440
+            // - All C series
+            // - All X series
+
             if (productInformation.isValid()) {
+
                 bool supported = false;
-                // This model does not support communication with smart devices.
+
+                qCDebug(dcKeba()) << "Product information are valid. Evaluating if model supports UDP/Modbus communication...";
+
                 switch (productInformation.series()) {
+                case KebaProductInfo::SeriesA:
+                    if (productInformation.model() == "P30" && productInformation.germanEdition()) {
+                        qCDebug(dcKeba()) << "The P30 A series german edition is supported (DE440 GREEN EDITION)";
+                        supported = true;
+                    }
+                    break;
+                case KebaProductInfo::SeriesB:
+                    if (productInformation.model() == "P30" && productInformation.germanEdition()) {
+                        qCDebug(dcKeba()) << "The P30 B series german edition is supported (DE440)";
+                        supported = true;
+                    }
+                    break;
                 case KebaProductInfo::SeriesC:
                 case KebaProductInfo::SeriesXWlan:
                 case KebaProductInfo::SeriesXWlan3G:
@@ -205,10 +225,12 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 }
 
                 if (!supported) {
-                    qCWarning(dcKeba()) << "Connected successfully to Keba but this" << productInformation.series() << "has no communication module.";
+                    qCWarning(dcKeba()) << "Connected successfully to Keba but this model" << productInformation.series() << "has no communication module.";
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("This model does not support communication with smart devices."));
                     return;
                 }
+            } else {
+                qCWarning(dcKeba()) << "Product information are not valid. Cannot determin if this model supports UDP/Modbus communication, assuming yes so let's try to init...";
             }
 
             m_kebaDevices.insert(thing->id(), keba);
