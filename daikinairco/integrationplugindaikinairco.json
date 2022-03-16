@@ -1,0 +1,131 @@
+{
+    "displayName": "Daikin Airco",
+    "name": "Daikinairco",
+    "id": "b5cf475e-707d-46a5-9684-296fb1a14886",
+    "vendors": [
+        {
+            "id": "88f6421c-cc7b-4006-b077-421fc384939c",
+            "displayName": "Daikin",
+            "name": "Daikin",
+            "thingClasses": [
+                {
+                    "id": "e6d0bfe6-5923-4c29-840d-ef8b0a17fad9",
+                    "name": "airco",
+                    "displayName": "Daikin Airco",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["power", "thermostat", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "758cad5c-994a-4136-b83d-80fe2f07346c",
+                            "name": "deviceId",
+                            "displayName": "Device ID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "1fefe7df-ef8e-4434-bb51-0c521553f750",
+                            "name": "deviceName",
+                            "displayName": "Device name",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "settingsTypes": [
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "71c5b083-6c95-44f0-b54c-b98f0ac459d8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "bd0ff439-6ab5-414a-ba6e-9ecef0f7c3f4",
+                            "name": "url",
+                            "displayName": "Device Address",
+                            "displayNameEvent": "Device IP changed",
+                            "defaultValue": "0.0.0.0",
+                            "type" : "QString"
+                        },
+                        {
+                            "displayName": "Power",
+                            "id": "6bb42aa0-2280-408d-89b5-400410abdd73",
+                            "name": "power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "2261311a-4302-4a03-bd67-50e92044fe59",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "minValue": "10",
+                            "maxValue": "30",
+                            "defaultValue": "20",
+                            "writable": true
+                        },
+                        {
+                            "id": "a2b7a3aa-641c-45b8-a13b-e845324969ca",
+                            "name": "temperature",
+                            "displayName": "Home temperature",
+                            "displayNameEvent": "Home temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "b99b7182-51e6-456c-b7bc-f39ea2397500",
+                            "name": "outsideTemperature",
+                            "displayName": "Outside temperature",
+                            "displayNameEvent": "Outside temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "9b614a01-4984-4e73-8cbc-95389c484c3b",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "minValue": "0",
+                            "maxValue": "100",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "59da03a6-1b61-4777-91e1-51e518beecbc",
+                            "name": "Mode",
+                            "displayName": "Mode",
+                            "displayNameEvent": "Mode changed",
+                            "displayNameAction": "Set mode",
+                            "type": "QString",
+                            "writable": true,
+                            "possibleValues": [
+                                "Automatic",
+                                "Cooling",
+                                "Heating",
+                                "Dehumidifier",
+                                "Fan"
+                            ],
+                            "defaultValue": "Automatic"
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
