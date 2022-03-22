@@ -1,0 +1,4 @@
+merosscloud/integrationpluginmerosscloud.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/merosscloud/
+merosscloud/integrationpluginmerosscloud.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/merosscloud/
+merosscloud/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/merosscloud/
+merosscloud/translations/*qm usr/share/nymea/translations/

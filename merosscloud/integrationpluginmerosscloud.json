@@ -1,0 +1,88 @@
+{
+    "name": "merossCloud",
+    "displayName": "Meross cloud",
+    "id": "93019e4b-30f1-4276-8f21-d1e08970f591",
+    "vendors": [
+        {
+            "name": "meross",
+            "displayName": "Meross",
+            "id": "8f4ec8ad-30b2-444c-afe7-1820abcfa9f6",
+            "thingClasses": [
+                {
+                    "id": "60b8987a-6137-4e7b-9e20-4c564d8d7077",
+                    "name": "account",
+                    "displayName": "Meross cloud account",
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": ["account"],
+                    "providedInterfaces": ["powersocket", "smartmeterconsumer"],
+                    "stateTypes": [
+                        {
+                            "id": "9cde6321-2abf-4a58-a1d6-c7418edb9747",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "61301ff7-f847-492e-ba9c-894ffebc35c6",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in/out",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "f1831617-7848-4c38-96d7-4cad24dc0cac",
+                    "name": "plug",
+                    "displayName": "Meross smart plug",
+                    "createMethods": ["auto"],
+                    "interfaces": ["powersocket", "smartmeterconsumer"],
+                    "paramTypes": [
+                        {
+                            "id": "b6430a9a-cc76-4bdd-81cf-8ffc68e9383e",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1fa6bde5-f407-4756-8abc-b25a5cce33ba",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "87609b93-7883-4019-ad5f-598e25ebdef6",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e96afbea-adc0-41e9-bc44-da7e7e642ff1",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

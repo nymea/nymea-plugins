@@ -1,0 +1,14 @@
+{
+    "title": "Meross cloud",
+    "tagline": "Adds support for meross cloud devices to nymea.",
+    "icon": "meross-icon.jpg",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "network",
+        "mqtt"
+    ],
+    "categories": [
+        "socket"
+    ]
+}

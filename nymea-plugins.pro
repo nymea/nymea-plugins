@@ -32,8 +32,9 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
-    mecelectronics      \
     mailnotification    \
+    mecelectronics      \
+    merosscloud         \
     mqttclient          \
     mystrom             \
     neatobotvac         \
