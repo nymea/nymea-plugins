@@ -6,13 +6,14 @@ This plugin allows to control Keba KeContact EV-Charging stations.
 
 * KeContact Wallbox
 	* P20 (certain models)
-	* P30 (certain models)
+	* P30
+		* c-series
+		* x-series
 	* BMW (certain models)
-	* [Keba Deutschland Edition](https://a.storyblok.com/f/40131/x/fc59dc7bf7/datenblatt_deutschland_edition.pdf)
-	* [Keba Green Edition](https://keba.com/download/x/7ec5b6e96f/121218_dbde.pdf)
+	* [Keba Deutschland Edition](https://a.storyblok.com/f/40131/x/fc59dc7bf7/datenblatt_deutschland_edition.pdf) (DE440)
+(by March 2022)
 
 Please make sure that your model supports communication through the UDP protocol.
-Only `c-series` and `x-series` have this ability (by March 2022) with the excemption of `Deutschland Edition` and `Green Edition`. 
 The [product overview](https://www.keba.com/download/x/21634787f7/kecontact-p30_productoverview_en.pdf) helps to verify about your models capabilities.
 
 ## Requirements
