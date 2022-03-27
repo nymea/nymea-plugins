@@ -28,46 +28,61 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#ifndef SPEEDWIREINTERFACE_H
+#define SPEEDWIREINTERFACE_H
 
-#include <integrations/integrationplugin.h>
-#include <plugintimer.h>
+#include <QObject>
+#include <QUdpSocket>
+#include <QDataStream>
 
-#include "sunnywebbox.h"
-#include "speedwiremeter.h"
-#include "speedwireinverter.h"
+#include "speedwire.h"
 
-class IntegrationPluginSma: public IntegrationPlugin {
+class SpeedwireInterface : public QObject
+{
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginSma();
+    enum DeviceType {
+        DeviceTypeUnknown,
+        DeviceTypeMeter,
+        DeviceTypeInverter
+    };
+    Q_ENUM(DeviceType)
 
-    void init() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+    explicit SpeedwireInterface(const QHostAddress &address, bool multicast, QObject *parent = nullptr);
+    ~SpeedwireInterface();
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+    bool initialize();
+    void deinitialize();
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    bool initialized() const;
 
-private slots:
-    void onConnectedChanged(bool connected);
-    void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
+    quint16 sourceModelId() const;
+    quint32 sourceSerialNumber() const;
 
-    void setupRefreshTimer();
+public slots:
+    void sendData(const QByteArray &data);
+
+signals:
+    void dataReceived(const QByteArray &data);
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
+    QUdpSocket *m_socket = nullptr;
+    QHostAddress m_address;
+    quint16 m_port = Speedwire::port();
+    QHostAddress m_multicastAddress = Speedwire::multicastAddress();
+    bool m_multicast = false;
+    bool m_initialized = false;
 
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
-    QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;
+    // Requester
+    quint16 m_sourceModelId = 0x007d;
+    quint32 m_sourceSerialNumber = 0x3a28be52;
+
+private slots:
+    void readPendingDatagrams();
+    void onSocketError(QAbstractSocket::SocketError error);
+    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+
 };
 
-#endif // INTEGRATIONPLUGINSMA_H
+
+#endif // SPEEDWIREINTERFACE_H

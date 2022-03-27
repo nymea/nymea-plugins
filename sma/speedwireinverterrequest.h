@@ -28,46 +28,35 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#ifndef SPEEDWIREINVERTERREQUEST_H
+#define SPEEDWIREINVERTERREQUEST_H
 
-#include <integrations/integrationplugin.h>
-#include <plugintimer.h>
+#include <QObject>
 
-#include "sunnywebbox.h"
-#include "speedwiremeter.h"
-#include "speedwireinverter.h"
+#include "speedwire.h"
 
-class IntegrationPluginSma: public IntegrationPlugin {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
-
+class SpeedwireInverterRequest
+{
 public:
-    explicit IntegrationPluginSma();
+    explicit SpeedwireInverterRequest();
 
-    void init() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+    Speedwire::Command command() const;
+    void setCommand(Speedwire::Command command);
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+    quint16 packetId() const;
+    void setPacketId(quint16 packetId);
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    QByteArray requestData() const;
+    void setRequestData(const QByteArray &requestData);
 
-private slots:
-    void onConnectedChanged(bool connected);
-    void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
-
-    void setupRefreshTimer();
+    quint8 retries() const;
+    void setRetries(quint8 retries);
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
-
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
-    QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;
+    Speedwire::Command m_command;
+    quint16 m_packetId = 0;
+    QByteArray m_requestData;
+    quint8 m_retries = 2; // Default try 2 times before timeout
 };
 
-#endif // INTEGRATIONPLUGINSMA_H
+#endif // SPEEDWIREINVERTERREQUEST_H

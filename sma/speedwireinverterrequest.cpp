@@ -28,46 +28,49 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#include "speedwireinverterrequest.h"
 
-#include <integrations/integrationplugin.h>
-#include <plugintimer.h>
+SpeedwireInverterRequest::SpeedwireInverterRequest()
+{
 
-#include "sunnywebbox.h"
-#include "speedwiremeter.h"
-#include "speedwireinverter.h"
+}
 
-class IntegrationPluginSma: public IntegrationPlugin {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
+Speedwire::Command SpeedwireInverterRequest::command() const
+{
+    return m_command;
+}
 
-public:
-    explicit IntegrationPluginSma();
+void SpeedwireInverterRequest::setCommand(Speedwire::Command command)
+{
+    m_command = command;
+}
 
-    void init() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+quint16 SpeedwireInverterRequest::packetId() const
+{
+    return m_packetId;
+}
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+void SpeedwireInverterRequest::setPacketId(quint16 packetId)
+{
+    m_packetId = packetId;
+}
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+QByteArray SpeedwireInverterRequest::requestData() const
+{
+    return m_requestData;
+}
 
-private slots:
-    void onConnectedChanged(bool connected);
-    void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
+void SpeedwireInverterRequest::setRequestData(const QByteArray &requestData)
+{
+    m_requestData = requestData;
+}
 
-    void setupRefreshTimer();
+quint8 SpeedwireInverterRequest::retries() const
+{
+    return m_retries;
+}
 
-private:
-    PluginTimer *m_refreshTimer = nullptr;
-
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
-    QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;
-};
-
-#endif // INTEGRATIONPLUGINSMA_H
+void SpeedwireInverterRequest::setRetries(quint8 retries)
+{
+    m_retries = retries;
+}

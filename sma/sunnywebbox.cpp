@@ -69,7 +69,7 @@ QString SunnyWebBox::getProcessData(const QStringList &deviceKeys)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
-    Q_FOREACH(QString key, deviceKeys) {
+    foreach (const QString &key, deviceKeys) {
         QJsonObject deviceObj;
         deviceObj["key"] = key;
         devicesArray.append(deviceObj);
@@ -93,7 +93,7 @@ QString SunnyWebBox::getParameters(const QStringList &deviceKeys)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
-    Q_FOREACH(QString key, deviceKeys) {
+    foreach (const QString &key, deviceKeys) {
         QJsonObject deviceObj;
         deviceObj["key"] = key;
         devicesArray.append(deviceObj);
@@ -109,7 +109,7 @@ QString SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString
     QJsonObject deviceObj;
     deviceObj["key"] = deviceKey;
     QJsonArray channelsArray;
-    Q_FOREACH(QString key, channels.keys()) {
+    foreach (const QString &key, channels.keys()) {
         QJsonObject channelObj;
         channelObj["meta"] = key;
         channelObj["value"] = channels.value(key).toString();
@@ -148,7 +148,7 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
         Overview overview;
         QVariantList overviewList = result.value("overview").toList();
         qCDebug(dcSma()) << "SunnyWebBox: GetPlantOverview";
-        Q_FOREACH(QVariant value, overviewList) {
+        foreach (const QVariant &value, overviewList) {
             QVariantMap map = value.toMap();
 
             if (map["meta"].toString() == "GriPwr") {
@@ -177,7 +177,7 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
         QList<Device> devices;
         QVariantList deviceList = result.value("devices").toList();
         qCDebug(dcSma()) << "SunnyWebBox: GetDevices" << result.value("totalDevicesReturned").toInt();
-        Q_FOREACH(QVariant value, deviceList) {
+        foreach (const QVariant &value, deviceList) {
             Device device;
             QVariantMap map = value.toMap();
             device.name = map["name"].toString();
@@ -185,7 +185,7 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
             device.key = map["key"].toString();
             qCDebug(dcSma()) << "SunnyWebBox:       - Key" << device.key;
             QVariantList childrenList = map["children"].toList();
-            Q_FOREACH(QVariant childValue, childrenList) {
+            foreach (const QVariant &childValue, childrenList) {
                 Device child;
                 QVariantMap childMap = childValue.toMap();
                 device.name = childMap["name"].toString();
@@ -194,44 +194,43 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
             }
             devices.append(device);
         }
-        if (!devices.isEmpty())
+        if (!devices.isEmpty()) {
             emit devicesReceived(messageId, devices);
+        }
     } else if (messageType == "GetProcessDataChannels" ||
                messageType == "GetProDataChannels") {
-        Q_FOREACH(QString deviceKey, result.keys()) {
+        foreach (const QString &deviceKey, result.keys()) {
             QStringList processDataChannels = result.value(deviceKey).toStringList();
             if (!processDataChannels.isEmpty())
                 emit processDataChannelsReceived(messageId, deviceKey, processDataChannels);
         }
     } else if (messageType == "GetProcessData") {
-        QList<Device> devices;
         QVariantList devicesList = result.value("devices").toList();
         qCDebug(dcSma()) << "SunnyWebBox: GetProcessData response received";
-        Q_FOREACH(QVariant value, devicesList) {
+        foreach (const QVariant &value, devicesList) {
 
             QString key = value.toMap().value("key").toString();
             QVariantList channelsList =  value.toMap().value("channels").toList();
             QHash<QString, QVariant> channels;
-            Q_FOREACH(QVariant channel, channelsList) {
+            foreach (const QVariant &channel, channelsList) {
                 channels.insert(channel.toMap().value("meta").toString(), channel.toMap().value("value"));
             }
             emit processDataReceived(messageId, key, channels);
         }
     } else if (messageType == "GetParameterChannels") {
-        Q_FOREACH(QString deviceKey, result.keys()) {
+        foreach (const QString &deviceKey, result.keys()) {
             QStringList parameterChannels = result.value(deviceKey).toStringList();
             if (!parameterChannels.isEmpty())
                 emit parameterChannelsReceived(messageId, deviceKey, parameterChannels);
         }
     } else if (messageType == "GetParameter"|| messageType == "SetParameter") {
-        QList<Device> devices;
         QVariantList devicesList = result.value("devices").toList();
-        Q_FOREACH(QVariant value, devicesList) {
+        foreach (const QVariant &value, devicesList) {
 
             QString key = value.toMap().value("key").toString();
             QVariantList channelsList =  value.toMap().value("channels").toList();
             QList<Parameter> parameters;
-            Q_FOREACH(QVariant channel, channelsList) {
+            foreach (const QVariant &channel, channelsList) {
                Parameter parameter;
                parameter.meta = channel.toMap().value("meta").toString();
                parameter.name = channel.toMap().value("name").toString();

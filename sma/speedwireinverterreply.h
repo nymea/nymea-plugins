@@ -28,46 +28,62 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#ifndef SPEEDWIREINVERTERREPLY_H
+#define SPEEDWIREINVERTERREPLY_H
 
-#include <integrations/integrationplugin.h>
-#include <plugintimer.h>
+#include <QObject>
+#include <QTimer>
 
-#include "sunnywebbox.h"
-#include "speedwiremeter.h"
-#include "speedwireinverter.h"
+#include "speedwireinverterrequest.h"
 
-class IntegrationPluginSma: public IntegrationPlugin {
+class SpeedwireInverterReply : public QObject
+{
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
+
+    friend class SpeedwireInverter;
 
 public:
-    explicit IntegrationPluginSma();
+    enum Error {
+        ErrorNoError,       // Response on, no error
+        ErrorInverterError, // Inverter returned error
+        ErrorTimeout        // Request timeouted
+    };
+    Q_ENUM(Error)
 
-    void init() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+    // Request
+    SpeedwireInverterRequest request() const;
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+    Error error() const;
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    // Response
+    QByteArray responseData() const;
+    Speedwire::Header responseHeader() const;
+    Speedwire::InverterPacket responsePacket() const;
+    QByteArray responsePayload() const;
 
-private slots:
-    void onConnectedChanged(bool connected);
-    void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
-
-    void setupRefreshTimer();
+signals:
+    void finished();
+    void timeout();
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
+    explicit SpeedwireInverterReply(const SpeedwireInverterRequest &request, QObject *parent = nullptr);
 
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, SpeedwireMeter *> m_speedwireMeters;
-    QHash<Thing *, SpeedwireInverter *> m_speedwireInverters;
+    QTimer m_timer;
+    Error m_error = ErrorNoError;
+    SpeedwireInverterRequest m_request;
+    quint8 m_retries = 0;
+    quint8 m_maxRetries = 3;
+    int m_timeout = 3000;
+
+    QByteArray m_responseData;
+    Speedwire::Header m_responseHeader;
+    Speedwire::InverterPacket m_responsePacket;
+    QByteArray m_responsePayload;
+
+
+    void finishReply(Error error);
+    void startWaiting();
+
 };
 
-#endif // INTEGRATIONPLUGINSMA_H
+#endif // SPEEDWIREINVERTERREPLY_H
