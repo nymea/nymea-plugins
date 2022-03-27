@@ -88,6 +88,7 @@ public:
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, MqttChannel *> m_channels;
+    QHash<Thing *, QNetworkReply *> m_pendingReplies;
 
     void update(Thing *thing, const QVariantMap &statusMap);
     QNetworkRequest buildStatusRequest(Thing *thing);
