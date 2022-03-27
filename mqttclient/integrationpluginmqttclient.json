@@ -115,6 +115,13 @@
                             "defaultValue": ""
                         },
                         {
+                            "id": "621f9054-2b64-4de9-93d2-65bba96a14a3",
+                            "name": "clientId",
+                            "displayName": "Client Id",
+                            "type": "QString",
+                            "defaultValue": "nymea"
+                        },
+                        {
                             "id": "d8211599-52f7-46f6-a741-a7204b987309",
                             "name": "password",
                             "displayName": "Password",
@@ -127,6 +134,43 @@
                             "displayName": "Subscription topic filter",
                             "type": "QString",
                             "defaultValue": "#"
+                        },
+                        {
+                            "id": "714074bd-1ab1-4ee6-b6db-7594b3dbf56f",
+                            "name": "useSsl",
+                            "displayName": "Use SSL",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "04aa1f25-4ee9-4bce-9844-a9860642c938",
+                            "name": "willTopic",
+                            "displayName": "Will topic",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "acb19fba-d140-4ff1-b4ec-3b933c04417e",
+                            "name": "willMessage",
+                            "displayName": "Will message",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "c7fba1f0-a7b0-4162-8b50-fb85697fe678",
+                            "name": "willRetain",
+                            "displayName": "Retain will",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "470b600d-e1c1-4ae7-83d4-0179600e4187",
+                            "name": "willQoS",
+                            "displayName": "Will QoS",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 2,
+                            "defaultValue": 0
                         }
                     ],
                     "eventTypes": [
