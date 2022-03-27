@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,29 +28,50 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef FRONIUSINVERTER_H
-#define FRONIUSINVERTER_H
+#include "froniusnetworkreply.h"
 
-#include <QObject>
-#include "froniusthing.h"
-
-class FroniusInverter : public FroniusThing
+FroniusNetworkReply::~FroniusNetworkReply()
 {
-    Q_OBJECT
+    if (m_networkReply) {
+        // We don't need the finished signal any more, object gets deleted
+        disconnect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::finished);
 
-public:
-    explicit FroniusInverter(Thing *thing, QObject *parent = 0);
+        if (m_networkReply->isRunning()) {
+            // Abort the reply, we are not interested in it any more
+            m_networkReply->abort();
+        }
 
-    QString activity() const;
-    void setActivity(const QString &activity);
-    Thing* inverterThing() const;
-    QUrl updateUrl();
-    void updateThingInfo(const QByteArray &data);
-    QUrl activityUrl();
-    void updateActivityInfo(const QByteArray &data);
+        m_networkReply->deleteLater();
+    }
+}
 
-private:
-    QString      m_activity;
-};
+QUrl FroniusNetworkReply::requestUrl() const
+{
+    return m_request.url();
+}
 
-#endif // FRONIUSINVERTER_H
+QNetworkRequest FroniusNetworkReply::request() const
+{
+    return m_request;
+}
+
+QNetworkReply *FroniusNetworkReply::networkReply() const
+{
+    return m_networkReply;
+}
+
+FroniusNetworkReply::FroniusNetworkReply(const QNetworkRequest &request, QObject *parent) :
+    QObject(parent),
+    m_request(request)
+{
+
+}
+
+void FroniusNetworkReply::setNetworkReply(QNetworkReply *networkReply)
+{
+    m_networkReply = networkReply;
+
+    // The QNetworkReply will be deleted in the destructor if set
+    connect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::finished);
+}
+

@@ -1,20 +1,13 @@
 include(../plugins.pri)
 
-QT += \
-    network \
+QT += network
 
 SOURCES += \
+    froniusnetworkreply.cpp \
+    froniussolarconnection.cpp \
     integrationpluginfronius.cpp \
-    froniusthing.cpp \
-    froniuslogger.cpp \
-    froniusinverter.cpp \
-    froniusstorage.cpp \
-    froniusmeter.cpp \
 
 HEADERS += \
+    froniusnetworkreply.h \
+    froniussolarconnection.h \
     integrationpluginfronius.h \
-    froniusthing.h \
-    froniuslogger.h \
-    froniusinverter.h \
-    froniusstorage.h \
-    froniusmeter.h \

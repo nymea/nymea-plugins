@@ -10,7 +10,7 @@
             "thingClasses": [
                 {
                     "id": "4fd79fed-42f1-4df9-be64-3df7b2e0bda2",
-                    "name": "datalogger",
+                    "name": "connection",
                     "displayName": "Fronius Solar",
                     "createMethods": ["discovery", "user"],
                     "interfaces": ["gateway"],
@@ -18,7 +18,7 @@
                     "paramTypes": [
                         {
                             "id": "52da0197-4b78-4fec-aa72-70f949e26edc",
-                            "name": "loggerHost",
+                            "name": "address",
                             "displayName": "Host address",
                             "type": "QString",
                             "inputType": "IPv4Address",
@@ -26,9 +26,10 @@
                         },
                         {
                             "id": "2237972e-385b-4458-b5d3-1d1fb4ae8756",
-                            "name": "loggerMac",
-                            "displayName": "MAC address",
+                            "name": "mac",
+                            "displayName": "Mac address",
                             "type": "QString",
+                            "readOnly": true,
                             "defaultValue": "00:00:00:00:00:00"
                         }
                     ],
@@ -37,127 +38,25 @@
                             "id": "98e4476f-e745-4a7f-b795-19269cb70c40",
                             "name": "connected",
                             "displayName": "Reachable",
-                            "displayNameEvent": "logger reachable changed",
+                            "displayNameEvent": "Reachable changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
-                            "id": "b22052ef-14da-43d2-982b-f2c2d8c03206",
-                            "name": "productid",
-                            "displayName": "Product ID",
-                            "displayNameEvent": "Product ID changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "65c068e6-4a0b-4672-9724-ae95216c4c9c",
-                            "name": "platformid",
-                            "displayName": "Platform ID",
-                            "displayNameEvent": "Platform ID changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "3b4206e5-74c7-4708-96b8-2abfab0c41d6",
-                            "name": "hwversion",
-                            "displayName": "Hardware version",
-                            "displayNameEvent": "Hardware version changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "31743ca5-4353-4f26-b2ad-5da43e5b9d86",
-                            "name": "swversion",
-                            "displayName": "Software version",
-                            "displayNameEvent": "Software version changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "d034f59d-dc34-450a-a6f3-68264767a3e4",
-                            "name": "tzoneloc",
-                            "displayName": "Timezone location",
-                            "displayNameEvent": "Timezone location changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "6bdfeeda-7a47-4043-a011-5eb96308a7d6",
-                            "name": "tzone",
-                            "displayName": "Time zone",
-                            "displayNameEvent": "Time zone changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "18b250e2-080a-4991-b368-177c4da83eca",
-                            "name": "defaultlang",
-                            "displayName": "Default language",
-                            "displayNameEvent": "Default language changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "bc18595b-17c7-4a1f-8002-b908a3d9239d",
-                            "name": "cashfactor",
-                            "displayName": "Cash factor",
-                            "displayNameEvent": "Cash factor changed",
-                            "type": "double",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "84da30c8-a7fb-49c6-884c-9521f9f62bbc",
-                            "name": "cashcurrency",
-                            "displayName": "Cash currency",
-                            "displayNameEvent": "Cash Currency changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "8ab01225-7be5-4482-a99b-314108ae0e2b",
-                            "name": "co2factor",
-                            "displayName": "CO2 factor",
-                            "displayNameEvent": "CO2 factor changed",
-                            "type": "double",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "b0e655f8-27d0-4add-918b-461cadc8efcc",
-                            "name": "co2unit",
-                            "displayName": "CO2 unit",
-                            "displayNameEvent": "CO2 unit changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "b217acf6-0c5e-4a3e-a50c-4c0133c871c2",
-                            "name": "powerManagmentRelay",
-                            "displayName": "Power management relay",
-                            "displayNameEvent": "Power management relay status changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "5650ce9b-0d7d-4c52-b410-ea618889b4bb",
-                            "name": "powerManagmentRelayReason",
-                            "displayName": "Power management relay reason",
-                            "displayNameEvent": "Power management relay reason changed",
+                            "id": "8fd0c0ed-af89-4887-bf0f-040b13c25268",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
                             "type": "QString",
                             "defaultValue": ""
                         }
                     ],
-                    "actionTypes": [
-                        {
-                            "id": "c217fdc1-de18-41dc-b5d8-8072f84e7b6c",
-                            "name": "searchDevices",
-                            "displayName": "Search new devices"
-                        }
-                    ]
+                    "actionTypes": [ ]
                 },
                 {
                     "id": "540aa956-8b8f-4982-9f58-343a76cea846",
                     "name": "inverter",
-                    "displayName": "Fronius Solar Inverter",
+                    "displayName": "Fronius solar inverter",
                     "createMethods": ["auto"],
                     "interfaces" : ["solarinverter", "connectable"],
                     "paramTypes": [
@@ -166,8 +65,14 @@
                             "name": "id",
                             "displayName": "Device ID",
                             "type": "QString",
-                            "inputType": "TextLine",
-                             "readOnly": true
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5e073a9d-f2de-4ff4-95f1-065a0ef4d51b",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -181,39 +86,32 @@
                             "cached": false
                         },
                         {
-                            "id": "e763baa7-5eaf-438c-83f0-4fa6c0f7eeb0",
-                            "name": "active",
-                            "displayName": "Inverter active",
-                            "displayNameEvent": "Inverter active changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
                             "id": "788accbc-b86e-471b-b37f-14c9c6411526",
                             "name": "currentPower",
                             "displayName": "Current power",
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": "0"
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b6af1bf5-753d-47b6-a151-e4d801fe6ff8",
-                            "name": "eday",
-                            "displayName": "Energy of current day",
-                            "displayNameEvent": "Energy of day changed",
+                            "name": "energyDay",
+                            "displayName": "Energy produced today",
+                            "displayNameEvent": "Energy produced today changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0"
+                            "defaultValue": 0
                         },
                         {
                             "id": "7fd2fa28-9bcc-4f01-a823-459437d185f6",
-                            "name": "eyear",
-                            "displayName": "Energy of current year",
-                            "displayNameEvent": "Energy of year changed",
+                            "name": "energyYear",
+                            "displayName": "Energy produced year",
+                            "displayNameEvent": "Energy produced changed",
                             "type": "int",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0"
+                            "defaultValue": 0
                         },
                         {
                             "id": "d6dbb879-4cbc-4db3-830e-b92ba91a13e5",
@@ -222,7 +120,7 @@
                             "displayNameEvent": "Total produced energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0"
+                            "defaultValue": 0
                         }
                     ]
                 },
@@ -261,13 +159,24 @@
                             "cached": false
                         },
                         {
+                            "id": "e5056ea1-88a2-410b-9c5e-6322aca4cb17",
+                            "name": "currentPower",
+                            "displayName": "Current power usage",
+                            "displayNameEvent": "Current power usage changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
                             "id": "267bc59f-1113-4aff-a502-4618a591aa16",
                             "name": "voltagePhaseA",
                             "displayName": "Voltage phase A",
                             "displayNameEvent": "Voltage phase A changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "bbcedb80-30f1-493e-81f0-5f77f2847353",
@@ -276,7 +185,8 @@
                             "displayNameEvent": "Voltage phase B changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "8037557b-40dc-411b-8937-bcd1695f898a",
@@ -285,7 +195,8 @@
                             "displayNameEvent": "Voltage phase C changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "a9673688-d84a-4848-8583-a70739130252",
@@ -294,7 +205,8 @@
                             "displayNameEvent": "Current phase A changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "15632e49-95f9-496d-830c-53a31ca6d98e",
@@ -303,7 +215,8 @@
                             "displayNameEvent": "Current phase B changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "10a24ba9-a57a-48a9-98f3-52671c09e855",
@@ -312,16 +225,8 @@
                             "displayNameEvent": "Current phase C changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "e5056ea1-88a2-410b-9c5e-6322aca4cb17",
-                            "name": "currentPower",
-                            "displayName": "Current power usage",
-                            "displayNameEvent": "Current power usage changed",
-                            "type": "double",
-                            "unit": "Watt",
-                            "defaultValue": "0"
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "ca14cca5-d9f0-49c5-a8f7-907d4c0825f0",
@@ -330,7 +235,7 @@
                             "displayNameEvent": "Energy production changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0"
+                            "defaultValue": 0
                         },
                         {
                             "id": "f3451818-48d2-42a5-94fd-ad094c06967f",
@@ -339,7 +244,7 @@
                             "displayNameEvent": "Energy consumption changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": "0"
+                            "defaultValue": 0
                         },
                         {
                             "id": "6dbbb062-447b-47d6-b2e4-dceac9aff795",
@@ -348,7 +253,8 @@
                             "displayNameEvent": "Current power phase A changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "f230e78e-15b0-47a4-b494-bae65be00755",
@@ -357,7 +263,8 @@
                             "displayNameEvent": "Current power phase B changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "56b5d550-d902-4c33-9288-8ee972735a75",
@@ -366,7 +273,8 @@
                             "displayNameEvent": "Current power phase C changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "9ff64b29-e023-4395-abd4-b6c366acfd9e",
@@ -375,7 +283,8 @@
                             "displayNameEvent": "Frequency changed",
                             "type": "double",
                             "unit": "Hertz",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         }
                     ]
                 },
@@ -429,7 +338,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "3b163deb-67a2-41d1-8441-b2d53ad846ef",
@@ -458,7 +368,8 @@
                             "displayNameEvent": "Cell temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": "0"
+                            "defaultValue": "0",
+                            "cached": false
                         },
                         {
                             "id": "e5396312-b50e-4d6f-b628-5b51448971d3",
