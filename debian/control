@@ -7,7 +7,6 @@ Build-depends: libboblight-dev,
                libnymea-dev (>= 0.26~),
                libnymea-mqtt-dev,
                libnymea-gpio-dev (>= 1.0.5~),
-               libnymea-zigbee-dev,
                libqt5serialport5-dev,
                libqt5websockets5-dev,
                nymea-dev-tools:native,
@@ -1186,111 +1185,6 @@ Description: nymea.io plugin for Yamaha receivers
  This package will install the nymea.io plugin for (non-Musiccast) Yamaha AV receivers.
 
 
-Package: nymea-plugin-zigbee-develco
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for develco things
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Develco
-
-
-Package: nymea-plugin-zigbee-generic
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for different generic recognizable devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for generic recognizable zigbee devices
-
-
-Package: nymea-plugin-zigbee-generic-lights
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for different generic recognizable lights
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for generic recognizable lights
-
-
-Package: nymea-plugin-zigbee-lumi
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for lumi/aquara/xiaomi things
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Lumi
-
-
-Package: nymea-plugin-zigbee-philipshue
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for Philips Hue devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Philips Hue zigbee devices
-
-
-Package: nymea-plugin-zigbee-remotes
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io plugin for various zigbee remote controls.
-
-
-Package: nymea-plugin-zigbee-tradfri
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libnymea-zigbee1,
-         nymea-plugins-translations,
-Description: nymea.io zigbee plugin for Ikea TRADRFI devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Ikea TRADFRI zigbee devices
-
-
 Package: nymea-plugins-translations
 Section: misc
 Architecture: all
@@ -1355,7 +1249,6 @@ Depends: nymea-plugin-anel,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
          nymea-plugin-yamahaavr,
-         nymea-plugins-zigbee,
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -1364,24 +1257,6 @@ Description: Plugins for nymea IoT server - the default plugin collection
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the default nymea plugins.
-
-Package: nymea-plugins-zigbee
-Section: libs    
-Architecture: all
-Depends: nymea-plugin-zigbee-develco,
-         nymea-plugin-zigbee-lumi,
-         nymea-plugin-zigbee-generic,
-         nymea-plugin-zigbee-generic-lights,
-         nymea-plugin-zigbee-philipshue,
-         nymea-plugin-zigbee-tradfri
-Description: Zigbee plugins for nymea IoT server - meta package for all zigbee replated plugins
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install all nymea zigbee related plugins.
 
 
 Package: nymea-plugins-maker
