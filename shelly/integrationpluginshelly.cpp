@@ -119,6 +119,7 @@ static QHash<ThingClassId, ParamTypeId> connectedDevice2ParamTypeMap = {
 };
 
 static QHash<ThingClassId, ParamTypeId> channelParamTypeMap = {
+    {shellySwitchThingClassId, shellySwitchThingChannelParamTypeId},
     {shellyGenericThingClassId, shellyGenericThingChannelParamTypeId},
     {shellyLightThingClassId, shellyLightThingChannelParamTypeId},
     {shellySocketThingClassId, shellySocketThingChannelParamTypeId},
@@ -1671,7 +1672,7 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
         url.setScheme("http");
         url.setHost(address);
         url.setPort(80);
-        url.setPath(QString("/settings/relay/%1").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() + 1));
+        url.setPath(QString("/settings/relay/%0").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() - 1));
         url.setUserName(parentDevice->paramValue(usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
         url.setPassword(parentDevice->paramValue(passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
 
@@ -1687,6 +1688,8 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
         }
 
         url.setQuery(query);
+
+        qCDebug(dcShelly) << "Setting configuration:" << url.toString();
 
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
