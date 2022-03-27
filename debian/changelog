@@ -1,3 +1,48 @@
+nymea-plugins (1.0.0) xenial; urgency=medium
+
+  [ Simon Stürz ]
+  * SMA: Add speedwire interface
+
+  [ Michael Zanetti ]
+  * MQTT client: Add more parameters to thing class (for SSL and will)
+  * Neato Botvac: Fix dependencies
+  * Remove ZigBee plugins (moved to new repository)
+
+  [ Simon Stürz ]
+  * SMA: Add default value for sma sunny webbox thing param #528
+  * go-eCharger: Handle reconfigure for MQTT and queue HTTP requests
+
+  [ Michael Zanetti ]
+  * Shelly: Try to reconfigure MQTT on disconnected shellies
+  * PhilipsHue: Improve discovery and error handling
+  * SomfyTahoma: Fix min/max values as per interface
+  * MecMeter: Optimize performance
+  * DHT: Properly clean up pluginTimer when all things are gone
+  * Shelly: Don't cache volatile states
+
+  [ Jenkins ]
+  * Shelly: Add support for Shelly EM
+
+  [ Michael Zanetti ]
+  * SolarLog: Fix currentPower state and disable caching for volatile
+    states
+  * BluOS: Fix eventTypeId -> stateTypeId typo
+  * Keba: Fix eventTypes -> stateTypes typo and uncache volatile states
+  * Remove generic things plugins (Moved to new repository)
+
+  [ Simon Stürz ]
+  * Keba: Add series capability check and fetch product information
+    during setup
+  * Fronius: Rework plugin entirely, queue request and simplify
+    structure for new API versions
+
+  [ Michael Zanetti ]
+  * Shelly: Fix switch settings (button mode and reverse)
+
+  [ Jenkins ]
+
+ -- Jenkins <jenkins@nymea.io>  Sun, 27 Mar 2022 19:50:27 +0200
+
 nymea-plugins (0.30.0) xenial; urgency=medium
 
   [ Michael Zanetti ]
