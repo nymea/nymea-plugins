@@ -517,15 +517,33 @@ void IntegrationPluginShelly::setupThing(ThingSetupInfo *info)
     setupShellyChild(info);
 }
 
+void IntegrationPluginShelly::postSetupThing(Thing *thing)
+{
+    Q_UNUSED(thing)
+    if (!m_statusUpdateTimer) {
+        m_statusUpdateTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_statusUpdateTimer, &PluginTimer::timeout, this, &IntegrationPluginShelly::updateStatus);
+    }
+
+    if (!m_reconfigureTimer) {
+        m_reconfigureTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_statusUpdateTimer, &PluginTimer::timeout, this, &IntegrationPluginShelly::reconfigureUnconnected);
+    }
+}
+
 void IntegrationPluginShelly::thingRemoved(Thing *thing)
 {
     if (m_mqttChannels.contains(thing)) {
         hardwareManager()->mqttProvider()->releaseChannel(m_mqttChannels.take(thing));
     }
 
-    if (myThings().isEmpty() && m_timer) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer);
-        m_timer = nullptr;
+    if (myThings().isEmpty() && m_statusUpdateTimer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_statusUpdateTimer);
+        m_statusUpdateTimer = nullptr;
+    }
+    if (myThings().isEmpty() && m_reconfigureTimer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconfigureTimer);
+        m_reconfigureTimer = nullptr;
     }
     qCDebug(dcShelly()) << "Device removed" << thing->name();
 }
@@ -538,7 +556,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (rebootActionTypeMap.contains(action.actionTypeId())) {
         QUrl url;
         url.setScheme("http");
-        url.setHost(getIP(info->thing()));
+        url.setHost(getIP(info->thing()).toString());
         url.setPath("/reboot");
         url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
         url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
@@ -725,6 +743,7 @@ void IntegrationPluginShelly::onClientConnected(MqttChannel *channel)
         qCWarning(dcShelly()) << "Received a client connect for a thing we don't know!";
         return;
     }
+    qCInfo(dcShelly) << thing->name() << "connected";
     thing->setStateValue(connectedStateTypesMap.value(thing->thingClassId()), true);
 
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
@@ -739,6 +758,7 @@ void IntegrationPluginShelly::onClientDisconnected(MqttChannel *channel)
         qCWarning(dcShelly()) << "Received a client disconnect for a thing we don't know!";
         return;
     }
+    qCInfo(dcShelly) << thing->name() << "disconnected";
     thing->setStateValue(connectedStateTypesMap.value(thing->thingClassId()), false);
 
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
@@ -1082,7 +1102,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         channelMap[2] = stateTypeIdMap;
         StateTypeId stateTypeId = channelMap.value(channel).value(stateName);
         if (stateTypeId.isNull()) {
-            qCWarning(dcShelly()) << "Unhandled emeter value for channel" << channel << stateName;
+            qCDebug(dcShelly()) << "Unhandled emeter value for channel" << channel << stateName;
             return;
         }
         double factor = 1;
@@ -1140,10 +1160,65 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 void IntegrationPluginShelly::updateStatus()
 {
     foreach (Thing *thing, m_mqttChannels.keys()) {
-        MqttChannel *channel = m_mqttChannels.value(thing);
-        QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
-        qCDebug(dcShelly()) << "Requesting announcement" << QString("shellies/%1/info").arg(shellyId);
-        channel->publish(QString("shellies/%1/command").arg(shellyId), "announce");
+
+        if (thing->stateValue("connected").toBool()) {
+            MqttChannel *channel = m_mqttChannels.value(thing);
+            QString shellyId = thing->paramValue(idParamTypeMap.value(thing->thingClassId())).toString();
+            qCDebug(dcShelly()) << "Requesting announcement" << QString("shellies/%1/info").arg(shellyId);
+            channel->publish(QString("shellies/%1/command").arg(shellyId), "announce");
+        }
+    }
+}
+
+void IntegrationPluginShelly::reconfigureUnconnected()
+{
+    foreach (Thing *thing, m_mqttChannels.keys()) {
+        if (!thing->stateValue("connected").toBool()) {
+            qCDebug(dcShelly()) << "Shelly is not connected. Trying to reconfigure its MQTT connection.";
+
+            MqttChannel *channel = m_mqttChannels.value(thing);
+
+            QHostAddress address = getIP(thing);
+            if (!address.isNull()) {
+                QUrl url;
+                url.setScheme("http");
+                url.setHost(address.toString());
+                url.setPort(80);
+                url.setPath("/settings");
+                url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
+                url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
+
+                QUrlQuery query;
+                query.addQueryItem("mqtt_server", channel->serverAddress().toString() + ":" + QString::number(channel->serverPort()));
+                query.addQueryItem("mqtt_user", channel->username());
+                query.addQueryItem("mqtt_pass", channel->password());
+                query.addQueryItem("mqtt_enable", "true");
+
+                url.setQuery(query);
+                QNetworkRequest request(url);
+                QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                connect(reply, &QNetworkReply::finished, thing, [reply, this, thing](){
+                    if (reply->error() != QNetworkReply::NoError) {
+                        qCWarning(dcShelly()) << "Failed to reconfigure MQTT on shelly" << thing->name();
+                        return;
+                    }
+
+                    qCDebug(dcShelly()) << "Successfully set MQTT configuration on shelly" << thing->name();
+
+                    // Newer shellies require a reboot after reconfiguring the MQTT connection
+                    QUrl url;
+                    url.setScheme("http");
+                    url.setHost(getIP(thing).toString());
+                    url.setPath("/reboot");
+                    url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
+                    url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
+                    qCDebug(dcShelly) << "Rebooting" << thing->name();
+                    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+                    connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+                });
+            }
+        }
     }
 }
 
@@ -1151,22 +1226,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
-    ZeroConfServiceEntry zeroConfEntry;
-    foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
-        if (entry.name() == shellyId) {
-            zeroConfEntry = entry;
-        }
-    }
-    QHostAddress address;
-    pluginStorage()->beginGroup(info->thing()->id().toString());
-    if (zeroConfEntry.isValid()) {
-        address = zeroConfEntry.hostAddress();
-        pluginStorage()->setValue("cachedAddress", address.toString());
-    } else {
-        qCWarning(dcShelly()) << "Could not find Shelly thing on zeroconf. Trying cached address.";
-        address = QHostAddress(pluginStorage()->value("cachedAddress").toString());
-    }
-    pluginStorage()->endGroup();
+
+    QHostAddress address = getIP(thing);
 
     if (address.isNull()) {
         qCWarning(dcShelly()) << "Unable to determine Shelly's network address. Failed to set up device.";
@@ -1220,10 +1281,6 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     url.setPassword(info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString());
 
     QUrlQuery query;
-    query.addQueryItem("mqtt_server", channel->serverAddress().toString() + ":" + QString::number(channel->serverPort()));
-    query.addQueryItem("mqtt_user", channel->username());
-    query.addQueryItem("mqtt_pass", channel->password());
-    query.addQueryItem("mqtt_enable", "true");
 
     // Make sure the shelly 2.5 is in the mode we expect it to be (roller or relay)
     if (info->thing()->thingClassId() == shelly25ThingClassId) {
@@ -1405,11 +1462,6 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 
         emit autoThingsAppeared(autoChilds);
 
-        if (!m_timer) {
-            m_timer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-            connect(m_timer, &PluginTimer::timeout, this, &IntegrationPluginShelly::updateStatus);
-        }
-
         // Make sure authentication is enalbed if the user wants it
         QString username = info->thing()->paramValue(usernameParamTypeMap.value(info->thing()->thingClassId())).toString();
         QString password = info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString();
@@ -1433,6 +1485,10 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             qCDebug(dcShelly()) << "Enabling auth" << username << password;
             QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+
+            connect(reply, &QNetworkReply::finished, this, &IntegrationPluginShelly::reconfigureUnconnected);
+        } else {
+            reconfigureUnconnected();
         }
     });
 
@@ -1543,14 +1599,33 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
     info->finish(Thing::ThingErrorNoError);
 }
 
-QString IntegrationPluginShelly::getIP(Thing *thing) const
+QHostAddress IntegrationPluginShelly::getIP(Thing *thing) const
 {
     Thing *d = thing;
     if (!thing->parentId().isNull()) {
         d = myThings().findById(thing->parentId());
     }
+
+    QString shellyId = d->paramValue(idParamTypeMap.value(d->thingClassId())).toString();
+    ZeroConfServiceEntry zeroConfEntry;
+    foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
+        if (entry.name() == shellyId) {
+            zeroConfEntry = entry;
+        }
+    }
+    QHostAddress address;
     pluginStorage()->beginGroup(d->id().toString());
-    QString ip = pluginStorage()->value("cachedAddress").toString();
+    if (zeroConfEntry.isValid()) {
+        qCDebug(dcShelly()) << "Shelly device found on mDNS. Using" << zeroConfEntry.hostAddress() << "and caching it.";
+        address = zeroConfEntry.hostAddress();
+        pluginStorage()->setValue("cachedAddress", address.toString());
+    } else if (pluginStorage()->contains("cachedAddress")){
+        address = QHostAddress(pluginStorage()->value("cachedAddress").toString());
+        qCDebug(dcShelly()) << "Could not find Shelly thing on mDNS. Trying cached address:" << address;
+    } else {
+        qCWarning(dcShelly()) << "Unable to determine IP address of shelly device:" << shellyId;
+    }
     pluginStorage()->endGroup();
-    return ip;
+
+    return address;
 }
