@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,6 +29,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "plugininfo.h"
+#include "kebaproductinfo.h"
 #include "integrationpluginkeba.h"
 
 #include <QJsonDocument>
@@ -162,6 +163,8 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             qCDebug(dcKeba()) << "     - DIP switch 1" << report.dipSw1;
             qCDebug(dcKeba()) << "     - DIP switch 2" << report.dipSw2;
 
+            KebaProductInfo productInformation(report.product);
+
             if (thing->paramValue(wallboxThingSerialNumberParamTypeId).toString().isEmpty()) {
                 qCDebug(dcKeba()) << "Update serial number parameter for" << thing << "to" << report.serialNumber;
                 thing->setParamValue(wallboxThingSerialNumberParamTypeId, report.serialNumber);
@@ -180,6 +183,54 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
                 qCWarning(dcKeba()) << "Connected successfully to Keba but the DIP Switch for controlling it is not enabled.";
                 info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The required communication interface is not enabled on this wallbox. Please make sure the DIP switch 1.3 is switched on and try again."));
                 return;
+            }
+
+            // Parse the product code and check if the model actually supports the UDP/Modbus communication
+            // Supported are:
+            // - The A series (german edition), no meter DE440 (green edition)
+            // - The B series (german edition), no meter DE440
+            // - All C series
+            // - All X series
+
+            if (productInformation.isValid()) {
+
+                bool supported = false;
+
+                qCDebug(dcKeba()) << "Product information are valid. Evaluating if model supports UDP/Modbus communication...";
+
+                switch (productInformation.series()) {
+                case KebaProductInfo::SeriesA:
+                    if (productInformation.model() == "P30" && productInformation.germanEdition()) {
+                        qCDebug(dcKeba()) << "The P30 A series german edition is supported (DE440 GREEN EDITION)";
+                        supported = true;
+                    }
+                    break;
+                case KebaProductInfo::SeriesB:
+                    if (productInformation.model() == "P30" && productInformation.germanEdition()) {
+                        qCDebug(dcKeba()) << "The P30 B series german edition is supported (DE440)";
+                        supported = true;
+                    }
+                    break;
+                case KebaProductInfo::SeriesC:
+                case KebaProductInfo::SeriesXWlan:
+                case KebaProductInfo::SeriesXWlan3G:
+                case KebaProductInfo::SeriesXWlan4G:
+                case KebaProductInfo::SeriesX3G:
+                case KebaProductInfo::SeriesX4G:
+                    qCDebug(dcKeba()) << "The keba" << productInformation.series() << "is capable of communicating using UDP";
+                    supported = true;
+                    break;
+                default:
+                    break;
+                }
+
+                if (!supported) {
+                    qCWarning(dcKeba()) << "Connected successfully to Keba but this model" << productInformation.series() << "has no communication module.";
+                    info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("This model does not support communication with smart devices."));
+                    return;
+                }
+            } else {
+                qCWarning(dcKeba()) << "Product information are not valid. Cannot determin if this model supports UDP/Modbus communication, assuming yes so let's try to init...";
             }
 
             m_kebaDevices.insert(thing->id(), keba);
