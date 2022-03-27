@@ -29,7 +29,8 @@
                             "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "readOnly": true
+                            "readOnly": true,
+                            "defaultValue": "00:00:00:00:00:00"
                         }
                     ],
                     "stateTypes": [
