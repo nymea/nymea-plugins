@@ -146,7 +146,7 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
             return info->finish(Thing::ThingErrorHardwareFailure);
         }
         if (action.actionTypeId() == bluosPlayerPlaybackStatusActionTypeId) {
-            QString playbakStatus = action.param(bluosPlayerPlaybackStatusEventPlaybackStatusParamTypeId).value().toString();
+            QString playbakStatus = action.param(bluosPlayerPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             QUuid requestId;
             if (playbakStatus == "Playing") {
                 requestId = bluos->play();
