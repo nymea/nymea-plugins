@@ -23,8 +23,6 @@ PLUGIN_DIRS = \
     flowercare          \
     fronius             \
     garadget            \
-    genericelements     \
-    genericthings       \
     goecharger          \
     gpio                \
     i2cdevices          \
