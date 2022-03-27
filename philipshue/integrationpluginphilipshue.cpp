@@ -113,12 +113,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
 
     // Tracking object
     DiscoveryJob *discovery = new DiscoveryJob();
-    m_discoveries.insert(info, discovery);
-
-    // clean up the discovery job when the ThingDiscoveryInfo is destroyed (either finished or cancelled)
-    connect(info, &ThingDiscoveryInfo::destroyed, this, [this, info](){
-        delete m_discoveries.take(info);
-    });
+    connect(info, &ThingDiscoveryInfo::destroyed, this, [=](){ delete discovery; });
 
     foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
 
@@ -152,6 +147,11 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
         discovery->results.append(descriptor);
     }
 
+    finishDiscovery(info, discovery);
+}
+
+void IntegrationPluginPhilipsHue::startUpnPDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery)
+{
     qCDebug(dcPhilipsHue()) << "Starting UPnP discovery...";
     UpnpDiscoveryReply *upnpReply = hardwareManager()->upnpDiscovery()->discoverDevices("libhue:idl");
     discovery->upnpReply = upnpReply;
@@ -159,9 +159,10 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
     connect(upnpReply, &UpnpDiscoveryReply::finished, upnpReply, &UpnpDiscoveryReply::deleteLater);
 
     // Process results if info is still around
-    connect(upnpReply, &UpnpDiscoveryReply::finished, info, [this, upnpReply, discovery](){
+    connect(upnpReply, &UpnpDiscoveryReply::finished, info, [=](){
 
         // Indicate we're done...
+        discovery->upnpDone = true;
         discovery->upnpReply = nullptr;
 
         if (upnpReply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
@@ -189,10 +190,12 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
             }
         }
 
-        finishDiscovery(discovery);
+        finishDiscovery(info, discovery);
     });
+}
 
-
+void IntegrationPluginPhilipsHue::startNUpnpDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery)
+{
     qCDebug(dcPhilipsHue) << "Starting N-UPNP discovery...";
     QNetworkRequest request(QUrl("https://discovery.meethue.com"));
     QNetworkReply *nUpnpReply = hardwareManager()->networkManager()->get(request);
@@ -202,20 +205,21 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
     connect(nUpnpReply, &QNetworkReply::finished, nUpnpReply, &QNetworkReply::deleteLater);
 
     // Process results if info is still around
-    connect(nUpnpReply, &QNetworkReply::finished, info, [this, nUpnpReply, discovery](){
-        nUpnpReply->deleteLater();
+    connect(nUpnpReply, &QNetworkReply::finished, info, [=](){
+
         discovery->nUpnpReply = nullptr;
+        discovery->nUpnpDone = true;
 
         if (nUpnpReply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue()) << "N-UPnP discovery failed:" << nUpnpReply->error() << nUpnpReply->errorString();
-            finishDiscovery(discovery);
+            finishDiscovery(info, discovery);
             return;
         }
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(nUpnpReply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcPhilipsHue) << "N-UPNP discovery JSON error in response" << error.errorString();
-            finishDiscovery(discovery);
+            finishDiscovery(info, discovery);
             return;
         }
 
@@ -232,16 +236,28 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
             discovery->results.append(descriptor);
         }
 
-        finishDiscovery(discovery);
+        finishDiscovery(info, discovery);
     });
 }
 
-void IntegrationPluginPhilipsHue::finishDiscovery(IntegrationPluginPhilipsHue::DiscoveryJob *job)
+void IntegrationPluginPhilipsHue::finishDiscovery(ThingDiscoveryInfo *info, IntegrationPluginPhilipsHue::DiscoveryJob *job)
 {
     if (job->upnpReply || job->nUpnpReply) {
         // still pending...
         return;
     }
+
+    if (job->results.isEmpty() && !job->upnpDone) {
+        qCDebug(dcPhilipsHue()) << "No results on mDNS. Trying UPnP...";
+        startUpnPDiscovery(info, job);
+        return;
+    }
+    if (job->results.isEmpty() && !job->nUpnpDone) {
+        qCDebug(dcPhilipsHue()) << "No results on UPnP. Trying NUPnP...";
+        startNUpnpDiscovery(info, job);
+        return;
+    }
+
     QHash<QString, ThingDescriptor> results;
     foreach (ThingDescriptor result, job->results) {
         // dedupe
@@ -259,8 +275,6 @@ void IntegrationPluginPhilipsHue::finishDiscovery(IntegrationPluginPhilipsHue::D
 
     }
 
-    ThingDiscoveryInfo *info = m_discoveries.key(job);
-
     info->addThingDescriptors(results.values());
     info->finish(Thing::ThingErrorNoError);
 }
@@ -269,7 +283,7 @@ void IntegrationPluginPhilipsHue::startPairing(ThingPairingInfo *info)
 {
     Q_ASSERT_X(info->thingClassId() == bridgeThingClassId, "DevicePluginPhilipsHue::startPairing", "Unexpected thing class.");
 
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please press the button on the Hue Bridge within 30 seconds before you continue"));
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please press the button on the Hue Bridge within 30 seconds before you continue."));
 }
 
 void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
@@ -705,7 +719,7 @@ void IntegrationPluginPhilipsHue::confirmPairing(ThingPairingInfo *info, const Q
 
     connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
         if (reply->error() != QNetworkReply::NoError) {
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error connecting to hue bridge."));
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Connecting to the Hue Bridge failed. Please make sure that your Hue Bridge is working and connected to the same network."));
             return;
         }
         QByteArray data = reply->readAll();
@@ -715,22 +729,29 @@ void IntegrationPluginPhilipsHue::confirmPairing(ThingPairingInfo *info, const Q
         // check JSON error
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Received unexpected data from hue bridge."));
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The pairing process failed. Please make sure that your Hue Bridge is working."));
             return;
         }
+        if (jsonDoc.toVariant().toList().isEmpty()) {
+            qCWarning(dcPhilipsHue) << "Hue Bridge empty json!";
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The pairing process failed. Please make sure that your Hue Bridge is working."));
+            return;
+        }
+
+        QVariantMap pairingReply = jsonDoc.toVariant().toList().first().toMap();
 
         // check response error
-        if (data.contains("error")) {
-            if (!jsonDoc.toVariant().toList().isEmpty()) {
-                qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge:" << jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+        if (pairingReply.contains("error")) {
+            qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge:" << pairingReply;
+            if (pairingReply.value("error").toMap().value("type").toInt() == 101) {
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The pairing process failed. The link button has not been pressed. Please follow the on-screen instructions again."));
             } else {
-                qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: Invalid error message format";
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Please make sure that your Hue bridge is working and follow the on-screen instructions again."));
             }
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened pairing the hue bridge."));
             return;
         }
 
-        QString apiKey = jsonDoc.toVariant().toList().first().toMap().value("success").toMap().value("username").toString();
+        QString apiKey = pairingReply.value("success").toMap().value("username").toString();
 
         if (apiKey.isEmpty()) {
             qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: did not get any key from the bridge";

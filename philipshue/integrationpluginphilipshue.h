@@ -92,12 +92,16 @@ private:
     class DiscoveryJob {
     public:
         UpnpDiscoveryReply* upnpReply;
+        bool upnpDone = false;
         QNetworkReply* nUpnpReply;
+        bool nUpnpDone = false;
         ThingDescriptors results;
     };
     ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
-    QHash<ThingDiscoveryInfo*, DiscoveryJob*> m_discoveries;
-    void finishDiscovery(DiscoveryJob* job);
+
+    void startUpnPDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery);
+    void startNUpnpDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery);
+    void finishDiscovery(ThingDiscoveryInfo *info, DiscoveryJob* job);
 
     PluginTimer *m_pluginTimer1Sec = nullptr;
     PluginTimer *m_pluginTimer5Sec = nullptr;
@@ -131,7 +135,6 @@ private:
     void setLightName(Thing *thing);
     void setRemoteName(Thing *thing);
 
-    void processNUpnpResponse(const QByteArray &data);
     void processBridgeLightDiscoveryResponse(Thing *thing, const QByteArray &data);
     void processBridgeSensorDiscoveryResponse(Thing *thing, const QByteArray &data);
     void processLightRefreshResponse(Thing *thing, const QByteArray &data);
