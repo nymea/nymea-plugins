@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,7 +30,6 @@
 
 #include "integrationpluginnetworkdetector.h"
 
-#include "integrations/thing.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -38,131 +37,187 @@
 
 IntegrationPluginNetworkDetector::IntegrationPluginNetworkDetector()
 {
-    m_broadcastPing = new BroadcastPing(this);
-    connect(m_broadcastPing, &BroadcastPing::finished, this, &IntegrationPluginNetworkDetector::broadcastPingFinished);
+
 }
+
 
 IntegrationPluginNetworkDetector::~IntegrationPluginNetworkDetector()
 {
+
 }
 
 void IntegrationPluginNetworkDetector::init()
 {
+
+}
+
+void IntegrationPluginNetworkDetector::discoverThings(ThingDiscoveryInfo *info)
+{
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+        qCWarning(dcNetworkDetector()) << "Failed to discover network devices. The network device discovery is not available.";
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discovery devices in your network."));
+        return;
+    }
+
+    qCDebug(dcNetworkDetector()) << "Starting network discovery...";
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, [=](const QHostAddress &address){
+        qCDebug(dcNetworkDetector()) << "Address discovered" << address.toString();
+    });
+
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, [=](const NetworkDeviceInfo &networkDeviceInfo){
+        qCDebug(dcNetworkDetector()) << "-->" << networkDeviceInfo;
+    });
+
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        ThingDescriptors descriptors;
+        qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+
+            qCDebug(dcNetworkDetector()) << "-->" << networkDeviceInfo;
+            QString title;
+            if (networkDeviceInfo.hostName().isEmpty()) {
+                title = networkDeviceInfo.macAddress();
+            } else {
+                title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.macAddress() + ")";
+            }
+            QString description;
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+                description =  networkDeviceInfo.address().toString();
+            } else {
+                description = networkDeviceInfo.address().toString() + " - " + networkDeviceInfo.macAddressManufacturer();
+            }
+
+            ThingDescriptor descriptor(networkDeviceThingClassId, title, description);
+            ParamList params;
+            params.append(Param(networkDeviceThingMacAddressParamTypeId, networkDeviceInfo.macAddress()));
+            descriptor.setParams(params);
+
+            // Check if we already have set up this device
+            Things existingThings = myThings().filterByParam(networkDeviceThingMacAddressParamTypeId, networkDeviceInfo.macAddress());
+            if (existingThings.count() == 1) {
+                qCDebug(dcNetworkDetector()) << "This network device already exists in the system" << networkDeviceInfo;
+                descriptor.setThingId(existingThings.first()->id());
+            }
+            descriptors.append(descriptor);
+        }
+        info->addThingDescriptors(descriptors);
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginNetworkDetector::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     qCDebug(dcNetworkDetector()) << "Setup" << thing->name() << thing->params();
-    DeviceMonitor *monitor = new DeviceMonitor(thing->name(),
-                                               thing->paramValue(networkDeviceThingMacAddressParamTypeId).toString(),
-                                               thing->paramValue(networkDeviceThingAddressParamTypeId).toString(),
-                                               thing->stateValue(networkDeviceIsPresentStateTypeId).toBool(),
-                                               this);
-    connect(monitor, &DeviceMonitor::reachableChanged, this, &IntegrationPluginNetworkDetector::deviceReachableChanged);
-    connect(monitor, &DeviceMonitor::addressChanged, this, &IntegrationPluginNetworkDetector::deviceAddressChanged);
-    connect(monitor, &DeviceMonitor::seen, this, &IntegrationPluginNetworkDetector::deviceSeen);
-    monitor->setGracePeriod(thing->setting(networkDeviceSettingsGracePeriodParamTypeId).toInt());
-    m_monitors.insert(monitor, thing);
 
-    connect(thing, &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
-        if (paramTypeId != networkDeviceSettingsGracePeriodParamTypeId) {
+    if (thing->thingClassId() == networkDeviceThingClassId) {
+
+        MacAddress macAddress(thing->paramValue(networkDeviceThingMacAddressParamTypeId).toString());
+        if (macAddress.isNull()) {
+            qCWarning(dcNetworkDetector()) << "Invalid mac address:" << thing->paramValue(networkDeviceThingMacAddressParamTypeId).toString();
+            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The configured MAC address is not valid."));
             return;
         }
-        DeviceMonitor *monitor = m_monitors.key(thing);
-        if (monitor) {
-            monitor->setGracePeriod(value.toInt());
-        }
-    });
 
-    if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
-        connect(m_pluginTimer, &PluginTimer::timeout, m_broadcastPing, &BroadcastPing::run);
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
+        connect(monitor, &NetworkDeviceMonitor::reachableChanged, this, [=](bool reachable){
+            qCDebug(dcNetworkDetector()) << thing << "reachable changed to" << reachable;
+            thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
+        });
 
-        m_broadcastPing->run();
+        connect(monitor, &NetworkDeviceMonitor::lastSeenChanged, this, [=](const QDateTime &lastSeen){
+            QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
+            qCDebug(dcNetworkDetector()) << thing << "last seen changed to" << lastSeen.toString() << minuteBased.toString();
+            thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);
+        });
+
+        connect(monitor, &NetworkDeviceMonitor::networkDeviceInfoChanged, this, [=](const NetworkDeviceInfo &networkInfo){
+            qCDebug(dcNetworkDetector()) << thing << "changed" << networkInfo;
+            thing->setStateValue(networkDeviceAddressStateTypeId, networkInfo.address().toString());
+            thing->setStateValue(networkDeviceHostNameStateTypeId, networkInfo.hostName());
+            thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, networkInfo.macAddressManufacturer());
+            thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
+        });
+
+        m_monitors.insert(thing, monitor);
+        info->finish(Thing::ThingErrorNoError);
+
+        thing->setStateValue(networkDeviceAddressStateTypeId, monitor->networkDeviceInfo().address().toString());
+        thing->setStateValue(networkDeviceHostNameStateTypeId, monitor->networkDeviceInfo().hostName());
+        thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, monitor->networkDeviceInfo().macAddressManufacturer());
+        thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
+        thing->setStateValue(networkDeviceIsPresentStateTypeId, monitor->reachable());
+        if (!monitor->lastSeen().isNull()) {
+            QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
+            thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);        }
+        return;
     }
 
-    info->finish(Thing::ThingErrorNoError);
-}
-
-void IntegrationPluginNetworkDetector::discoverThings(ThingDiscoveryInfo *info)
-{
-    Discovery *discovery = new Discovery(this);
-    discovery->discoverHosts(25);
-
-    // clean up discovery object when this discovery info is deleted
-    connect(info, &ThingDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
-
-    connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
-        qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
-        foreach (const Host &host, hosts) {
-            ThingDescriptor descriptor(networkDeviceThingClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
-
-            foreach (Thing *existingThing, myThings()) {
-                if (existingThing->paramValue(networkDeviceThingMacAddressParamTypeId).toString() == host.macAddress()) {
-                    descriptor.setThingId(existingThing->id());
-                    break;
-                }
-            }
-
-            ParamList params;
-            params << Param(networkDeviceThingMacAddressParamTypeId, host.macAddress());
-            params << Param(networkDeviceThingAddressParamTypeId, host.address());
-            descriptor.setParams(params);
-
-            info->addThingDescriptor(descriptor);
-
-        }
-        info->finish(Thing::ThingErrorNoError);
-    });
+    info->finish(Thing::ThingErrorThingClassNotFound);
 }
 
 void IntegrationPluginNetworkDetector::thingRemoved(Thing *thing)
 {
-    DeviceMonitor *monitor = m_monitors.key(thing);
-    m_monitors.remove(monitor);
-    delete monitor;
-
-    if (m_monitors.isEmpty()) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-        m_pluginTimer = nullptr;
-
+    if (m_monitors.contains(thing)) {
+        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
     }
 }
 
-void IntegrationPluginNetworkDetector::broadcastPingFinished()
+void IntegrationPluginNetworkDetector::executeAction(ThingActionInfo *info)
 {
-    foreach (DeviceMonitor *monitor, m_monitors.keys()) {
-        monitor->update();
+    if (info->thing()->thingClassId() == networkDeviceThingClassId) {
+
+        NetworkDeviceMonitor *monitor = m_monitors.value(info->thing());
+        if (!monitor) {
+            qCWarning(dcNetworkDetector()) << "Could not execute action. There is no monitor registered for" << info->thing();
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        if (info->action().actionTypeId() == networkDevicePingActionTypeId) {
+            PingReply *pingReply = hardwareManager()->networkDeviceDiscovery()->ping(monitor->networkDeviceInfo().address());
+            connect(pingReply, &PingReply::finished, info, [=](){
+                if (pingReply->error() == PingReply::ErrorNoError) {
+                    qCDebug(dcNetworkDetector()) << "Ping finished for" << monitor->networkDeviceInfo().address().toString() << pingReply->duration() << "ms";
+                    info->finish(Thing::ThingErrorNoError);
+                } else {
+                    qCWarning(dcNetworkDetector()) << "Ping" << monitor->networkDeviceInfo().address().toString() << "finished with error" << pingReply->error();
+                    info->finish(Thing::ThingErrorHardwareNotAvailable);
+                }
+            });
+        } else if (info->action().actionTypeId() == networkDeviceArpRequestActionTypeId) {
+            bool result = hardwareManager()->networkDeviceDiscovery()->sendArpRequest(monitor->networkDeviceInfo().address());
+            if (result) {
+                qCDebug(dcNetworkDetector()) << "ARP request sent successfully to" << monitor->networkDeviceInfo().address().toString();
+                info->finish(Thing::ThingErrorNoError);
+            } else {
+                qCWarning(dcNetworkDetector()) << "Failed to send ARP request to" << monitor->networkDeviceInfo().address().toString();
+                info->finish(Thing::ThingErrorHardwareFailure);
+            }
+        } else if (info->action().actionTypeId() == networkDeviceLookupHostActionTypeId) {
+            int lookupId = QHostInfo::lookupHost(monitor->networkDeviceInfo().address().toString(), this, SLOT(onHostLookupFinished(QHostInfo)));
+            m_pendingHostLookup.insert(lookupId, info);
+            connect(info, &ThingActionInfo::aborted, this, [=](){
+                m_pendingHostLookup.remove(lookupId);
+            });
+        }
     }
 }
 
-void IntegrationPluginNetworkDetector::deviceReachableChanged(bool reachable)
+void IntegrationPluginNetworkDetector::onHostLookupFinished(const QHostInfo &info)
 {
-    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
-    Thing *thing = m_monitors.value(monitor);
-    if (thing->stateValue(networkDeviceIsPresentStateTypeId).toBool() != reachable) {
-        qCDebug(dcNetworkDetector()) << "Device" << thing->name() << thing->paramValue(networkDeviceThingMacAddressParamTypeId).toString() << "reachable changed" << reachable;
-        thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
+    ThingActionInfo *actionInfo = m_pendingHostLookup.take(info.lookupId());
+    if (!actionInfo) {
+        qCWarning(dcNetworkDetector()) << "Host loopup finished for" << info.addresses() << info.hostName() << "but the action does not exist any more.";
+        return;
     }
-}
 
-void IntegrationPluginNetworkDetector::deviceAddressChanged(const QString &address)
-{
-    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
-    Thing *thing = m_monitors.value(monitor);
-    if (thing->paramValue(networkDeviceThingAddressParamTypeId).toString() != address) {
-        qCDebug(dcNetworkDetector()) << "Device" << thing->name() << thing->paramValue(networkDeviceThingMacAddressParamTypeId).toString() << "changed IP address to" << address;
-        thing->setParamValue(networkDeviceThingAddressParamTypeId, address);
-    }
-}
-
-void IntegrationPluginNetworkDetector::deviceSeen()
-{
-    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
-    Thing *thing = m_monitors.value(monitor);
-    QDateTime oldLastSeen = QDateTime::fromTime_t(thing->stateValue(networkDeviceLastSeenTimeStateTypeId).toInt());
-    if (oldLastSeen.addSecs(60) < QDateTime::currentDateTime()) {
-        thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+    qCDebug(dcNetworkDetector()) << "Host lookup finished" << info.addresses() << info.hostName() << info.error();
+    if (info.error() != QHostInfo::NoError) {
+        qCWarning(dcNetworkDetector()) << "Error occured during host lookup:" << info.errorString();
+        actionInfo->finish(Thing::ThingErrorHardwareFailure);
+    } else {
+        actionInfo->finish(Thing::ThingErrorNoError);
     }
 }

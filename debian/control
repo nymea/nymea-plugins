@@ -395,9 +395,6 @@ Package: nymea-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nmap,
-         fping,
-         arping,
 Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for networkdetector
  This package contains the nymea integration plugin for detecting and monitoring

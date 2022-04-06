@@ -16,30 +16,46 @@
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
                         {
-                            "id": "c6707093-3b51-469d-9fc0-f167bff2a987",
-                            "name": "address",
-                            "displayName": "address",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "18fd3b05-478a-49cf-b8ae-3c6a98675ccc",
                             "name": "macAddress",
-                            "displayName": "hardware address",
+                            "displayName": "MAC address",
                             "type": "QString",
-                            "inputType": "TextLine"
-                        }
-                    ],
-                    "settingsTypes": [
-                        {
-                            "id": "6c1ec0c8-6a02-4b3c-9064-ee33cfd61fbe",
-                            "name": "gracePeriod",
-                            "displayName": "Grace period (Minutes)",
-                            "type": "uint",
-                            "defaultValue": 5
+                            "inputType": "MacAddress"
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "acee9260-4d01-471a-85c5-4d6116b35ff1",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "displayNameEvent": "IP address changed",
+                            "type": "QString",
+                            "defaultValue": "127.0.0.1"
+                        },
+                        {
+                            "id": "29c65dcf-090e-4316-8554-68f038a8416f",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "displayNameEvent": "Host name changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "395623b2-5b25-4582-803e-61cd6d40844c",
+                            "name": "macManufacturerName",
+                            "displayName": "MAC manufacturer name",
+                            "displayNameEvent": "MAC manufacturer name changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "412f0e24-26e7-450b-8e60-bfaf938ea23e",
+                            "name": "networkInterface",
+                            "displayName": "Network interface",
+                            "displayNameEvent": "Network interface changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
                         {
                             "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
                             "name": "isPresent",
@@ -56,6 +72,23 @@
                             "type": "int",
                             "unit": "UnixTime",
                             "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e98793b6-2dad-4090-91db-77f8493b4e45",
+                            "name": "ping",
+                            "displayName": "Ping device"
+                        },
+                        {
+                            "id": "2ca3f99f-7315-4f17-b48d-99f0c151a62c",
+                            "name": "arpRequest",
+                            "displayName": "Send ARP request"
+                        },
+                        {
+                            "id": "9797dac5-d99a-4bcf-a99a-5b9356bbce76",
+                            "name": "lookupHost",
+                            "displayName": "Lookup host name"
                         }
                     ]
                 }
