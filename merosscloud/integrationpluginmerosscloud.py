@@ -22,9 +22,10 @@ def runBlocking(coro):
 
 def init():
     loop.run_forever()
+    loop.close()
 
 def deinit():
-    loop.close()
+    loop.call_soon_threadsafe(loop.stop)
 
 
 def startPairing(info):
@@ -43,8 +44,9 @@ async def confirmPairingAsync(info, username, secret):
         pluginStorage().endGroup();
         logger.info("Logged in to meross cloud as %s" % username)
         info.finish(nymea.ThingErrorNoError)
-    except:
+    except Exception as e:
         logger.warn("Error loggin in to meross cloud as %s" % username)
+        logger.warn(e)
         info.finish(nymea.ThingErrorAuthenticationFailure)
 
 
@@ -109,8 +111,9 @@ async def setupAccount(info):
 
         autoThingsAppeared(thingDescriptors)
 
-    except:
+    except Exception as e:
         logger.warn("Login error")
+        logger.warn("Login error: %s" % e.toString() )
         info.finish(nymea.ThingErrorAuthenticationFailure)
 
     global pollTimer
