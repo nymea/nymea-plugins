@@ -41,7 +41,7 @@
 IntegrationPluginDateTime::IntegrationPluginDateTime() :
     m_timer(nullptr),
     m_todayDevice(nullptr),
-    m_timeZone(QTimeZone(QTimeZone::systemTimeZoneId())),
+    m_timeZone(QTimeZone::systemTimeZoneId()),
     m_dusk(QDateTime()),
     m_sunrise(QDateTime()),
     m_noon(QDateTime()),
@@ -288,12 +288,11 @@ void IntegrationPluginDateTime::processTimesData(const QByteArray &data)
     QString duskString = result.value("civil_twilight_end").toString();
 
     // calculate the times in each alarm
-
-    m_dawn = QDateTime(QDate::currentDate(), parseTime(dawnString), Qt::UTC).toTimeZone(m_timeZone);
-    m_sunrise = QDateTime(QDate::currentDate(), parseTime(sunriseString), Qt::UTC).toTimeZone(m_timeZone);
-    m_noon = QDateTime(QDate::currentDate(), parseTime(noonString), Qt::UTC).toTimeZone(m_timeZone);
-    m_sunset = QDateTime(QDate::currentDate(), parseTime(sunsetString), Qt::UTC).toTimeZone(m_timeZone);
-    m_dusk = QDateTime(QDate::currentDate(), parseTime(duskString), Qt::UTC).toTimeZone(m_timeZone);
+    m_dawn = QDateTime(QDate::currentDate(), QTime::fromString(dawnString, "h:mm:ss AP"), Qt::UTC).toTimeZone(m_timeZone);
+    m_sunrise = QDateTime(QDate::currentDate(), QTime::fromString(sunriseString, "h:mm:ss AP"), Qt::UTC).toTimeZone(m_timeZone);
+    m_noon = QDateTime(QDate::currentDate(), QTime::fromString(noonString, "h:mm:ss AP"), Qt::UTC).toTimeZone(m_timeZone);
+    m_sunset = QDateTime(QDate::currentDate(), QTime::fromString(sunsetString, "h:mm:ss AP"), Qt::UTC).toTimeZone(m_timeZone);
+    m_dusk = QDateTime(QDate::currentDate(), QTime::fromString(duskString, "h:mm:ss AP"), Qt::UTC).toTimeZone(m_timeZone);
 
     qCDebug(dcDateTime) << " dawn     :" << m_dawn.toString() << dawnString;
     qCDebug(dcDateTime) << " sunrise  :" << m_sunrise.toString() << sunriseString;
@@ -303,18 +302,6 @@ void IntegrationPluginDateTime::processTimesData(const QByteArray &data)
     qCDebug(dcDateTime) << "---------------------------------------------";
 
     updateTimes();
-}
-
-QTime IntegrationPluginDateTime::parseTime(const QString &timeString) const
-{
-    bool isPm = timeString.endsWith(" PM");
-    QString tmp = QString(timeString).remove(QRegExp("[ APM]*"));
-    QStringList parts = tmp.split(":");
-    if (parts.count() != 3) {
-        qCWarning(dcDateTime()) << "Error parsing timeString:" << timeString;
-        return QTime();
-    }
-    return QTime(parts.first().toInt(), parts.at(1).toInt(), parts.last().toInt()).addSecs(isPm ? 60 * 60 * 12 : 0);
 }
 
 void IntegrationPluginDateTime::onNetworkReplayFinished()
