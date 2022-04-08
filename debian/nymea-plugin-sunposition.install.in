@@ -2,3 +2,4 @@ sunposition/integrationpluginsunposition.json usr/lib/@DEB_HOST_MULTIARCH@/nymea
 sunposition/integrationpluginsunposition.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
 sunposition/sunposition.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
 sunposition/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/sunposition/
+sunposition/translations/*qm usr/share/nymea/translations/

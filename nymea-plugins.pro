@@ -94,7 +94,6 @@ QMAKE_EXTRA_TARGETS += lupdate
 # make lrelease to build .qm from .ts
 lrelease.depends = FORCE
 for (entry, PLUGIN_DIRS):lrelease.commands += lrelease $$files($$PWD/$${entry}/translations/*.ts, true);
-for (entry, PLUGIN_DIRS):lrelease.commands += rsync -a $$PWD/$${entry}/translations/*.qm $$OUT_PWD/translations/;
 QMAKE_EXTRA_TARGETS += lrelease
 
 # For Qt-Creator's code model: Add CPATH to INCLUDEPATH explicitly

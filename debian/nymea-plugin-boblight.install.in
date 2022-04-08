@@ -1,1 +1,2 @@
 usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginboblight.so
+boblight/translations/*qm usr/share/nymea/translations/
