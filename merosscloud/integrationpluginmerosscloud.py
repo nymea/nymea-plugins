@@ -118,7 +118,7 @@ async def setupAccount(info):
 
     global pollTimer
     if pollTimer is None:
-        pollTimer = nymea.PluginTimer(5, pollService)
+        pollTimer = nymea.PluginTimer(10, pollService)
         logger.log("timer interval @ setupThing", pollTimer.interval)
 
 
