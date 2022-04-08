@@ -1230,7 +1230,6 @@ Depends: nymea-plugin-anel,
          nymea-plugin-keba,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
-         nymea-plugin-usbrly82,
          nymea-plugin-yamahaavr,
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
