@@ -673,3 +673,12 @@ Depends: ${shlibs:Depends},
          python3-pip,
 Description: nymea integration plugin for Yamaha receivers
  This package contains the nymea integration plugin for (non-Musiccast) Yamaha AV receivers.
+
+
+Package: nymea-plugins-translations
+Architecture: all
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: Transitional package.
+ This package used to contain plugins translations. It is empty now, used
+ as a transitional package and will be removed in the future.
