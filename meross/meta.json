@@ -1,0 +1,14 @@
+{
+    "title": "Meross",
+    "tagline": "Integrates meross devices with nymea.",
+    "icon": "meross-icon.jpg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "socket",
+        "energy"
+    ]
+}
