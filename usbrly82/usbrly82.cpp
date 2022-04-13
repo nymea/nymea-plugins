@@ -96,9 +96,20 @@ UsbRly82Reply *UsbRly82::setRelay1Power(bool power)
     UsbRly82Reply *reply;
     if (power) {
         reply = createReply(QByteArray::fromHex("65"), false);
+        connect(reply, &UsbRly82Reply::finished, this, [=](){
+            if (reply->error() == UsbRly82Reply::ErrorNoError) {
+                emit powerRelay1Changed(true);
+            }
+        });
     } else {
         reply = createReply(QByteArray::fromHex("6F"), false);
+        connect(reply, &UsbRly82Reply::finished, this, [=](){
+            if (reply->error() == UsbRly82Reply::ErrorNoError) {
+                emit powerRelay1Changed(false);
+            }
+        });
     }
+
     sendNextRequest();
     return reply;
 }
@@ -114,10 +125,20 @@ UsbRly82Reply *UsbRly82::setRelay2Power(bool power)
     UsbRly82Reply *reply;
     if (power) {
         reply = createReply(QByteArray::fromHex("66"), false);
+        connect(reply, &UsbRly82Reply::finished, this, [=](){
+            if (reply->error() == UsbRly82Reply::ErrorNoError) {
+                emit powerRelay2Changed(true);
+            }
+        });
     } else {
         reply = createReply(QByteArray::fromHex("70"), false);
+        connect(reply, &UsbRly82Reply::finished, this, [=](){
+            if (reply->error() == UsbRly82Reply::ErrorNoError) {
+                emit powerRelay2Changed(false);
+            }
+        });
     }
-    reply->m_expectsResponse = false;
+
     sendNextRequest();
     return reply;
 }
@@ -435,13 +456,13 @@ void UsbRly82::updateAnalogInputs()
             return;
         }
 
-        qCDebug(dcUsbRly82()) << "Analog inputs" << m_updateAnalogInputsReply->responseData().toHex();
+        //qCDebug(dcUsbRly82()) << "Analog inputs" << m_updateAnalogInputsReply->responseData().toHex();
         QDataStream stream(m_updateAnalogInputsReply->responseData());
         quint16 value = 0;
         for (int i = 0; i < 8; i++) {
             stream >> value;
             m_analogValues.insert(i, value);
-            qCDebug(dcUsbRly82()) << "Channel" << i << ":" << value;
+            //qCDebug(dcUsbRly82()) << "Channel" << i << ":" << value;
         }
 
         m_updateAnalogInputsReply = nullptr;
