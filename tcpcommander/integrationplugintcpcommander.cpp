@@ -91,7 +91,9 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             m_tcpServers.insert(thing, tcpServer);
             connect(tcpServer, &TcpServer::connectionCountChanged, this, &IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged);
             connect(tcpServer, &TcpServer::commandReceived, this, &IntegrationPluginTcpCommander::onTcpServerCommandReceived);
-            return info->finish(Thing::ThingErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
+            thing->setStateValue("connected", true);
+            return;
         } else {
             tcpServer->deleteLater();
             qDebug(dcTCPCommander()) << "Could not open TCP Server";
