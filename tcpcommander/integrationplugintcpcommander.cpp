@@ -85,19 +85,30 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             // In case of reconfigure, make sure to re-setup the server
             delete tcpServer;
         }
+
         tcpServer = new TcpServer(port, this);
+        tcpServer->setConfirmCommands(thing->setting(tcpServerSettingsConfirmCommandParamTypeId).toBool());
 
         if (tcpServer->isValid()) {
             m_tcpServers.insert(thing, tcpServer);
+            connect(thing, &Thing::settingChanged, tcpServer, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+                if (paramTypeId == tcpServerSettingsConfirmCommandParamTypeId) {
+                    tcpServer->setConfirmCommands(value.toBool());
+                }
+            });
+
             connect(tcpServer, &TcpServer::connectionCountChanged, this, &IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged);
             connect(tcpServer, &TcpServer::commandReceived, this, &IntegrationPluginTcpCommander::onTcpServerCommandReceived);
             info->finish(Thing::ThingErrorNoError);
+
+            // Set the initial connected state since the server is running
             thing->setStateValue("connected", true);
             return;
         } else {
             tcpServer->deleteLater();
             qDebug(dcTCPCommander()) << "Could not open TCP Server";
-            return info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
+            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
+            return;
         }
     }
 }

@@ -89,6 +89,15 @@
                             "defaultValue": "22"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "27b8a43a-186e-46e6-b2e5-b6fa1dfaaaa9",
+                            "name": "confirmCommand",
+                            "displayName": "Autoconfirm commands",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "a2eb1619-261c-45ee-9587-6b5994633ad0",

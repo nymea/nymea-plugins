@@ -43,12 +43,16 @@ public:
     explicit TcpServer(const quint16 &port, QObject *parent = nullptr);
     ~TcpServer();
 
-    bool isValid();
-    QHostAddress serverAddress();
 
+    QHostAddress serverAddress();
     int serverPort();
 
-    int connectionCount();
+    bool isValid() const;
+
+    bool confirmCommands() const;
+    void setConfirmCommands(bool confirmCommands);
+
+    int connectionCount() const;
 
     bool sendCommand(const QString &clientIp, const QByteArray &data);
 
@@ -65,7 +69,7 @@ private slots:
 
 private:
     QTcpServer *m_tcpServer = nullptr;
-
+    bool m_confirmCommands = false;
     QList<QTcpSocket*> m_clients;
 
 };
