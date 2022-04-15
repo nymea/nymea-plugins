@@ -119,6 +119,22 @@
                                 "Fan"
                             ],
                             "defaultValue": "Automatic"
+                        },
+                        {
+                            "id": "f63db3b7-423b-48be-be55-8ac9221316a7",
+                            "name": "heatingOn",
+                            "displayName": "Heating On",
+                            "displayNameEvent": "Heating changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6f00a58f-248a-4137-adf5-36999adbaf50",
+                            "name": "coolingOn",
+                            "displayName": "Cooling On",
+                            "displayNameEvent": "Cooling changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "actionTypes": [

@@ -197,6 +197,37 @@ def pollAirco(info):
                 airco.setStateValue(aircoOutsideTemperatureStateTypeId, outTemp)
     else:
         airco.setStateValue(aircoConnectedStateTypeId, False)
+        #device disconnected, did IP change? search again
+        searchSystemId = airco.paramValue(aircoThingDeviceIdParamTypeId)
+        discoveredIps = findIps()
+        found = False
+        for i in range(0, len(discoveredIps)):
+            deviceIp = discoveredIps[i]
+            aUrl = 'http://' + deviceIp + '/common/basic_info'
+            headers = {'Accept': '*/*'}
+            rr = requests.get(aUrl, headers=headers)
+            pollResponse = rr.text
+            if rr.status_code == requests.codes.ok:
+                logger.log("Device with IP " + deviceIp + " is a supported Daikin Airco.")
+                # get device info
+                splitResponse = pollResponse.split(",")
+                for j in range(0, len(splitResponse)):
+                    splitItem = splitResponse[j].split("=")
+                    if splitItem[0] == 'id':
+                        systemId = splitItem[1]
+                logger.log("Device ID:", systemId)
+                # check if this is the device with the serial number we're looking for
+                if systemId == searchSystemId:
+                    logger.log("Device with IP " + deviceIp + " is the existing device.")
+                    found = True
+                    airco.setStateValue(aircoUrlStateTypeId, deviceIp)
+            else:
+                logger.log("Device with IP " + deviceIp + " does not appear to be a supported Daikin Airco.")
+        if found == True:
+            airco.setStateValue(aircoConnectedStateTypeId, True)
+        else:
+            airco.setStateValue(aircoConnectedStateTypeId, False)
+        return
 
     # get control info
     # response example:
@@ -249,6 +280,36 @@ def pollAirco(info):
                             airco.setStateValue(aircoTargetTemperatureStateTypeId, targetTemp)
     else:
         airco.setStateValue(aircoConnectedStateTypeId, False)
+
+    #set heatingOn / coolingOn based on mode, temperature & target temperature (API doesn't seem to return it)
+    targetTemperature = airco.stateValue(aircoTargetTemperatureStateTypeId)
+    temperature = airco.stateValue(aircoTemperatureStateTypeId)
+    mode = airco.stateValue(aircoModeStateTypeId)
+    if mode == "Cooling":
+        airco.setStateValue(aircoHeatingOnStateTypeId, False)
+        if targetTemperature < temperature:
+            airco.setStateValue(aircoCoolingOnStateTypeId, True)
+        else:
+            airco.setStateValue(aircoCoolingOnStateTypeId, False)
+    elif mode == "Heating":
+        airco.setStateValue(aircoCoolingOnStateTypeId, False)
+        if targetTemperature > temperature:
+            airco.setStateValue(aircoHeatingOnStateTypeId, True)
+        else:
+            airco.setStateValue(aircoHeatingOnStateTypeId, False)
+    elif mode == "Automatic":
+        if targetTemperature == temperature:
+            airco.setStateValue(aircoCoolingOnStateTypeId, False)
+            airco.setStateValue(aircoHeatingOnStateTypeId, False)
+        elif targetTemperature > temperature:
+            airco.setStateValue(aircoCoolingOnStateTypeId, False)
+            airco.setStateValue(aircoHeatingOnStateTypeId, True)
+        else:
+            airco.setStateValue(aircoCoolingOnStateTypeId, True)
+            airco.setStateValue(aircoHeatingOnStateTypeId, False)
+    else:
+        airco.setStateValue(aircoCoolingOnStateTypeId, False)
+        airco.setStateValue(aircoHeatingOnStateTypeId, False)
 
 def pollService():
     logger.log("pollTimer triggered")
@@ -355,23 +416,6 @@ def executeAction(info):
     pollAirco(info.thing)
     info.finish(nymea.ThingErrorNoError)
     return
-
-    # Control Info Examples
-    #   Switched Off
-    #       ret=OK,pow=0,mode=7,adv=,stemp=24.0,shum=0,dt1=24.0,dt2=M,dt3=25.0,dt4=25.0,dt5=25.0,dt7=24.0,dh1=0,dh2=50,dh3=0,dh4=0,dh5=0,dh7=0,
-    #       dhh=50,b_mode=7,b_stemp=24.0,b_shum=0,alert=255,f_rate=4,f_dir=0,b_f_rate=4,b_f_dir=0,dfr1=4,dfr2=5,dfr3=7,dfr4=5,dfr5=5,dfr6=5,
-    #       dfr7=4,dfrh=5,dfd1=0,dfd2=0,dfd3=3,dfd4=0,dfd5=0,dfd6=0,dfd7=0,dfdh=0
-    #   Auto 25C ( CONFORT AIR ) ( INTELLIGENT EYE )
-    #       ret=OK,pow=1,mode=7,adv=,stemp=25.0,shum=0,dt1=25.0,dt2=M,dt3=22.0,dt4=25.0,dt5=25.0,dt7=25.0,dh1=0,dh2=50,dh3=0,dh4=0,dh5=0,dh7=0,
-    #       dhh=50,b_mode=7,b_stemp=25.0,b_shum=0,alert=255,f_rate=A,f_dir=0,b_f_rate=4,b_f_dir=0,dfr1=4,dfr2=5,dfr3=4,dfr4=5,dfr5=5,dfr6=5,
-    #       dfr7=4,dfrh=5,dfd1=0,dfd2=0,dfd3=0,dfd4=0,dfd5=0,dfd6=0,dfd7=0,dfdh=0
-    #       ret=OK,pow=1&dh2=50&dfd4=0&b_stemp=25.0&alert=255&f_dir=0&b_shum=0&dh4=0&dfd3=0&dh3=0&dfd2=0&dfr2=5&dfr7=B&dfr4=5&dfd7=0&
-    #       dfrh=5&dt3=25.0&dfdh=0&adv=&dh5=0&dh1=0&dfr6=5&dt5=25.0&dfr1=B&stemp=25.0&shum=0&dfd6=0&f_rate=A&b_f_dir=0&dt1=25.0&dhh=50&
-    #       dfd1=0&dfr3=5&dh7=0&mode=1&dfd5=0&b_mode=7&dt4=25.0&b_f_rate=A&dt7=25.0&dt2=M&dfr5=5
-    #   Hot 25c ( AIR silence )
-    #       ret=OK,pow=1,mode=4,adv=,stemp=25.0,shum=0,dt1=25.0,dt2=M,dt3=22.0,dt4=25.0,dt5=25.0,dt7=25.0,dh1=0,dh2=50,dh3=0,dh4=0,dh5=0,dh7=0,
-    #       dhh=50,b_mode=4,b_stemp=25.0,b_shum=0,alert=255,f_rate=B,f_dir=0,b_f_rate=B,b_f_dir=0,dfr1=B,dfr2=B,dfr3=B,dfr4=B,dfr5=B,dfr6=B,
-    #       dfr7=B,dfrh=5,dfd1=0,dfd2=0,dfd3=0,dfd4=0,dfd5=0,dfd6=0,dfd7=0,dfdh=0
 
 def deinit():
     global pollTimer
