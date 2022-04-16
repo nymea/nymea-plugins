@@ -267,19 +267,20 @@ def pollAirco(info):
     targetTemperature = airco.stateValue(aircoTargetTemperatureStateTypeId)
     temperature = airco.stateValue(aircoTemperatureStateTypeId)
     mode = airco.stateValue(aircoModeStateTypeId)
-    if mode == "Cooling":
+    power = airco.stateValue(aircoPowerStateTypeId)
+    if mode == "Cooling" and power == True:
         airco.setStateValue(aircoHeatingOnStateTypeId, False)
         if targetTemperature < temperature:
             airco.setStateValue(aircoCoolingOnStateTypeId, True)
         else:
             airco.setStateValue(aircoCoolingOnStateTypeId, False)
-    elif mode == "Heating":
+    elif mode == "Heating" and power == True:
         airco.setStateValue(aircoCoolingOnStateTypeId, False)
         if targetTemperature > temperature:
             airco.setStateValue(aircoHeatingOnStateTypeId, True)
         else:
             airco.setStateValue(aircoHeatingOnStateTypeId, False)
-    elif mode == "Automatic":
+    elif mode == "Automatic" and power == True:
         if targetTemperature == temperature:
             airco.setStateValue(aircoCoolingOnStateTypeId, False)
             airco.setStateValue(aircoHeatingOnStateTypeId, False)
