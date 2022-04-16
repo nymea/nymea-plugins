@@ -44,14 +44,6 @@
                             "cached": false
                         },
                         {
-                            "id": "bd0ff439-6ab5-414a-ba6e-9ecef0f7c3f4",
-                            "name": "url",
-                            "displayName": "Device Address",
-                            "displayNameEvent": "Device IP changed",
-                            "defaultValue": "0.0.0.0",
-                            "type" : "QString"
-                        },
-                        {
                             "displayName": "Power",
                             "id": "6bb42aa0-2280-408d-89b5-400410abdd73",
                             "name": "power",

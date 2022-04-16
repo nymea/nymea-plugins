@@ -9,6 +9,7 @@ import sys
 
 pollTimer = None
 pollFrequency = 30
+ipMap = {}
 
 def discoverThings(info):
     logger.log("Discovery started for", info.thingClassId)
@@ -116,13 +117,11 @@ def findIps():
         sock.close()
     return discoveredIps
     
-def setupThing(info):
-    searchSystemId = info.thing.paramValue(aircoThingDeviceIdParamTypeId)
-    logger.log("setupThing called for", info.thing.name, searchSystemId)
-
+def findDeviceIP(airco):
+    searchSystemId = airco.paramValue(aircoThingDeviceIdParamTypeId)
     discoveredIps = findIps()
+    foundIp = None
     found = False
-    
     for i in range(0, len(discoveredIps)):
         deviceIp = discoveredIps[i]
         aUrl = 'http://' + deviceIp + '/common/basic_info'
@@ -142,15 +141,24 @@ def setupThing(info):
             if systemId == searchSystemId:
                 logger.log("Device with IP " + deviceIp + " is the existing device.")
                 found = True
-                info.thing.setStateValue(aircoUrlStateTypeId, deviceIp)
+                foundIp = deviceIp
+                ipMap[airco] = foundIp
         else:
             logger.log("Device with IP " + deviceIp + " does not appear to be a supported Daikin Airco.")
     if found == True:
-        info.thing.setStateValue(aircoConnectedStateTypeId, True)
+        airco.setStateValue(aircoConnectedStateTypeId, True)
+    else:
+        airco.setStateValue(aircoConnectedStateTypeId, False)
+    return found
+
+def setupThing(info):
+    searchSystemId = info.thing.paramValue(aircoThingDeviceIdParamTypeId)
+    logger.log("setupThing called for", info.thing.name, searchSystemId)
+    found = findDeviceIP(info.thing)
+    if found == True:
         pollAirco(info.thing)
         info.finish(nymea.ThingErrorNoError)
     else:
-        info.thing.setStateValue(aircoConnectedStateTypeId, False)
         info.finish(nymea.ThingErrorHardwareFailure, "Error connecting to the device in the network.")
     
     logger.log("Airco added:", info.thing.name)
@@ -171,7 +179,8 @@ def setupThing(info):
 
 def pollAirco(info):
     global pollFrequency
-    deviceIp = info.stateValue(aircoUrlStateTypeId)
+    global ipMap
+    deviceIp = ipMap[info]
     logger.log("polling airco", deviceIp, info.name)
     airco = info
     headers = {'Accept': '*/*'}
@@ -197,37 +206,10 @@ def pollAirco(info):
                 airco.setStateValue(aircoOutsideTemperatureStateTypeId, outTemp)
     else:
         airco.setStateValue(aircoConnectedStateTypeId, False)
-        #device disconnected, did IP change? search again
-        searchSystemId = airco.paramValue(aircoThingDeviceIdParamTypeId)
-        discoveredIps = findIps()
-        found = False
-        for i in range(0, len(discoveredIps)):
-            deviceIp = discoveredIps[i]
-            aUrl = 'http://' + deviceIp + '/common/basic_info'
-            headers = {'Accept': '*/*'}
-            rr = requests.get(aUrl, headers=headers)
-            pollResponse = rr.text
-            if rr.status_code == requests.codes.ok:
-                logger.log("Device with IP " + deviceIp + " is a supported Daikin Airco.")
-                # get device info
-                splitResponse = pollResponse.split(",")
-                for j in range(0, len(splitResponse)):
-                    splitItem = splitResponse[j].split("=")
-                    if splitItem[0] == 'id':
-                        systemId = splitItem[1]
-                logger.log("Device ID:", systemId)
-                # check if this is the device with the serial number we're looking for
-                if systemId == searchSystemId:
-                    logger.log("Device with IP " + deviceIp + " is the existing device.")
-                    found = True
-                    airco.setStateValue(aircoUrlStateTypeId, deviceIp)
-            else:
-                logger.log("Device with IP " + deviceIp + " does not appear to be a supported Daikin Airco.")
-        if found == True:
-            airco.setStateValue(aircoConnectedStateTypeId, True)
-        else:
-            airco.setStateValue(aircoConnectedStateTypeId, False)
-        return
+        #device disconnected, IP may have changed, so search again
+        found = findDeviceIP(airco)
+        if found == False:
+            return
 
     # get control info
     # response example:
@@ -322,7 +304,8 @@ def pollService():
             pollAirco(thing)
 
 def executeAction(info):
-    deviceIp = info.thing.stateValue(aircoUrlStateTypeId)
+    global ipMap
+    deviceIp = ipMap[info.thing]
     logger.log("executeAction called for thing", info.thing.name, deviceIp, info.actionTypeId, info.params)
     headers = {'Accept': '*/*'}
     aUrl = 'http://' + deviceIp + '/aircon/get_control_info'
