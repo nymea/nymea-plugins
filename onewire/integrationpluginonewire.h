@@ -36,6 +36,8 @@
 #include "owfs.h"
 #include "w1.h"
 
+#include "extern-plugininfo.h"
+
 #include <QHash>
 
 class IntegrationPluginOneWire : public IntegrationPlugin
