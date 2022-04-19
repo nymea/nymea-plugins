@@ -74,9 +74,6 @@ private:
     QDateTime m_sunset;
     QDateTime m_dawn;
 
-    QList<QNetworkReply *> m_locationReplies;
-    QList<QNetworkReply *> m_timeReplies;
-
     void searchGeoLocation();
     void processGeoLocationData(const QByteArray &data);
 
@@ -91,7 +88,6 @@ signals:
     void dawn();
 
 private slots:
-    void onNetworkReplayFinished();
     void onAlarm();
     void onCountdownTimeout();
     void onCountdownRunningChanged(const bool &running);

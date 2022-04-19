@@ -203,8 +203,15 @@ void IntegrationPluginDateTime::searchGeoLocation()
     qCDebug(dcDateTime()) << "Requesting geo location.";
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, this, &IntegrationPluginDateTime::onNetworkReplayFinished);
-    m_locationReplies.append(reply);
+    connect(reply, &QNetworkReply::finished, this, [reply, this](){
+        reply->deleteLater();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDateTime) << "Http error status for location request:" << reply->error();
+            return;
+        }
+        processGeoLocationData(reply->readAll());
+    });
 }
 
 void IntegrationPluginDateTime::processGeoLocationData(const QByteArray &data)
@@ -250,16 +257,22 @@ void IntegrationPluginDateTime::getTimes(const QString &latitude, const QString 
     urlQuery.addQueryItem("lng", longitude);
     urlQuery.addQueryItem("date", "today");
 
-    QUrl url = QUrl("http://api.sunrise-sunset.org/json");
+    QUrl url = QUrl("https://api.sunrise-sunset.org/json");
     url.setQuery(urlQuery.toString());
 
     QNetworkRequest request;
     request.setUrl(url);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, this, &IntegrationPluginDateTime::onNetworkReplayFinished);
+    connect(reply, &QNetworkReply::finished, this, [reply, this](){
+        reply->deleteLater();
 
-    m_timeReplies.append(reply);
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDateTime) << "Http error status for time request:" << reply->error();
+            return;
+        }
+        processTimesData(reply->readAll());
+    });
 }
 
 void IntegrationPluginDateTime::processTimesData(const QByteArray &data)
@@ -302,30 +315,6 @@ void IntegrationPluginDateTime::processTimesData(const QByteArray &data)
     qCDebug(dcDateTime) << "---------------------------------------------";
 
     updateTimes();
-}
-
-void IntegrationPluginDateTime::onNetworkReplayFinished()
-{
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    if (m_locationReplies.contains(reply)) {
-        m_locationReplies.removeAll(reply);
-        if (status != 200) {
-            qCWarning(dcDateTime) << "Http error status for location request:" << status << reply->error();
-        } else {
-            processGeoLocationData(reply->readAll());
-        }
-    } else if (m_timeReplies.contains(reply)) {
-        m_timeReplies.removeAll(reply);
-        if (status != 200) {
-            qCWarning(dcDateTime) << "Http error status for time request:" << status << reply->error();
-        } else {
-            processTimesData(reply->readAll());
-        }
-    }
-    reply->deleteLater();
 }
 
 void IntegrationPluginDateTime::onAlarm()
