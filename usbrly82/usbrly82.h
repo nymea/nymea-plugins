@@ -85,7 +85,7 @@ public:
     UsbRly82Reply *setRelay2Power(bool power);
 
     uint analogRefreshRate() const;
-    void setAnlalogRefreshRate(uint analogRefreshRate);
+    void setAnalogRefreshRate(uint analogRefreshRate);
 
     quint8 digitalInputs() const;
 

@@ -71,8 +71,13 @@ void IntegrationPluginUsbRly82::setupThing(ThingSetupInfo *info)
             if (serialPortInfo.serialNumber == thing->paramValue(usbRelayThingSerialNumberParamTypeId).toString()) {
                 qCDebug(dcUsbRly82()) << "Found serial port for" << thing << serialPortInfo;
 
+                // Handle reconfigure
+                if (m_relays.contains(thing)) {
+                    m_relays.take(thing)->deleteLater();
+                }
+
                 UsbRly82 *relay = new UsbRly82(this);
-                relay->setAnlalogRefreshRate(thing->setting(usbRelaySettingsAnalogRefreshRateParamTypeId).toUInt());
+                relay->setAnalogRefreshRate(thing->setting(usbRelaySettingsAnalogRefreshRateParamTypeId).toUInt());
 
                 connect(relay, &UsbRly82::availableChanged, thing, [=](bool available){
                     qCDebug(dcUsbRly82()) << thing << "available changed" << available;
@@ -83,7 +88,7 @@ void IntegrationPluginUsbRly82::setupThing(ThingSetupInfo *info)
                         thing->setStateValue(usbRelayPowerRelay1StateTypeId, relay->powerRelay1());
                         thing->setStateValue(usbRelayPowerRelay2StateTypeId, relay->powerRelay2());
 
-                        updateDigitalInuts(thing);
+                        updateDigitalInputs(thing);
 
                         thing->setStateValue(usbRelayVersionStateTypeId, relay->softwareVersion());
                     }
@@ -100,7 +105,7 @@ void IntegrationPluginUsbRly82::setupThing(ThingSetupInfo *info)
                 });
 
                 connect(relay, &UsbRly82::digitalInputsChanged, thing, [=](){
-                    updateDigitalInuts(thing);
+                    updateDigitalInputs(thing);
                 });
 
                 if (!relay->connectRelay(serialPortInfo.systemLocation)) {
@@ -116,7 +121,7 @@ void IntegrationPluginUsbRly82::setupThing(ThingSetupInfo *info)
                 connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &paramTypeId, const QVariant &value){
                     if (paramTypeId == usbRelaySettingsAnalogRefreshRateParamTypeId) {
                         qCDebug(dcUsbRly82()) << "Refrsh rat changed for" << thing << value.toUInt() << "ms";
-                        relay->setAnlalogRefreshRate(value.toUInt());
+                        relay->setAnalogRefreshRate(value.toUInt());
                     }
                 });
 
@@ -148,7 +153,6 @@ void IntegrationPluginUsbRly82::thingRemoved(Thing *thing)
         }
     }
 }
-
 
 void IntegrationPluginUsbRly82::executeAction(ThingActionInfo *info)
 {
@@ -235,7 +239,7 @@ void IntegrationPluginUsbRly82::onSerialPortRemoved(const SerialPortMonitor::Ser
     }
 }
 
-void IntegrationPluginUsbRly82::updateDigitalInuts(Thing *thing)
+void IntegrationPluginUsbRly82::updateDigitalInputs(Thing *thing)
 {
     UsbRly82 *relay = m_relays.value(thing);
     if (!relay)

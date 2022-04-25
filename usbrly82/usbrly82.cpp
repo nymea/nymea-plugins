@@ -148,7 +148,7 @@ uint UsbRly82::analogRefreshRate() const
     return m_analogRefreshRate;
 }
 
-void UsbRly82::setAnlalogRefreshRate(uint analogRefreshRate)
+void UsbRly82::setAnalogRefreshRate(uint analogRefreshRate)
 {
     m_analogRefreshRate = analogRefreshRate;
     if (m_analogRefreshRate == 0) {

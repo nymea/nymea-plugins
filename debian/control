@@ -853,8 +853,8 @@ Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libudev1,
-Description: nymea.io plugin for USB-RLY82 relay
- This package will install the nymea.io integration plugin for USB-RLY82 relay
+Description: nymea integration plugin for USB-RLY82 relay
+ This package will install the nymea integration plugin for USB-RLY82 relay
  with 2 relays and 8 analog/digital inputs.
 
 
