@@ -54,9 +54,9 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             // In case of a reconfigure, make sure we reconnect
             tcpSocket->disconnectFromHost();
         }
+
         connect(tcpSocket, &QTcpSocket::stateChanged, thing, [=](QAbstractSocket::SocketState state){
             thing->setStateValue(tcpClientConnectedStateTypeId, state == QAbstractSocket::ConnectedState);
-
             if (state == QAbstractSocket::UnconnectedState) {
                 QTimer::singleShot(10000, tcpSocket, [=](){
                     qCDebug(dcTCPCommander()) << "Reconnecting to server" << address << port;
@@ -64,12 +64,12 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
                 });
             }
         });
+
         connect(tcpSocket, &QTcpSocket::readyRead, thing, [=](){
             QByteArray data = tcpSocket->readAll();
             ParamList params;
             params << Param(tcpClientTriggeredEventDataParamTypeId, data);
-            Event event(tcpClientTriggeredEventTypeId, thing->id(), params);
-            emitEvent(event);
+            emit emitEvent(Event(tcpClientTriggeredEventTypeId, thing->id(), params));
         });
 
         tcpSocket->connectToHost(address, port);
@@ -171,15 +171,8 @@ void IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged(int connec
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Thing *thing = m_tcpServers.key(tcpServer);
-    if (!thing)
-        return;
-    qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
-    if (thing->thingClassId() == tcpServerThingClassId) {
-        if (connections > 0) {
-            thing->setStateValue(tcpServerConnectedStateTypeId, true);
-        } else {
-            thing->setStateValue(tcpServerConnectedStateTypeId, false);
-        }
+    if (thing && thing->thingClassId() == tcpServerThingClassId) {
+        qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
         thing->setStateValue(tcpServerConnectionCountStateTypeId, connections);
     }
 }
@@ -190,10 +183,8 @@ void IntegrationPluginTcpCommander::onTcpServerCommandReceived(const QString &cl
     Thing *thing = m_tcpServers.key(tcpServer);
     qDebug(dcTCPCommander()) << thing->name() << "Message received" << data;
 
-    Event event = Event(tcpServerTriggeredEventTypeId, thing->id());
     ParamList params;
     params.append(Param(tcpServerTriggeredEventDataParamTypeId, data));
     params.append(Param(tcpServerTriggeredEventClientIpParamTypeId, clientIp));
-    event.setParams(params);
-    emitEvent(event);
+    emit emitEvent(Event(tcpServerTriggeredEventTypeId, thing->id(), params));
 }
