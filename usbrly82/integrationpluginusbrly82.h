@@ -62,7 +62,7 @@ private slots:
     void onSerialPortAdded(const SerialPortMonitor::SerialPortInfo &serialPortInfo);
     void onSerialPortRemoved(const SerialPortMonitor::SerialPortInfo &serialPortInfo);
 
-    void updateDigitalInuts(Thing *thing);
+    void updateDigitalInputs(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINUSBRLY82_H
