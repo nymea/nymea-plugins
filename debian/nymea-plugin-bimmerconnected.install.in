@@ -1,0 +1,3 @@
+bimmerconnected/integrationpluginbimmerconnected.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/bimmerconnected/
+bimmerconnected/integrationpluginbimmerconnected.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/bimmerconnected/
+bimmerconnected/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/bimmerconnected/

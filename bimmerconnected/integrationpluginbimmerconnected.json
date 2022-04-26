@@ -1,0 +1,129 @@
+{
+    "name": "bimmerconnected",
+    "displayName": "Bimmer Connected",
+    "id": "d65df364-575c-40eb-9d02-0b5f194b6c03",
+    "vendors": [
+        {
+            "name": "bmw",
+            "displayName": "BMW",
+            "id": "564d4beb-f760-41dd-80fa-bd91258aeaa3",
+            "thingClasses": [
+                {
+                    "id": "c90b36b2-2de4-4638-b60e-ef929d2738d6",
+                    "name": "account",
+                    "displayName": "BMW account",
+                    "createMethods": [
+                        "User"
+                    ],
+                    "interfaces": [
+                        "account"
+                    ],
+                    "setupMethod": "userandpassword",
+                    "paramTypes": [
+                        {
+                            "id": "863913c1-a835-4789-b06c-aa0819571395",
+                            "name": "region",
+                            "displayName": "Region",
+                            "type": "QString",
+                            "defaultValue": "Rest of world",
+                            "allowedValues": ["Rest of world", "North America", "China"]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e8f47781-e3fd-416f-a9ac-51ef942d0573",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected/disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "d3abc53e-8590-4e72-af5f-f7a27cb441e7",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in or out",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": []
+                },
+                {
+                    "id": "b7230349-97ff-4768-b929-40ab44b328b4",
+                    "name": "vehicle",
+                    "displayName": "Bimmer",
+                    "createMethods": [
+                        "auto"
+                    ],
+                    "interfaces": [
+                        "electricvehicle"
+                    ],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "ea198b04-0576-4ecb-9933-9f8ec640b16a",
+                            "name": "vin",
+                            "displayName": "VIN",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "79a8f4cb-a359-4c78-8d0f-c4ef70fc0db8",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "displayNameEvent": "Capacity changed",
+                            "displayNameAction": "Set capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 50,
+                            "writable": true
+                        },
+                        {
+                            "id": "b70b2a73-4304-46ba-85ce-4ecdc68f241f",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": "50"
+                        },
+                        {
+                            "id": "95c48726-cd0c-4301-8298-1ac2c41e13db",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8a4f89f3-fdb1-4b7b-8d17-1ff813e3800c",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged in",
+                            "displayNameEvent": "Plugged/unplugged",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fa05b774-13f1-432f-a8c5-5ffc18bafc6d",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "displayNameEvent": "Charging state",
+                            "type": "QString",
+                            "possibleValues": [
+                                "idle",
+                                "charging",
+                                "discharging"
+                            ],
+                            "defaultValue": "idle"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
