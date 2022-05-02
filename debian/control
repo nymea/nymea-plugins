@@ -1,6 +1,6 @@
 Source: nymea-plugins
 Section: utils
-Priority: options
+Priority: optional
 Maintainer: Nymea GmbH <developer@nymea.io>
 Build-depends: libboblight-dev,
                debhelper (>= 0.0.0),
