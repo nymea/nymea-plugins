@@ -4,6 +4,6 @@
     "icon": "",
     "stability": "community",
     "offline": true,
-    "technologies": ["Serial Port", "Network"],
-    "categories": ["Sensor", "Relay", "Switch", "Gateway"]
+    "technologies": ["serial-port", "network"],
+    "categories": ["sensor", "diy", "switch"]
 }
