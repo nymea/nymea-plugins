@@ -33,6 +33,7 @@
 
 #include <integrations/integrationplugin.h>
 #include <network/networkdevicediscovery.h>
+#include <plugintimer.h>
 
 #include <QHostInfo>
 
@@ -56,7 +57,10 @@ public:
 
 private:
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    QHash<Thing *, PluginTimer *> m_gracePeriodTimers;
     QHash<int, ThingActionInfo *> m_pendingHostLookup;
+
+    void setupMonitorConnections(Thing *thing, NetworkDeviceMonitor *monitor);
 
 private slots:
     void onHostLookupFinished(const QHostInfo &info);

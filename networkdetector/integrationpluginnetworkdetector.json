@@ -23,6 +23,15 @@
                             "inputType": "MacAddress"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "6c1ec0c8-6a02-4b3c-9064-ee33cfd61fbe",
+                            "name": "gracePeriod",
+                            "displayName": "Grace period (Minutes)",
+                            "type": "uint",
+                            "defaultValue": 5
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "acee9260-4d01-471a-85c5-4d6116b35ff1",
@@ -30,7 +39,8 @@
                             "displayName": "IP address",
                             "displayNameEvent": "IP address changed",
                             "type": "QString",
-                            "defaultValue": "127.0.0.1"
+                            "defaultValue": "127.0.0.1",
+                            "cached": true
                         },
                         {
                             "id": "29c65dcf-090e-4316-8554-68f038a8416f",
@@ -38,7 +48,8 @@
                             "displayName": "Host name",
                             "displayNameEvent": "Host name changed",
                             "type": "QString",
-                            "defaultValue": ""
+                            "defaultValue": "",
+                            "cached": true
                         },
                         {
                             "id": "395623b2-5b25-4582-803e-61cd6d40844c",
@@ -46,7 +57,8 @@
                             "displayName": "MAC manufacturer name",
                             "displayNameEvent": "MAC manufacturer name changed",
                             "type": "QString",
-                            "defaultValue": ""
+                            "defaultValue": "",
+                            "cached": true
                         },
                         {
                             "id": "412f0e24-26e7-450b-8e60-bfaf938ea23e",
@@ -54,7 +66,8 @@
                             "displayName": "Network interface",
                             "displayNameEvent": "Network interface changed",
                             "type": "QString",
-                            "defaultValue": ""
+                            "defaultValue": "",
+                            "cached": true
                         },
                         {
                             "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
@@ -62,7 +75,8 @@
                             "displayName": "Device is present",
                             "displayNameEvent": "Device is present changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": true
                         },
                         {
                             "id": "b51d54c9-cce1-43f0-a35d-52fc2d8d302c",
@@ -71,7 +85,8 @@
                             "displayNameEvent": "Last seen time changed",
                             "type": "int",
                             "unit": "UnixTime",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": true
                         }
                     ],
                     "actionTypes": [

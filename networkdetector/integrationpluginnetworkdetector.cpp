@@ -120,47 +120,69 @@ void IntegrationPluginNetworkDetector::setupThing(ThingSetupInfo *info)
             return;
         }
 
+        // Handle reconfigure
+        if (m_monitors.contains(thing)) {
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+        }
+
         NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
-        connect(monitor, &NetworkDeviceMonitor::reachableChanged, this, [=](bool reachable){
-            qCDebug(dcNetworkDetector()) << thing << "reachable changed to" << reachable;
-            thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
-        });
-
-        connect(monitor, &NetworkDeviceMonitor::lastSeenChanged, this, [=](const QDateTime &lastSeen){
-            QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
-            qCDebug(dcNetworkDetector()) << thing << "last seen changed to" << lastSeen.toString() << minuteBased.toString();
-            thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);
-        });
-
-        connect(monitor, &NetworkDeviceMonitor::networkDeviceInfoChanged, this, [=](const NetworkDeviceInfo &networkInfo){
-            qCDebug(dcNetworkDetector()) << thing << "changed" << networkInfo;
-            thing->setStateValue(networkDeviceAddressStateTypeId, networkInfo.address().toString());
-            thing->setStateValue(networkDeviceHostNameStateTypeId, networkInfo.hostName());
-            thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, networkInfo.macAddressManufacturer());
-            thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
-        });
-
         m_monitors.insert(thing, monitor);
-        info->finish(Thing::ThingErrorNoError);
 
-        thing->setStateValue(networkDeviceAddressStateTypeId, monitor->networkDeviceInfo().address().toString());
-        thing->setStateValue(networkDeviceHostNameStateTypeId, monitor->networkDeviceInfo().hostName());
-        thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, monitor->networkDeviceInfo().macAddressManufacturer());
-        thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
-        thing->setStateValue(networkDeviceIsPresentStateTypeId, monitor->reachable());
-        if (!monitor->lastSeen().isNull()) {
-            QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
-            thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);        }
-        return;
+        QHostAddress cachedAddress;
+        if (!monitor->networkDeviceInfo().address().isNull()) {
+            cachedAddress = monitor->networkDeviceInfo().address();
+        } else {
+            cachedAddress = QHostAddress(thing->stateValue(networkDeviceAddressStateTypeId).toString());
+        }
+
+        // If the address is not known yet, let the monitor do the work and finish the setup...
+        if (cachedAddress.isNull()) {
+            setupMonitorConnections(thing, monitor);
+            info->finish(Thing::ThingErrorNoError);
+            thing->setStateValue(networkDeviceIsPresentStateTypeId, monitor->reachable());
+            return;
+        }
+
+        // Make an initial ping in order to check if the device reachable state has changed compaired to the cached state
+        qCDebug(dcNetworkDetector()) << "Send initial ping to" << cachedAddress.toString() << "in order to get initial reachable state...";
+        PingReply *pingReply = hardwareManager()->networkDeviceDiscovery()->ping(cachedAddress);
+        connect(pingReply, &PingReply::finished, this, [=](){
+
+            qCDebug(dcNetworkDetector()) << "Initial ping finished" << pingReply->error();
+
+            // However the ping result is, the monitor has catched up internally with the reachable state...
+
+            info->finish(Thing::ThingErrorNoError);
+
+            if (!monitor->networkDeviceInfo().address().isNull())
+                thing->setStateValue(networkDeviceAddressStateTypeId, monitor->networkDeviceInfo().address().toString());
+
+            thing->setStateValue(networkDeviceHostNameStateTypeId, monitor->networkDeviceInfo().hostName());
+            thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, monitor->networkDeviceInfo().macAddressManufacturer());
+            thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
+            thing->setStateValue(networkDeviceIsPresentStateTypeId, monitor->reachable());
+
+            setupMonitorConnections(thing, monitor);
+
+            if (!monitor->lastSeen().isNull()) {
+                QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
+                thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);
+            }
+
+        });
+    } else {
+        info->finish(Thing::ThingErrorThingClassNotFound);
     }
-
-    info->finish(Thing::ThingErrorThingClassNotFound);
 }
 
 void IntegrationPluginNetworkDetector::thingRemoved(Thing *thing)
 {
     if (m_monitors.contains(thing)) {
         hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+    }
+
+    if (m_gracePeriodTimers.contains(thing)) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_gracePeriodTimers.take(thing));
     }
 }
 
@@ -203,6 +225,53 @@ void IntegrationPluginNetworkDetector::executeAction(ThingActionInfo *info)
             });
         }
     }
+}
+
+void IntegrationPluginNetworkDetector::setupMonitorConnections(Thing *thing, NetworkDeviceMonitor *monitor)
+{
+    connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [=](bool reachable){
+        qCDebug(dcNetworkDetector()) << thing->name() << "monitor reachable changed to" << reachable;
+        if (reachable) {
+            thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
+            // Remove any possible running grace priod timer
+            if (m_gracePeriodTimers.contains(thing)) {
+                hardwareManager()->pluginTimerManager()->unregisterTimer(m_gracePeriodTimers.take(thing));
+            }
+        } else {
+            int gracePeriodSeconds = thing->setting(networkDeviceSettingsGracePeriodParamTypeId).toInt() * 60;
+            if (gracePeriodSeconds == 0) {
+                thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
+            } else {
+                // Let's wait the grace period before setting not present
+                PluginTimer *timer = hardwareManager()->pluginTimerManager()->registerTimer(gracePeriodSeconds);
+                connect(timer, &PluginTimer::timeout, thing, [=](){
+                    if (thing->stateValue(networkDeviceIsPresentStateTypeId).toBool() && monitor->lastSeen().addSecs(gracePeriodSeconds) < QDateTime::currentDateTime()) {
+                        qCDebug(dcNetworkDetector()) << thing->name() << "still not reachable after a grace period of" << gracePeriodSeconds << "seconds. Mark device as not reachable.";
+                        thing->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
+                        hardwareManager()->pluginTimerManager()->unregisterTimer(m_gracePeriodTimers.take(thing));
+                    }
+                });
+
+                m_gracePeriodTimers.insert(thing, timer);
+                qCDebug(dcNetworkDetector()) << "Starting grace period timer" << m_gracePeriodTimers << "seconds";
+                timer->start();
+            }
+        }
+    });
+
+    connect(monitor, &NetworkDeviceMonitor::lastSeenChanged, thing, [=](const QDateTime &lastSeen){
+        QDateTime minuteBased = QDateTime::fromMSecsSinceEpoch((monitor->lastSeen().toMSecsSinceEpoch() / 60000)  * 60000);
+        qCDebug(dcNetworkDetector()) << thing << "last seen changed to" << lastSeen.toString() << minuteBased.toString();
+        thing->setStateValue(networkDeviceLastSeenTimeStateTypeId, minuteBased.toMSecsSinceEpoch() / 1000);
+    });
+
+    connect(monitor, &NetworkDeviceMonitor::networkDeviceInfoChanged, thing, [=](const NetworkDeviceInfo &networkInfo){
+        qCDebug(dcNetworkDetector()) << thing << "changed" << networkInfo;
+        thing->setStateValue(networkDeviceAddressStateTypeId, networkInfo.address().toString());
+        thing->setStateValue(networkDeviceHostNameStateTypeId, networkInfo.hostName());
+        thing->setStateValue(networkDeviceMacManufacturerNameStateTypeId, networkInfo.macAddressManufacturer());
+        thing->setStateValue(networkDeviceNetworkInterfaceStateTypeId, monitor->networkDeviceInfo().networkInterface().name());
+    });
 }
 
 void IntegrationPluginNetworkDetector::onHostLookupFinished(const QHostInfo &info)
