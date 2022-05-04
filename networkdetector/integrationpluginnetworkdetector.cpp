@@ -127,6 +127,7 @@ void IntegrationPluginNetworkDetector::setupThing(ThingSetupInfo *info)
 
         NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
         m_monitors.insert(thing, monitor);
+        info->finish(Thing::ThingErrorNoError);
 
         QHostAddress cachedAddress;
         if (!monitor->networkDeviceInfo().address().isNull()) {
@@ -138,7 +139,6 @@ void IntegrationPluginNetworkDetector::setupThing(ThingSetupInfo *info)
         // If the address is not known yet, let the monitor do the work and finish the setup...
         if (cachedAddress.isNull()) {
             setupMonitorConnections(thing, monitor);
-            info->finish(Thing::ThingErrorNoError);
             thing->setStateValue(networkDeviceIsPresentStateTypeId, monitor->reachable());
             return;
         }
@@ -151,8 +151,6 @@ void IntegrationPluginNetworkDetector::setupThing(ThingSetupInfo *info)
             qCDebug(dcNetworkDetector()) << "Initial ping finished" << pingReply->error();
 
             // However the ping result is, the monitor has catched up internally with the reachable state...
-
-            info->finish(Thing::ThingErrorNoError);
 
             if (!monitor->networkDeviceInfo().address().isNull())
                 thing->setStateValue(networkDeviceAddressStateTypeId, monitor->networkDeviceInfo().address().toString());
