@@ -13,7 +13,7 @@
                     "name": "airco",
                     "displayName": "Daikin Airco",
                     "createMethods": ["discovery"],
-                    "interfaces": ["power", "thermostat", "wirelessconnectable"],
+                    "interfaces": ["power", "thermostat", "temperaturesensor", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "758cad5c-994a-4136-b83d-80fe2f07346c",
