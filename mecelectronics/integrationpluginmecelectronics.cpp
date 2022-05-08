@@ -93,7 +93,13 @@ void IntegrationPluginMecMeter::confirmPairing(ThingPairingInfo *info, const QSt
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcMecElectronics()) << "Error connecting to mecmeter:" << reply->error() << reply->errorString();
+            // Device responds with InternalServerError on wrong login
+            if (reply->error() == QNetworkReply::InternalServerError) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("The login credentials are not valid."));
+                return;
+            }
             info->finish(Thing::ThingErrorHardwareFailure);
+            return;
         }
 
         pluginStorage()->beginGroup(meterId);

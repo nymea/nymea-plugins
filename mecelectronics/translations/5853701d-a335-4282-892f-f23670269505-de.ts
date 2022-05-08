@@ -8,6 +8,11 @@
         <source>Please enter your login credentials for the mecMeter.</source>
         <translation>Bitte gib Deine Logindaten für das mecMeter ein.</translation>
     </message>
+    <message>
+        <location filename="../integrationpluginmecelectronics.cpp" line="98"/>
+        <source>The login credentials are not valid.</source>
+        <translation>Die eingegebenen Login-Daten sind nicht korrekt.</translation>
+    </message>
 </context>
 <context>
     <name>mecElectronics</name>
