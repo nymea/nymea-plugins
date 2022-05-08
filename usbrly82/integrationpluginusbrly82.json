@@ -1,0 +1,255 @@
+{
+    "name": "UsbRly82",
+    "displayName": "USB-RLY82",
+    "id": "33d4ebad-104b-4f24-8089-6edd35ba2c95",
+    "vendors": [
+        {
+            "displayName": "Robot electronics",
+            "name": "robotElectronics",
+            "id": "c3b972d1-85e6-436c-ae07-a04cbfae604e",
+            "thingClasses": [
+                {
+                    "name": "usbRelay",
+                    "displayName": "USB-RLY82",
+                    "id": "0ae5cd75-d42e-4993-8ce8-ced5ba315688",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["discovery", "auto"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "5ac5b15f-34cf-4d42-8b9d-6e9866d8f2ed",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "e426f3b1-e9bf-4bef-bc01-2aba6326d265",
+                            "name": "analogRefreshRate",
+                            "displayName": "Analog refresh interval",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "defaultValue": 1000
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b482b0ea-1901-4437-a309-be43833a1ad5",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "9935ecba-bb56-4c6c-8be1-60bacc40abb7",
+                            "name": "powerRelay1",
+                            "displayName": "Power relay 1",
+                            "displayNameEvent": "Power relay 1 changed",
+                            "displayNameAction": "Set power relay 1",
+                            "type": "bool",
+                            "ioType": "digitalOutput",
+                            "defaultValue": false,
+                            "writable": true,
+                            "cached": true
+                        },
+                        {
+                            "id": "d4b84a73-44dd-4bb9-a0d0-e45e6d2aaf7d",
+                            "name": "powerRelay2",
+                            "displayName": "Power relay 2",
+                            "displayNameEvent": "Power relay 2 changed",
+                            "displayNameAction": "Set power relay 2",
+                            "type": "bool",
+                            "ioType": "digitalOutput",
+                            "defaultValue": false,
+                            "writable": true,
+                            "cached": true
+                        },
+                        {
+                            "id": "ad60f859-11e0-4a80-86fc-1810a5054fb6",
+                            "name": "digitalInputChannel1",
+                            "displayName": "Channel 1",
+                            "displayNameEvent": "Channel 1 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "5038008d-68c7-4cde-845d-335758a05a15",
+                            "name": "digitalInputChannel2",
+                            "displayName": "Channel 2",
+                            "displayNameEvent": "Channel 2 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "73a8c051-5ce8-4909-a75f-f0e88f1ceb61",
+                            "name": "digitalInputChannel3",
+                            "displayName": "Channel 3",
+                            "displayNameEvent": "Channel 3 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "11a3e692-cccc-435b-a9fd-721ae332c90c",
+                            "name": "digitalInputChannel4",
+                            "displayName": "Channel 4",
+                            "displayNameEvent": "Channel 4 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "932cb171-5ba2-4420-bee3-9016dca6498a",
+                            "name": "digitalInputChannel5",
+                            "displayName": "Channel 5",
+                            "displayNameEvent": "Channel 5 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "e10074d7-68cb-4f74-87ea-f0cdf193d207",
+                            "name": "digitalInputChannel6",
+                            "displayName": "Channel 6",
+                            "displayNameEvent": "Channel 6 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "f37aa320-ecfb-4896-bb31-8109606cc5b3",
+                            "name": "digitalInputChannel7",
+                            "displayName": "Channel 7",
+                            "displayNameEvent": "Channel 7 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "32aa1fbd-c128-4258-bb41-22b5b5e150de",
+                            "name": "digitalInputChannel8",
+                            "displayName": "Channel 8",
+                            "displayNameEvent": "Channel 8 input changed",
+                            "type": "bool",
+                            "ioType": "digitalInput",
+                            "defaultValue": false,
+                            "cached": true
+                        },
+                        {
+                            "id": "0dfda321-7da5-4e4c-880e-5b45098398e8",
+                            "name": "analogInputChannel1",
+                            "displayName": "Analog Channel 1",
+                            "displayNameEvent": "Analog channel 1 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "02882e2a-f0a6-4042-b91e-c7618c15399e",
+                            "name": "analogInputChannel2",
+                            "displayName": "Analog Channel 2",
+                            "displayNameEvent": "Analog channel 2 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "de9172e5-b1c1-4a7e-aebe-819ef22c2c5a",
+                            "name": "analogInputChannel3",
+                            "displayName": "Analog Channel 3",
+                            "displayNameEvent": "Analog channel 3 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "875ffbf1-3f11-4935-bd16-de983585baad",
+                            "name": "analogInputChannel4",
+                            "displayName": "Analog Channel 4",
+                            "displayNameEvent": "Analog channel 4 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fa97d343-544d-4322-aacd-4f9f7c21224b",
+                            "name": "analogInputChannel5",
+                            "displayName": "Analog Channel 5",
+                            "displayNameEvent": "Analog channel 5 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "51d50bf9-6d40-4d63-a3a2-a0a7c0b5850d",
+                            "name": "analogInputChannel6",
+                            "displayName": "Analog Channel 6",
+                            "displayNameEvent": "Analog channel 6 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "25ecf6a9-2007-4768-93a4-28ec81bac179",
+                            "name": "analogInputChannel7",
+                            "displayName": "Analog Channel 7",
+                            "displayNameEvent": "Analog channel 7 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "93198a69-4ab6-4fd5-90ab-7f26a67b3b4a",
+                            "name": "analogInputChannel8",
+                            "displayName": "Analog Channel 8",
+                            "displayNameEvent": "Analog channel 8 value changed",
+                            "ioType": "analogInput",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e06c88f4-38d9-42cd-bab9-2a07a9a83ce0",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

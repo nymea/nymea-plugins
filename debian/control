@@ -846,6 +846,18 @@ Description: nymea.io plugin for USB relay
  This package will install the nymea.io plugin for USB relay
 
 
+Package: nymea-plugin-usbrly82
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libudev1,
+Description: nymea integration plugin for USB-RLY82 relay
+ This package will install the nymea integration plugin for USB-RLY82 relay
+ with 2 relays and 8 analog/digital inputs.
+
+
 Package: nymea-plugin-wakeonlan
 Architecture: any
 Depends: ${shlibs:Depends},
