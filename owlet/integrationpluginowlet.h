@@ -56,6 +56,9 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    void processActionQueue(Thing *thing);
+
+private:
     ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
 
     QHash<Thing *, OwletClient *> m_clients;
@@ -76,6 +79,9 @@ private:
     void setupArduinoChildThing(OwletSerialClient *client, quint8 pinId, OwletSerialClient::PinMode pinMode);
     void configurePin(OwletSerialClient *client, quint8 pinId, OwletSerialClient::PinMode pinMode);
     QString getPinName(Thing *parent, quint8 pinId);
+
+    QHash<Thing*, QList<ThingActionInfo*>> m_actionQueue;
+    QHash<Thing*, ThingActionInfo*> m_pendingActions;
 };
 
 #endif // INTEGRATIONPLUGINOWLET_H

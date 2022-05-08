@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QTimer>
 
 class OwletTransport;
 
@@ -30,11 +31,21 @@ signals:
 private slots:
     void dataReceived(const QByteArray &data);
 
+    void sendNextRequest();
+
 private:
+    struct Command {
+        int id;
+        QVariantMap payload;
+    };
     OwletTransport *m_transport = nullptr;
-    int m_commandId = 0;
+    quint16 m_commandId = 0;
 
     QByteArray m_receiveBuffer;
+
+    QList<Command> m_commandQueue;
+    qint32 m_pendingCommandId = -1;
+    QTimer m_commandTimeoutTimer;
 
 };
 

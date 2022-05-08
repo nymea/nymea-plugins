@@ -44,6 +44,7 @@
 #include <QColor>
 #include <QTimer>
 #include <QDataStream>
+#include <QJsonDocument>
 
 IntegrationPluginOwlet::IntegrationPluginOwlet()
 {
@@ -852,7 +853,55 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
             params.insert("ledCount", thing->paramValue(ws2812ThingLedCountParamTypeId).toUInt());
             params.insert("ledMode", "WS2812Mode" + thing->paramValue(ws2812ThingLedModeParamTypeId).toString());
             params.insert("ledClock", "WS2812Clock" + thing->paramValue(ws2812ThingLedClockParamTypeId).toString());
-            client->sendCommand("GPIO.ConfigurePin", params);
+            int id = client->sendCommand("GPIO.ConfigurePin", params);
+            connect(client, &OwletClient::replyReceived, thing, [id, client, thing](int commandId, const QVariantMap &/*params*/){
+                if (id != commandId)
+                    return;
+
+                qCDebug(dcOwlet()) << "Configuration sent...";
+                QVariantMap params;
+                params.insert("id", thing->paramValue(ws2812ThingPinParamTypeId).toUInt());
+                params.insert("power", thing->stateValue(ws2812PowerStateTypeId).toBool());
+                params.insert("brightness", thing->stateValue(ws2812BrightnessStateTypeId).toInt());
+                QColor color = thing->stateValue(ws2812ColorStateTypeId).value<QColor>();
+                params.insert("color", (color.rgb() & 0xFFFFFF));
+                int effect = thing->stateValue(ws2812EffectStateTypeId).toInt();
+                params.insert("effect", effect);
+                qCDebug(dcOwlet()) << "Initializing" << QJsonDocument::fromVariant(params).toJson();
+                client->sendCommand("GPIO.ControlPin", params);
+
+                connect(client, &OwletClient::notificationReceived, thing, [=](const QString &name, const QVariantMap &params){
+                    qCDebug(dcOwlet()) << "***Notif" << name << params;
+                    if (thing->thingClassId() == digitalInputThingClassId) {
+                        if (params.value("id").toInt() == thing->paramValue(digitalInputThingPinParamTypeId)) {
+                            thing->setStateValue(digitalInputPowerStateTypeId, params.value("power").toBool());
+                        }
+                    }
+                    if (thing->thingClassId() == digitalOutputThingClassId) {
+                        if (params.value("id").toInt() == thing->paramValue(digitalOutputThingPinParamTypeId)) {
+                            thing->setStateValue(digitalOutputPowerStateTypeId, params.value("power").toBool());
+                        }
+                    }
+                    if (thing->thingClassId() == ws2812ThingClassId) {
+                        if (name == "GPIO.PinChanged") {
+                            if (params.contains("power")) {
+                                thing->setStateValue(ws2812PowerStateTypeId, params.value("power").toBool());
+                            }
+                            if (params.contains("brightness")) {
+                                thing->setStateValue(ws2812BrightnessStateTypeId, params.value("brightness").toInt());
+                            }
+                            if (params.contains("color")) {
+                                thing->setStateValue(ws2812ColorStateTypeId, params.value("color").value<QColor>());
+                            }
+                            if (params.contains("effect")) {
+                                thing->setStateValue(ws2812EffectStateTypeId, params.value("effect").toInt());
+                            }
+                        }
+                    }
+                });
+
+            });
+
         }
 
 
@@ -868,36 +917,6 @@ void IntegrationPluginOwlet::setupThing(ThingSetupInfo *info)
 
     connect(client, &OwletClient::disconnected, thing, [=](){
         thing->setStateValue("connected", false);
-    });
-
-    connect(client, &OwletClient::notificationReceived, this, [=](const QString &name, const QVariantMap &params){
-        qCDebug(dcOwlet()) << "***Notif" << name << params;
-        if (thing->thingClassId() == digitalInputThingClassId) {
-            if (params.value("id").toInt() == thing->paramValue(digitalInputThingPinParamTypeId)) {
-                thing->setStateValue(digitalInputPowerStateTypeId, params.value("power").toBool());
-            }
-        }
-        if (thing->thingClassId() == digitalOutputThingClassId) {
-            if (params.value("id").toInt() == thing->paramValue(digitalOutputThingPinParamTypeId)) {
-                thing->setStateValue(digitalOutputPowerStateTypeId, params.value("power").toBool());
-            }
-        }
-        if (thing->thingClassId() == ws2812ThingClassId) {
-            if (name == "GPIO.PinChanged") {
-                if (params.contains("power")) {
-                    thing->setStateValue(ws2812PowerStateTypeId, params.value("power").toBool());
-                }
-                if (params.contains("brightness")) {
-                    thing->setStateValue(ws2812BrightnessStateTypeId, params.value("brightness").toInt());
-                }
-                if (params.contains("color")) {
-                    thing->setStateValue(ws2812ColorStateTypeId, params.value("color").value<QColor>());
-                }
-                if (params.contains("effect")) {
-                    thing->setStateValue(ws2812EffectStateTypeId, params.value("effect").toInt());
-                }
-            }
-        }
     });
 
     client->transport()->connectTransport();
