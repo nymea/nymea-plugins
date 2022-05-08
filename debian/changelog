@@ -1,3 +1,27 @@
+nymea-plugins (1.1.0) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * New plugin: USB-RLY82 relay with 2 relays and 8 analog/digital
+    inputs.
+
+  [ Jenkins ]
+  * New plugin - Daikin Airco
+
+  [ Michael Zanetti ]
+  * MecElectronics: Return proper error code on wrong authentication
+  * DateTime: Fix time parsing and HTTP redirects
+  * Update project packaging
+
+  [ Simon Stürz ]
+  * GoE: Add smartmeterconsumer interface due to interface update
+
+  [ Michael Zanetti ]
+  * New plugin: Meross
+  * OneWire: Make owfs more robust against occational read errors
+  * Update dependencies
+
+ -- jenkins <developer@nymea.io>  Sun, 08 May 2022 19:14:39 +0200
+
 nymea-plugins (1.0.0) xenial; urgency=medium
 
   [ Simon Stürz ]
