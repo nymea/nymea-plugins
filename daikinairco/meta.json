@@ -1,0 +1,14 @@
+{
+    "title": "Daikin Airco",
+    "tagline": "Discover and control Daikin airconditioning devices",
+    "icon": "daikin.jpg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "appliance",
+        "heating"
+    ]
+}

@@ -162,6 +162,15 @@ Description: nymea.io plugin for commandlauncher
  This package will install the nymea.io plugin for commandlauncher
 
 
+Package: nymea-plugin-daikinairco
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         python3-pip,
+Description: nymea integration plugin for Daikin airconditioning units
+ This package contains the nymea integration plugin for Daikin airconditioning units.
+
+
 Package: nymea-plugin-datetime
 Architecture: any
 Depends: ${shlibs:Depends},

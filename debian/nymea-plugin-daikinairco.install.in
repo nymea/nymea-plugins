@@ -1,0 +1,3 @@
+daikinairco/integrationplugindaikinairco.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/daikinairco/
+daikinairco/integrationplugindaikinairco.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/daikinairco/
+daikinairco/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/daikinairco/
