@@ -13,7 +13,7 @@
                     "displayName": "go-eCharger Home",
                     "id": "3b663d51-fdb5-4944-b409-c07f7933877e",
                     "createMethods": ["Discovery", "User"],
-                    "interfaces": ["evcharger", "connectable"],
+                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
                     "paramTypes": [
                         {
                             "id": "4342b72c-99d0-41a5-abc6-ea6c1cc1352c",
