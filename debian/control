@@ -26,15 +26,9 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for ANEL Elektronik NET-PwrCtrl power sockets
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for ANEL Elektronik NET-PwrCtrl
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for ANEL Elektronik NET-PwrCtrl power sockets
+ This package contains the nymea integration plugin for ANEL Elektronik NET-PwrCtrl
  network controlled power sockets.
 
 
@@ -43,15 +37,9 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin to fetch the air quaility index from http://aqicn.org
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for the air quality index
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to fetch the air quaility index from http://aqicn.org
+ This package contains the nymea integration plugin for the air quality index online service
 
 
 Package: nymea-plugin-avahimonitor
@@ -59,60 +47,36 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for avahimonitor
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for avahimonitor
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for avahimonitor
+ This package contains the nymea integration plugin for monitoring network devices via mDNS
 
 
 Package: nymea-plugin-awattar
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for awattar
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for awattar
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for awattar
+ This package contains the nymea integration plugin for the awattar online service
 
 
 Package: nymea-plugin-bluos
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for bluos
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for bluos
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for bluos
+ This package contains the nymea integration plugin for bluos based media devices
 
 
 Package: nymea-plugin-boblight
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for boblight
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for boblight. Boblight allows
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for boblight
+ This package contains the nymea integration plugin for boblight. Boblight allows
  controlling LEDs via home-brew controllers. See https://github.com/arvydas/boblight
  for informations on boblight.
 
@@ -121,45 +85,27 @@ Package: nymea-plugin-bose
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for bose soundtouch
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for bose soundtouch.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for bose soundtouch
+ This package contains the nymea integration plugin for bose soundtouch devices.
 
 
 Package: nymea-plugin-coinmarketcap
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for coin market cap
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for coinmarketcap
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for coin market cap
+ This package contains the nymea integration plugin for the coinmarketcap online service
 
 
 Package: nymea-plugin-commandlauncher
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for commandlauncher
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for commandlauncher
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for commandlauncher
+ This package contains the nymea integration plugin for launching system commands
 
 
 Package: nymea-plugin-daikinairco
@@ -175,30 +121,18 @@ Package: nymea-plugin-datetime
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for datetime
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for datetime
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for datetime
+ This package contains the nymea integration plugin for date and time related features
 
 
 Package: nymea-plugin-daylightsensor
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for a mathematical daylight sensor
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install a plugin for a mathematical daylight sensor. That means
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for a mathematical daylight sensor
+ This package contains a plugin for a mathematical daylight sensor. That means
  it will work without any internet connection or hardware. It computes daylight
  times based on the geographical location of the nymea instance.
 
@@ -207,24 +141,18 @@ Package: nymea-plugin-denon
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for denon
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for denon
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for denon
+ This package contains the nymea integration plugin for Denon sound devices
 
 
 Package: nymea-plugin-dht
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
          python3-pip,
-Description: nymea.io plugin for DHT11/DHT22/AM2302
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for DHT11/DHT22/AM2302
  This plugin add support for the DHT11, DHT22 and AM2302 temperature and humidity
  sensors to nymea.
 
@@ -233,75 +161,45 @@ Package: nymea-plugin-doorbird
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for DoorBird
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for DoorBird
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for DoorBird
+ This package contains the nymea integration plugin for DoorBird doorbells
 
 
 Package: nymea-plugin-dweetio
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for dweet.io
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for dweet.io
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for dweet.io
+ This package contains the nymea integration plugin for dweet.io
 
 
 Package: nymea-plugin-dynatrace
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for dynatrace
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for dynatrace
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for dynatrace
+ This package contains the nymea integration plugin for the dynatrace UFO
 
 
 Package: nymea-plugin-elgato
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for elgato
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for elgato
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for elgato
+ This package contains the nymea integration plugin for devices from Elgato
 
 
 Package: nymea-plugin-fastcom
 Architecture: any
 Depends: ${misc:Depends},
-         nymea-plugins-translations,
          python3-pip,
-Description: nymea.io plugin for fast.com based internet speed test
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for performing ineternet speed
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for fast.com based internet speed test
+ This package contains the nymea integration plugin for performing ineternet speed
  tests using fast.com
 
 
@@ -309,15 +207,9 @@ Package: nymea-plugin-flowercare
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Xiaomi Flower care devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Xiaomi Flower care devices,
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Xiaomi Flower care devices
+ This package contains the nymea integration plugin for Xiaomi Flower care devices,
  also know as Plant care or MiCare
 
 
@@ -326,30 +218,18 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Fronius PV inverters
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Fronius
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Fronius PV inverters
+ This package contains the nymea integration plugin for Fronius solar inverters
 
 
 Package: nymea-plugin-eq-3
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for eq-3
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for eq-3
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for eq-3
+ This package contains the nymea integration plugin for eq-3 devices
 
 
 Package: nymea-plugin-garadget
@@ -358,14 +238,9 @@ Multi-Arch: same
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-Description: nymea.io plugin for Garadget
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Garadget Garage Door Opener
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Garadget
+ This package contains the nymea integration plugin for Garadget Garage Door Opener
 
 
 Package: nymea-plugin-gpio
@@ -373,45 +248,27 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libnymea-gpio,
-         nymea-plugins-translations,
-Description: nymea.io plugin for gpio
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for gpio
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for gpio
+ This package contains the nymea integration plugin to interact with GPIOs
 
 
 Package: nymea-plugin-goecharger
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for the go-eCharger wallbox
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for the go-eCharger wallbox
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for the go-eCharger wallbox
+ This package contains the nymea integration plugin for the go-eCharger wallbox
 
 
 Package: nymea-plugin-homeconnect
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for home connect
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for home connect appliances
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for home connect
+ This package contains the nymea integration plugin for home connect appliances
 
 
 Package: nymea-plugin-i2cdevices
@@ -419,64 +276,44 @@ Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for I2C devies
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for I2C devies
  This plugin adds support for I2C devices to nymea.
  Currently supported devices are the ADS1114/1114/1115 and the Pi-16ADC.
- .
- This package will install the nymea.io plugin for AD converters
 
 
 Package: nymea-plugin-kodi
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for kodi
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for kodi
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for kodi
+ This package contains the nymea integration plugin for kodi
 
 
 Package: nymea-plugin-lgsmarttv
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for lgsmarttv
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for lgsmarttv
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for lgsmarttv
+ This package contains the nymea integration plugin for smart tvs from LG
 
 
 Package: nymea-plugin-lifx
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for lifx
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for lifx
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for lifx
+ This package contains the nymea integration plugin for lifx devices
 
 Package: nymea-plugin-mecelectronics
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for mec electronics devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for mec electronics devices
  This package will add support for the mec meter to nymea.
 
 
@@ -484,47 +321,35 @@ Package: nymea-plugin-mailnotification
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for mailnotification
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for mailnotification
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for mailnotification
+ This package contains the nymea integration plugin for sending notifications via email.
 
 
 Package: nymea-plugin-mcp3008
 Architecture: any
 Depends: ${misc:Depends},
-         nymea-plugins-translations,
          python3-pip,
+Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: MCP3008 DAC integration plugin for nymea
- This package will install the nymea.io plugin for using the MCP3008 DAC.
+ This package contains the nymea integration plugin for using the MCP3008 DAC.
 
 
 Package: nymea-plugin-mqttclient
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for a generic MQTT client
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install a generic MQTT client plugin for nymea.io
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for a generic MQTT client
+ This package contains a generic MQTT client plugin for nymea.
 
 
 Package: nymea-plugin-mystrom
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for myStrom devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for myStrom devices
  This package will add support for myStrom devices to nymea.
 
 
@@ -532,48 +357,30 @@ Package: nymea-plugin-neatobotvac
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
          python3-pip,
          libffi-dev,
          libssl-dev,
-Description: nymea.io plugin for neato
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Neato Botvac robots.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for neato
+ This package contains the nymea integration plugin for Neato Botvac robots.
 
 
 Package: nymea-plugin-netatmo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for netatmo
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for netatmo
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for netatmo
+ This package contains the nymea integration plugin for the netatmo weather station.
 
 
 Package: nymea-plugin-nanoleaf
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for nanoleaf
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for nanoleaf
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for nanoleaf
+ This package contains the nymea integration plugin for nanoleaf devices.
 
 
 Package: nymea-plugin-networkdetector
@@ -583,188 +390,118 @@ Depends: ${shlibs:Depends},
          nmap,
          fping,
          arping,
-         nymea-plugins-translations,
-Description: nymea.io plugin for networkdetector
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for networkdetector
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for networkdetector
+ This package contains the nymea integration plugin for detecting and monitoring
+ network devices via basic networking mechanisms (ARP, ICMP..).
 
 
 Package: nymea-plugin-nuki
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
 Replaces: nymea-nukiplugin
-Description: nymea.io plugin for the nuki smart lock
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for nuki devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for the nuki smart lock
+ This package contains the nymea integration plugin for nuki smart lock devices.
 
 
 Package: nymea-plugin-onewire
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for one wire devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for one wire devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for one wire devices
+ This package contains the nymea integration plugin for one wire devices.
 
 
 Package: nymea-plugin-openuv
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for OpenUV
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for OpenUV
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for OpenUV
+ This package contains the nymea integration plugin for OpenUV.
 
 
 Package: nymea-plugin-openweathermap
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for openweathermap
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for openweathermap
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for openweathermap
+ This package contains the nymea integration plugin for openweathermap.
 
 
 Package: nymea-plugin-osdomotics
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for osdomotics
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for osdomotics
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for osdomotics
+ This package contains the nymea integration plugin for osdomotics.
 
 
 Package: nymea-plugin-philipshue
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for philipshue
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for philipshue
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for philipshue
+ This package contains the nymea integration plugin for Philips Hue bridges
+ and connected devices to it.
 
 
 Package: nymea-plugin-pushbullet
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Pushbullet
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for sending messages via Pushbullet.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Pushbullet
+ This package contains the nymea integration plugin for sending messages via Pushbullet.
 
 
 Package: nymea-plugin-pushnotifications
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin to send Push notifications
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for sending messages via GCM, APNs and UBPorts
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to send Push notifications
+ This package contains the nymea integration plugin for sending messages to nymea:app.
 
 
 Package: nymea-plugin-solarlog
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Solar-Log
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Solar-Log.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Solar-Log
+ This package contains the nymea integration plugin for Solar-Log devices.
 
 
 Package: nymea-plugin-tasmota
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Sonoff-Tasmota devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Tasmota-Sonoff devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Sonoff-Tasmota devices
+ This package contains the nymea integration plugin for Tasmota-Sonoff devices.
 
 Package: nymea-plugin-texasinstruments
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Texas Instruments devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Texas Instruments devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Texas Instruments devices
+ This package contains the nymea integration plugin for Texas Instruments devices.
 
 
 Package: nymea-plugin-telegram
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Telegram
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Telegram
  This plugin allows nymea to send messages to telegram via the bot API.
  
 
@@ -772,69 +509,46 @@ Package: nymea-plugin-tempo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Tempo time tracking
- This package will install the nymea.io plugin for Tempo time tracking.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Tempo time tracking
+ This package contains the nymea integration plugin for Tempo time tracking.
 
 
 Package: nymea-plugin-tplink
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for tp-link Kasa devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for tp-link Kasa devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for tp-link Kasa devices
+ This package contains the nymea integration plugin for TP-Link Kasa devices.
 
 
 Package: nymea-plugin-tuya
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Tuya cloud devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Tuya cloud devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Tuya cloud devices
+ This package contains the nymea integration plugin for Tuya cloud devices.
 
 
 Package: nymea-plugin-udpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for UDP commander
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for udpcommander
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for UDP commander
+ This package contains the nymea integration plugin for sending arbitrary 
+ UDP commands from and to nymea.
 
 
 Package: nymea-plugin-unifi
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for UniFi network controllers
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for UniFi network controllers
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for UniFi network controllers
+ This package contains the nymea integration plugin for UniFi network controllers.
 
 
 Package: nymea-plugin-usbrelay
@@ -845,14 +559,9 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libudev1,
          libhidapi-hidraw0,
-Description: nymea.io plugin for USB relay
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for USB relay
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for USB relay
+ This package contains the nymea integration plugin for USB relays.
 
 
 Package: nymea-plugin-usbrly82
@@ -871,89 +580,57 @@ Package: nymea-plugin-wakeonlan
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for wakeonlan
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for wakeonlan
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for wakeonlan
+ This package contains the nymea integration plugin for sending WOL
+ (wake on lan) magic packets to the network.
 
 
 Package: nymea-plugin-wemo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for wemo
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for wemo
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for wemo
+ This package contains the nymea integration plugin for wemo devices.
 
 
 Package: nymea-plugin-ws2812fx
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for ws2812fx
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for ws2812fx
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for ws2812fx
+ This package contains the nymea integration plugin for using ws2812fx
+ LEDs via an Arduino based microcontroller connected to nymea.
 
 
 Package: nymea-plugin-tcpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for TCP commander
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for the TCP commander
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for TCP commander
+ This package contains the nymea integration plugin for sending arbitrary
+ TCP packets from and to nymea.
 
 Package: nymea-plugin-httpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for HTTP commander
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for the HTPP commander
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for HTTP commander
+ This package contains the nymea integration plugin for sending arbitrary
+ HTTP requests from and to nymea.
 
 
 Package: nymea-plugin-senic
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for senic
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for senic
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for senic
+ This package contains the nymea integration plugin for the Senic Nuimo.
 
 
 Package: nymea-plugin-sgready
@@ -961,30 +638,18 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libnymea-gpio,
-         nymea-plugins-translations,
-Description: nymea.io plugin for SG-Ready heat pump interface based on GPIOs
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for SG-Ready heat pump interface based on GPIOs
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for SG-Ready heat pump interface based on GPIOs
+ This package contains the nymea integration plugin for SG-Ready heat pump interface based on GPIOs.
 
 
 Package: nymea-plugin-shelly
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Shelly devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Shelly devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Shelly devices
+ This package contains the nymea integration plugin for Shelly devices.
 
 
 Package: nymea-plugin-simpleheatpump
@@ -992,45 +657,27 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libnymea-gpio,
-         nymea-plugins-translations,
-Description: nymea.io plugin for simple heat pumps
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for simple heat pumps
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for simple heat pumps
+ This package contains the nymea integration plugin for simple heat pumps.
 
 
 Package: nymea-plugin-somfytahoma
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Somfy TaHoma
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Somfy TaHoma devices
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Somfy TaHoma
+ This package contains the nymea integration plugin for Somfy TaHoma devices.
 
 
 Package: nymea-plugin-sonos
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for Sonos smart speakers
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Sonos smart speakers
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Sonos smart speakers
+ This package contains the nymea integration plugin for Sonos smart speakers.
 
 
 Package: nymea-plugin-sunposition
@@ -1038,32 +685,20 @@ Architecture: any
 Depends: ${misc:Depends},
          libatlas-base-dev,
          python3-pip,
-         nymea-plugins-translations,
-Description: nymea.io plugin for calculating the sun position
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for calculating the sun position
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for calculating the sun position
+ This package contains the nymea integration plugin for calculating the sun position.
 
 
 Package: nymea-plugin-keba
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
          nmap,
          arping,
-Description: nymea.io plugin for keba
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for keba
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Keba wallboxes
+ This package contains the nymea integration plugin for Keba wallboxes.
 
 
 Package: nymea-plugin-reversessh
@@ -1071,18 +706,12 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          sshpass,
-         nymea-plugins-translations,
 Recommends: openssh-server
 Replaces: nymea-plugin-remotessh
-Conflicts: nymea-plugin-remotessh
-Description: nymea.io plugin to configure remotessh for your nymea:core
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for remote ssh connections
+Conflicts: nymea-plugin-remotessh,
+           nymea-plugins-translations (<= 1.0.0)
+Description: nymea integration plugin to configure remotessh for your nymea:core
+ This package contains the nymea integration plugin for remote ssh connections.
 
 
 Package: nymea-plugin-serialportcommander
@@ -1090,219 +719,63 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libqt5serialport5,
-         nymea-plugins-translations,
-Description: nymea.io plugin to send and receive strings over a serial port
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for serial ports
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to send and receive strings over a serial port
+ This package contains the nymea integration plugin for sending and receiving
+ arbitrary data via serial ports.
 
 
 Package: nymea-plugin-sma
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin for SMA PV-Inverter
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for SMA PV-Inverter
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for SMA solar inverters
+ This package contains the nymea integration plugin for SMA solar inverters.
 
 
 Package: nymea-plugin-systemmonitor
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin to monitor the system
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for system monitoring
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to monitor the system
+ This package contains the nymea integration plugin for system monitoring.
 
 
 Package: nymea-plugin-tado
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin to connect to your Tado account
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for Tado
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to connect to your Tado account
+ This package contains the nymea integration plugin for Tado devices.
 
 
 Package: nymea-plugin-wheretheissat
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
-Description: nymea.io plugin to monitor the ISS position
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for wheretheiss.at
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin to monitor the ISS position
+ This package contains the nymea integration plugin for the wheretheiss.at
+ online service.
 
 
 Package: nymea-plugin-yamahaavr
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nymea-plugins-translations,
          python3-pip,
-Description: nymea.io plugin for Yamaha receivers
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for (non-Musiccast) Yamaha AV receivers.
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Yamaha receivers
+ This package contains the nymea integration plugin for (non-Musiccast) Yamaha AV receivers.
 
 
 Package: nymea-plugins-translations
-Section: misc
 Architecture: all
-Depends: ${misc:Depends}
-Description: Translation files for nymea plugins - translations
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package provides the translation files for all nymea plugins.
-
-
-Package: nymea-plugins
-Section: libs
-Architecture: all
-Depends: nymea-plugin-anel,
-         nymea-plugin-aqi,
-         nymea-plugin-awattar,
-         nymea-plugin-bose,
-         nymea-plugin-datetime,
-         nymea-plugin-daylightsensor,
-         nymea-plugin-denon,
-         nymea-plugin-doorbird,
-         nymea-plugin-eq-3,
-         nymea-plugin-flowercare,
-         nymea-plugin-fronius,
-         nymea-plugin-homeconnect,
-         nymea-plugin-kodi,
-         nymea-plugin-lgsmarttv,
-         nymea-plugin-lifx,
-         nymea-plugin-mailnotification,
-         nymea-plugin-texasinstruments,
-         nymea-plugin-telegram,
-         nymea-plugin-mystrom,
-         nymea-plugin-nanoleaf,
-         nymea-plugin-neatobotvac,
-         nymea-plugin-netatmo,
-         nymea-plugin-networkdetector,
-         nymea-plugin-nuki,
-         nymea-plugin-openuv,
-         nymea-plugin-openweathermap,
-         nymea-plugin-philipshue,
-         nymea-plugin-pushbullet,
-         nymea-plugin-pushnotifications,
-         nymea-plugin-wakeonlan,
-         nymea-plugin-tasmota,
-         nymea-plugin-tempo,
-         nymea-plugin-tplink,
-         nymea-plugin-wemo,
-         nymea-plugin-elgato,
-         nymea-plugin-shelly,
-         nymea-plugin-senic,
-         nymea-plugin-somfytahoma,
-         nymea-plugin-sma,
-         nymea-plugin-sonos,
-         nymea-plugin-solarlog,
-         nymea-plugin-tado,
-         nymea-plugin-keba,
-         nymea-plugin-unifi,
-         nymea-plugin-usbrelay,
-         nymea-plugin-yamahaavr,
-Description: Plugins for nymea IoT server - the default plugin collection
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the default nymea plugins.
-
-
-Package: nymea-plugins-maker
-Section: libs
-Architecture: all
-Depends: nymea-plugin-boblight,
-         nymea-plugin-commandlauncher,
-         nymea-plugin-udpcommander,
-         nymea-plugin-tcpcommander,
-         nymea-plugin-httpcommander,
-         nymea-plugin-avahimonitor,
-         nymea-plugin-anel,
-         nymea-plugin-gpio,
-         nymea-plugin-sgready,
-         nymea-plugin-i2cdevices,
-         nymea-plugin-mqttclient,
-         nymea-plugin-mcp3008,
-         nymea-plugin-remotessh,
-         nymea-plugin-serialportcommander,
-         nymea-plugin-systemmonitor,
-         nymea-plugin-simpleheatpump,
-         nymea-plugin-onewire,
-         nymea-plugin-dynatrace,
-Description: Meta package for nymea makers, tinkerers and hackers plugins.
- This package is a meta package that pulls in useful nymea plugins for makers.
- Such plugins allow tinkering with GPIOs, I2C, One-Wire, raw MQTT and more.
- .
- This package will install nymea plugins for makers, tinkerers and hackers.
-
-
-Package: nymea-plugins-merkurboard
-Section: libs
-Architecture: all
-Depends: nymea-plugin-osdomotics,
-Description: Plugins for nymea IoT server - Meta package for 6LoWPAN Merkur boards
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the 6LoWPAN Merkur board plugins for nymea.
-
-
-Package: nymea-plugins-all
-Section: libs
-Architecture: all
-Depends: nymea-plugins,
-         nymea-plugins-maker,
-         nymea-plugins-merkurboard,
-Description: Plugins for nymea IoT server - Meta package for all plugins
- The nymea daemon is a plugin based IoT (Internet of Things) server. The		
- server works like a translator for devices, things and services and		
- allows them to interact.		
- With the powerful rule engine you are able to connect any device available		
- in the system and create individual scenes and behaviors for your environment.		
- .		
- This package will install all the available plugins for nymea.
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: Transitional package.
+ This package used to contain plugins translations. It is empty now, used
+ as a transitional package and will be removed in the future.

@@ -7,5 +7,3 @@ nymea-plugins pull request checklist:
 - [ ] Did you update the plugin's README.md accordingly?
 
 - [ ] Did you update translations (`cd builddir && make lupdate`)?
-
-- [ ] If you added a new plugin, should it be added to nymea-plugins-all or nymea-plugins-maker?

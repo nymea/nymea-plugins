@@ -1,1 +1,2 @@
 usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationplugineq-3.so
+eq-3/translations/*qm usr/share/nymea/translations/

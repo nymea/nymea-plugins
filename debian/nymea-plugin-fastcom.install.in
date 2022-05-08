@@ -1,3 +1,4 @@
 fastcom/integrationpluginfastcom.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/fastcom/
 fastcom/integrationpluginfastcom.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/fastcom/
 fastcom/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/fastcom/
+fastcom/translations/*qm usr/share/nymea/translations/
