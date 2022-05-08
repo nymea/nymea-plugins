@@ -175,18 +175,18 @@ void Owfs::setValue(const QByteArray &address, const QByteArray &type, const QBy
     }
 }
 
-double Owfs::getTemperature(const QByteArray &address)
+double Owfs::getTemperature(const QByteArray &address, bool *ok)
 {
     QByteArray temperature = getValue(address, "temperature");
     qDebug(dcOneWire()) << "Temperature" << temperature << temperature.replace(',','.').toDouble();
-    return temperature.toDouble();
+    return temperature.toDouble(ok);
 }
 
-double Owfs::getHumidity(const QByteArray &address)
+double Owfs::getHumidity(const QByteArray &address, bool *ok)
 {
     QByteArray humidity = getValue(address, "humidity");
     qDebug(dcOneWire()) << "Humidity" << humidity << humidity.replace(',','.').toDouble();
-    return humidity.toDouble();
+    return humidity.toDouble(ok);
 }
 
 QByteArray Owfs::getType(const QByteArray &address)
@@ -195,7 +195,7 @@ QByteArray Owfs::getType(const QByteArray &address)
     return type;
 }
 
-bool Owfs::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
+bool Owfs::getSwitchOutput(const QByteArray &address, SwitchChannel channel, bool *ok)
 {
     QByteArray c;
     c.append("PIO.");
@@ -227,10 +227,10 @@ bool Owfs::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
     }
     QByteArray state = getValue(address, c);
     qDebug(dcOneWire()) << "Switch state" << state.toInt();
-    return state.toInt();
+    return state.toInt(ok);
 }
 
-bool Owfs::getSwitchInput(const QByteArray &address, SwitchChannel channel)
+bool Owfs::getSwitchInput(const QByteArray &address, SwitchChannel channel, bool *ok)
 {
     QByteArray c;
     c.append("sensed.");
@@ -262,7 +262,7 @@ bool Owfs::getSwitchInput(const QByteArray &address, SwitchChannel channel)
     }
     QByteArray state = getValue(address, c);
     qDebug(dcOneWire()) << "Switch state" << state.toInt();
-    return state.toInt();
+    return state.toInt(ok);
 }
 
 void Owfs::setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state)

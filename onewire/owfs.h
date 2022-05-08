@@ -75,12 +75,12 @@ public:
     bool interfaceIsAvailable();
     bool isConnected(const QByteArray &address);
 
-    double getTemperature(const QByteArray &address);
-    double getHumidity(const QByteArray &address);
+    double getTemperature( const QByteArray &address, bool *ok);
+    double getHumidity(const QByteArray &address, bool *ok);
     QByteArray getType(const QByteArray &address);
-    bool getSwitchOutput(const QByteArray &address, SwitchChannel channel);
+    bool getSwitchOutput(const QByteArray &address, SwitchChannel channel, bool *ok);
     void setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state);
-    bool getSwitchInput(const QByteArray &address, SwitchChannel channel);
+    bool getSwitchInput(const QByteArray &address, SwitchChannel channel, bool *ok);
 
 private:
     QByteArray m_path;

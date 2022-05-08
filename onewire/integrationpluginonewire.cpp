@@ -185,8 +185,12 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
         qCDebug(dcOneWire) << "Setup one wire switch" << thing->params();
         if (m_owfsInterface) {
             QByteArray address = thing->paramValue(singleChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
             thing->setStateValue(singleChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
+            bool ok;
+            bool output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, output);
+            }
         }
         return info->finish(Thing::ThingErrorNoError);
 
@@ -194,9 +198,16 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
         qCDebug(dcOneWire) << "Setup one wire dual switch" << thing->params();
         if (m_owfsInterface) {
             QByteArray address = thing->paramValue(dualChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(dualChannelSwitchDigitalOutput1StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
-            thing->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B));
             thing->setStateValue(dualChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
+            bool ok;
+            bool output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(dualChannelSwitchDigitalOutput1StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B, &ok);
+            if (ok) {
+                thing->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, output);
+            }
         }
         return info->finish(Thing::ThingErrorNoError);
 
@@ -204,15 +215,40 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
         qCDebug(dcOneWire) << "Setup one wire eight channel switch" << thing->params();
         if (m_owfsInterface) {
             QByteArray address = thing->paramValue(eightChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(eightChannelSwitchDigitalOutput1StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
-            thing->setStateValue(eightChannelSwitchDigitalOutput2StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B));
-            thing->setStateValue(eightChannelSwitchDigitalOutput3StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_C));
-            thing->setStateValue(eightChannelSwitchDigitalOutput4StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_D));
-            thing->setStateValue(eightChannelSwitchDigitalOutput5StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_E));
-            thing->setStateValue(eightChannelSwitchDigitalOutput6StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_F));
-            thing->setStateValue(eightChannelSwitchDigitalOutput7StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_G));
-            thing->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_H));
             thing->setStateValue(eightChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
+            bool ok;
+            bool output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput1StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput2StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_C, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput3StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_D, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput4StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_E, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput5StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_F, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput6StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_G, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput7StateTypeId, output);
+            }
+            output =  m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_H, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, output);
+            }
         }
         return info->finish(Thing::ThingErrorNoError);
     } else {
@@ -323,7 +359,11 @@ void IntegrationPluginOneWire::setupOwfsTemperatureSensor(ThingSetupInfo *info)
     QByteArray address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
     if (m_owfsInterface) {
         thing->setStateValue(temperatureSensorConnectedStateTypeId,  m_owfsInterface->isConnected(address));
-        thing->setStateValue(temperatureSensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
+        bool ok;
+        double temp = m_owfsInterface->getTemperature(address, &ok);
+        if (ok) {
+            thing->setStateValue(temperatureSensorTemperatureStateTypeId, temp);
+        }
         return info->finish(Thing::ThingErrorNoError);
     } else {
         qCWarning(dcOneWire()) << "OWFS interface is not available";
@@ -337,8 +377,15 @@ void IntegrationPluginOneWire::setupOwfsTemperatureHumiditySensor(ThingSetupInfo
     QByteArray address = thing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toByteArray();
     if (m_owfsInterface) {
         thing->setStateValue(temperatureHumiditySensorConnectedStateTypeId,  m_owfsInterface->isConnected(address));
-        thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
-        thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, m_owfsInterface->getHumidity(address));
+        bool ok;
+        double temp = m_owfsInterface->getTemperature(address, &ok);
+        if (ok) {
+            thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, temp);
+        }
+        double humidity = m_owfsInterface->getHumidity(address, &ok);
+        if (ok) {
+            thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, humidity);
+        }
         return info->finish(Thing::ThingErrorNoError);
     } else {
         qCWarning(dcOneWire()) << "OWFS interface is not available";
@@ -354,13 +401,15 @@ void IntegrationPluginOneWire::onPluginTimer()
 
         } else if (thing->thingClassId() == temperatureSensorThingClassId) {
             QByteArray address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
+            bool ok = true;
             double temperature = 0;
             bool connected = false;
 
             if (!thing->parentId().isNull()) {
                 if (m_owfsInterface) {
-                    temperature = m_owfsInterface->getTemperature(address);
                     connected = m_owfsInterface->isConnected(address);
+                    bool ok;
+                    temperature = m_owfsInterface->getTemperature(address, &ok);
                 } else {
                     qCWarning(dcOneWire()) << "onPlugInTimer: OWFS interface not setup for thing" << thing->name();
                 }
@@ -370,40 +419,85 @@ void IntegrationPluginOneWire::onPluginTimer()
                 connected = m_w1Interface->deviceAvailable(address);
             }
 
-            thing->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
+            if (ok) {
+                thing->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
+            }
             thing->setStateValue(temperatureSensorConnectedStateTypeId, connected);
         } else if (thing->thingClassId() == temperatureHumiditySensorThingClassId)  {
             if (!m_owfsInterface)
                 continue;
             QByteArray address = thing->paramValue(temperatureHumiditySensorThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
-            thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, m_owfsInterface->getHumidity(address));
+            bool ok;
+            double temp = m_owfsInterface->getTemperature(address, &ok);
+            if (ok) {
+                thing->setStateValue(temperatureHumiditySensorTemperatureStateTypeId, temp);
+            }
+            double humidity = m_owfsInterface->getHumidity(address, &ok);
+            if (ok) {
+                thing->setStateValue(temperatureHumiditySensorHumidityStateTypeId, humidity);
+            }
             thing->setStateValue(temperatureHumiditySensorConnectedStateTypeId, m_owfsInterface->isConnected(address));
         } else if (thing->thingClassId() == singleChannelSwitchThingClassId) {
             if (!m_owfsInterface)
                 continue;
             QByteArray address = thing->paramValue(singleChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
+            bool ok;
+            bool output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, output);
+            }
             thing->setStateValue(singleChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
         } else if (thing->thingClassId() == dualChannelSwitchThingClassId) {
             if (!m_owfsInterface)
                 continue;
             QByteArray address = thing->paramValue(dualChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(dualChannelSwitchDigitalOutput1StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
-            thing->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B));
+            bool ok;
+            bool output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(dualChannelSwitchDigitalOutput1StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B, &ok);
+            if (ok) {
+                thing->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, output);
+            }
             thing->setStateValue(dualChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
         } else if (thing->thingClassId() == eightChannelSwitchThingClassId) {
             if (!m_owfsInterface)
                 continue;
             QByteArray address = thing->paramValue(eightChannelSwitchThingAddressParamTypeId).toByteArray();
-            thing->setStateValue(eightChannelSwitchDigitalOutput1StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
-            thing->setStateValue(eightChannelSwitchDigitalOutput2StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B));
-            thing->setStateValue(eightChannelSwitchDigitalOutput3StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_C));
-            thing->setStateValue(eightChannelSwitchDigitalOutput4StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_D));
-            thing->setStateValue(eightChannelSwitchDigitalOutput5StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_E));
-            thing->setStateValue(eightChannelSwitchDigitalOutput6StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_F));
-            thing->setStateValue(eightChannelSwitchDigitalOutput7StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_G));
-            thing->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_H));
+            bool ok;
+            bool output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput1StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput2StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_C, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput3StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_D, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput4StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_E, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput5StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_F, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput6StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_G, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput7StateTypeId, output);
+            }
+            output = m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_H, &ok);
+            if (ok) {
+                thing->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, output);
+            }
             thing->setStateValue(eightChannelSwitchConnectedStateTypeId, m_owfsInterface->isConnected(address));
         }
     }
