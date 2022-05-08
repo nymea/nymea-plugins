@@ -33,6 +33,7 @@ PLUGIN_DIRS = \
     lgsmarttv           \
     lifx                \
     mecelectronics      \
+    meross              \
     mailnotification    \
     mqttclient          \
     mystrom             \

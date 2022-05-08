@@ -317,6 +317,14 @@ Description: nymea integration plugin for mec electronics devices
  This package will add support for the mec meter to nymea.
 
 
+Package: nymea-plugin-meross
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for meross devices
+ This package will add support for the meross devices to nymea.
+
+
 Package: nymea-plugin-mailnotification
 Architecture: any
 Depends: ${shlibs:Depends},

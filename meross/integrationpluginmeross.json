@@ -1,0 +1,83 @@
+{
+    "name": "meross",
+    "displayName": "ANEL-Elektronik AG",
+    "id": "4b11bdcd-f45b-4b88-9383-267381713227",
+    "vendors": [
+        {
+            "name": "meross",
+            "displayName": "meross",
+            "id": "878df3e1-5f73-4d4f-8e65-bb050fda935f",
+            "thingClasses": [
+                {
+                    "id": "162ef487-e05b-4c92-b4d0-cc5a7ed77134",
+                    "name": "plug",
+                    "displayName": "Smart plug",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "1e273e10-3ea0-4337-a221-3b8e26c6e7dc",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9cde6321-2abf-4a58-a1d6-c7418edb9747",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ec75ed0a-18e5-401b-a011-52dcb2b26c34",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "filter": "adaptive",
+                            "cached": false
+                        },
+                        {
+                            "id": "0ff2166b-4620-4f7a-ba56-066eead97bc3",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "79a72494-afe8-46a5-8185-abbb81a6ca48",
+                            "name": "currentPower",
+                            "displayName": "Power consumption",
+                            "displayNameEvent": "Power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "6b187a9e-f9ed-4952-a078-26380962f42b",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
