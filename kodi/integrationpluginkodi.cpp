@@ -429,7 +429,7 @@ void IntegrationPluginKodi::onConnectionChanged(bool connected)
         imageString = "info";
     }
 
-    kodi->showNotification("nymea", tr("Connected"), 2000, imageString);
+    kodi->showNotification("nymea", QT_TR_NOOP("Connected"), 2000, imageString);
     thing->setStateValue(kodiConnectedStateTypeId, kodi->connected());
 }
 
