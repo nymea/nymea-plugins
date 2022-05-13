@@ -44,6 +44,31 @@
                             "type": "QString"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "4a2e939a-dc9c-4885-8fd5-4b102f91483f",
+                            "name": "notificationCustomIconUrl",
+                            "displayName": "Notification icon URL",
+                            "type": "QString",
+                            "defaultValue": "https://downloads.nymea.io/nymea-icons/kodi-notification/nymea-logo.png"
+                        },
+                        {
+                            "id": "2c534f37-e1c2-4762-8e38-1718306739f1",
+                            "name": "notificationUseCustomIcon",
+                            "displayName": "Use notification icon",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "55133408-794a-4c32-a7f1-f59e83e6eae7",
+                            "name": "notificationDuration",
+                            "displayName": "Notification display times",
+                            "type": "uint",
+                            "minValue": 1500,
+                            "unit": "MilliSeconds",
+                            "defaultValue": 8000
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "09dfbd40-c97c-4a20-9ecd-f80e389a4864",

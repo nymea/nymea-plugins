@@ -67,7 +67,7 @@ public:
     int setRepeat(const QString &repeat);
 
     // actions
-    int showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType);
+    int showNotification(const QString &title, const QString &message, const int &displayTime, const QString &image);
     int navigate(const QString &to);
     int systemCommand(const QString &command);
 
