@@ -25,7 +25,8 @@
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "efe2d520-3b35-4668-b6f5-db3df0c8bf0d",
@@ -37,7 +38,8 @@
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "d9671ee3-51be-4cf8-8601-125c0684aec9",
@@ -47,7 +49,8 @@
                             "type": "int",
                             "unit": "KiloByte",
                             "defaultValue": 0,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         },
                         {
                             "id": "6d71b001-c7fe-4f08-941d-47009b710d94",
@@ -57,7 +60,8 @@
                             "type": "int",
                             "unit": "KiloByte",
                             "defaultValue": 0,
-                            "suggestLogging": true
+                            "suggestLogging": true,
+                            "cached": false
                         }
                     ]
                 }
