@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -44,6 +44,7 @@
 #include <QDateTime>
 #include <QUdpSocket>
 
+#include "extern-plugininfo.h"
 
 class IntegrationPluginKeba : public IntegrationPlugin
 {
@@ -74,6 +75,11 @@ private:
     QHash<ThingId, int> m_lastSessionId;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     KebaDiscovery *m_runningDiscovery = nullptr;
+
+    QHash<ThingClassId, ParamTypeId> m_macAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_modelParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_serialNumberParamTypeIds;
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);
