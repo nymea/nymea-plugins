@@ -154,7 +154,7 @@ The name of the StateType ({b44bc948-1234-4f87-9a22-bfb6de09df4d}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/keba/plugininfo.h" line="219"/>
         <source>KeConnect German Edition</source>
         <extracomment>The name of the ThingClass ({c5bca9d2-2a17-40c4-8bb2-ba89783a6dd1})</extracomment>
-        <translation>KeConnect German Edition</translation>
+        <translation>KeConnect Deutschland Edition</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/keba/plugininfo.h" line="180"/>
