@@ -12,8 +12,7 @@
                     "id": "fedd72b8-547d-4e4f-b73e-71344a8ba0c1",
                     "name": "tahoma",
                     "displayName": "Tahoma Account",
-                    "createMethods": ["user"],
-                    "setupMethod": "userandpassword",
+                    "createMethods": ["auto"],
                     "interfaces": ["account"],
                     "stateTypes": [
                         {
@@ -46,14 +45,23 @@
                     "id": "6c09e0b9-f0cc-4dea-9994-9e039eff78f1",
                     "name": "gateway",
                     "displayName": "Tahoma Gateway",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
                     "interfaces": ["gateway"],
                     "paramTypes": [
                         {
                             "id": "e321a7d6-6dcb-4a37-baf1-c7008f2d5bdb",
                             "displayName": "Gateway Id",
                             "name": "gatewayId",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "30b73244-e5bb-4c00-9332-702a60c03420",
+                            "displayName": "Gateway pin",
+                            "name": "gatewayPin",
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [

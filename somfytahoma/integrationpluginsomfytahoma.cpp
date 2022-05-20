@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,128 +35,176 @@
 #include <QJsonArray>
 
 #include "network/networkaccessmanager.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "platform/platformzeroconfcontroller.h"
 
 #include "plugininfo.h"
 #include "somfytahomarequests.h"
 
+void IntegrationPluginSomfyTahoma::init()
+{
+    m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_kizboxdev._tcp");
+}
+
+void IntegrationPluginSomfyTahoma::discoverThings(ThingDiscoveryInfo *info)
+{
+    foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+        qCDebug(dcSomfyTahoma()) << "Found local gateway:" << entry;
+
+        ThingDescriptor descriptor(info->thingClassId(), "Somfy Tahoma Gateway", entry.hostAddress().toString());
+        ParamList params;
+        params << Param(gatewayThingGatewayIdParamTypeId, entry.name());
+        params << Param(gatewayThingGatewayPinParamTypeId, entry.txt("gateway_pin"));
+        descriptor.setParams(params);
+
+        Things existingThings = myThings().filterByParam(gatewayThingGatewayIdParamTypeId, entry.name());
+        if (existingThings.count() == 1) {
+            qCDebug(dcSomfyTahoma()) << "This gateway already exists in the system!";
+            descriptor.setThingId(existingThings.first()->id());
+        }
+
+        info->addThingDescriptor(descriptor);
+    }
+
+    info->finish(Thing::ThingErrorNoError);
+}
+
 void IntegrationPluginSomfyTahoma::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for Somfy Tahoma."));
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the cloud login credentials for Somfy Tahoma in order to set up local access to the Gateway."));
 }
 
 void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    SomfyTahomaRequest *request = createSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
+    // Request local token from cloud account.
+    SomfyTahomaRequest *request = createCloudSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
     connect(request, &SomfyTahomaRequest::error, info, [info](){
         info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to login to Somfy Tahoma."));
     });
     connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password](const QVariant &/*result*/){
-        pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("username", username);
-        pluginStorage()->setValue("password", password);
-        pluginStorage()->endGroup();
-        info->finish(Thing::ThingErrorNoError);
+        SomfyTahomaRequest *request = createCloudSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/config/" + info->params().paramValue(gatewayThingGatewayPinParamTypeId).toString() + "/local/tokens/generate", this);
+        connect(request, &SomfyTahomaRequest::error, info, [info](){
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to generate token."));
+        });
+        connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password](const QVariant &result){
+            QString token = result.toMap()["token"].toString();
+            QJsonDocument jsonRequest{QJsonObject{
+                {"label", "nymea"},
+                {"token", token},
+                {"scope", "devmode"},
+            }};
+            SomfyTahomaRequest *request = createCloudSomfyTahomaPostRequest(hardwareManager()->networkManager(), "/config/" + info->params().paramValue(gatewayThingGatewayPinParamTypeId).toString() + "/local/tokens", "application/json", jsonRequest.toJson(QJsonDocument::Compact), this);
+            connect(request, &SomfyTahomaRequest::error, info, [info](){
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to activate token."));
+            });
+            connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password, token](const QVariant &result){
+                qCDebug(dcSomfyTahoma()) << "Got token uuid" << result;
+                QString requestId = result.toMap()["requestId"].toString();
+
+                pluginStorage()->beginGroup(info->thingId().toString());
+                pluginStorage()->setValue("username", username);
+                pluginStorage()->setValue("password", password);
+                pluginStorage()->setValue("token", token);
+                pluginStorage()->setValue("tokenRequestId", requestId);
+                pluginStorage()->endGroup();
+
+                info->finish(Thing::ThingErrorNoError);
+            });
+        });
     });
 }
 
 void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
 {
-    if (info->thing()->thingClassId() == tahomaThingClassId) {
-        SomfyTahomaRequest *request = createLoginRequestWithStoredCredentials(info->thing());
+    // Compatibility to older cloud based versions of the plugin.
+    if (info->thing()->thingClassId() == tahomaThingClassId ||
+            (info->thing()->thingClassId() == gatewayThingClassId && getToken(info->thing()).isEmpty())) {
+        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("The Somfy Plugin switched to local connection. Please enable 'Developer Mode' on somfy.com, remove the account from Nymea and re-setup the Somfy Tahoma Gateway."));
+        return;
+    }
+
+    if (info->thing()->thingClassId() == gatewayThingClassId) {
+        SomfyTahomaRequest *request = createLocalSomfyTahomaGetRequest(hardwareManager()->networkManager(), getHost(info->thing()), getToken(info->thing()), "/setup", this);
         connect(request, &SomfyTahomaRequest::error, info, [info](){
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to login to Somfy Tahoma."));
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to connect to gateway."));
         });
-        connect(request, &SomfyTahomaRequest::finished, info, [this, info](const QVariant &/*result*/){
-            QUuid accountId = info->thing()->id();
-            SomfyTahomaRequest *request = createSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
-            connect(request, &SomfyTahomaRequest::finished, this, [this, accountId](const QVariant &result){
-                QList<ThingDescriptor> unknownDevices;
-                foreach (const QVariant &gatewayVariant, result.toMap()["gateways"].toList()) {
-                    QVariantMap gatewayMap = gatewayVariant.toMap();
-                    QString gatewayId = gatewayMap.value("gatewayId").toString();
-                    Thing *thing = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, gatewayId));
+        connect(request, &SomfyTahomaRequest::finished, info, [info, this](const QVariant &result){
+            QList<ThingDescriptor> unknownDevices;
+            QUuid gatewayId = info->thing()->id();
+
+            info->thing()->setParamValue(gatewayThingGatewayIdParamTypeId, result.toMap()["gateways"].toList().first().toMap().value("gatewayId").toString());
+
+            foreach (const QVariant &deviceVariant, result.toMap()["devices"].toList()) {
+                QVariantMap deviceMap = deviceVariant.toMap();
+                QString type = deviceMap.value("controllableName").toString();
+                QString deviceUrl = deviceMap.value("deviceURL").toString();
+                QString label = deviceMap.value("label").toString();
+
+                if (type.startsWith(QStringLiteral("io:RollerShutter"))) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(rollershutterThingDeviceUrlParamTypeId, deviceUrl));
                     if (thing) {
-                        qCDebug(dcSomfyTahoma()) << "Found existing gateway:" << gatewayId;
+                        qCDebug(dcSomfyTahoma()) << "Found existing roller shutter:" << label << deviceUrl;
                     } else {
-                        qCInfo(dcSomfyTahoma()) << "Found new gateway:" << gatewayId;
-                        ThingDescriptor descriptor(gatewayThingClassId, "TaHoma Gateway", QString(), accountId);
-                        descriptor.setParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, gatewayId));
+                        qCInfo(dcSomfyTahoma()) << "Found new roller shutter:" << label << deviceUrl;
+                        ThingDescriptor descriptor(rollershutterThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(rollershutterThingDeviceUrlParamTypeId, deviceUrl));
                         unknownDevices.append(descriptor);
                     }
-                }
-                foreach (const QVariant &deviceVariant, result.toMap()["devices"].toList()) {
-                    QVariantMap deviceMap = deviceVariant.toMap();
-                    QString type = deviceMap.value("uiClass").toString();
-                    QString deviceUrl = deviceMap.value("deviceURL").toString();
-                    QString label = deviceMap.value("label").toString();
-                    if (type == QStringLiteral("RollerShutter")) {
-                        Thing *thing = myThings().findByParams(ParamList() << Param(rollershutterThingDeviceUrlParamTypeId, deviceUrl));
-                        if (thing) {
-                            qCDebug(dcSomfyTahoma()) << "Found existing roller shutter:" << label << deviceUrl;
-                        } else {
-                            qCInfo(dcSomfyTahoma()) << "Found new roller shutter:" << label << deviceUrl;
-                            ThingDescriptor descriptor(rollershutterThingClassId, label, QString(), accountId);
-                            descriptor.setParams(ParamList() << Param(rollershutterThingDeviceUrlParamTypeId, deviceUrl));
-                            unknownDevices.append(descriptor);
-                        }
-                    } else if (type == QStringLiteral("ExteriorVenetianBlind")) {
-                        Thing *thing = myThings().findByParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, deviceUrl));
-                        if (thing) {
-                            qCDebug(dcSomfyTahoma()) << "Found existing venetian blind:" << label << deviceUrl;
-                        } else {
-                            qCInfo(dcSomfyTahoma()) << "Found new venetian blind:" << label << deviceUrl;
-                            ThingDescriptor descriptor(venetianblindThingClassId, label, QString(), accountId);
-                            descriptor.setParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, deviceUrl));
-                            unknownDevices.append(descriptor);
-                        }
-                    } else if (type == QStringLiteral("GarageDoor")) {
-                        Thing *thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
-                        if (thing) {
-                            qCDebug(dcSomfyTahoma()) << "Found existing garage door:" << label << deviceUrl;
-                        } else {
-                            qCInfo(dcSomfyTahoma()) << "Found new garage door:" << label << deviceUrl;
-                            ThingDescriptor descriptor(garagedoorThingClassId, label, QString(), accountId);
-                            descriptor.setParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
-                            unknownDevices.append(descriptor);
-                        }
-                    } else if (type == QStringLiteral("Awning")) {
-                        Thing *thing = myThings().findByParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, deviceUrl));
-                        if (thing) {
-                            qCDebug(dcSomfyTahoma()) << "Found existing awning:" << label << deviceUrl;
-                        } else {
-                            qCInfo(dcSomfyTahoma()) << "Found new awning:" << label << deviceUrl;
-                            ThingDescriptor descriptor(awningThingClassId, label, QString(), accountId);
-                            descriptor.setParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, deviceUrl));
-                            unknownDevices.append(descriptor);
-                        }
-                    } else if (type == QStringLiteral("Light") && (deviceUrl.startsWith("io"))) {
-                        Thing *thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
-                        if (thing) {
-                            qCDebug(dcSomfyTahoma()) << "Found existing light:" << label << deviceUrl;
-                        } else {
-                            qCInfo(dcSomfyTahoma()) << "Found new light:" << label << deviceUrl;
-                            ThingDescriptor descriptor(lightThingClassId, label, QString(), accountId);
-                            descriptor.setParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
-                            unknownDevices.append(descriptor);
-                        }
-                    } else if (type == QStringLiteral("ProtocolGateway") ||
-                               type == QStringLiteral("Alarm") ||
-                               (type == QStringLiteral("Light") && deviceUrl.startsWith("hue"))) {
-                        continue;
+                } else if (type == QStringLiteral("io:ExteriorVenetianBlindIOComponent")) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, deviceUrl));
+                    if (thing) {
+                        qCDebug(dcSomfyTahoma()) << "Found existing venetian blind:" << label << deviceUrl;
                     } else {
-                        qCInfo(dcSomfyTahoma()) << "Found unsupperted Somfy device:" << label << type << deviceUrl;
+                        qCInfo(dcSomfyTahoma()) << "Found new venetian blind:" << label << deviceUrl;
+                        ThingDescriptor descriptor(venetianblindThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, deviceUrl));
+                        unknownDevices.append(descriptor);
                     }
+                } else if (type == QStringLiteral("io:GarageOpenerIOComponent")) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
+                    if (thing) {
+                        qCDebug(dcSomfyTahoma()) << "Found existing garage door:" << label << deviceUrl;
+                    } else {
+                        qCInfo(dcSomfyTahoma()) << "Found new garage door:" << label << deviceUrl;
+                        ThingDescriptor descriptor(garagedoorThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
+                        unknownDevices.append(descriptor);
+                    }
+                } else if (type == QStringLiteral("io:HorizontalAwningIOComponent")) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, deviceUrl));
+                    if (thing) {
+                        qCDebug(dcSomfyTahoma()) << "Found existing awning:" << label << deviceUrl;
+                    } else {
+                        qCInfo(dcSomfyTahoma()) << "Found new awning:" << label << deviceUrl;
+                        ThingDescriptor descriptor(awningThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, deviceUrl));
+                        unknownDevices.append(descriptor);
+                    }
+                } else if (type == QStringLiteral("io:DimmableLightIOComponent")) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
+                    if (thing) {
+                        qCDebug(dcSomfyTahoma()) << "Found existing light:" << label << deviceUrl;
+                    } else {
+                        qCInfo(dcSomfyTahoma()) << "Found new light:" << label << deviceUrl;
+                        ThingDescriptor descriptor(lightThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
+                        unknownDevices.append(descriptor);
+                    }
+                } else if (type == QStringLiteral("io:StackComponent") ||
+                           type.startsWith("internal:")) {
+                    continue;
+                } else {
+                    qCInfo(dcSomfyTahoma()) << "Found unsupperted Somfy device:" << label << type << deviceUrl;
                 }
-                if (!unknownDevices.isEmpty()) {
-                    emit autoThingsAppeared(unknownDevices);
-                }
-            });
+            }
             info->finish(Thing::ThingErrorNoError);
+            if (!unknownDevices.isEmpty()) {
+                emit autoThingsAppeared(unknownDevices);
+            }
         });
     }
 
-    else if (info->thing()->thingClassId() == gatewayThingClassId ||
-             info->thing()->thingClassId() == rollershutterThingClassId ||
+    else if (info->thing()->thingClassId() == rollershutterThingClassId ||
              info->thing()->thingClassId() == venetianblindThingClassId ||
              info->thing()->thingClassId() == garagedoorThingClassId ||
              info->thing()->thingClassId() == awningThingClassId ||
@@ -167,105 +215,39 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginSomfyTahoma::postSetupThing(Thing *thing)
 {
-    if (thing->thingClassId() == tahomaThingClassId) {
-        pluginStorage()->beginGroup(thing->id().toString());
-        thing->setStateValue(tahomaUserDisplayNameStateTypeId, pluginStorage()->value("username"));
-        pluginStorage()->endGroup();
-
-        refreshAccount(thing);
+    if (thing->thingClassId() != gatewayThingClassId) {
+        return;
     }
 
-    // Set parent of all devices to the respective gateway. We create all devices in setup() of the account.
-    // But we don't have the ThingIds of the gateways, because they're created in setup() as well.
-    QUrl deviceUrl;
-    if (thing->thingClassId() == rollershutterThingClassId) {
-        deviceUrl = QUrl(thing->paramValue(rollershutterThingDeviceUrlParamTypeId).toString());
-    } else if (thing->thingClassId() == venetianblindThingClassId) {
-        deviceUrl = QUrl(thing->paramValue(venetianblindThingDeviceUrlParamTypeId).toString());
-    } else if (thing->thingClassId() == garagedoorThingClassId) {
-        deviceUrl = QUrl(thing->paramValue(garagedoorThingDeviceUrlParamTypeId).toString());
-    } else if (thing->thingClassId() == awningThingClassId) {
-        deviceUrl = QUrl(thing->paramValue(awningThingDeviceUrlParamTypeId).toString());
-    } else if (thing->thingClassId() == lightThingClassId) {
-        deviceUrl = QUrl(thing->paramValue(lightThingDeviceUrlParamTypeId).toString());
-    }
-    if (!deviceUrl.isEmpty()) {
-        Thing *gateway = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, deviceUrl.host()));
-        if (gateway) {
-            thing->setParentId(gateway->parentId());
-        } else {
-            qCWarning(dcSomfyTahoma()) << "Couldn't find gateway for thing" << thing;
-        }
-    }
-}
-
-void IntegrationPluginSomfyTahoma::refreshAccount(Thing *thing)
-{
-    // Ensure that even't polling doesn't interfere the refreshing.
-    if (m_eventPollTimer.contains(thing)) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_eventPollTimer[thing]);
-    }
-
-    SomfyTahomaRequest *setupRequest = createSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/setup", this);
+    // Call /setup and update the state of all devices
+    SomfyTahomaRequest *setupRequest = createLocalSomfyTahomaGetRequest(hardwareManager()->networkManager(), getHost(thing), getToken(thing), "/setup", this);
     connect(setupRequest, &SomfyTahomaRequest::error, this, [this, thing](){
         markDisconnected(thing);
     });
     connect(setupRequest, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &result){
-        thing->setStateValue(tahomaLoggedInStateTypeId, true);
-        thing->setStateValue(tahomaConnectedStateTypeId, true);
-        foreach (const QVariant &gatewayVariant, result.toMap()["gateways"].toList()) {
-            QVariantMap gatewayMap = gatewayVariant.toMap();
-            QString gatewayId = gatewayMap.value("gatewayId").toString();
-            Thing *thing = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, gatewayId));
-            if (thing) {
-                qCDebug(dcSomfyTahoma()) << "Setting initial state for gateway:" << gatewayId;
-                thing->setStateValue(gatewayConnectedStateTypeId, gatewayMap["connectivity"].toMap()["status"] == "OK");
-                pluginStorage()->beginGroup(thing->id().toString());
-                pluginStorage()->setValue("connected", gatewayMap["connectivity"].toMap()["status"] == "OK");
-                pluginStorage()->endGroup();
-            }
-        }
+        thing->setStateValue(gatewayConnectedStateTypeId, true);
         foreach (const QVariant &deviceVariant, result.toMap()["devices"].toList()) {
             updateThingStates(deviceVariant.toMap()["deviceURL"].toString(), deviceVariant.toMap()["states"].toList());
         }
     });
 
-    SomfyTahomaRequest *eventRegistrationRequest = createSomfyTahomaPostRequest(hardwareManager()->networkManager(), "/events/register", "application/json", QByteArray(), this);
+    // Register event handler
+    SomfyTahomaRequest *eventRegistrationRequest = createLocalSomfyTahomaPostRequest(hardwareManager()->networkManager(), getHost(thing), getToken(thing), "/events/register", "application/json", QByteArray(), this);
     connect(eventRegistrationRequest, &SomfyTahomaRequest::error, this, [this, thing](){
-        qCWarning(dcSomfyTahoma()) << "Failed to register for events.";
         markDisconnected(thing);
     });
     connect(eventRegistrationRequest, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &result){
-        thing->setStateValue(tahomaConnectedStateTypeId, true);
         QString eventListenerId = result.toMap()["id"].toString();
         m_eventPollTimer[thing] = hardwareManager()->pluginTimerManager()->registerTimer(2 /*sec*/);
         connect(m_eventPollTimer[thing], &PluginTimer::timeout, thing, [this, thing, eventListenerId](){
-            SomfyTahomaRequest *eventFetchRequest = createSomfyTahomaEventFetchRequest(hardwareManager()->networkManager(), eventListenerId, this);
+            SomfyTahomaRequest *eventFetchRequest = createLocalSomfyTahomaEventFetchRequest(hardwareManager()->networkManager(), getHost(thing), getToken(thing), eventListenerId, this);
             connect(eventFetchRequest, &SomfyTahomaRequest::error, thing, [this, thing](QNetworkReply::NetworkError error){
+                qCWarning(dcSomfyTahoma()) << "Failed to fetch events:" << error;
                 markDisconnected(thing);
-                if (error == QNetworkReply::AuthenticationRequiredError) {
-                    qCInfo(dcSomfyTahoma()) << "Failed to fetch events: Authentication expired, reauthenticating";
-                    SomfyTahomaRequest *request = createLoginRequestWithStoredCredentials(thing);
-                    connect(request, &SomfyTahomaRequest::error, this, [this, thing](){
-                        // This is a fatal error. The user needs to reconfigure the account to provide new credentials.
-                        qCWarning(dcSomfyTahoma()) << "Failed to reauthenticate";
-                        hardwareManager()->pluginTimerManager()->unregisterTimer(m_eventPollTimer[thing]);
-                        m_eventPollTimer.remove(thing);
-                    });
-                    connect(request, &SomfyTahomaRequest::finished, this, [this, thing](const QVariant &/*result*/){
-                        qCInfo(dcSomfyTahoma()) << "Reauthentication successful";
-                        refreshAccount(thing);
-                    });
-                } else {
-                    qCWarning(dcSomfyTahoma()) << "Failed to fetch events:" << error;
-                }
             });
             connect(eventFetchRequest, &SomfyTahomaRequest::finished, thing, [this, thing](const QVariant &result){
-                thing->setStateValue(tahomaConnectedStateTypeId, true);
+                thing->setStateValue(gatewayConnectedStateTypeId, true);
                 restoreChildConnectedState(thing);
-                if (!result.toList().empty()) {
-                    qCDebug(dcSomfyTahoma()) << "Got events:" << qUtf8Printable(QJsonDocument::fromVariant(result).toJson());
-                }
                 handleEvents(result.toList());
             });
         });
@@ -275,13 +257,61 @@ void IntegrationPluginSomfyTahoma::refreshAccount(Thing *thing)
 void IntegrationPluginSomfyTahoma::thingRemoved(Thing *thing)
 {
     m_eventPollTimer.remove(thing);
+
+    if (thing->thingClassId() != gatewayThingClassId) {
+        return;
+    }
+
+    // Unregister local token from cloud account.
+    pluginStorage()->beginGroup(thing->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    QString requestId = pluginStorage()->value("tokenRequestId").toString();
+    QString gatewayPin = thing->paramValue(gatewayThingGatewayPinParamTypeId).toString();
+    pluginStorage()->endGroup();
+
+    SomfyTahomaRequest *request = createCloudSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
+    connect(request, &SomfyTahomaRequest::error, this, [](){
+        qCWarning(dcSomfyTahoma()) << "Failed to login to Somfy Tahoma cloud for deleting the Token.";
+    });
+    connect(request, &SomfyTahomaRequest::finished, this, [this, gatewayPin, requestId](const QVariant &/*result*/){
+        SomfyTahomaRequest *request = createCloudSomfyTahomaDeleteRequest(hardwareManager()->networkManager(), "/config/" + gatewayPin + "/local/tokens/" + requestId, this);
+        connect(request, &SomfyTahomaRequest::finished, this, [](const QVariant &/*result*/){
+            qCInfo(dcSomfyTahoma()) << "Deleted Token from Somfy Tahoma cloud.";
+        });
+    });
 }
 
-void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &eventList)
+void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &events)
 {
     Thing *thing;
-    foreach (const QVariant &eventVariant, eventList) {
+    foreach (const QVariant &eventVariant, events) {
         QVariantMap eventMap = eventVariant.toMap();
+
+        QString device = eventMap["deviceURL"].toString();
+        thing = myThings().findByParams(ParamList() << Param(rollershutterThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        thing = myThings().findByParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        thing = myThings().findByParams(ParamList() << Param(awningThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        qCDebug(dcSomfyTahoma()) << "Got event" << eventMap["name"].toString() << "for device" << device;
+        qCDebug(dcSomfyTahoma()) << qUtf8Printable(QJsonDocument::fromVariant(eventVariant).toJson());
+
         if (eventMap["name"] == "DeviceStateChangedEvent") {
             updateThingStates(eventMap["deviceURL"].toString(), eventMap["deviceStates"].toList());
         } else if (eventMap["name"] == "ExecutionRegisteredEvent") {
@@ -339,30 +369,6 @@ void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &eventList)
                     qCWarning(dcSomfyTahoma()) << "Action in unknown state" << thingActionInfo->thing() << thingActionInfo->action().actionTypeId() << eventMap["newState"].toString();
                     thingActionInfo->finish(Thing::ThingErrorHardwareFailure);
                 }
-            }
-        } else if (eventMap["name"] == "GatewayAliveEvent") {
-            thing = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, eventMap["gatewayId"]));
-            if (thing) {
-                qCInfo(dcSomfyTahoma()) << "Gateway connected event received:" << eventMap["gatewayId"];
-                thing->setStateValue(gatewayConnectedStateTypeId, true);
-                pluginStorage()->beginGroup(thing->id().toString());
-                pluginStorage()->setValue("connected", true);
-                pluginStorage()->endGroup();
-                restoreChildConnectedState(thing);
-            } else {
-                qCDebug(dcSomfyTahoma()) << "Ignoring gateway connected event for unknown gateway" << eventMap["gatewayId"];
-            }
-        } else if (eventMap["name"] == "GatewayDownEvent") {
-            thing = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, eventMap["gatewayId"]));
-            if (thing) {
-                qCInfo(dcSomfyTahoma()) << "Gateway disconnected event received:" << eventMap["gatewayId"];
-                thing->setStateValue(gatewayConnectedStateTypeId, false);
-                pluginStorage()->beginGroup(thing->id().toString());
-                pluginStorage()->setValue("connected", false);
-                pluginStorage()->endGroup();
-                markDisconnected(thing);
-            } else {
-                qCDebug(dcSomfyTahoma()) << "Ignoring gateway disconnected event for unknown gateway" << eventMap["gatewayId"];
             }
         }
     }
@@ -551,7 +557,7 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
                                                {"commands", QJsonArray{QJsonObject{{"name", actionName},
                                                                                    {"parameters", actionParameters}}}}}}}
         }};
-        SomfyTahomaRequest *request = createSomfyTahomaPostRequest(hardwareManager()->networkManager(), "/exec/apply", "application/json", jsonRequest.toJson(QJsonDocument::Compact), this);
+        SomfyTahomaRequest *request = createLocalSomfyTahomaPostRequest(hardwareManager()->networkManager(), getHost(info->thing()), getToken(info->thing()), "/exec/apply", "application/json", jsonRequest.toJson(QJsonDocument::Compact), this);
         connect(request, &SomfyTahomaRequest::error, info, [info](){
             info->finish(Thing::ThingErrorHardwareFailure);
         });
@@ -564,20 +570,9 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
     }
 }
 
-SomfyTahomaRequest *IntegrationPluginSomfyTahoma::createLoginRequestWithStoredCredentials(Thing *thing)
-{
-    pluginStorage()->beginGroup(thing->id().toString());
-    QString username = pluginStorage()->value("username").toString();
-    QString password = pluginStorage()->value("password").toString();
-    pluginStorage()->endGroup();
-    return createSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
-}
-
 void IntegrationPluginSomfyTahoma::markDisconnected(Thing *thing)
 {
-    if (thing->thingClassId() == tahomaThingClassId) {
-        thing->setStateValue(tahomaConnectedStateTypeId, false);
-    } else if (thing->thingClassId() == gatewayThingClassId) {
+    if (thing->thingClassId() == gatewayThingClassId) {
         thing->setStateValue(gatewayConnectedStateTypeId, false);
     } else if (thing->thingClassId() == rollershutterThingClassId) {
         thing->setStateValue(rollershutterConnectedStateTypeId, false);
@@ -599,9 +594,7 @@ void IntegrationPluginSomfyTahoma::restoreChildConnectedState(Thing *thing)
 {
     pluginStorage()->beginGroup(thing->id().toString());
     if (pluginStorage()->contains("connected")) {
-        if (thing->thingClassId() == gatewayThingClassId) {
-            thing->setStateValue(gatewayConnectedStateTypeId, pluginStorage()->value("connected").toBool());
-        } else if (thing->thingClassId() == rollershutterThingClassId) {
+        if (thing->thingClassId() == rollershutterThingClassId) {
             thing->setStateValue(rollershutterConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         } else if (thing->thingClassId() == venetianblindThingClassId) {
             thing->setStateValue(venetianblindConnectedStateTypeId, pluginStorage()->value("connected").toBool());
@@ -617,4 +610,47 @@ void IntegrationPluginSomfyTahoma::restoreChildConnectedState(Thing *thing)
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
         restoreChildConnectedState(child);
     }
+}
+
+QString IntegrationPluginSomfyTahoma::getHost(Thing *thing) const
+{
+    Thing *gateway = thing;
+    if (!thing->parentId().isNull()) {
+        gateway = myThings().findById(thing->parentId());
+    }
+
+    QString gatewayId = gateway->paramValue(gatewayThingGatewayIdParamTypeId).toString();
+    ZeroConfServiceEntry zeroConfEntry;
+    foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+        if (entry.name() == gatewayId) {
+            zeroConfEntry = entry;
+        }
+    }
+    QString host;
+    pluginStorage()->beginGroup(gateway->id().toString());
+    if (zeroConfEntry.isValid()) {
+        host = zeroConfEntry.hostAddress().toString() + ":" + QString::number(zeroConfEntry.port());
+        pluginStorage()->setValue("cachedAddress", host);
+    } else if (pluginStorage()->contains("cachedAddress")){
+        host = pluginStorage()->value("cachedAddress").toString();
+    } else {
+        qCWarning(dcSomfyTahoma()) << "Unable to determine IP address for:" << gatewayId;
+    }
+    pluginStorage()->endGroup();
+
+    return host;
+}
+
+QString IntegrationPluginSomfyTahoma::getToken(Thing *thing) const
+{
+    Thing *gateway = thing;
+    if (!thing->parentId().isNull()) {
+        gateway = myThings().findById(thing->parentId());
+    }
+
+    QString token;
+    pluginStorage()->beginGroup(gateway->id().toString());
+    token = pluginStorage()->value("token").toString();
+    pluginStorage()->endGroup();
+    return token;
 }

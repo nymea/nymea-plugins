@@ -1,7 +1,11 @@
 # Somfy TaHoma
 
-This plugin adds support for Somfy smarthome devices through the Somfy TaHoma
-API.
+This plugin adds support for Somfy smarthome devices through the local
+Somfy TaHoma API offered by Somfy Gateways with 'Developer Mode'
+enabled.
+
+See <https://developer.somfy.com/developer-mode> and <https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode>
+for more information.
 
 ## Prerequisites
 
