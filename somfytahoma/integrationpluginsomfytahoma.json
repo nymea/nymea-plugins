@@ -444,7 +444,61 @@
                             "defaultValue": false
                         }
                     ]
+                },
+                {
+                    "id": "e883a8ef-1fb7-4d7f-b40b-9cbc0133e58a",
+                    "name": "smokedetector",
+                    "displayName": "Smoke Detector",
+                    "createMethods": ["auto"],
+                    "interfaces": ["firesensor", "battery", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "3a41017b-87fe-4690-b148-1f69fac67f91",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6c3ee0ce-fc0f-477c-9a01-be61e061463b",
+                            "name": "fireDetected",
+                            "displayName": "Fire detected",
+                            "displayNameEvent": "Fire detected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8f67b692-243b-4ce8-9983-0d1206439f16",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "47f8506c-af7f-4928-b0ce-8c52ce4f740b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "98cf101c-cb0e-47a9-9c27-b6a0cdf9ba4b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ]
                 }
+
+
             ]
         }
     ]

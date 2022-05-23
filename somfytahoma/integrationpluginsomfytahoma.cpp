@@ -183,6 +183,16 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
                         descriptor.setParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, deviceUrl));
                         unknownDevices.append(descriptor);
                     }
+                } else if (type == QStringLiteral("io:SomfySmokeIOSystemSensor")) {
+                    Thing *thing = myThings().findByParams(ParamList() << Param(smokedetectorThingDeviceUrlParamTypeId, deviceUrl));
+                    if (thing) {
+                        qCDebug(dcSomfyTahoma()) << "Found existing smoke detector:" << label << deviceUrl;
+                    } else {
+                        qCInfo(dcSomfyTahoma()) << "Found new smoke detector:" << label << deviceUrl;
+                        ThingDescriptor descriptor(smokedetectorThingClassId, label, QString(), gatewayId);
+                        descriptor.setParams(ParamList() << Param(smokedetectorThingDeviceUrlParamTypeId, deviceUrl));
+                        unknownDevices.append(descriptor);
+                    }
                 } else if (type == QStringLiteral("io:StackComponent") ||
                            type.startsWith("internal:")) {
                     continue;
@@ -201,7 +211,8 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
              info->thing()->thingClassId() == venetianblindThingClassId ||
              info->thing()->thingClassId() == garagedoorThingClassId ||
              info->thing()->thingClassId() == awningThingClassId ||
-             info->thing()->thingClassId() == lightThingClassId) {
+             info->thing()->thingClassId() == lightThingClassId ||
+             info->thing()->thingClassId() == smokedetectorThingClassId) {
         info->finish(Thing::ThingErrorNoError);
     }
 }
@@ -312,6 +323,10 @@ void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &events)
             device = thing->name();
         }
         thing = myThings().findByParams(ParamList() << Param(lightThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
+        if (thing) {
+            device = thing->name();
+        }
+        thing = myThings().findByParams(ParamList() << Param(smokedetectorThingDeviceUrlParamTypeId, eventMap["deviceURL"]));
         if (thing) {
             device = thing->name();
         }
@@ -480,6 +495,47 @@ void IntegrationPluginSomfyTahoma::updateThingStates(const QString &deviceUrl, c
         }
         return;
     }
+    thing = myThings().findByParams(ParamList() << Param(smokedetectorThingDeviceUrlParamTypeId, deviceUrl));
+    if (thing) {
+        foreach (const QVariant &stateVariant, stateList) {
+            QVariantMap stateMap = stateVariant.toMap();
+            if (stateMap["name"] == "core:SmokeState") {
+                thing->setStateValue(smokedetectorFireDetectedStateTypeId, stateMap["value"] == "detected");
+            } else if (stateMap["name"] == "core:MaintenanceRadioPartBatteryState") {
+                QString radioBattery = stateMap["value"].toString();
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("radioBatteryState", stateMap["value"]);
+                QString sensorBattery = pluginStorage()->value("sensorBatteryState", "normal").toString();
+                pluginStorage()->endGroup();
+                if (radioBattery == "normal" && sensorBattery == "normal") {
+                    thing->setStateValue(smokedetectorBatteryCriticalStateTypeId, false);
+                } else {
+                    qCWarning(dcSomfyTahoma()) << "Smoke Detector" << thing->name() << " radio battery is low!";
+                    thing->setStateValue(smokedetectorBatteryCriticalStateTypeId, true);
+                }
+            } else if (stateMap["name"] == "core:MaintenanceSensorPartBatteryState") {
+                QString sensorBattery = stateMap["value"].toString();
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("radioBatteryState", stateMap["value"]);
+                QString radioBattery = pluginStorage()->value("radioBatteryState", "normal").toString();
+                pluginStorage()->endGroup();
+                if (radioBattery == "normal" && sensorBattery == "normal") {
+                    thing->setStateValue(smokedetectorBatteryCriticalStateTypeId, false);
+                } else {
+                    qCWarning(dcSomfyTahoma()) << "Smoke Detector" << thing->name() << " sensor battery is low!";
+                    thing->setStateValue(smokedetectorBatteryCriticalStateTypeId, true);
+                }
+            } else if (stateMap["name"] == "core:StatusState") {
+                thing->setStateValue(smokedetectorConnectedStateTypeId, stateMap["value"] == "available");
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("connected", stateMap["value"] == "available");
+                pluginStorage()->endGroup();
+            } else if (stateMap["name"] == "core:RSSILevelState") {
+                thing->setStateValue(smokedetectorSignalStrengthStateTypeId, stateMap["value"]);
+            }
+        }
+        return;
+    }
 }
 
 void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
@@ -590,6 +646,8 @@ void IntegrationPluginSomfyTahoma::markDisconnected(Thing *thing)
         thing->setStateValue(awningConnectedStateTypeId, false);
     } else if (thing->thingClassId() == lightThingClassId) {
         thing->setStateValue(lightConnectedStateTypeId, false);
+    } else if (thing->thingClassId() == smokedetectorThingClassId) {
+        thing->setStateValue(smokedetectorConnectedStateTypeId, false);
     }
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
         markDisconnected(child);
@@ -610,6 +668,8 @@ void IntegrationPluginSomfyTahoma::restoreChildConnectedState(Thing *thing)
             thing->setStateValue(awningConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         } else if (thing->thingClassId() == lightThingClassId) {
             thing->setStateValue(lightConnectedStateTypeId, pluginStorage()->value("connected").toBool());
+        } else if (thing->thingClassId() == smokedetectorThingClassId) {
+            thing->setStateValue(smokedetectorConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         }
     }
     pluginStorage()->endGroup();
