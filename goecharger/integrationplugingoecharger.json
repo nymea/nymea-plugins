@@ -22,6 +22,13 @@
                             "type": "QString"
                         },
                         {
+                            "id": "74abaff3-39e6-40be-b3c3-f41911d17e02",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
                             "id": "848613a6-8a17-4082-ba77-3b4421170a4f",
                             "name":"useMqtt",
                             "displayName": "Use MQTT interface",
@@ -126,13 +133,11 @@
                             "name": "absoluteMaxAmpere",
                             "displayName": "Maximal ampere",
                             "displayNameEvent": "Maximal ampere changed",
-                            "displayNameAction": "Set maximal ampere",
                             "type": "uint",
                             "unit": "Ampere",
                             "minValue": 6,
                             "maxValue": 32,
-                            "defaultValue": 16,
-                            "writable": true,
+                            "defaultValue": 32,
                             "suggestLogging": true
                         },
                         {
@@ -331,15 +336,6 @@
                             "name": "firmwareVersion",
                             "displayName": "Firmware version",
                             "displayNameEvent": "Firmware version changed",
-                            "type": "QString",
-                            "defaultValue": "",
-                            "cached": true
-                        },
-                        {
-                            "id": "8ecdf24b-daca-4b7a-98b5-3236f1e6ad85",
-                            "name": "serialNumber",
-                            "displayName": "Serial number",
-                            "displayNameEvent": "Serial number changed",
                             "type": "QString",
                             "defaultValue": "",
                             "cached": true

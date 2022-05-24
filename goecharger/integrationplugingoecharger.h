@@ -36,6 +36,7 @@
 #include <network/networkaccessmanager.h>
 #include <network/mqtt/mqttchannel.h>
 #include <network/mqtt/mqttprovider.h>
+#include <network/networkdevicemonitor.h>
 #include <integrations/integrationplugin.h>
 #include <plugintimer.h>
 
@@ -68,6 +69,7 @@ public:
         ForceStateOff = 1,
         ForceStateOn = 2
     };
+    Q_ENUM(ForceState)
 
     enum Access {
         AccessOpen = 0,
@@ -102,6 +104,7 @@ public:
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, MqttChannel *> m_channels;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
     QHash<Thing *, QNetworkReply *> m_pendingReplies;
 
     void update(Thing *thing, const QVariantMap &statusMap);
@@ -117,9 +120,15 @@ private:
     QNetworkReply *sendActionReply(Thing *thing, const QString &configuration);
 
     void setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    void reconfigureMqttChannel(Thing *thing, const QVariantMap &statusMap);
+
+    // Helpers
+    QHostAddress getHostAddress(Thing *thing);
+    ApiVersion getApiVersion(Thing *thing);
 
 private slots:
     void refreshHttp();
+    void refreshHttpThing(Thing *thing);
 
     void onClientConnected(MqttChannel* channel);
     void onClientDisconnected(MqttChannel* channel);
