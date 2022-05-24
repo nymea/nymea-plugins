@@ -163,9 +163,10 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         if (!keba)
             return;
 
-        qCDebug(dcKeba()) << "Network device monitor reachable changed for" << thing->name() << reachable;
+        qCDebug(dcKeba()) << "Network device monitor for" << thing->name() << (reachable ? "is now reachable" : "is not reachable any more" );
         if (reachable) {
             // Update address and refresh
+            thing->setStateValue("hostAddress", monitor->networkDeviceInfo().address().toString());
             keba->setAddress(monitor->networkDeviceInfo().address());
             refresh(thing, keba);
         }
@@ -214,7 +215,6 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
                 }
 
                 refresh(thing, keba);
-
             }
         });
 
@@ -424,6 +424,7 @@ void IntegrationPluginKeba::setupKeba(ThingSetupInfo *info, const QHostAddress &
         qCDebug(dcKeba()) << "Setup finsihed successfully for" << thing << thing->params();
 
         thing->setStateValue("connected", true);
+        thing->setStateValue("hostAddress", address.toString());
         thing->setStateValue("firmware", report.firmware);
         thing->setStateValue("uptime", report.seconds / 60);
     });
