@@ -31,8 +31,8 @@
 #ifndef INTEGRATIONPLUGINKEBA_H
 #define INTEGRATIONPLUGINKEBA_H
 
-#include <integrations/integrationplugin.h>
 #include <plugintimer.h>
+#include <integrations/integrationplugin.h>
 #include <network/networkdevicediscovery.h>
 
 #include "kecontact.h"
@@ -68,26 +68,26 @@ public:
 
 private:
     PluginTimer *m_updateTimer = nullptr;
-    PluginTimer *m_reconnectTimer = nullptr;
     KeContactDataLayer *m_kebaDataLayer = nullptr;
 
     QHash<ThingId, KeContact *> m_kebaDevices;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
     QHash<ThingId, int> m_lastSessionId;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     KebaDiscovery *m_runningDiscovery = nullptr;
 
     QHash<ThingClassId, ParamTypeId> m_macAddressParamTypeIds;
-    QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_modelParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_serialNumberParamTypeIds;
+
+    void setupKeba(ThingSetupInfo *info, const QHostAddress &address);
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);
 
-    void searchNetworkDevices();
+    void refresh(Thing *thing, KeContact *keba);
 
 private slots:
-    void onConnectionChanged(bool status);
     void onCommandExecuted(QUuid requestId, bool success);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);
     void onReportThreeReceived(const KeContact::ReportThree &reportThree);

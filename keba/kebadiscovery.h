@@ -64,10 +64,18 @@ private:
     KeContactDataLayer *m_kebaDataLayer = nullptr;
     NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
     QTimer m_responseTimer;
+
     NetworkDeviceInfos m_networkDeviceInfos;
+    NetworkDeviceInfos m_verifiedNetworkDeviceInfos;
     QList<KebaDiscoveryResult> m_results;
 
     bool alreadyDiscovered(const QHostAddress &address);
+
+    void cleanup();
+
+private slots:
+    void sendReportRequest(const NetworkDeviceInfo &networkDeviceInfo);
+
 };
 
 #endif // KEBADISCOVERY_H
