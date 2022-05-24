@@ -40,7 +40,7 @@ GoeDiscovery::GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDe
     m_networkDeviceDiscovery(networkDeviceDiscovery)
 {
     m_gracePeriodTimer.setSingleShot(true);
-    m_gracePeriodTimer.setInterval(5000);
+    m_gracePeriodTimer.setInterval(3000);
     connect(&m_gracePeriodTimer, &QTimer::timeout, this, [this](){
         qCDebug(dcGoECharger()) << "Discovery: Grace period timer triggered.";
         finishDiscovery();
@@ -62,7 +62,7 @@ void GoeDiscovery::startDiscovery()
 
     m_startDateTime = QDateTime::currentDateTime();
 
-    qCDebug(dcGoECharger()) << "Discovery: Start discovering the network...";
+    qCInfo(dcGoECharger()) << "Discovery: Start discovering the network...";
     m_discoveryReply = m_networkDeviceDiscovery->discover();
 
     // Check if all network device infos which might already be discovered here to save time...
@@ -142,7 +142,7 @@ void GoeDiscovery::checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDevic
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V1 verification returned HTTP status error" << reply->errorString();
+            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V1 verification HTTP error" << reply->errorString() << "Continue...";
             return;
         }
 
@@ -150,7 +150,7 @@ void GoeDiscovery::checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDevic
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V1 verification received data but it does not seem to be valid JSON data. Continue..." << networkDeviceInfo.address().toString();
+            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V1 verification invalid JSON data. Continue...";
             return;
         }
 
@@ -159,7 +159,7 @@ void GoeDiscovery::checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDevic
         QVariantMap responseMap = jsonDoc.toVariant().toMap();
         if (responseMap.contains("fwv") && responseMap.contains("sse") && responseMap.contains("nrg") && responseMap.contains("amp")) {
             // Looks like we have found a go-e V1 api endpoint, nice
-            qCDebug(dcGoECharger()) << "Discovery: Found API V1 on" << networkDeviceInfo.address().toString();
+            qCDebug(dcGoECharger()) << "Discovery: --> Found API V1 on" << networkDeviceInfo.address().toString();
 
             if (m_discoveryResults.contains(networkDeviceInfo.address())) {
                 // We use the information from API V2 since there are more information available
@@ -192,7 +192,7 @@ void GoeDiscovery::checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDevic
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification returned HTTP status error" << reply->errorString();
+            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification HTTP error" << reply->errorString() << "Continue...";
             return;
         }
 
@@ -200,7 +200,7 @@ void GoeDiscovery::checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDevic
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification received data but it does not seem to be valid JSON data. Continue...";
+            qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification invalid JSON data. Continue...";
             return;
         }
 
@@ -209,7 +209,7 @@ void GoeDiscovery::checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDevic
         QVariantMap responseMap = jsonDoc.toVariant().toMap();
         if (responseMap.contains("fwv") && responseMap.contains("sse") && responseMap.contains("typ") && responseMap.contains("fna")) {
             // Looks like we have found a go-e V2 api endpoint, nice
-            qCDebug(dcGoECharger()) << "Discovery: Found API V2 on" << networkDeviceInfo.address().toString();
+            qCDebug(dcGoECharger()) << "Discovery: --> Found API V2 on" << networkDeviceInfo.address().toString();
 
             GoeDiscovery::Result result;
             result.serialNumber = responseMap.value("sse").toString();
@@ -252,7 +252,7 @@ void GoeDiscovery::cleanupPendingReplies()
 void GoeDiscovery::finishDiscovery()
 {
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
-    qCDebug(dcGoECharger()) << "Discovery finished. Found" << m_discoveryResults.count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
+    qCInfo(dcGoECharger()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     m_gracePeriodTimer.stop();
     cleanupPendingReplies();
     emit discoveryFinished();

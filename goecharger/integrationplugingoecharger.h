@@ -109,6 +109,8 @@ private:
 
     void update(Thing *thing, const QVariantMap &statusMap);
 
+    void setupGoeHome(ThingSetupInfo *info);
+
     QNetworkRequest buildStatusRequest(Thing *thing);
     QNetworkRequest buildConfigurationRequest(Thing *thing, const QUrlQuery &configuration);
 
@@ -119,12 +121,13 @@ private:
     void sendActionRequest(Thing *thing, ThingActionInfo *info, const QString &configuration, ApiVersion apiVersion = ApiVersion2);
     QNetworkReply *sendActionReply(Thing *thing, const QString &configuration);
 
-    void setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    void setupMqttChannel(ThingSetupInfo *info, const QVariantMap &statusMap);
     void reconfigureMqttChannel(Thing *thing, const QVariantMap &statusMap);
 
     // Helpers
     QHostAddress getHostAddress(Thing *thing);
     ApiVersion getApiVersion(Thing *thing);
+
 
 private slots:
     void refreshHttp();

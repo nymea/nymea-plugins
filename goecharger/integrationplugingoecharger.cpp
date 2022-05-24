@@ -110,23 +110,31 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
         return;
     }
 
+    // Create the monitor
     NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
     m_monitors.insert(thing, monitor);
-
     QHostAddress address = getHostAddress(thing);
     if (address.isNull()) {
-        qCWarning(dcGoECharger()) << "Cannot set up goe. The host address is not known yet. Maybe it will be available in the next run.";
+        qCWarning(dcGoECharger()) << "Cannot set up go-eCharger. The host address is not known yet. Maybe it will be available in the next run...";
         hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The host address is not known yet. Trying later again."));
         return;
     }
 
+    // Clean up in case the setup gets aborted
+    connect(info, &ThingSetupInfo::aborted, monitor, [=](){
+        if (m_monitors.contains(thing)) {
+            qCDebug(dcGoECharger()) << "Unregister monitor because setup has been aborted.";
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+        }
+    });
+
     connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [=](bool reachable){
         qCDebug(dcGoECharger()) << "Network device monitor reachable changed for" << thing->name() << reachable;
-        if (reachable && !thing->stateValue("connected").toBool()) {
+        if (reachable && thing->setupComplete() && !thing->stateValue("connected").toBool()) {
             QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-            connect(reply, &QNetworkReply::finished, info, [=](){
+            connect(reply, &QNetworkReply::finished, thing, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
                     return;
@@ -140,16 +148,8 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
                     return;
                 }
 
-                // Handle reconfigure
-                if (m_channels.contains(thing))
-                    hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
-
-                if (m_pendingReplies.contains(thing))
-                    m_pendingReplies.take(thing)->abort();
-
                 qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
                 QVariantMap statusMap = jsonDoc.toVariant().toMap();
-
                 if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
                     // Reconfigure mqtt since also this host might have changed the ip
                     reconfigureMqttChannel(thing, statusMap);
@@ -161,55 +161,18 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
         }
     });
 
-
-
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [=](){
-        if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
-            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
-            return;
-        }
-
-        // Handle reconfigure
-        if (m_channels.contains(thing))
-            hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
-
-        if (m_pendingReplies.contains(thing))
-            m_pendingReplies.take(thing)->abort();
-
-        qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
-        QVariantMap statusMap = jsonDoc.toVariant().toMap();
-
-        // Handle reconfigure
-        if (m_channels.contains(thing)) {
-            hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
-            // Continue with normal setup
-        }
-
-        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
-            // Verify mqtt client and set it up
-            qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
-            setupMqttChannel(info, address, statusMap);
-        } else {
-            // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
-            info->finish(Thing::ThingErrorNoError);
-            qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
-            update(thing, statusMap);
-            thing->setStateValue(goeHomeConnectedStateTypeId, true);
-        }
-    });
-
+    // Wait for the monitor to be ready
+    if (monitor->reachable()) {
+        // Thing already reachable...let's finish the setup
+        setupGoeHome(info);
+    } else {
+        qCDebug(dcGoECharger()) << "Wait for the network monitor to get reachable";
+        connect(monitor, &NetworkDeviceMonitor::reachableChanged, info, [=](bool reachable){
+            if (reachable) {
+                setupGoeHome(info);
+            }
+        });
+    }
 }
 
 void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
@@ -307,7 +270,7 @@ void IntegrationPluginGoECharger::onClientDisconnected(MqttChannel *channel)
         return;
     }
 
-    qCDebug(dcGoECharger()) << thing << "connected";
+    qCWarning(dcGoECharger()) << thing << "mqtt client disconnected";
     thing->setStateValue(goeHomeConnectedStateTypeId, false);
 }
 
@@ -331,7 +294,7 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
             break;
         case CarStateWaitForCar:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Waiting for vehicle");
-            thing->setStateValue(goeHomePluggedInStateTypeId, false);
+            thing->setStateValue(goeHomePluggedInStateTypeId, true);
             break;
         case CarStateChargedCarConnected:
             thing->setStateValue(goeHomeCarStatusStateTypeId, "Charging finished and vehicle still connected");
@@ -415,32 +378,36 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
     if (statusMap.contains("fhz"))
         thing->setStateValue(goeHomeFrequencyStateTypeId, statusMap.value("fhz").toDouble());
 
-    if (statusMap.contains("ama") && statusMap.contains("cbl")) {
-        uint amaLimit = statusMap.value("ama").toUInt();
-        uint cableLimit = statusMap.value("cbl").toUInt();
+    if (statusMap.contains("cbl"))
+        thing->setStateValue(goeHomeCableType2AmpereStateTypeId, statusMap.value("cbl").toUInt());
+
+    if (statusMap.contains("ama"))
+        thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, statusMap.value("ama").toUInt());
+
+    if (statusMap.contains("var")) {
+        uint variant = statusMap.value("var").toUInt();
+        uint variantLimit = 16; // 11 kW
+        if (variant == 22) // 22 kW
+            variantLimit = 32;
+
+        thing->setStateValue(goeHomeModelMaxAmpereStateTypeId, variantLimit);
+    }
+
+    if (statusMap.contains("cbl") || statusMap.contains("ama")) {
+        // Check charging limits
+        uint amaLimit = thing->stateValue(goeHomeAbsoluteMaxAmpereStateTypeId).toUInt();
+        uint cableLimit = thing->stateValue(goeHomeCableType2AmpereStateTypeId).toUInt();
+        uint modelLimit = thing->stateValue(goeHomeModelMaxAmpereStateTypeId).toUInt();
+
         uint finalLimit = 0;
         if (cableLimit != 0) {
             finalLimit = qMin(amaLimit, cableLimit);
         } else {
             finalLimit = amaLimit;
         }
-
-        thing->setStateValue(goeHomeAbsoluteMaxAmpereStateTypeId, amaLimit);
-        thing->setStateValue(goeHomeCableType2AmpereStateTypeId, cableLimit);
-
-        // Set the limit for the max charging amps
-
         // Check hardware variant: 11 -> 16A and 22 -> 32A
-        if (statusMap.contains("var")) {
-            uint variant = statusMap.value("var").toUInt();
-            uint variantLimit = 16;
-            if (variant == 22)
-                variantLimit = 32;
-
-            finalLimit = qMin(finalLimit, variantLimit);
-        } else {
-            thing->setStateMaxValue(goeHomeAbsoluteMaxAmpereStateTypeId, qMin(cableLimit, finalLimit));
-        }
+        if (modelLimit != 0)
+            finalLimit = qMin(finalLimit, modelLimit);
 
         thing->setStateMaxValue(goeHomeMaxChargingCurrentStateTypeId, finalLimit);
     }
@@ -453,69 +420,186 @@ void IntegrationPluginGoECharger::update(Thing *thing, const QVariantMap &status
         uint voltagePhaseA = 0; uint voltagePhaseB = 0; uint voltagePhaseC = 0;
         double amperePhaseA = 0; double amperePhaseB = 0; double amperePhaseC = 0;
         double currentPower = 0; double powerPhaseA = 0; double powerPhaseB = 0; double powerPhaseC = 0;
-
         QVariantList measurementList = statusMap.value("nrg").toList();
-        if (measurementList.count() >= 1)
-            voltagePhaseA = measurementList.at(0).toUInt();
 
-        if (measurementList.count() >= 2)
-            voltagePhaseB = measurementList.at(1).toUInt();
+        if (apiVersion == ApiVersion1) {
 
-        if (measurementList.count() >= 3)
-            voltagePhaseC = measurementList.at(2).toUInt();
+            if (measurementList.count() >= 1)
+                voltagePhaseA = measurementList.at(0).toUInt();
 
-        if (measurementList.count() >= 5)
-            amperePhaseA = measurementList.at(4).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
+            if (measurementList.count() >= 2)
+                voltagePhaseB = measurementList.at(1).toUInt();
 
-        if (measurementList.count() >= 6)
-            amperePhaseB = measurementList.at(5).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
+            if (measurementList.count() >= 3)
+                voltagePhaseC = measurementList.at(2).toUInt();
 
-        if (measurementList.count() >= 7)
-            amperePhaseC = measurementList.at(6).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
+            if (measurementList.count() >= 5)
+                amperePhaseA = measurementList.at(4).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-        if (measurementList.count() >= 8)
-            powerPhaseA = measurementList.at(7).toUInt() * 100.0; // 0.1kW -> W
+            if (measurementList.count() >= 6)
+                amperePhaseB = measurementList.at(5).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-        if (measurementList.count() >= 9)
-            powerPhaseB = measurementList.at(8).toUInt() * 100.0; // 0.1kW -> W
+            if (measurementList.count() >= 7)
+                amperePhaseC = measurementList.at(6).toUInt() / 10.0; // 0,1 A value 123 -> 12,3 A
 
-        if (measurementList.count() >= 10)
-            powerPhaseC = measurementList.at(9).toUInt() * 100.0; // 0.1kW -> W
+            if (measurementList.count() >= 8)
+                powerPhaseA = measurementList.at(7).toUInt() * 100.0; // 0.1kW -> W
 
-        if (measurementList.count() >= 12)
-            currentPower = measurementList.at(11).toUInt() * 10.0; // 0.01kW -> W
+            if (measurementList.count() >= 9)
+                powerPhaseB = measurementList.at(8).toUInt() * 100.0; // 0.1kW -> W
 
-        // Update all states
-        thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
-        thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, voltagePhaseB);
-        thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, voltagePhaseC);
-        thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, amperePhaseA);
-        thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, amperePhaseB);
-        thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, amperePhaseC);
-        thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, powerPhaseA);
-        thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, powerPhaseB);
-        thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
+            if (measurementList.count() >= 10)
+                powerPhaseC = measurementList.at(9).toUInt() * 100.0; // 0.1kW -> W
 
-        thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
+            if (measurementList.count() >= 12)
+                currentPower = measurementList.at(11).toUInt() * 10.0; // 0.01kW -> W
 
-        // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
-        if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
-            uint phaseCount = 0;
-            if (amperePhaseA != 0)
-                phaseCount += 1;
+            // Update all states
+            thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
+            thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, voltagePhaseB);
+            thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, voltagePhaseC);
+            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, amperePhaseA);
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, amperePhaseB);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, amperePhaseC);
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, powerPhaseA);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, powerPhaseB);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
 
-            if (amperePhaseB != 0)
-                phaseCount += 1;
+            thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
 
-            if (amperePhaseC != 0)
-                phaseCount += 1;
+            // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+            if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
+                uint phaseCount = 0;
+                if (amperePhaseA != 0)
+                    phaseCount += 1;
 
-            // Use this loginc only if we don't have pnp available
-            if (!statusMap.contains("pnp") || statusMap.value("pnp").toUInt() == 0) {
-                thing->setStateValue(goeHomePhaseCountStateTypeId, phaseCount);
+                if (amperePhaseB != 0)
+                    phaseCount += 1;
+
+                if (amperePhaseC != 0)
+                    phaseCount += 1;
+
+                // Use this loginc only if we don't have pnp available
+                if (!statusMap.contains("pnp") || statusMap.value("pnp").toUInt() == 0) {
+                    thing->setStateValue(goeHomePhaseCountStateTypeId, phaseCount);
+                }
+            }
+        } else if (apiVersion == ApiVersion2) {
+
+            if (measurementList.count() >= 1)
+                voltagePhaseA = measurementList.at(0).toUInt();
+
+            if (measurementList.count() >= 2)
+                voltagePhaseB = measurementList.at(1).toUInt();
+
+            if (measurementList.count() >= 3)
+                voltagePhaseC = measurementList.at(2).toUInt();
+
+            if (measurementList.count() >= 5)
+                amperePhaseA = measurementList.at(4).toUInt();
+
+            if (measurementList.count() >= 6)
+                amperePhaseB = measurementList.at(5).toUInt();
+
+            if (measurementList.count() >= 7)
+                amperePhaseC = measurementList.at(6).toUInt();
+
+            if (measurementList.count() >= 8)
+                powerPhaseA = measurementList.at(7).toUInt();
+            if (measurementList.count() >= 9)
+                powerPhaseB = measurementList.at(8).toUInt() ;
+
+            if (measurementList.count() >= 10)
+                powerPhaseC = measurementList.at(9).toUInt();
+
+            if (measurementList.count() >= 12)
+                currentPower = measurementList.at(11).toUInt();
+
+            // Update all states
+            thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
+            thing->setStateValue(goeHomeVoltagePhaseBStateTypeId, voltagePhaseB);
+            thing->setStateValue(goeHomeVoltagePhaseCStateTypeId, voltagePhaseC);
+            thing->setStateValue(goeHomeCurrentPhaseAStateTypeId, amperePhaseA);
+            thing->setStateValue(goeHomeCurrentPhaseBStateTypeId, amperePhaseB);
+            thing->setStateValue(goeHomeCurrentPhaseCStateTypeId, amperePhaseC);
+            thing->setStateValue(goeHomeCurrentPowerPhaseAStateTypeId, powerPhaseA);
+            thing->setStateValue(goeHomeCurrentPowerPhaseBStateTypeId, powerPhaseB);
+            thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
+
+            thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
+
+            // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
+            if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
+                uint phaseCount = 0;
+                if (amperePhaseA != 0)
+                    phaseCount += 1;
+
+                if (amperePhaseB != 0)
+                    phaseCount += 1;
+
+                if (amperePhaseC != 0)
+                    phaseCount += 1;
+
+                // Use this loginc only if we don't have pnp available
+                if (!statusMap.contains("pnp") || statusMap.value("pnp").toUInt() == 0) {
+                    thing->setStateValue(goeHomePhaseCountStateTypeId, phaseCount);
+                }
             }
         }
     }
+}
+
+void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
+{
+    Thing *thing = info->thing();
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [=](){
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+            return;
+        }
+
+        // Handle reconfigure
+        if (m_channels.contains(thing))
+            hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
+
+        if (m_pendingReplies.contains(thing))
+            m_pendingReplies.take(thing)->abort();
+
+        qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
+        QVariantMap statusMap = jsonDoc.toVariant().toMap();
+
+        // Handle reconfigure
+        if (m_channels.contains(thing)) {
+            hardwareManager()->mqttProvider()->releaseChannel(m_channels.take(thing));
+            // Continue with normal setup
+        }
+
+        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+            // Verify mqtt client and set it up
+            qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
+            setupMqttChannel(info, statusMap);
+        } else {
+            // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
+            info->finish(Thing::ThingErrorNoError);
+            qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
+            update(thing, statusMap);
+            thing->setStateValue(goeHomeConnectedStateTypeId, true);
+        }
+    });
 }
 
 QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing)
@@ -762,9 +846,11 @@ QNetworkReply *IntegrationPluginGoECharger::sendActionReply(Thing *thing, const 
     return reply;
 }
 
-void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap)
+void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const QVariantMap &statusMap)
 {
     Thing *thing = info->thing();
+
+    QHostAddress address = getHostAddress(thing);
     QString serialNumber = statusMap.value("sse").toString();
     ApiVersion apiVersion = getApiVersion(thing);
 
@@ -801,6 +887,7 @@ void IntegrationPluginGoECharger::setupMqttChannel(ThingSetupInfo *info, const Q
         // The query item must be JSON encoded, meaning: strings need quouts... for whatever reason...
         QUrlQuery query;
         query.addQueryItem("mcu", "\"" + mqttUrl.toString() + "\"");
+        query.addQueryItem("mce", "true");
 
         QNetworkRequest request = buildConfigurationRequest(thing, query);
         qCDebug(dcGoECharger()) << "Configure nymea mqtt server address on" << thing << request.url().toString();
@@ -1401,4 +1488,3 @@ void IntegrationPluginGoECharger::refreshHttpThing(Thing *thing)
         update(thing, statusMap);
     });
 }
-

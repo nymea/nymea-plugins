@@ -141,6 +141,19 @@
                             "suggestLogging": true
                         },
                         {
+                            "id": "ede9251d-662e-4d4b-90e3-db3d33c823d3",
+                            "name": "modelMaxAmpere",
+                            "displayName": "Model maximal ampere",
+                            "displayNameEvent": "Maximal ampere model changed",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "minValue": 16,
+                            "maxValue": 32,
+                            "defaultValue": 16,
+                            "suggestLogging": true,
+                            "cached": true
+                        },
+                        {
                             "id": "08b107bc-1284-455d-9e5a-6a1c3adc389f",
                             "name": "updateAvailable",
                             "displayName": "Update available",
@@ -165,7 +178,8 @@
                             "displayNameEvent": "Cable ampere encoding changed",
                             "type": "uint",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": true
                         },
                         {
                             "id": "d8f5abb6-5db3-4040-8829-553b1d881ce4",
@@ -174,7 +188,8 @@
                             "displayNameEvent": "Total energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "cached": true
                         },
                         {
                             "id": "e8258831-ad89-4d27-b295-e8c10dd42b76",
