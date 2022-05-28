@@ -47,7 +47,19 @@ SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : 
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
         deleteLater();
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Request for" << reply->url().path() << "failed:" << reply->errorString();
+            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            QVariantMap requestHeaders;
+            foreach (const QByteArray &rawHeader, reply->request().rawHeaderList()) {
+              requestHeaders.insert(rawHeader, reply->request().rawHeader(rawHeader));
+            }
+            QVariantMap replyHeaders;
+            foreach (const QByteArray &rawHeader, reply->rawHeaderList()) {
+              replyHeaders.insert(rawHeader, reply->rawHeader(rawHeader));
+            }
+            qCWarning(dcSomfyTahoma()).noquote() << "Request error:" << status << "for URL:" << reply->url().toString()
+                                                 << "on operation" << reply->operation() << "\n" << "Content:" << reply->readAll();
+            qCDebug(dcSomfyTahoma()).noquote() << "Request headers:" << QJsonDocument::fromVariant(requestHeaders).toJson()
+                                               << "Reply headers:" << QJsonDocument::fromVariant(replyHeaders).toJson();
             emit error(reply->error());
             return;
         }
@@ -56,7 +68,7 @@ SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : 
         QJsonParseError parseError;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
         if (parseError.error != QJsonParseError::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Json parse error in reply for" << reply->url().path() << ":" << parseError.errorString();
+            qCWarning(dcSomfyTahoma()) << "Json parse error:" << reply->url().toString() << ":" << parseError.error << parseError.errorString();
             emit error(QNetworkReply::UnknownContentError);
             return;
         }

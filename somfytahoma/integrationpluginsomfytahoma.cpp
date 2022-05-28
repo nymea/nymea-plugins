@@ -98,8 +98,8 @@ void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const 
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to activate token."));
             });
             connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password, token](const QVariant &result){
-                qCDebug(dcSomfyTahoma()) << "Got token uuid" << result;
                 QString requestId = result.toMap()["requestId"].toString();
+                qCDebug(dcSomfyTahoma()) << "Got token requestId" << requestId;
 
                 pluginStorage()->beginGroup(info->thingId().toString());
                 pluginStorage()->setValue("username", username);
