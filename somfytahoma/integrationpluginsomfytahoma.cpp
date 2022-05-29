@@ -89,7 +89,7 @@ void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const 
         connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password](const QVariant &result){
             QString token = result.toMap()["token"].toString();
             QJsonDocument jsonRequest{QJsonObject{
-                {"label", "nymea"},
+                {"label", "nymea_" + info->thingId().toString()},
                 {"token", token},
                 {"scope", "devmode"},
             }};
@@ -97,15 +97,11 @@ void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const 
             connect(request, &SomfyTahomaRequest::error, info, [info](){
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to activate token."));
             });
-            connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password, token](const QVariant &result){
-                QString requestId = result.toMap()["requestId"].toString();
-                qCDebug(dcSomfyTahoma()) << "Got token requestId" << requestId;
-
+            connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password, token](const QVariant &/*result*/){
                 pluginStorage()->beginGroup(info->thingId().toString());
                 pluginStorage()->setValue("username", username);
                 pluginStorage()->setValue("password", password);
                 pluginStorage()->setValue("token", token);
-                pluginStorage()->setValue("tokenRequestId", requestId);
                 pluginStorage()->endGroup();
 
                 info->finish(Thing::ThingErrorNoError);
@@ -266,18 +262,31 @@ void IntegrationPluginSomfyTahoma::thingRemoved(Thing *thing)
     pluginStorage()->beginGroup(thing->id().toString());
     QString username = pluginStorage()->value("username").toString();
     QString password = pluginStorage()->value("password").toString();
-    QString requestId = pluginStorage()->value("tokenRequestId").toString();
     QString gatewayPin = thing->paramValue(gatewayThingGatewayPinParamTypeId).toString();
+    QString tokenName = "nymea_" + thing->id().toString();
     pluginStorage()->endGroup();
 
     SomfyTahomaRequest *request = createCloudSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
     connect(request, &SomfyTahomaRequest::error, this, [](){
-        qCWarning(dcSomfyTahoma()) << "Failed to login to Somfy Tahoma cloud for deleting the Token.";
+        qCWarning(dcSomfyTahoma()) << "Failed to login to Somfy TaHoma.";
     });
-    connect(request, &SomfyTahomaRequest::finished, this, [this, gatewayPin, requestId](const QVariant &/*result*/){
-        SomfyTahomaRequest *request = createCloudSomfyTahomaDeleteRequest(hardwareManager()->networkManager(), "/config/" + gatewayPin + "/local/tokens/" + requestId, this);
-        connect(request, &SomfyTahomaRequest::finished, this, [](const QVariant &/*result*/){
-            qCInfo(dcSomfyTahoma()) << "Deleted Token from Somfy Tahoma cloud.";
+    connect(request, &SomfyTahomaRequest::finished, this, [this, gatewayPin, tokenName](const QVariant &/*result*/){
+        SomfyTahomaRequest *request = createCloudSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/config/" + gatewayPin + "/local/tokens/devmode", this);
+        connect(request, &SomfyTahomaRequest::error, this, [](){
+            qCWarning(dcSomfyTahoma()) << "Failed to get list of tokens.";
+        });
+        connect(request, &SomfyTahomaRequest::finished, this, [this, gatewayPin, tokenName](const QVariant &result){
+            foreach (const QVariant &tokenVariant, result.toList()) {
+                QVariantMap tokenMap = tokenVariant.toMap();
+                QString label = tokenMap["label"].toString();
+                QString uuid = tokenMap["uuid"].toString();
+                if (label == tokenName) {
+                    SomfyTahomaRequest *request = createCloudSomfyTahomaDeleteRequest(hardwareManager()->networkManager(), "/config/" + gatewayPin + "/local/tokens/" + uuid, this);
+                    connect(request, &SomfyTahomaRequest::error, this, [](){
+                        qCWarning(dcSomfyTahoma()) << "Failed to remove token.";
+                    });
+                }
+            }
         });
     });
 }
