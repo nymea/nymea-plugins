@@ -53,11 +53,10 @@ void IntegrationPluginSomfyTahoma::discoverThings(ThingDiscoveryInfo *info)
 
         ThingDescriptor descriptor(info->thingClassId(), "Somfy TaHoma Gateway", entry.hostAddress().toString());
         ParamList params;
-        params << Param(gatewayThingGatewayIdParamTypeId, entry.name());
         params << Param(gatewayThingGatewayPinParamTypeId, entry.txt("gateway_pin"));
         descriptor.setParams(params);
 
-        Things existingThings = myThings().filterByParam(gatewayThingGatewayIdParamTypeId, entry.name());
+        Things existingThings = myThings().filterByParam(gatewayThingGatewayPinParamTypeId, entry.txt("gateway_pin"));
         if (existingThings.count() == 1) {
             qCDebug(dcSomfyTahoma()) << "This gateway already exists in the system!";
             descriptor.setThingId(existingThings.first()->id());
@@ -127,8 +126,6 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
         connect(request, &SomfyTahomaRequest::finished, info, [info, this](const QVariant &result){
             QList<ThingDescriptor> unknownDevices;
             QUuid gatewayId = info->thing()->id();
-
-            info->thing()->setParamValue(gatewayThingGatewayIdParamTypeId, result.toMap()["gateways"].toList().first().toMap().value("gatewayId").toString());
 
             foreach (const QVariant &deviceVariant, result.toMap()["devices"].toList()) {
                 QVariantMap deviceMap = deviceVariant.toMap();
@@ -628,10 +625,10 @@ QString IntegrationPluginSomfyTahoma::getHost(Thing *thing) const
         gateway = myThings().findById(thing->parentId());
     }
 
-    QString gatewayId = gateway->paramValue(gatewayThingGatewayIdParamTypeId).toString();
+    QString gatewayPin = gateway->paramValue(gatewayThingGatewayPinParamTypeId).toString();
     ZeroConfServiceEntry zeroConfEntry;
     foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
-        if (entry.name() == gatewayId) {
+        if (gatewayPin == entry.txt("gateway_pin")) {
             zeroConfEntry = entry;
         }
     }
@@ -643,7 +640,7 @@ QString IntegrationPluginSomfyTahoma::getHost(Thing *thing) const
     } else if (pluginStorage()->contains("cachedAddress")){
         host = pluginStorage()->value("cachedAddress").toString();
     } else {
-        qCWarning(dcSomfyTahoma()) << "Unable to determine IP address for:" << gatewayId;
+        qCWarning(dcSomfyTahoma()) << "Unable to determine IP address for:" << gatewayPin;
     }
     pluginStorage()->endGroup();
 
