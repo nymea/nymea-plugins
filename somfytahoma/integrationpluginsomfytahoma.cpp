@@ -51,7 +51,7 @@ void IntegrationPluginSomfyTahoma::discoverThings(ThingDiscoveryInfo *info)
     foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
         qCDebug(dcSomfyTahoma()) << "Found local gateway:" << entry;
 
-        ThingDescriptor descriptor(info->thingClassId(), "Somfy Tahoma Gateway", entry.hostAddress().toString());
+        ThingDescriptor descriptor(info->thingClassId(), "Somfy TaHoma Gateway", entry.hostAddress().toString());
         ParamList params;
         params << Param(gatewayThingGatewayIdParamTypeId, entry.name());
         params << Param(gatewayThingGatewayPinParamTypeId, entry.txt("gateway_pin"));
@@ -71,7 +71,7 @@ void IntegrationPluginSomfyTahoma::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginSomfyTahoma::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the cloud login credentials for Somfy Tahoma in order to set up local access to the Gateway."));
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the cloud login credentials for Somfy TaHoma in order to set up local access to the Gateway."));
 }
 
 void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
@@ -79,7 +79,7 @@ void IntegrationPluginSomfyTahoma::confirmPairing(ThingPairingInfo *info, const 
     // Request local token from cloud account.
     SomfyTahomaRequest *request = createCloudSomfyTahomaLoginRequest(hardwareManager()->networkManager(), username, password, this);
     connect(request, &SomfyTahomaRequest::error, info, [info](){
-        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to login to Somfy Tahoma."));
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to login to Somfy TaHoma."));
     });
     connect(request, &SomfyTahomaRequest::finished, info, [this, info, username, password](const QVariant &/*result*/){
         SomfyTahomaRequest *request = createCloudSomfyTahomaGetRequest(hardwareManager()->networkManager(), "/config/" + info->params().paramValue(gatewayThingGatewayPinParamTypeId).toString() + "/local/tokens/generate", this);
@@ -119,7 +119,7 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
     // Compatibility to older cloud based versions of the plugin.
     if (info->thing()->thingClassId() == tahomaThingClassId ||
             (info->thing()->thingClassId() == gatewayThingClassId && getToken(info->thing()).isEmpty())) {
-        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("The Somfy Plugin switched to local connection. Please enable 'Developer Mode' on somfy.com, remove the account from Nymea and re-setup the Somfy Tahoma Gateway."));
+        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("The Somfy Plugin switched to local connection. Please enable 'Developer Mode' on somfy.com, remove the account from Nymea and re-setup the Somfy TaHoma Gateway."));
         return;
     }
 
