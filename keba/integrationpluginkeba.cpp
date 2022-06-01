@@ -131,8 +131,13 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         if (keba) {
             qCDebug(dcKeba()) << "Reconfigure" << thing->name() << thing->params();
             delete keba;
-            // Now continue with the normal setup
         }
+
+        if (m_monitors.contains(thing)) {
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+        }
+
+        // Now continue with the normal setup..
     }
 
     qCDebug(dcKeba()) << "Setting up" << thing->name() << thing->params();
