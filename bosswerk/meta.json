@@ -1,0 +1,13 @@
+{
+    "title": "Bosswerk",
+    "tagline": "Integrates Bosswerk solar inverters with nymea.",
+    "icon": "bosswerk.jpg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
