@@ -53,13 +53,6 @@
                             "defaultValue": "https://downloads.nymea.io/nymea-icons/kodi-notification/nymea-logo.png"
                         },
                         {
-                            "id": "2c534f37-e1c2-4762-8e38-1718306739f1",
-                            "name": "notificationUseCustomIcon",
-                            "displayName": "Use notification icon",
-                            "type": "bool",
-                            "defaultValue": true
-                        },
-                        {
                             "id": "55133408-794a-4c32-a7f1-f59e83e6eae7",
                             "name": "notificationDuration",
                             "displayName": "Notification display times",
@@ -263,8 +256,9 @@
                                     "name": "type",
                                     "displayName": "type",
                                     "type": "QString",
-                                    "defaultValue": "info",
+                                    "defaultValue": "icon",
                                     "allowedValues": [
+                                        "icon",
                                         "info",
                                         "warning",
                                         "error"

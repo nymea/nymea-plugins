@@ -283,12 +283,19 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
 
     int commandId = -1;
     if (action.actionTypeId() == kodiNotifyActionTypeId) {
+        QString notificationType = action.param(kodiNotifyActionTypeParamTypeId).value().toString();
         QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
         QString imageString;
-        if (thing->setting(kodiSettingsNotificationUseCustomIconParamTypeId).toBool()) {
-            imageString = notificationUrl.toString();
+        if (notificationType == "icon") {
+            if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
+                imageString = notificationUrl.toString();
+            } else {
+                // No valid icon url configured. Let's fallback to info
+                imageString = "info";
+            }
         } else {
-            imageString = action.param(kodiNotifyActionTypeParamTypeId).value().toString();
+            // info, warning, error
+            imageString = notificationType;
         }
 
         commandId = kodi->showNotification(
@@ -421,9 +428,9 @@ void IntegrationPluginKodi::onConnectionChanged(bool connected)
         }
     }
 
-    QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
     QString imageString;
-    if (thing->setting(kodiSettingsNotificationUseCustomIconParamTypeId).toBool()) {
+    QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
+    if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
         imageString = notificationUrl.toString();
     } else {
         imageString = "info";
