@@ -20,11 +20,10 @@ The currently supported devices are:
 * Shelly Vintage
 
 ## Requirements
-Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required
-to have the MQTT broker enabled in the nymea settings and the Shelly device needs to be connected to the same WiFi as nymea is
-in. New Shelly devices will open a WiFi named with their name as SSID. For instance, a Shelly 1 would appear as "shelly1-XXXXXX".
-Connect to this WiFi and open the webpage that will pop up. From there, it can be configured it to connect to the same
-network where the nymea system is located. No other options need to be set as they can be configured using nymea later on.
+The Shelly device needs to be connected to the same WiFi as nymea is in. New Shelly devices will open a WiFi named with 
+their name as SSID. For instance, a Shelly 1 would appear as "shelly1-XXXXXX". Connect to this WiFi and open the webpage
+that will pop up. From there, it can be configured it to connect to the same network where the nymea system is located.
+No other options need to be set as they can be configured using nymea later on.
 
 
 ## Setting up devices

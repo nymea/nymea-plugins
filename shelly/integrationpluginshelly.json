@@ -358,22 +358,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "84e60831-0a2c-466a-bdfe-36ae6bd114e2",
-                            "name": "connectedDevice1",
-                            "displayName": "Connected device 1",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Up"],
-                            "defaultValue": "Generic"
-                        },
-                        {
-                            "id": "0becaa77-b927-489a-ad5f-9b22513f8673",
-                            "name": "connectedDevice2",
-                            "displayName": "Connected device 2",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Down"],
-                            "defaultValue": "Generic"
-                        },
-                        {
                             "id": "521303e2-ef93-47df-8acb-fb1f8f78aae9",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -384,6 +368,13 @@
                             "name": "password",
                             "displayName": "Password (optional)",
                             "type": "QString"
+                        },
+                        {
+                            "id": "be637e1f-7b87-4980-9cc2-fc787909ce59",
+                            "name": "rollerMode",
+                            "displayName": "Roller shutter mode",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "stateTypes": [
@@ -432,6 +423,28 @@
                             "displayNameEvent": "Available firmware version changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "e3179799-96ca-47a4-8771-888f523247ac",
+                            "name": "channel1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Channel 1 turned on or off",
+                            "displayNameAction": "Turn channel 1 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "0e50c443-786a-4067-b1df-2b183434a546",
+                            "name": "channel2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Channel 2 turned on or off",
+                            "displayNameAction": "Turn channel 2 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ],
                     "actionTypes": [
@@ -462,22 +475,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "dc8a02fb-baa4-40bf-9e00-684b17794287",
-                            "name": "connectedDevice1",
-                            "displayName": "Connected device 1",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Up"],
-                            "defaultValue": "Generic"
-                        },
-                        {
-                            "id": "1e6925f8-1613-4fe4-8234-e4a4e973ef83",
-                            "name": "connectedDevice2",
-                            "displayName": "Connected device 2",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Down"],
-                            "defaultValue": "Generic"
-                        },
-                        {
                             "id": "4fb3c690-0183-4fc4-affa-1404788b2dcc",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -488,6 +485,13 @@
                             "name": "password",
                             "displayName": "Password (optional)",
                             "type": "QString"
+                        },
+                        {
+                            "id": "8265295d-042c-4d07-bcae-d83f5da7b1a4",
+                            "name": "rollerMode",
+                            "displayName": "Roller shutter mode",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "stateTypes": [
@@ -792,6 +796,18 @@
                             "displayNameAction": "Set color",
                             "type": "QColor",
                             "defaultValue": "white",
+                            "writable": true
+                        },
+                        {
+                            "id": "8006331c-53ca-4386-8d5c-da62c175af01",
+                            "name": "whiteChannel",
+                            "displayName": "White channel",
+                            "displayNameEvent": "White channel changed",
+                            "displayNameAction": "Set white channel",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 255,
+                            "defaultValue": 0,
                             "writable": true
                         },
                         {
@@ -1919,11 +1935,77 @@
                     ]
                 },
                 {
+                    "id": "e2d2f11b-922f-4ff0-81e1-6fbf4c965521",
+                    "name": "shellyPowerMeterChannel",
+                    "displayName": "Shelly Power meter Channel",
+                    "createMethods": ["auto"],
+                    "interfaces": ["smartmeterconsumer", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "a52ae311-7a68-47df-a70e-4d05840798f1",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "a6a14cfe-3560-4311-875c-5f04a83f48c5",
+                            "name": "channel",
+                            "displayName": "Channel",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1524dc63-7df8-47fc-a466-69ca896db361",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "c3d6a520-dad3-463e-b321-91fa1dff6e07",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "670b966c-f882-4846-86ce-54db7da68917",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0,
+                            "cached": true
+                        },
+                        {
+                            "id": "9d6a6965-3024-424d-b71b-cf1358a2ece1",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
                     "id": "67ccc046-c8b5-4584-8f7f-6fe0a0c6a860",
                     "name": "shellyEmChannel",
                     "displayName": "Shelly EM Channel",
                     "createMethods": ["auto"],
-                    "interfaces": ["wirelessconnectable", "energymeter"],
+                    "interfaces": ["energymeter", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "b9b85416-0d48-4e71-9471-03385f8fc619",
@@ -1987,25 +2069,6 @@
                             "name": "currentPower",
                             "displayName": "Current power",
                             "displayNameEvent": "Current power changed",
-                            "type": "double",
-                            "unit": "Watt",
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "fd5898ce-c8c9-422d-a32a-996d4004ca15",
-                            "name": "powerFactorPhaseA",
-                            "displayName": "Power factor",
-                            "displayNameEvent": "Power factor changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "abdb5b38-05d3-4c12-aed2-f7c560d6b4e8",
-                            "name": "reactivePowerPhaseA",
-                            "displayName": "Reactive power",
-                            "displayNameEvent": "Reactive power changed",
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0,
@@ -2160,418 +2223,6 @@
                             "id": "17327674-f160-44e1-8a3d-fc2b6e1ee319",
                             "name": "performUpdate",
                             "displayName": "Start firmware update"
-                        }
-                    ]
-                },
-                {
-                    "id": "512c3c7d-d6a6-4d2a-bccd-83147e5f9a25",
-                    "name": "shellyGeneric",
-                    "displayName": "Shelly connected device",
-                    "createMethods": ["auto"],
-                    "interfaces": ["power", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "7d35aea3-1444-48c8-9732-a41bfc3b9d75",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "c08b1272-6eb2-4fed-80ad-06566a521b95",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "4a141674-faa6-4953-8272-5b4a4da84d31",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "e48d19f1-e04b-4c5d-b515-15bb22060607",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "72d7dbba-757c-4b03-a092-1d3f374fa961",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        }
-
-                    ]
-                },
-                {
-                    "id": "3bd614e0-72c4-4fbe-8c70-ce6c48d04bce",
-                    "name": "shellyGenericPM",
-                    "displayName": "Shelly connected device",
-                    "createMethods": ["auto"],
-                    "interfaces": ["power", "smartmeterconsumer", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "8c60a23c-5e5b-42ba-abae-aeeb3d379d79",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "5e7c6ed5-fe9c-4e27-ad1e-e96886f3c09b",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "5ec936f8-694d-43f4-b3a2-fdc77d38feab",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "46cd6c28-b59a-4e20-b706-f202c0848b93",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "bd9480af-eec2-42d7-ab17-15715ee2e8e0",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "54b0b02e-1dfe-4172-bdfd-8129709e5d9f",
-                            "name": "totalEnergyConsumed",
-                            "displayName": "Total energy consumed",
-                            "displayNameEvent": "Total energy changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "KiloWattHour"
-                        },
-                        {
-                            "id": "41338dbd-6d58-4093-a56c-0adaec5398d5",
-                            "name": "currentPower",
-                            "displayName": "Current power consumption",
-                            "displayNameEvent": "Power consumption changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "Watt",
-                            "cached": false
-                        }
-                    ]
-                },
-                {
-                    "id": "62a2d6b8-d70d-45fc-ba8c-1c680282a399",
-                    "name": "shellyLight",
-                    "displayName": "Shelly connected light",
-                    "createMethods": ["auto"],
-                    "interfaces": ["light", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "4fe9ae31-3657-41bf-bd40-a219d58465d3",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "9c8b88c0-2825-4235-9b68-2ba378eeb53f",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "61b7d8ac-d229-4268-8143-6edb2eca978d",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "739a511c-b36d-40c9-b726-acde87f63d9f",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "2ee5bfab-271e-4b95-9464-122a5208f1a5",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        }
-                    ]
-                },
-                {
-                    "id": "5ab05c19-71aa-4a85-a02f-a108f039a69a",
-                    "name": "shellyLightPM",
-                    "displayName": "Shelly connected light",
-                    "createMethods": ["auto"],
-                    "interfaces": ["light", "smartmeterconsumer", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "01cc242a-268d-4dd9-96ce-5502dd1bd430",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "9066e9e9-56e0-4e6b-8667-503b68613640",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "df6f8a11-1295-4ceb-b277-dbe83b9d039c",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "066de9e4-41f7-4628-a83c-102a2719473a",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "e77d1c75-e856-46bc-9f38-36e59ed7849d",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "39e3d2c6-efb8-4c40-8ae9-8684d87e4087",
-                            "name": "totalEnergyConsumed",
-                            "displayName": "Total energy consumed",
-                            "displayNameEvent": "Total energy changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "KiloWattHour"
-                        },
-                        {
-                            "id": "0de42461-1077-4b74-9212-5446914fd25f",
-                            "name": "currentPower",
-                            "displayName": "Current power consumption",
-                            "displayNameEvent": "Power consumption changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "Watt",
-                            "cached": false
-                        }
-                    ]
-                },
-                {
-                    "id": "3e13206c-a6cd-49a0-b653-2ccb5bb4bbc1",
-                    "name": "shellySocket",
-                    "displayName": "Shelly connected power socket",
-                    "createMethods": ["auto"],
-                    "interfaces": ["powersocket", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "9f365d87-ddb9-4764-9bfb-0e64020646b4",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "d48edbdf-8ed5-4721-a42a-fd2c340c1a6e",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "b71fa926-9fd2-4008-9fe5-83bbf821963c",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "3459cd8a-8e27-48b1-9b14-43c6239ed3a2",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "51e897b3-dd17-4df3-aa42-52b9bb5f0df8",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        }
-                    ]
-                },
-                {
-                    "id": "ae6e55fe-1a0b-43bc-bdfb-605661b96905",
-                    "name": "shellySocketPM",
-                    "displayName": "Shelly connected power socket",
-                    "createMethods": ["auto"],
-                    "interfaces": ["powersocket", "smartmeterconsumer", "wirelessconnectable"],
-                    "settingsTypes": [
-                        {
-                            "id": "9880a51b-57da-4b65-a0ec-23eb0fdcb8ac",
-                            "name": "defaultState",
-                            "displayName": "Default state",
-                            "allowedValues": ["on", "off", "last", "switch"],
-                            "defaultValue": "off",
-                            "type": "QString"
-                        }
-                    ],
-                    "paramTypes": [
-                        {
-                            "id": "17c19689-8c88-454e-8b18-15436cad293d",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "6e5dbb06-ef4b-42eb-bf6d-e3c83d78de67",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected or disconnected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
-                        },
-                        {
-                            "id": "e81ee293-9dff-46d0-92dc-5f5627e05962",
-                            "name": "signalStrength",
-                            "displayName": "Signal strength",
-                            "displayNameEvent": "Signal strength changed",
-                            "type": "uint",
-                            "unit": "Percentage",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 0,
-                            "cached": false
-                        },
-                        {
-                            "id": "d6adeab6-c91d-44ba-8d01-9b5b9b7368be",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Turned on or off",
-                            "displayNameAction": "Turn on or off",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "89a65444-63d4-4add-a479-a48e95dd0458",
-                            "name": "totalEnergyConsumed",
-                            "displayName": "Total energy consumed",
-                            "displayNameEvent": "Total energy changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "KiloWattHour"
-                        },
-                        {
-                            "id": "e95b97d4-b88f-4656-8819-3f681fbe8510",
-                            "name": "currentPower",
-                            "displayName": "Current power consumption",
-                            "displayNameEvent": "Power consumption changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "Watt",
-                            "cached": false
                         }
                     ]
                 },
