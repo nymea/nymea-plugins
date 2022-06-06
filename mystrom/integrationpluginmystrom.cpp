@@ -81,6 +81,7 @@ void IntegrationPluginMyStrom::setupThing(ThingSetupInfo *info)
 
     QNetworkRequest request(infoUrl);
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcMyStrom()) << "Error fetching device info from myStrom device" << info->thing()->name();
@@ -117,6 +118,7 @@ void IntegrationPluginMyStrom::postSetupThing(Thing *thing)
             foreach (Thing *thing, myThings().filterByThingClassId(switchThingClassId)) {
                 QUrl url = composeUrl(thing, "/report");
                 QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
                 connect(reply, &QNetworkReply::finished, thing, [reply, thing](){
                     if (reply->error() != QNetworkReply::NoError) {
                         qCWarning(dcMyStrom()) << "Error fetching report from myStrom device:" << reply->errorString();
@@ -167,6 +169,7 @@ void IntegrationPluginMyStrom::executeAction(ThingActionInfo *info)
             powerUrl.setQuery(query);
 
             QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(powerUrl));
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, this, [info, reply, power](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcMyStrom()) << "Error switching myStrom switch:" << reply->error() << reply->errorString();
