@@ -104,7 +104,6 @@ IntegrationPluginTPLink::~IntegrationPluginTPLink()
 void IntegrationPluginTPLink::init()
 {
     m_broadcastSocket = new QUdpSocket(this);
-
 }
 
 void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
@@ -264,6 +263,20 @@ void IntegrationPluginTPLink::setupThing(ThingSetupInfo *info)
 void IntegrationPluginTPLink::postSetupThing(Thing *thing)
 {
     qCDebug(dcTplink()) << "Post setup thing" << thing->name();
+    QTimer *jobTimer = new QTimer(thing);
+    jobTimer->setInterval(5000);
+    connect(jobTimer, &QTimer::timeout, thing, [this, thing](){
+        if (m_pendingJobs.contains(thing)) {
+            Job job = m_pendingJobs.take(thing);
+            qCWarning(dcTplink()) << "A job" << job.id << "timed out";
+            if (job.actionInfo) {
+                job.actionInfo->finish(Thing::ThingErrorTimeout);
+            }
+            processQueue(thing);
+        }
+    });
+    m_jobTimers[thing] = jobTimer;
+
     connect(thing, &Thing::nameChanged, this, [this, thing](){
         QVariantMap map;
         QVariantMap systemMap;
@@ -310,6 +323,7 @@ void IntegrationPluginTPLink::thingRemoved(Thing *thing)
     m_sockets.remove(thing);
     m_pendingJobs.remove(thing);
     m_jobQueue.remove(thing);
+    m_jobTimers.remove(thing);
 
     if (myThings().isEmpty() && m_timer) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer);
@@ -436,6 +450,7 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
             }
 
             Job job = m_pendingJobs.take(thing);
+            m_jobTimers[thing]->stop();
 
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(decryptPayload(payload), &error);
@@ -604,5 +619,7 @@ void IntegrationPluginTPLink::processQueue(Thing *thing)
         socket->disconnectFromHost();
         return;
     }
+
+    m_jobTimers[thing]->start();
 }
 
