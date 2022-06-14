@@ -1,0 +1,13 @@
+{
+    "title": "powerfox",
+    "tagline": "Connects nymea to powerfox.",
+    "icon": "powerfox.jpeg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
