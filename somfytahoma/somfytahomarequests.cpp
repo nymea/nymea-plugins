@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -38,7 +38,8 @@
 #include "extern-plugininfo.h"
 
 
-static const QString somfyTahomaUrl = QStringLiteral("https://tahomalink.com/enduser-mobile-web/enduserAPI");
+static const QString somfyTahomaWebUrl = QStringLiteral("https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI");
+static const QString localSomfyTahomaPath = QStringLiteral("/enduser-mobile-web/1/enduserAPI");
 
 SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : QObject(parent)
 {
@@ -46,7 +47,19 @@ SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : 
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
         deleteLater();
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Request for" << reply->url().path() << "failed:" << reply->errorString();
+            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            QVariantMap requestHeaders;
+            foreach (const QByteArray &rawHeader, reply->request().rawHeaderList()) {
+              requestHeaders.insert(rawHeader, reply->request().rawHeader(rawHeader));
+            }
+            QVariantMap replyHeaders;
+            foreach (const QByteArray &rawHeader, reply->rawHeaderList()) {
+              replyHeaders.insert(rawHeader, reply->rawHeader(rawHeader));
+            }
+            qCWarning(dcSomfyTahoma()).noquote() << "Request error:" << status << "for URL:" << reply->url().toString()
+                                                 << "on operation" << reply->operation() << "\n" << "Content:" << reply->readAll();
+            qCDebug(dcSomfyTahoma()).noquote() << "Request headers:" << QJsonDocument::fromVariant(requestHeaders).toJson()
+                                               << "Reply headers:" << QJsonDocument::fromVariant(replyHeaders).toJson();
             emit error(reply->error());
             return;
         }
@@ -55,7 +68,7 @@ SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : 
         QJsonParseError parseError;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
         if (parseError.error != QJsonParseError::NoError) {
-            qCWarning(dcSomfyTahoma()) << "Json parse error in reply for" << reply->url().path() << ":" << parseError.errorString();
+            qCWarning(dcSomfyTahoma()) << "Json parse error:" << reply->url().toString() << ":" << parseError.error << parseError.errorString();
             emit error(QNetworkReply::UnknownContentError);
             return;
         }
@@ -64,32 +77,73 @@ SomfyTahomaRequest::SomfyTahomaRequest(QNetworkReply *reply, QObject *parent) : 
     });
 }
 
-SomfyTahomaRequest *createSomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent)
+SomfyTahomaRequest *createCloudSomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent)
 {
-    QUrl url(somfyTahomaUrl + path);
+    QUrl url(somfyTahomaWebUrl + path);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, contentType);
     QNetworkReply *reply = networkManager->post(request, body);
     return new SomfyTahomaRequest(reply, parent);
 }
 
-SomfyTahomaRequest *createSomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent)
+SomfyTahomaRequest *createCloudSomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent)
 {
-    QUrl url(somfyTahomaUrl + path);
+    QUrl url(somfyTahomaWebUrl + path);
     QNetworkRequest request(url);
     QNetworkReply *reply = networkManager->get(request);
     return new SomfyTahomaRequest(reply, parent);
 }
 
-SomfyTahomaRequest *createSomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent)
+SomfyTahomaRequest *createCloudSomfyTahomaDeleteRequest(NetworkAccessManager *networkManager, const QString &path, QObject *parent)
+{
+    QUrl url(somfyTahomaWebUrl + path);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentLengthHeader, 0);
+
+    QNetworkReply *reply = networkManager->deleteResource(request);
+    return new SomfyTahomaRequest(reply, parent);
+}
+
+SomfyTahomaRequest *createCloudSomfyTahomaLoginRequest(NetworkAccessManager *networkManager, const QString &username, const QString &password, QObject *parent)
 {
     QUrlQuery postData;
     postData.addQueryItem("userId", username);
     postData.addQueryItem("userPassword", password);
-    return createSomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", postData.toString(QUrl::FullyEncoded).toUtf8(), parent);
+    return createCloudSomfyTahomaPostRequest(networkManager, "/login", "application/x-www-form-urlencoded", postData.toString(QUrl::FullyEncoded).toUtf8(), parent);
 }
 
-SomfyTahomaRequest *createSomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &eventListenerId, QObject *parent)
+SomfyTahomaRequest *createLocalSomfyTahomaPostRequest(NetworkAccessManager *networkManager, const QString &host, const QString &token, const QString &path, const QString &contentType, const QByteArray &body, QObject *parent)
 {
-    return createSomfyTahomaPostRequest(networkManager, "/events/" + eventListenerId + "/fetch", "application/json", QByteArray(), parent);
+    QUrl url("https://" + host + localSomfyTahomaPath + path);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, contentType);
+    request.setRawHeader("Authorization", "Bearer " + token.toUtf8());
+
+    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    request.setSslConfiguration(config);
+
+    QNetworkReply *reply = networkManager->post(request, body);
+
+    return new SomfyTahomaRequest(reply, parent);
+}
+
+SomfyTahomaRequest *createLocalSomfyTahomaGetRequest(NetworkAccessManager *networkManager, const QString &host, const QString &token, const QString &path, QObject *parent)
+{
+    QUrl url("https://" + host + localSomfyTahomaPath + path);
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer " + token.toUtf8());
+
+    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    request.setSslConfiguration(config);
+
+    QNetworkReply *reply = networkManager->get(request);
+
+    return new SomfyTahomaRequest(reply, parent);
+}
+
+SomfyTahomaRequest *createLocalSomfyTahomaEventFetchRequest(NetworkAccessManager *networkManager, const QString &host, const QString &token, const QString &eventListenerId, QObject *parent)
+{
+    return createLocalSomfyTahomaPostRequest(networkManager, host, token, "/events/" + eventListenerId + "/fetch", "application/json", QByteArray(), parent);
 }

@@ -1,7 +1,11 @@
 # Somfy TaHoma
 
-This plugin adds support for Somfy smarthome devices through the Somfy TaHoma
-API.
+This plugin adds support for Somfy smarthome devices through the local
+Somfy TaHoma API offered by Somfy Gateways with 'Developer Mode'
+enabled.
+
+See <https://developer.somfy.com/developer-mode> and <https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode>
+for more information.
 
 ## Prerequisites
 
@@ -18,5 +22,5 @@ entering your personal username + password for the Somfy TaHoma API.
 ## Supported devices
 
 Currently this plugin supports all roller shutters, blinds, garage
-door, awning drives and lights that are connectable to the TaHoma gateway.
-These are Somfy iO devices as well as RTS devices.
+door, awning drives, lights and smoke detectors that are connectable to the
+TaHoma gateway. These are Somfy iO devices as well as RTS devices.

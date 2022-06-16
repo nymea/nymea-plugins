@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -34,6 +34,12 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 
+#include "extern-plugininfo.h"
+
+class QHostAddress;
+
+class ZeroConfServiceBrowser;
+
 class SomfyTahomaRequest;
 
 class IntegrationPluginSomfyTahoma : public IntegrationPlugin
@@ -44,6 +50,9 @@ class IntegrationPluginSomfyTahoma : public IntegrationPlugin
     Q_INTERFACES(IntegrationPlugin)
 
 public:
+    void init() override;
+    void discoverThings(ThingDiscoveryInfo *info) override;
+
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password) override;
 
@@ -54,14 +63,16 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    SomfyTahomaRequest *createLoginRequestWithStoredCredentials(Thing *thing);
-    void refreshAccount(Thing *thing);
-    void handleEvents(const QVariantList &eventList);
+    void refreshGateway(Thing *thing);
+    void handleEvents(const QVariantList &events);
     void updateThingStates(const QString &deviceUrl, const QVariantList &stateList);
     void markDisconnected(Thing *thing);
     void restoreChildConnectedState(Thing *thing);
+    QString getHost(Thing *thing) const;
+    QString getToken(Thing *thing) const;
 
 private:
+    ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
     QMap<Thing *, PluginTimer *> m_eventPollTimer;
     QMap<QString, QPointer<ThingActionInfo>> m_pendingActions;
     QMap<QString, QList<Thing *>> m_currentExecutions;

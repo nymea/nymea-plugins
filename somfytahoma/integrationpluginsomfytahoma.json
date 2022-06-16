@@ -1,6 +1,6 @@
 {
     "name": "SomfyTahoma",
-    "displayName": "Somfy Tahoma",
+    "displayName": "Somfy TaHoma",
     "id": "4e8be1c1-daa8-4e21-9e85-b2372ab1a450",
     "vendors": [
         {
@@ -11,9 +11,8 @@
                 {
                     "id": "fedd72b8-547d-4e4f-b73e-71344a8ba0c1",
                     "name": "tahoma",
-                    "displayName": "Tahoma Account",
-                    "createMethods": ["user"],
-                    "setupMethod": "userandpassword",
+                    "displayName": "TaHoma Account",
+                    "createMethods": ["auto"],
                     "interfaces": ["account"],
                     "stateTypes": [
                         {
@@ -45,15 +44,17 @@
                 {
                     "id": "6c09e0b9-f0cc-4dea-9994-9e039eff78f1",
                     "name": "gateway",
-                    "displayName": "Tahoma Gateway",
-                    "createMethods": ["auto"],
+                    "displayName": "TaHoma Gateway",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
                     "interfaces": ["gateway"],
                     "paramTypes": [
                         {
-                            "id": "e321a7d6-6dcb-4a37-baf1-c7008f2d5bdb",
-                            "displayName": "Gateway Id",
-                            "name": "gatewayId",
-                            "type": "QString"
+                            "id": "30b73244-e5bb-4c00-9332-702a60c03420",
+                            "displayName": "Gateway pin",
+                            "name": "gatewayPin",
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -443,7 +444,61 @@
                             "defaultValue": false
                         }
                     ]
+                },
+                {
+                    "id": "e883a8ef-1fb7-4d7f-b40b-9cbc0133e58a",
+                    "name": "smokedetector",
+                    "displayName": "Smoke Detector",
+                    "createMethods": ["auto"],
+                    "interfaces": ["firesensor", "battery", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "3a41017b-87fe-4690-b148-1f69fac67f91",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6c3ee0ce-fc0f-477c-9a01-be61e061463b",
+                            "name": "fireDetected",
+                            "displayName": "Fire detected",
+                            "displayNameEvent": "Fire detected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8f67b692-243b-4ce8-9983-0d1206439f16",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "47f8506c-af7f-4928-b0ce-8c52ce4f740b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "98cf101c-cb0e-47a9-9c27-b6a0cdf9ba4b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ]
                 }
+
+
             ]
         }
     ]
