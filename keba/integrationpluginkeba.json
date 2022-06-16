@@ -16,14 +16,6 @@
                     "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
                     "paramTypes":[
                         {
-                            "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
-                            "name": "ipAddress",
-                            "displayName": "IP address",
-                            "type": "QString",
-                            "inputType": "IPv4Address",
-                            "defaultValue":"0.0.0.0"
-                        },
-                        {
                             "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
                             "name": "macAddress",
                             "displayName": "MAC address",
@@ -343,6 +335,14 @@
                             "displayNameEvent": "Firmware changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "11501a4b-8b83-4b92-be3c-a714d507f158",
+                            "name": "hostAddress",
+                            "displayName": "Host address",
+                            "displayNameEvent": "Host address changed",
+                            "type": "QString",
+                            "defaultValue": "http://127.0.0.1"
                         }
                     ],
                     "actionTypes": [
@@ -401,14 +401,6 @@
                     "createMethods": ["discovery", "user"],
                     "interfaces": ["evcharger", "connectable"],
                     "paramTypes":[
-                        {
-                            "id": "8324cad1-0d9d-4e48-b472-8c22eb7a1057",
-                            "name": "ipAddress",
-                            "displayName": "IP address",
-                            "type": "QString",
-                            "inputType": "IPv4Address",
-                            "defaultValue":"0.0.0.0"
-                        },
                         {
                             "id": "e438179a-5202-4106-a622-d9e10a74fed9",
                             "name": "macAddress",
@@ -596,6 +588,14 @@
                             "displayNameEvent": "Firmware changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "eef1d569-f383-4980-8cb8-06ccc5069b0b",
+                            "name": "hostAddress",
+                            "displayName": "Host address",
+                            "displayNameEvent": "Host address changed",
+                            "type": "QString",
+                            "defaultValue": "http://127.0.0.1"
                         }
                     ],
                     "actionTypes": [
