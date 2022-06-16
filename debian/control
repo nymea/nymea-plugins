@@ -99,6 +99,14 @@ Description: nymea integration plugin for bose soundtouch
  This package contains the nymea integration plugin for bose soundtouch devices.
 
 
+Package: nymea-plugin-bosswerk
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for Bosswerk micro inverters
+ This package contains the nymea integration plugin for Bosswerk micro inverters.
+
+
 Package: nymea-plugin-coinmarketcap
 Architecture: any
 Depends: ${shlibs:Depends},

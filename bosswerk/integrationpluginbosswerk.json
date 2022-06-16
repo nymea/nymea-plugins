@@ -1,0 +1,73 @@
+{
+    "name": "bosswerk",
+    "displayName": "Bosswerk",
+    "id": "595b7759-336d-4677-a014-1b0fd11f45ea",
+    "vendors": [
+        {
+            "name": "bosswerk",
+            "displayName": "Bosswerk",
+            "id": "26ec1591-cc37-4ac1-b943-04844e002601",
+            "thingClasses": [
+                {
+                    "id": "31ee3e61-eb3f-470b-8957-293fe65f404d",
+                    "name": "mix00",
+                    "displayName": "MI-300/600",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": [ "solarinverter", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "6fbe5f08-3539-447d-9281-916abe9d8128",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b1a9bdf7-1c87-4c5d-b7e5-835697e7b7e5",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "4187873d-50dd-4470-8bd1-2787436db84d",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "filter": "adaptive",
+                            "cached": false
+                        },
+                        {
+                            "id": "044c26ce-67a7-4c81-99b1-4aa35285b109",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "4a596301-3a8d-41de-bc97-275d23c0e5cd",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total produced energy",
+                            "displayNameEvent": "Total produced energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

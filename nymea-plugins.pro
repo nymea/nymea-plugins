@@ -9,6 +9,7 @@ PLUGIN_DIRS = \
     bluos               \
     boblight            \
     bose                \
+    bosswerk            \
     coinmarketcap       \
     commandlauncher     \
     datetime            \
