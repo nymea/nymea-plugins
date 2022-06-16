@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,15 +31,10 @@
 #ifndef INTEGRATIONPLUGINNETWORKDETECTOR_H
 #define INTEGRATIONPLUGINNETWORKDETECTOR_H
 
-#include "integrations/integrationplugin.h"
-#include "host.h"
-#include "discovery.h"
-#include "plugintimer.h"
-#include "devicemonitor.h"
-#include "broadcastping.h"
+#include <integrations/integrationplugin.h>
+#include <network/networkdevicediscovery.h>
+#include <plugintimer.h>
 
-#include <QProcess>
-#include <QXmlStreamReader>
 #include <QHostInfo>
 
 class IntegrationPluginNetworkDetector : public IntegrationPlugin
@@ -54,23 +49,22 @@ public:
     ~IntegrationPluginNetworkDetector();
 
     void init() override;
-
-    void setupThing(ThingSetupInfo *info) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-
-private slots:
-    void deviceReachableChanged(bool reachable);
-    void deviceAddressChanged(const QString &address);
-    void deviceSeen();
-
-    void broadcastPingFinished();
+    void executeAction(ThingActionInfo *info) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
-    BroadcastPing *m_broadcastPing = nullptr;
-    QHash<DeviceMonitor*, Thing*> m_monitors;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    QHash<Thing *, PluginTimer *> m_gracePeriodTimers;
+    QHash<int, ThingActionInfo *> m_pendingHostLookup;
+
+    void setupMonitorConnections(Thing *thing, NetworkDeviceMonitor *monitor);
+
+private slots:
+    void onHostLookupFinished(const QHostInfo &info);
+
 };
 
 #endif // INTEGRATIONPLUGINNETWORKDETECTOR_H
