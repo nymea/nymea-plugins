@@ -61,9 +61,19 @@ TcpServer::~TcpServer()
 {
 }
 
-bool TcpServer::isValid()
+bool TcpServer::isValid() const
 {
     return m_tcpServer->isListening();
+}
+
+bool TcpServer::confirmCommands() const
+{
+    return m_confirmCommands;
+}
+
+void TcpServer::setConfirmCommands(bool confirmCommands)
+{
+    m_confirmCommands = confirmCommands;
 }
 
 QHostAddress TcpServer::serverAddress()
@@ -76,7 +86,7 @@ int TcpServer::serverPort()
     return m_tcpServer->serverPort();
 }
 
-int TcpServer::connectionCount()
+int TcpServer::connectionCount() const
 {
     return m_clients.count();
 }
@@ -85,16 +95,19 @@ bool TcpServer::sendCommand(const QString &clientIp, const QByteArray &data)
 {
     bool success = false;
     QHostAddress address(clientIp);
+    bool broadcast = false;
+    if (address == QHostAddress(QHostAddress::AnyIPv4) || address == QHostAddress(QHostAddress::Broadcast))
+        broadcast = true;
 
     foreach (QTcpSocket *client, m_clients) {
-        if (address == QHostAddress(QHostAddress::AnyIPv4) || client->peerAddress() == address) {
+        if (broadcast || client->peerAddress() == address) {
             qint64 len = client->write(data);
             if (len == data.length()) {
                 success = true;
             }
         }
     }
-    qCWarning(dcTCPCommander()) << "No client matching the destination IP" << address.toString();
+
     return success;
 }
 
@@ -125,7 +138,10 @@ void TcpServer::readData()
     QTcpSocket *socket = static_cast<QTcpSocket *>(sender());
     QByteArray data = socket->readAll();
     qDebug(dcTCPCommander()) << "TCP Server data received: " << data;
-    socket->write("OK\n");
+    if (m_confirmCommands) {
+        socket->write("OK\n");
+    }
+
     emit commandReceived(socket->peerAddress().toString(), data);
 }
 

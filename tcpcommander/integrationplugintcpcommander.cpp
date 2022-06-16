@@ -54,9 +54,9 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             // In case of a reconfigure, make sure we reconnect
             tcpSocket->disconnectFromHost();
         }
+
         connect(tcpSocket, &QTcpSocket::stateChanged, thing, [=](QAbstractSocket::SocketState state){
             thing->setStateValue(tcpClientConnectedStateTypeId, state == QAbstractSocket::ConnectedState);
-
             if (state == QAbstractSocket::UnconnectedState) {
                 QTimer::singleShot(10000, tcpSocket, [=](){
                     qCDebug(dcTCPCommander()) << "Reconnecting to server" << address << port;
@@ -64,12 +64,12 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
                 });
             }
         });
+
         connect(tcpSocket, &QTcpSocket::readyRead, thing, [=](){
             QByteArray data = tcpSocket->readAll();
             ParamList params;
             params << Param(tcpClientTriggeredEventDataParamTypeId, data);
-            Event event(tcpClientTriggeredEventTypeId, thing->id(), params);
-            emitEvent(event);
+            emit emitEvent(Event(tcpClientTriggeredEventTypeId, thing->id(), params));
         });
 
         tcpSocket->connectToHost(address, port);
@@ -85,17 +85,30 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             // In case of reconfigure, make sure to re-setup the server
             delete tcpServer;
         }
+
         tcpServer = new TcpServer(port, this);
+        tcpServer->setConfirmCommands(thing->setting(tcpServerSettingsConfirmCommandParamTypeId).toBool());
 
         if (tcpServer->isValid()) {
             m_tcpServers.insert(thing, tcpServer);
+            connect(thing, &Thing::settingChanged, tcpServer, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+                if (paramTypeId == tcpServerSettingsConfirmCommandParamTypeId) {
+                    tcpServer->setConfirmCommands(value.toBool());
+                }
+            });
+
             connect(tcpServer, &TcpServer::connectionCountChanged, this, &IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged);
             connect(tcpServer, &TcpServer::commandReceived, this, &IntegrationPluginTcpCommander::onTcpServerCommandReceived);
-            return info->finish(Thing::ThingErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
+
+            // Set the initial connected state since the server is running
+            thing->setStateValue("connected", true);
+            return;
         } else {
             tcpServer->deleteLater();
             qDebug(dcTCPCommander()) << "Could not open TCP Server";
-            return info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
+            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
+            return;
         }
     }
 }
@@ -158,15 +171,8 @@ void IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged(int connec
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Thing *thing = m_tcpServers.key(tcpServer);
-    if (!thing)
-        return;
-    qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
-    if (thing->thingClassId() == tcpServerThingClassId) {
-        if (connections > 0) {
-            thing->setStateValue(tcpServerConnectedStateTypeId, true);
-        } else {
-            thing->setStateValue(tcpServerConnectedStateTypeId, false);
-        }
+    if (thing && thing->thingClassId() == tcpServerThingClassId) {
+        qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
         thing->setStateValue(tcpServerConnectionCountStateTypeId, connections);
     }
 }
@@ -177,10 +183,8 @@ void IntegrationPluginTcpCommander::onTcpServerCommandReceived(const QString &cl
     Thing *thing = m_tcpServers.key(tcpServer);
     qDebug(dcTCPCommander()) << thing->name() << "Message received" << data;
 
-    Event event = Event(tcpServerTriggeredEventTypeId, thing->id());
     ParamList params;
     params.append(Param(tcpServerTriggeredEventDataParamTypeId, data));
     params.append(Param(tcpServerTriggeredEventClientIpParamTypeId, clientIp));
-    event.setParams(params);
-    emitEvent(event);
+    emit emitEvent(Event(tcpServerTriggeredEventTypeId, thing->id(), params));
 }
