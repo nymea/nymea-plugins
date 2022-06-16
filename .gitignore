@@ -2,3 +2,5 @@
 builddir
 doc/html
 .DS_Store
+*/modules/
+*__pycache__*

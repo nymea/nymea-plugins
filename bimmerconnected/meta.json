@@ -1,0 +1,13 @@
+{
+    "title": "Bimmerconnected",
+    "tagline": "Get BMW vehicle status.",
+    "icon": "bmw.svg",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "appliance"
+    ]
+}

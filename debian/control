@@ -61,6 +61,15 @@ Description: nymea integration plugin for awattar
  This package contains the nymea integration plugin for the awattar online service
 
 
+Package: nymea-plugin-bimmerconnected
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for bimmerconnected
+ This package contains a nymea integration plugin for BMW cars with
+ BMW Connect via the bimmerconnected community project.
+
+
 Package: nymea-plugin-bluos
 Architecture: any
 Depends: ${shlibs:Depends},

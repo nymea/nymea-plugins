@@ -166,8 +166,6 @@ def pollService():
                 refreshRobot(thing)
             except:
                 logger.warn("Error refreshing robot state")
-    global pollTimer
-    logger.log("timer interval @ pollService", pollTimer.interval)
 
 def executeAction(info):
     if info.actionTypeId == robotStartCleaningActionTypeId:
