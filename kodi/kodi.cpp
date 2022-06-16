@@ -238,13 +238,13 @@ int Kodi::setRepeat(const QString &repeat)
     return m_jsonHandler->sendData("Player.SetRepeat", params);
 }
 
-int Kodi::showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType)
+int Kodi::showNotification(const QString &title, const QString &message, const int &displayTime, const QString &image)
 {
     QVariantMap params;
     params.insert("title", title);
     params.insert("message", message);
     params.insert("displaytime", displayTime);
-    params.insert("image", notificationType);
+    params.insert("image", image);
 
     return m_jsonHandler->sendData("GUI.ShowNotification", params);
 }

@@ -42,19 +42,7 @@
 
 IntegrationPluginKodi::IntegrationPluginKodi()
 {
-//    Q_INIT_RESOURCE(images);
-//    QFile file(":/images/nymea-logo.png");
-//    if (!file.open(QIODevice::ReadOnly)) {
-//        qCWarning(dcKodi) << "could not open" << file.fileName();
-//        return;
-//    }
 
-//    QByteArray nymeaLogoByteArray = file.readAll();
-//    if (nymeaLogoByteArray.isEmpty()) {
-//        qCWarning(dcKodi) << "could not read" << file.fileName();
-//        return;
-//    }
-    //    m_logo = nymeaLogoByteArray;
 }
 
 IntegrationPluginKodi::~IntegrationPluginKodi()
@@ -295,11 +283,26 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
 
     int commandId = -1;
     if (action.actionTypeId() == kodiNotifyActionTypeId) {
+        QString notificationType = action.param(kodiNotifyActionTypeParamTypeId).value().toString();
+        QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
+        QString imageString;
+        if (notificationType == "icon") {
+            if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
+                imageString = notificationUrl.toString();
+            } else {
+                // No valid icon url configured. Let's fallback to info
+                imageString = "info";
+            }
+        } else {
+            // info, warning, error
+            imageString = notificationType;
+        }
+
         commandId = kodi->showNotification(
                     action.param(kodiNotifyActionTitleParamTypeId).value().toString(),
                     action.param(kodiNotifyActionBodyParamTypeId).value().toString(),
-                    8000,
-                    action.param(kodiNotifyActionTypeParamTypeId).value().toString());
+                    thing->setting(kodiSettingsNotificationDurationParamTypeId).toUInt(),
+                    imageString);
     } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
         commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
     } else if (action.actionTypeId() == kodiMuteActionTypeId) {
@@ -425,8 +428,15 @@ void IntegrationPluginKodi::onConnectionChanged(bool connected)
         }
     }
 
-    kodi->showNotification("nymea", tr("Connected"), 2000, "info");
+    QString imageString;
+    QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
+    if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
+        imageString = notificationUrl.toString();
+    } else {
+        imageString = "info";
+    }
 
+    kodi->showNotification("nymea", QT_TR_NOOP("Connected"), 2000, imageString);
     thing->setStateValue(kodiConnectedStateTypeId, kodi->connected());
 }
 
