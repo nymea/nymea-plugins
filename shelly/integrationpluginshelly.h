@@ -41,7 +41,7 @@
 class ZeroConfServiceBrowser;
 class PluginTimer;
 
-class MqttChannel;
+class ShellyJsonRpcClient;
 
 class IntegrationPluginShelly: public IntegrationPlugin
 {
@@ -67,21 +67,28 @@ private slots:
     void onMulticastMessageReceived(const QHostAddress &source, const CoapPdu &pdu);
 
     void updateStatus();
-    void fetchStatus(Thing *thing);
+    void fetchStatusGen1(Thing *thing);
+    void fetchStatusGen2(Thing *thing);
 
 private:
-    void setupShellyGateway(ThingSetupInfo *info);
+    void setupGen1(ThingSetupInfo *info);
+    void setupGen2(ThingSetupInfo *info);
     void setupShellyChild(ThingSetupInfo *info);
 
     QHostAddress getIP(Thing *thing) const;
 
     void handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount);
+
+    QVariantMap createRpcRequest(const QString &method);
+
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
     PluginTimer *m_statusUpdateTimer = nullptr;
     PluginTimer *m_reconfigureTimer = nullptr;
 
     Coap *m_coap = nullptr;
+
+    QHash<Thing*, ShellyJsonRpcClient*> m_rpcClients;
 };
 
 #endif // INTEGRATIONPLUGINSHELLY_H
