@@ -426,7 +426,6 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
             {shelly25Channel1ActionTypeId, 1},
             {shelly25Channel2ActionTypeId, 2}
         };
-
         if (channelParamTypeMap.contains(thing->thingClassId())) {
             relay = thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt();
         } else if (actionChannelMap.contains(action.actionTypeId())) {
@@ -435,16 +434,27 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
 
         ParamTypeId powerParamTypeId = powerActionParamTypesMap.value(action.actionTypeId());
         bool on = action.param(powerParamTypeId).value().toBool();
-        url.setPath(QString("/relay/%1").arg(relay - 1));
-        QUrlQuery query;
-        query.addQueryItem("turn", on ? "on" : "off");
-        url.setQuery(query);
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [info, reply, on](){
-            info->thing()->setStateValue("power", on);
-            info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
-        });
+
+        if (shellyId.contains("Plus")) {
+            QVariantMap params;
+            params.insert("id", relay - 1);
+            params.insert("on", on);
+            ShellyRpcReply *reply = m_rpcClients.value(thing)->sendRequest("Switch.Set", params);
+            connect(reply, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                info->finish(status == ShellyRpcReply::StatusSuccess ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+            });
+        } else {
+            url.setPath(QString("/relay/%1").arg(relay - 1));
+            QUrlQuery query;
+            query.addQueryItem("turn", on ? "on" : "off");
+            url.setQuery(query);
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+            connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, info, [info, reply, on](){
+                info->thing()->setStateValue("power", on);
+                info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+            });
+        }
         return;
     }
 
@@ -1321,6 +1331,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     QHostAddress address = getIP(thing);
+    QString shellyId = info->thing()->paramValue("id").toString();
 
     if (address.isNull()) {
         qCWarning(dcShelly()) << "Unable to determine Shelly's network address. Failed to set up device.";
@@ -1328,11 +1339,15 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
         return;
     }
 
+    QString password = info->thing()->paramValue("password").toString();
+
     ShellyJsonRpcClient *client = new ShellyJsonRpcClient(info->thing());
-    client->open(address);
+    client->open(address, "admin", password, shellyId);
     connect(client, &ShellyJsonRpcClient::stateChanged, info, [info, client, this](QAbstractSocket::SocketState state) {
         qCDebug(dcShelly()) << "Websocket state changed:" << state;
-        ShellyRpcReply *reply = client->sendRequest("Shelly.GetDeviceInfo");
+        // GetDeviceInfo wouldn't require authentication if enabled, so if the setup is changed to fetch some info from GetDeviceInfo,
+        // make sure to not just replace the GetStatus call, or authentication verification won't work any more.
+        ShellyRpcReply *reply = client->sendRequest("Shelly.GetStatus");
         connect(reply, &ShellyRpcReply::finished, info, [info, client, this](ShellyRpcReply::Status status, const QVariantMap &response){
             if (status != ShellyRpcReply::StatusSuccess) {
                 qCWarning(dcShelly) << "Error during shelly setup";
@@ -1360,7 +1375,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
         }
 
         if (state == QAbstractSocket::UnconnectedState) {
-            client->open(getIP(thing));
+            client->open(getIP(thing), "admin", thing->paramValue("password").toString(), thing->paramValue("id").toString());
         }
     });
     connect(client, &ShellyJsonRpcClient::notificationReceived, thing, [thing, this](const QVariantMap &notification){
