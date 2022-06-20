@@ -10,11 +10,27 @@
             "thingClasses": [
                 {
                     "id": "a3a15700-c251-4803-a608-0f3ddfcbd7a8",
-                    "name": "systemMonitor",
-                    "displayName": "System monitor",
-                    "interfaces": [ "system" ],
-                    "paramTypes": [ ],
+                    "name": "processMonitor",
+                    "displayName": "Process monitor",
+                    "paramTypes": [
+                        {
+                            "id": "794a2a7e-01dc-4383-8110-4d1cd59c421f",
+                            "name": "processName",
+                            "displayName": "Process name",
+                            "type": "QString",
+                            "defaultValue": "nymead"
+                        }
+                    ],
                     "stateTypes": [
+                        {
+                            "id": "8b8b6b38-79ed-4f0e-bdc7-445f073fa4b7",
+                            "name": "running",
+                            "displayName": "Running",
+                            "displayNameEvent": "Running changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "suggestLogging": true
+                        },
                         {
                             "id": "56f8fac2-1021-4b96-bf15-23b21bb85b4c",
                             "name": "cpuUsage",
@@ -31,8 +47,8 @@
                         {
                             "id": "efe2d520-3b35-4668-b6f5-db3df0c8bf0d",
                             "name": "percentMemory",
-                            "displayName": "memory usage",
-                            "displayNameEvent": "memory usage changed",
+                            "displayName": "Memory usage",
+                            "displayNameEvent": "Memory usage changed",
                             "type": "double",
                             "unit": "Percentage",
                             "defaultValue": 0,
@@ -55,13 +71,68 @@
                         {
                             "id": "6d71b001-c7fe-4f08-941d-47009b710d94",
                             "name": "virtualMemory",
-                            "displayName": "virtual memory usage",
+                            "displayName": "Virtual memory usage",
                             "displayNameEvent": "virtual memory usage changed",
                             "type": "int",
                             "unit": "KiloByte",
                             "defaultValue": 0,
                             "suggestLogging": true,
                             "cached": false
+                        },
+                        {
+                            "id": "fcdae649-dcc2-4f5b-a241-fe40fb07c071",
+                            "name": "sharedMemory",
+                            "displayName": "Shared memory usage",
+                            "displayNameEvent": "Shared memory usage changed",
+                            "type": "int",
+                            "unit": "KiloByte",
+                            "defaultValue": 0,
+                            "suggestLogging": true,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "181d852a-6290-434d-891a-35d2c3435f47",
+                    "name": "systemMonitor",
+                    "displayName": "System monitor",
+                    "paramTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "0744b84a-f9dc-4e53-a6f3-3533e909c533",
+                            "name": "cpuUsage",
+                            "displayName": "CPU usage",
+                            "displayNameEvent": "CPU usage changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "suggestLogging": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "672748c1-dbd0-4c65-8983-d0dd34892176",
+                            "name": "percentMemory",
+                            "displayName": "Memory usage",
+                            "displayNameEvent": "Memory usage changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "suggestLogging": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "47d6e6fb-5dc9-4e3f-ad24-c9d7eab320bd",
+                            "name": "percentStorage",
+                            "displayName": "Storage usage",
+                            "displayNameEvent": "Storage usage changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "suggestLogging": true
                         }
                     ]
                 }

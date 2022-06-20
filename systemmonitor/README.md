@@ -1,19 +1,18 @@
 # System monitor
 
-This integration plug-in displays the system usage of nymea.
+This integration plugin allows to monitor system resources and processes on the host running nymea.
 
 ## Supported Things
 
+* Process monitor
+    * Process status (running/stopped)
+    * Process CPU usage
+    * Process memory usage (percent to available physical memory)
+    * Process RSS memory usage
+    * Process virtual memory usage
+    * Process shared memory usage
+
 * System monitor
-    * CPU usage (in percent)
-    * Memory usage (in percent)
-    * RSS memory usage (in KiloByte)
-    * Virtual memory usage (in KiloByte)
-
-## Requirements
-
-* The package “nymea-plugin-systemmonitor” must be installed
-
-## More
-
-This plug-in uses "ps" to gather the required system information: http://man7.org/linux/man-pages/man1/ps.1.html
+    * System CPU usage
+    * System memory usage
+    * System disk usage
