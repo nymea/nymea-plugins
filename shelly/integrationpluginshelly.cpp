@@ -267,7 +267,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         qCDebug(dcShelly()) << "Have entry" << entry;
         QRegExp namePattern;
         if (info->thingClassId() == shelly1ThingClassId) {
-            namePattern = QRegExp("^shelly1-[0-9A-Z]+$");
+            namePattern = QRegExp("^(shelly1|ShellyPlus1)-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly1pmThingClassId) {
             namePattern = QRegExp("^(shelly1pm|ShellyPlus1PM)-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly1lThingClassId) {

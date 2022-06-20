@@ -11,7 +11,7 @@
                 {
                     "id": "f810b66a-7177-4397-9771-4229abaabbb6",
                     "name": "shelly1",
-                    "displayName": "Shelly 1",
+                    "displayName": "Shelly 1/Plus 1",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
