@@ -623,6 +623,64 @@
                             "displayName": "Stop"
                         }
                     ]
+                },
+                {
+                    "id": "805487dd-768b-47d5-a0a9-c7021bbec6ff",
+                    "name": "powerMeterChannel",
+                    "displayName": "Power meter",
+                    "createMethods": ["auto"],
+                    "interfaces": ["smartmeterconsumer", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "72bafebf-e541-4ede-aed5-a17241a57743",
+                            "name": "channelName",
+                            "displayName": "Channel name",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f268fa63-e17f-41ab-9536-ec2e21a9164c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "5ef7fb87-901f-4f1f-8db0-1aa0e0ee633e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "bcd91dba-d063-445a-9680-32d64da29fc0",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "ebd82e2f-4d23-451a-a26d-9c95fd3c00be",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "displayNameEvent": "Total consumption changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+
                 }
             ]
         }
