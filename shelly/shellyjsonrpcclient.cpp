@@ -67,7 +67,7 @@ ShellyRpcReply *ShellyJsonRpcClient::sendRequest(const QString &method, const QV
     });
     m_pendingReplies.insert(id, reply);
 
-    qCDebug(dcShelly) << "Sending request" << QJsonDocument::fromVariant(data).toJson();
+    qCDebug(dcShelly) << "Sending request" << qUtf8Printable(QJsonDocument::fromVariant(data).toJson());
     m_socket->sendTextMessage(QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
 
     return reply;

@@ -1323,6 +1323,9 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
             QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
             qCDebug(dcShelly()) << "Setting configuration:" << url.toString();
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, [reply](){
+                qCDebug(dcShelly) << "Set config reply:" << reply->error() << reply->errorString() << reply->readAll();
+            });
         });
     }
 }
@@ -1375,7 +1378,9 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
         }
 
         if (state == QAbstractSocket::UnconnectedState) {
-            client->open(getIP(thing), "admin", thing->paramValue("password").toString(), thing->paramValue("id").toString());
+            QTimer::singleShot(1000, thing, [this, client, thing](){
+                client->open(getIP(thing), "admin", thing->paramValue("password").toString(), thing->paramValue("id").toString());
+            });
         }
     });
     connect(client, &ShellyJsonRpcClient::notificationReceived, thing, [thing, this](const QVariantMap &notification){
@@ -1427,34 +1432,64 @@ void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
     qCDebug(dcShelly()) << "Parent for" << info->thing()->name() << "is set up. Finishing child setup.";
 
     // Connect to settings changes to store them to the thing
-    connect(info->thing(), &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
-        Thing *parentDevice = myThings().findById(thing->parentId());
-        pluginStorage()->beginGroup(parentDevice->id().toString());
-        QString address = pluginStorage()->value("cachedAddress").toString();
-        pluginStorage()->endGroup();
+    connect(info->thing(), &Thing::settingChanged, this, [this, thing, parent](const ParamTypeId &paramTypeId, const QVariant &value){
+        if (parent->paramValue("id").toString().contains("Plus")) {
+            ShellyJsonRpcClient *client = m_rpcClients.value(parent);
+            QVariantMap params;
+            params.insert("id", thing->paramValue("channel").toInt() - 1);
 
-        QUrl url;
-        url.setScheme("http");
-        url.setHost(address);
-        url.setPort(80);
-        url.setPath(QString("/settings/relay/%0").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() - 1));
-        url.setUserName(parentDevice->paramValue(usernameParamTypeMap.value(parentDevice->thingClassId())).toString());
-        url.setPassword(parentDevice->paramValue(passwordParamTypeMap.value(parentDevice->thingClassId())).toString());
+            if (paramTypeId == shellySwitchSettingsButtonTypeParamTypeId) {
+                QVariantMap inputConfig;
+                if (value == "toggle" || value == "edge") {
+                    inputConfig.insert("type", "switch");
+                } else {
+                    inputConfig.insert("type", "button");
+                }
+                params["config"] = inputConfig;
+                client->sendRequest("Input.SetConfig", params);
 
-        QUrlQuery query;
-        if (paramTypeId == shellySwitchSettingsButtonTypeParamTypeId) {
-            query.addQueryItem("btn_type", value.toString());
+                QVariantMap switchConfig;
+                switchConfig.insert("in_mode", value.toString().replace("toggle", "follow").replace("edge", "flip"));
+                params["config"] = switchConfig;
+                client->sendRequest("Switch.SetConfig", params);
+
+            } else if (paramTypeId == shellySwitchSettingsInvertButtonParamTypeId) {
+                QVariantMap config;
+                config.insert("invert", value.toBool());
+                params.insert("config", config);
+                client->sendRequest("Input.SetConfig", params);
+            }
+        } else {
+            pluginStorage()->beginGroup(parent->id().toString());
+            QString address = pluginStorage()->value("cachedAddress").toString();
+            pluginStorage()->endGroup();
+
+            QUrl url;
+            url.setScheme("http");
+            url.setHost(address);
+            url.setPort(80);
+            url.setPath(QString("/settings/relay/%0").arg(thing->paramValue(channelParamTypeMap.value(thing->thingClassId())).toInt() - 1));
+            url.setUserName(parent->paramValue(usernameParamTypeMap.value(parent->thingClassId())).toString());
+            url.setPassword(parent->paramValue(passwordParamTypeMap.value(parent->thingClassId())).toString());
+
+            QUrlQuery query;
+            if (paramTypeId == shellySwitchSettingsButtonTypeParamTypeId) {
+                query.addQueryItem("btn_type", value.toString());
+            }
+            if (paramTypeId == shellySwitchSettingsInvertButtonParamTypeId) {
+                query.addQueryItem("btn_reverse", value.toBool() ? "1" : "0");
+            }
+
+            url.setQuery(query);
+
+            qCDebug(dcShelly) << "Setting configuration:" << url.toString();
+
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, [reply](){
+                qCDebug(dcShelly) << "Set config reply:" << reply->error() << reply->errorString() << reply->readAll();
+            });
         }
-        if (paramTypeId == shellySwitchSettingsInvertButtonParamTypeId) {
-            query.addQueryItem("btn_reverse", value.toBool() ? "1" : "0");
-        }
-
-        url.setQuery(query);
-
-        qCDebug(dcShelly) << "Setting configuration:" << url.toString();
-
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     });
 
     info->finish(Thing::ThingErrorNoError);
