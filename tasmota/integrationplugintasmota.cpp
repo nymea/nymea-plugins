@@ -140,6 +140,7 @@ void IntegrationPluginTasmota::setupThing(ThingSetupInfo *info)
         configItems.insert("MqttUser", channel->username());
         configItems.insert("MqttPassword", channel->password());
         configItems.insert("Topic", "sonoff");
+        configItems.insert("TelePeriod", "10");
         configItems.insert("FullTopic", channel->topicPrefixList().first() + "/%topic%/");
 
         QStringList configList;
