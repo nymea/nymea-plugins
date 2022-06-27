@@ -432,6 +432,16 @@ void IntegrationPluginKeba::setupKeba(ThingSetupInfo *info, const QHostAddress &
         thing->setStateValue("hostAddress", address.toString());
         thing->setStateValue("firmware", report.firmware);
         thing->setStateValue("uptime", report.seconds / 60);
+
+        if (thing->thingClassId() == kebaSimpleThingClassId) {
+            thing->setStateValue(kebaSimplePhaseCountStateTypeId, thing->setting(kebaSimpleThingClassId));
+        }
+
+        connect(thing, &Thing::settingChanged, thing, [thing](const ParamTypeId &settingsTypeId, const QVariant &value){
+            if (settingsTypeId == kebaSimpleSettingsPhaseCountParamTypeId) {
+                thing->setStateValue(kebaSimplePhaseCountStateTypeId, value);
+            }
+        });
     });
 
     keba->getReport1();
