@@ -429,6 +429,17 @@
                             "readOnly": true
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "42f32882-ae1c-455e-a044-3f589056a148",
+                            "name": "phaseCount",
+                            "displayName": "Phase count",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 3
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "995f2ccf-2082-434e-a46d-c506862e6d6a",
@@ -457,6 +468,16 @@
                             "displayNameEvent": "System enabled changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "2473e39b-9641-4236-be56-e706d7797161",
+                            "name": "phaseCount",
+                            "displayName": "Number of connected phases",
+                            "displayNameEvent": "Number of connected phases changed",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 3
                         },
                         {
                             "id": "955ffd64-42f6-4000-94c5-c7f862daa438",
