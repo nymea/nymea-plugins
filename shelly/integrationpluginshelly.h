@@ -35,6 +35,7 @@
 
 #include "extern-plugininfo.h"
 
+#include <coap/coap.h>
 #include <QHostAddress>
 
 class ZeroConfServiceBrowser;
@@ -62,12 +63,11 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private slots:
-    void onClientConnected(MqttChannel* channel);
-    void onClientDisconnected(MqttChannel* channel);
-    void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
+    void joinMulticastGroup();
+    void onMulticastMessageReceived(const QHostAddress &source, const CoapPdu &pdu);
 
     void updateStatus();
-    void reconfigureUnconnected();
+    void fetchStatus(Thing *thing);
 
 private:
     void setupShellyGateway(ThingSetupInfo *info);
@@ -75,12 +75,13 @@ private:
 
     QHostAddress getIP(Thing *thing) const;
 
+    void handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount);
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
     PluginTimer *m_statusUpdateTimer = nullptr;
     PluginTimer *m_reconfigureTimer = nullptr;
 
-    QHash<Thing*, MqttChannel*> m_mqttChannels;
+    Coap *m_coap = nullptr;
 };
 
 #endif // INTEGRATIONPLUGINSHELLY_H
