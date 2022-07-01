@@ -58,8 +58,7 @@ void IntegrationPluginMeross::discoverThings(ThingDiscoveryInfo *info)
     connect(reply, &NetworkDeviceDiscoveryReply::finished, info, [info, reply, this](){
         foreach (const NetworkDeviceInfo &deviceInfo, reply->networkDeviceInfos()) {
             qCDebug(dcMeross) << "Discovery result" << deviceInfo;
-            if (deviceInfo.hostName().toLower().startsWith("meross_smart_plug")) {
-
+            if (deviceInfo.hostName().toLower().startsWith("meross_smart_plug") || deviceInfo.macAddressManufacturer().toLower().contains("meross")) {
                 ThingDescriptor descriptor(plugThingClassId, "Meross Smart Plug", deviceInfo.macAddress());
                 descriptor.setParams({Param(plugThingMacAddressParamTypeId, deviceInfo.macAddress())});
 
@@ -110,6 +109,7 @@ void IntegrationPluginMeross::confirmPairing(ThingPairingInfo *info, const QStri
     qCDebug(dcMeross) << "Requesting" << request.url() << query.toString();
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, query.toString().toUtf8());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcMeross()) << "Error retrieving device key from cloud:" << reply->error() << reply->errorString();
