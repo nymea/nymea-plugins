@@ -474,6 +474,15 @@ Description: nymea integration plugin for philipshue
  and connected devices to it.
 
 
+Package: nymea-plugin-powerfox
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for powerfox
+ This package contains the nymea integration plugin for the powerfox online service
+ to integrate energy meters.
+
+
 Package: nymea-plugin-pushbullet
 Architecture: any
 Depends: ${shlibs:Depends},

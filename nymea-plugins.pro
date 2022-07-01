@@ -50,6 +50,7 @@ PLUGIN_DIRS = \
     openweathermap      \
     osdomotics          \
     philipshue          \
+    powerfox            \
     pushbullet          \
     pushnotifications   \
     shelly              \
