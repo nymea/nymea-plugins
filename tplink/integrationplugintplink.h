@@ -36,6 +36,7 @@
 #include <QUdpSocket>
 
 #include <QNetworkAccessManager>
+#include <QTimer>
 
 class PluginTimer;
 
@@ -76,6 +77,7 @@ private:
     };
     QHash<Thing*, Job> m_pendingJobs;
     QHash<Thing*, QList<Job>> m_jobQueue;
+    QHash<Thing*, QTimer*> m_jobTimers;
     int m_jobIdx = 0;
 
     QUdpSocket *m_broadcastSocket = nullptr;
