@@ -1,3 +1,27 @@
+nymea-plugins (1.3.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Rework plugin to use CoAP instead of MQTT
+  * Meross: Also list devices with a Meross owned mac address
+  * TpLink: Add a timeout timer for jobs
+  * New plugin: powerfox
+
+  [ Jenkins ]
+  * Bump pyjwt from 2.3.0 to 2.4.0 in /bimmerconnected
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly Plus 1[PM]
+  * SystemMonitor: Add more process and system monitoring capabilites
+
+  [ Jenkins ]
+  * Bump numpy from 1.21.0 to 1.22.0 in /sunposition
+
+  [ Michael Zanetti ]
+  * Tasmota: Add support for energy metering
+  * Keba: Add a phase count setting to the Keba germany edition
+
+ -- jenkins <developer@nymea.io>  Fri, 01 Jul 2022 22:49:06 +0200
+
 nymea-plugins (1.2.0) jammy; urgency=medium
 
   [ Simon Stürz ]
