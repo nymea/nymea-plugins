@@ -11,7 +11,7 @@
                 {
                     "id": "f810b66a-7177-4397-9771-4229abaabbb6",
                     "name": "shelly1",
-                    "displayName": "Shelly 1",
+                    "displayName": "Shelly 1/Plus 1",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
@@ -110,7 +110,7 @@
                 {
                     "id": "30e74e9f-57f4-4bbc-b0df-f2c4f28b2f06",
                     "name": "shelly1pm",
-                    "displayName": "Shelly 1PM",
+                    "displayName": "Shelly 1PM/Plus 1PM",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "smartmeterconsumer", "wirelessconnectable", "update" ],
                     "paramTypes": [
