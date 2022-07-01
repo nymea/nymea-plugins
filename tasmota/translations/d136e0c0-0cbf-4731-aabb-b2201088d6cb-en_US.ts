@@ -50,61 +50,24 @@ The name of the ParamType (ThingClass: sonoff_basic, Type: thing, ID: {cdead654-
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Connected changed</source>
-        <extracomment>The name of the EventType ({686ad054-0ee5-4135-8f2d-dda993532262}) of ThingClass tasmotaBlinds
-----------
-The name of the EventType ({7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef}) of ThingClass tasmotaShutter
-----------
-The name of the EventType ({72050de9-c318-4e53-93e5-36f7c2fc7cab}) of ThingClass tasmotaLight
-----------
-The name of the EventType ({b4607e5d-70c4-4e76-9d9a-c6de7c50377e}) of ThingClass tasmotaSwitch
-----------
-The name of the EventType ({1078dd25-b5bd-4005-8c1f-005ddca7ea21}) of ThingClass sonoff_dimmer
-----------
-The name of the EventType ({5b422d28-9f60-4ea9-ab23-42a0ec605b9e}) of ThingClass sonoff_quad
-----------
-The name of the EventType ({e6439ea4-4373-4ac1-a790-748604cf2830}) of ThingClass sonoff_tri
-----------
-The name of the EventType ({e2f55332-e706-412e-beb6-abf76b3bcff3}) of ThingClass sonoff_dual
-----------
-The name of the EventType ({9cde6321-2abf-4a58-a1d6-c7418edb9747}) of ThingClass sonoff_basic</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Connected</source>
-        <extracomment>The name of the ParamType (ThingClass: tasmotaBlinds, EventType: connected, ID: {686ad054-0ee5-4135-8f2d-dda993532262})
+        <extracomment>The name of the StateType ({f268fa63-e17f-41ab-9536-ec2e21a9164c}) of ThingClass powerMeterChannel
 ----------
 The name of the StateType ({686ad054-0ee5-4135-8f2d-dda993532262}) of ThingClass tasmotaBlinds
 ----------
-The name of the ParamType (ThingClass: tasmotaShutter, EventType: connected, ID: {7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef})
-----------
 The name of the StateType ({7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef}) of ThingClass tasmotaShutter
-----------
-The name of the ParamType (ThingClass: tasmotaLight, EventType: connected, ID: {72050de9-c318-4e53-93e5-36f7c2fc7cab})
 ----------
 The name of the StateType ({72050de9-c318-4e53-93e5-36f7c2fc7cab}) of ThingClass tasmotaLight
 ----------
-The name of the ParamType (ThingClass: tasmotaSwitch, EventType: connected, ID: {b4607e5d-70c4-4e76-9d9a-c6de7c50377e})
-----------
 The name of the StateType ({b4607e5d-70c4-4e76-9d9a-c6de7c50377e}) of ThingClass tasmotaSwitch
-----------
-The name of the ParamType (ThingClass: sonoff_dimmer, EventType: connected, ID: {1078dd25-b5bd-4005-8c1f-005ddca7ea21})
 ----------
 The name of the StateType ({1078dd25-b5bd-4005-8c1f-005ddca7ea21}) of ThingClass sonoff_dimmer
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: connected, ID: {5b422d28-9f60-4ea9-ab23-42a0ec605b9e})
-----------
 The name of the StateType ({5b422d28-9f60-4ea9-ab23-42a0ec605b9e}) of ThingClass sonoff_quad
-----------
-The name of the ParamType (ThingClass: sonoff_tri, EventType: connected, ID: {e6439ea4-4373-4ac1-a790-748604cf2830})
 ----------
 The name of the StateType ({e6439ea4-4373-4ac1-a790-748604cf2830}) of ThingClass sonoff_tri
 ----------
-The name of the ParamType (ThingClass: sonoff_dual, EventType: connected, ID: {e2f55332-e706-412e-beb6-abf76b3bcff3})
-----------
 The name of the StateType ({e2f55332-e706-412e-beb6-abf76b3bcff3}) of ThingClass sonoff_dual
-----------
-The name of the ParamType (ThingClass: sonoff_basic, EventType: connected, ID: {9cde6321-2abf-4a58-a1d6-c7418edb9747})
 ----------
 The name of the StateType ({9cde6321-2abf-4a58-a1d6-c7418edb9747}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
@@ -156,45 +119,28 @@ The name of the ParamType (ThingClass: sonoff_tri, Type: thing, ID: {7dada813-d3
     </message>
     <message>
         <source>Channel name</source>
-        <extracomment>The name of the ParamType (ThingClass: tasmotaLight, Type: thing, ID: {1f792ae4-cf39-4e12-99ca-c593bd020fcb})
+        <extracomment>The name of the ParamType (ThingClass: powerMeterChannel, Type: thing, ID: {72bafebf-e541-4ede-aed5-a17241a57743})
+----------
+The name of the ParamType (ThingClass: tasmotaLight, Type: thing, ID: {1f792ae4-cf39-4e12-99ca-c593bd020fcb})
 ----------
 The name of the ParamType (ThingClass: tasmotaSwitch, Type: thing, ID: {564cf6c6-86eb-41a5-9b87-fb32f1b6fcd6})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power changed</source>
-        <extracomment>The name of the EventType ({88dbdf8e-45ff-466f-8352-8654a6b5fe68}) of ThingClass tasmotaLight
-----------
-The name of the EventType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
-----------
-The name of the EventType ({c8ec62d4-024b-4770-b893-6288b64f0dfe}) of ThingClass sonoff_dimmer
-----------
-The name of the EventType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Power</source>
         <extracomment>The name of the ParamType (ThingClass: tasmotaLight, ActionType: power, ID: {88dbdf8e-45ff-466f-8352-8654a6b5fe68})
 ----------
-The name of the ParamType (ThingClass: tasmotaLight, EventType: power, ID: {88dbdf8e-45ff-466f-8352-8654a6b5fe68})
-----------
 The name of the StateType ({88dbdf8e-45ff-466f-8352-8654a6b5fe68}) of ThingClass tasmotaLight
 ----------
 The name of the ParamType (ThingClass: tasmotaSwitch, ActionType: power, ID: {413503d7-fc9f-417a-95fa-5c350a6f69f9})
-----------
-The name of the ParamType (ThingClass: tasmotaSwitch, EventType: power, ID: {413503d7-fc9f-417a-95fa-5c350a6f69f9})
 ----------
 The name of the StateType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
 ----------
 The name of the ParamType (ThingClass: sonoff_dimmer, ActionType: power, ID: {c8ec62d4-024b-4770-b893-6288b64f0dfe})
 ----------
-The name of the ParamType (ThingClass: sonoff_dimmer, EventType: power, ID: {c8ec62d4-024b-4770-b893-6288b64f0dfe})
-----------
 The name of the StateType ({c8ec62d4-024b-4770-b893-6288b64f0dfe}) of ThingClass sonoff_dimmer
 ----------
 The name of the ParamType (ThingClass: sonoff_basic, ActionType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
-----------
-The name of the ParamType (ThingClass: sonoff_basic, EventType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
 ----------
 The name of the StateType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
@@ -277,158 +223,73 @@ The name of the ActionType ({c9c9c569-e224-4f63-abed-782cba04d61b}) of ThingClas
     </message>
     <message>
         <source>Signal strength</source>
-        <extracomment>The name of the ParamType (ThingClass: tasmotaBlinds, EventType: signalStrength, ID: {dc58b863-1e84-4469-b226-cd4349d82050})
+        <extracomment>The name of the StateType ({5ef7fb87-901f-4f1f-8db0-1aa0e0ee633e}) of ThingClass powerMeterChannel
 ----------
 The name of the StateType ({dc58b863-1e84-4469-b226-cd4349d82050}) of ThingClass tasmotaBlinds
 ----------
-The name of the ParamType (ThingClass: tasmotaShutter, EventType: signalStrength, ID: {1de7fac2-87f1-4c2b-9286-1b0895c5ac49})
-----------
 The name of the StateType ({1de7fac2-87f1-4c2b-9286-1b0895c5ac49}) of ThingClass tasmotaShutter
-----------
-The name of the ParamType (ThingClass: tasmotaLight, EventType: signalStrength, ID: {dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402})
 ----------
 The name of the StateType ({dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402}) of ThingClass tasmotaLight
 ----------
-The name of the ParamType (ThingClass: tasmotaSwitch, EventType: signalStrength, ID: {34e54234-d2d6-4c93-8d52-bada19e5ff23})
-----------
 The name of the StateType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
-----------
-The name of the ParamType (ThingClass: sonoff_dimmer, EventType: signalStrength, ID: {662d99de-bfce-4cf0-8029-108e9911866c})
 ----------
 The name of the StateType ({662d99de-bfce-4cf0-8029-108e9911866c}) of ThingClass sonoff_dimmer
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: signalStrength, ID: {d80d8f37-f3c0-4364-998b-312339fd1fa8})
-----------
 The name of the StateType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
-----------
-The name of the ParamType (ThingClass: sonoff_tri, EventType: signalStrength, ID: {08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d})
 ----------
 The name of the StateType ({08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d}) of ThingClass sonoff_tri
 ----------
-The name of the ParamType (ThingClass: sonoff_dual, EventType: signalStrength, ID: {3d6a567f-d266-4711-bcf1-3ac1f53abadb})
-----------
 The name of the StateType ({3d6a567f-d266-4711-bcf1-3ac1f53abadb}) of ThingClass sonoff_dual
 ----------
-The name of the ParamType (ThingClass: sonoff_basic, EventType: signalStrength, ID: {f70e202a-c178-4fbe-a778-713220d11b23})
-----------
 The name of the StateType ({f70e202a-c178-4fbe-a778-713220d11b23}) of ThingClass sonoff_basic</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal strength changed</source>
-        <extracomment>The name of the EventType ({dc58b863-1e84-4469-b226-cd4349d82050}) of ThingClass tasmotaBlinds
-----------
-The name of the EventType ({1de7fac2-87f1-4c2b-9286-1b0895c5ac49}) of ThingClass tasmotaShutter
-----------
-The name of the EventType ({dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402}) of ThingClass tasmotaLight
-----------
-The name of the EventType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
-----------
-The name of the EventType ({662d99de-bfce-4cf0-8029-108e9911866c}) of ThingClass sonoff_dimmer
-----------
-The name of the EventType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
-----------
-The name of the EventType ({08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d}) of ThingClass sonoff_tri
-----------
-The name of the EventType ({3d6a567f-d266-4711-bcf1-3ac1f53abadb}) of ThingClass sonoff_dual
-----------
-The name of the EventType ({f70e202a-c178-4fbe-a778-713220d11b23}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Power channel 1</source>
         <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH1, ID: {e8fd95c3-2323-40d8-89cf-40e0068977d8})
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH1, ID: {e8fd95c3-2323-40d8-89cf-40e0068977d8})
-----------
 The name of the StateType ({e8fd95c3-2323-40d8-89cf-40e0068977d8}) of ThingClass sonoff_quad
 ----------
 The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH1, ID: {27bdb42d-ef95-4905-ac3d-925bcc8a1ba1})
-----------
-The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH1, ID: {27bdb42d-ef95-4905-ac3d-925bcc8a1ba1})
 ----------
 The name of the StateType ({27bdb42d-ef95-4905-ac3d-925bcc8a1ba1}) of ThingClass sonoff_tri
 ----------
 The name of the ParamType (ThingClass: sonoff_dual, ActionType: powerCH1, ID: {b8bf3085-8061-4cd6-af1f-f76a03054f46})
 ----------
-The name of the ParamType (ThingClass: sonoff_dual, EventType: powerCH1, ID: {b8bf3085-8061-4cd6-af1f-f76a03054f46})
-----------
 The name of the StateType ({b8bf3085-8061-4cd6-af1f-f76a03054f46}) of ThingClass sonoff_dual</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power channel 1 changed</source>
-        <extracomment>The name of the EventType ({e8fd95c3-2323-40d8-89cf-40e0068977d8}) of ThingClass sonoff_quad
-----------
-The name of the EventType ({27bdb42d-ef95-4905-ac3d-925bcc8a1ba1}) of ThingClass sonoff_tri
-----------
-The name of the EventType ({b8bf3085-8061-4cd6-af1f-f76a03054f46}) of ThingClass sonoff_dual</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Power channel 2</source>
         <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH2, ID: {baf0ca62-7f09-45ea-aea1-6de34764e6cb})
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH2, ID: {baf0ca62-7f09-45ea-aea1-6de34764e6cb})
-----------
 The name of the StateType ({baf0ca62-7f09-45ea-aea1-6de34764e6cb}) of ThingClass sonoff_quad
 ----------
 The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH2, ID: {705d8277-896a-4d56-b9ff-0a614ecfd39c})
-----------
-The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH2, ID: {705d8277-896a-4d56-b9ff-0a614ecfd39c})
 ----------
 The name of the StateType ({705d8277-896a-4d56-b9ff-0a614ecfd39c}) of ThingClass sonoff_tri
 ----------
 The name of the ParamType (ThingClass: sonoff_dual, ActionType: powerCH2, ID: {4fbcaeb6-9242-4aa6-b462-a214fb38bcc9})
 ----------
-The name of the ParamType (ThingClass: sonoff_dual, EventType: powerCH2, ID: {4fbcaeb6-9242-4aa6-b462-a214fb38bcc9})
-----------
 The name of the StateType ({4fbcaeb6-9242-4aa6-b462-a214fb38bcc9}) of ThingClass sonoff_dual</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power channel 2 changed</source>
-        <extracomment>The name of the EventType ({baf0ca62-7f09-45ea-aea1-6de34764e6cb}) of ThingClass sonoff_quad
-----------
-The name of the EventType ({705d8277-896a-4d56-b9ff-0a614ecfd39c}) of ThingClass sonoff_tri
-----------
-The name of the EventType ({4fbcaeb6-9242-4aa6-b462-a214fb38bcc9}) of ThingClass sonoff_dual</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Power channel 3</source>
         <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH3, ID: {8b939d15-3e45-40aa-bb53-9b3fb47f3cb3})
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH3, ID: {8b939d15-3e45-40aa-bb53-9b3fb47f3cb3})
-----------
 The name of the StateType ({8b939d15-3e45-40aa-bb53-9b3fb47f3cb3}) of ThingClass sonoff_quad
 ----------
 The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH3, ID: {156f285d-e474-43d9-9a9d-17b3bcaef893})
 ----------
-The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH3, ID: {156f285d-e474-43d9-9a9d-17b3bcaef893})
-----------
 The name of the StateType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClass sonoff_tri</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power channel 3 changed</source>
-        <extracomment>The name of the EventType ({8b939d15-3e45-40aa-bb53-9b3fb47f3cb3}) of ThingClass sonoff_quad
-----------
-The name of the EventType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClass sonoff_tri</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Power channel 4</source>
         <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH4, ID: {4060baa0-2b11-4905-908c-b6f1c3b6a892})
 ----------
-The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH4, ID: {4060baa0-2b11-4905-908c-b6f1c3b6a892})
-----------
 The name of the StateType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Power channel 4 changed</source>
-        <extracomment>The name of the EventType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -465,14 +326,7 @@ The name of the ActionType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClas
         <source>Brightness</source>
         <extracomment>The name of the ParamType (ThingClass: sonoff_dimmer, ActionType: brightness, ID: {5cd8d0df-1188-4da1-9a87-bff991d3b2af})
 ----------
-The name of the ParamType (ThingClass: sonoff_dimmer, EventType: brightness, ID: {5cd8d0df-1188-4da1-9a87-bff991d3b2af})
-----------
 The name of the StateType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Brightness changed</source>
-        <extracomment>The name of the EventType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -483,6 +337,21 @@ The name of the StateType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass
     <message>
         <source>Set brightness</source>
         <extracomment>The name of the ActionType ({5cd8d0df-1188-4da1-9a87-bff991d3b2af}) of ThingClass sonoff_dimmer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current power consumption</source>
+        <extracomment>The name of the StateType ({bcd91dba-d063-445a-9680-32d64da29fc0}) of ThingClass powerMeterChannel</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power meter</source>
+        <extracomment>The name of the ThingClass ({805487dd-768b-47d5-a0a9-c7021bbec6ff})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total consumed energy</source>
+        <extracomment>The name of the StateType ({ebd82e2f-4d23-451a-a26d-9c95fd3c00be}) of ThingClass powerMeterChannel</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
