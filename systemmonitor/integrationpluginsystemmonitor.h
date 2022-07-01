@@ -38,6 +38,7 @@
 #include <QProcess>
 #include <QUrlQuery>
 
+#include "extern-plugininfo.h"
 
 class IntegrationPluginSystemMonitor: public IntegrationPlugin {
 	Q_OBJECT
@@ -51,12 +52,23 @@ public:
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-private slots:
-    void onRefreshTimer();
-    void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+private:
+    void updateSystemMonitor(Thing *thing);
+    void updateProcessMonitor(Thing *thing);
+
+    double readTotalCpuUsage(Thing *thing);
+    double readTotalMemoryUsage();
+    bool readProcessMemoryUsage(qint32 pid, quint32 &total, quint32 &rss, quint32 &shared, double &percentage);
+    double readProcessCpuUsage(qint32 pid, Thing *thing);
+
+    qint32 getPidByName(const QString &processName);
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
+
+    QHash<Thing*, qulonglong> m_oldTotalJiffies;
+    QHash<Thing*, qulonglong> m_oldWorkJiffies;
+    QHash<Thing*, qulonglong> m_oldProcessWorkJiffies;
 
 };
 
