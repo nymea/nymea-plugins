@@ -30,6 +30,17 @@
                             "defaultValue": "None"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "c853a836-245d-46b5-9101-00a78a3921a8",
+                            "name": "telePeriod",
+                            "displayName": "TelePeriod",
+                            "type": "uint",
+                            "minValue": 10,
+                            "maxValue": 3600,
+                            "defaultValue": 10
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "9cde6321-2abf-4a58-a1d6-c7418edb9747",
@@ -92,6 +103,17 @@
                             "type": "QString",
                             "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "e7e46024-3108-4cab-8b38-9d238bb24a2e",
+                            "name": "telePeriod",
+                            "displayName": "TelePeriod",
+                            "type": "uint",
+                            "minValue": 10,
+                            "maxValue": 3600,
+                            "defaultValue": 10
                         }
                     ],
                     "stateTypes": [
@@ -175,6 +197,17 @@
                             "type": "QString",
                             "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "ebc30277-3beb-4380-9211-ced38876a393",
+                            "name": "telePeriod",
+                            "displayName": "TelePeriod",
+                            "type": "uint",
+                            "minValue": 10,
+                            "maxValue": 3600,
+                            "defaultValue": 10
                         }
                     ],
                     "stateTypes": [
@@ -277,6 +310,18 @@
                             "type": "QString",
                             "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "a9bcab97-0b48-4fd6-a4dd-86829dd1c202",
+                            "name": "telePeriod",
+                            "displayName": "TelePeriod",
+                            "type": "uint",
+                            "minValue": 10,
+                            "maxValue": 3600,
+                            "defaultValue": 10,
+                            "unit": "Seconds"
                         }
                     ],
                     "stateTypes": [
