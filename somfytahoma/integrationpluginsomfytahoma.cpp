@@ -549,14 +549,12 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
     if (info->thing()->thingClassId() == rollershutterThingClassId) {
         deviceUrl = info->thing()->paramValue(rollershutterThingDeviceUrlParamTypeId).toString();
         if (info->action().actionTypeId() == rollershutterPercentageActionTypeId) {
-            actionName = "setClosureAndLinearSpeed";
-            actionParameters = { info->action().param(rollershutterPercentageActionPercentageParamTypeId).value().toInt(), "lowspeed" };
+            actionName = "setClosure";
+            actionParameters = { info->action().param(rollershutterPercentageActionPercentageParamTypeId).value().toInt() };
         } else if (info->action().actionTypeId() == rollershutterOpenActionTypeId) {
-            actionName = "setClosureAndLinearSpeed";
-            actionParameters = { 0, "lowspeed" };
+            actionName = "open";
         } else if (info->action().actionTypeId() == rollershutterCloseActionTypeId) {
-            actionName = "setClosureAndLinearSpeed";
-            actionParameters = { 100, "lowspeed" };
+            actionName = "close";
         } else if (info->action().actionTypeId() == rollershutterStopActionTypeId) {
             actionName = "stop";
         }
