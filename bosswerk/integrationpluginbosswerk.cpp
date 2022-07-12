@@ -53,26 +53,42 @@ IntegrationPluginBosswerk::~IntegrationPluginBosswerk()
 }
 
 void IntegrationPluginBosswerk::discoverThings(ThingDiscoveryInfo *info)
-{
-    NetworkDeviceDiscoveryReply *reply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(reply, &NetworkDeviceDiscoveryReply::finished, info, [info, reply, this](){
-        foreach (const NetworkDeviceInfo &deviceInfo, reply->networkDeviceInfos()) {
-//            qCDebug(dcBosswerk) << "Discovery result" << deviceInfo;
-            QString cover_mid = deviceInfo.hostName().split(".").first();
-//            qCDebug(dcBosswerk()) << "Cover mid" << cover_mid;
+{    
+    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
 
-            if (QRegExp("[0-9]{10}").exactMatch(cover_mid)) {
-                qCDebug(dcBosswerk()) << "Potential result:" << deviceInfo;
-                ThingDescriptor descriptor(mix00ThingClassId, "MI-300/600", deviceInfo.hostName());
-                descriptor.setParams({Param(mix00ThingMacAddressParamTypeId, deviceInfo.macAddress())});
-                Thing *existingThing = myThings().findByParams({Param(mix00ThingMacAddressParamTypeId, deviceInfo.macAddress())});
+    // This device doesn't give much information without login credentials. In order to identify it we'll
+    // do an unauthorized GET call on it and compare the server header "HTTPD" as well as the static
+    // Unauthorized page which looks unique enough.
+    // If this proves to not be reliable enough, one more option would be to connect to TCP port 8899 which is open
+    // and responds to a proprietary binary protocol which would need to be reverse engineered first.
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, info, [=](const NetworkDeviceInfo &networkDeviceInfo){
+        qCDebug(dcBosswerk()) << "Probing device" << networkDeviceInfo.address();
+
+        QUrl url("http://" + networkDeviceInfo.address().toString() + "/status.html");
+        QNetworkRequest request(url);
+
+        QNetworkReply *probeReply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        connect(probeReply, &QNetworkReply::finished, probeReply, &QNetworkReply::deleteLater);
+        connect(probeReply, &QNetworkReply::finished, info, [=](){
+            QByteArray data = probeReply->readAll();
+            qCDebug(dcBosswerk()) << "Probe reply from" << networkDeviceInfo.address() << ":" << probeReply->rawHeaderPairs() << data;
+            if (probeReply->header(QNetworkRequest::ServerHeader) == "HTTPD" && data == "<HTML><HEAD><TITLE>401 Unauthorized</TITLE></HEAD>\n<BODY BGCOLOR=\"#cc9999\"><H4>401 Unauthorized</H4>\nAuthorization required.\n</BODY></HTML>\n") {
+                qCDebug(dcBosswerk()) << "Found bosswerk MI-300/600:" << networkDeviceInfo.address();
+
+                ThingDescriptor descriptor(mix00ThingClassId, "MI-300/600", networkDeviceInfo.hostName());
+                descriptor.setParams({Param(mix00ThingMacAddressParamTypeId, networkDeviceInfo.macAddress())});
+                Thing *existingThing = myThings().findByParams({Param(mix00ThingMacAddressParamTypeId, networkDeviceInfo.macAddress())});
                 if (existingThing) {
                     descriptor.setThingId(existingThing->id());
                 }
                 info->addThingDescriptor(descriptor);
             }
-        }
-        qCInfo(dcBosswerk) << "Discovery finished." << info->thingDescriptors().count() << "results.";
+        });
+    });
+
+    QTimer *timeout = new QTimer(info);
+    timeout->start(28000);
+    connect(timeout, &QTimer::timeout, info, [=](){
         info->finish(Thing::ThingErrorNoError);
     });
 }
