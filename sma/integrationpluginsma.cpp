@@ -30,9 +30,10 @@
 
 #include "integrationpluginsma.h"
 #include "plugininfo.h"
+#include "speedwirediscovery.h"
+#include "sunnywebboxdiscovery.h"
 
 #include <network/networkdevicediscovery.h>
-#include "speedwirediscovery.h"
 
 IntegrationPluginSma::IntegrationPluginSma()
 {
@@ -53,16 +54,12 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        qCDebug(dcSma()) << "Starting network discovery...";
-        NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-        connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+        qCDebug(dcSma()) << "Starting Sunny WebBox discovery...";
+        SunnyWebBoxDiscovery *webBoxDiscovery = new SunnyWebBoxDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), info);
+        connect(webBoxDiscovery, &SunnyWebBoxDiscovery::discoveryFinished, this, [=](){
+            webBoxDiscovery->deleteLater();
             ThingDescriptors descriptors;
-            qCDebug(dcSma()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
-            foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-                // Filter for sma hosts
-                if (!networkDeviceInfo.hostName().toLower().contains("sma"))
-                    continue;
-
+            foreach (const NetworkDeviceInfo &networkDeviceInfo, webBoxDiscovery->discoveryResults()) {
                 QString title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
                 QString description;
                 if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
@@ -90,6 +87,9 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             info->addThingDescriptors(descriptors);
             info->finish(Thing::ThingErrorNoError);
         });
+
+        webBoxDiscovery->startDiscovery();
+
     } else if (info->thingClassId() == speedwireMeterThingClassId) {
         SpeedwireDiscovery *speedwireDiscovery = new SpeedwireDiscovery(hardwareManager()->networkDeviceDiscovery(), info);
         if (!speedwireDiscovery->initialize()) {
