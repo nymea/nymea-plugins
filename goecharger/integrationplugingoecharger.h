@@ -118,11 +118,16 @@ private:
 
     // API V1
     void updateV1(Thing *thing, const QVariantMap &statusMap);
-    void sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration);
     QNetworkRequest buildConfigurationRequestV1(const QHostAddress &address, const QString &configuration);
+    void sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration);
     void setupMqttChannelV1(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
     void reconfigureMqttChannelV1(Thing *thing, const QVariantMap &statusMap);
 
+    // API V2
+    void updateV2(Thing *thing, const QVariantMap &statusMap);
+    QNetworkRequest buildConfigurationRequestV2(const QHostAddress &address, const QUrlQuery &configuration);
+    void setupMqttChannelV2(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    void reconfigureMqttChannelV2(Thing *thing);
 
 private slots:
     void refreshHttp();
@@ -131,6 +136,10 @@ private slots:
     void onMqttClientV1Connected(MqttChannel* channel);
     void onMqttClientV1Disconnected(MqttChannel* channel);
     void onMqttPublishV1Received(MqttChannel* channel, const QString &topic, const QByteArray &payload);
+
+    // API V2
+    void onMqttClientV2Connected(MqttChannel* channel);
+    void onMqttClientV2Disconnected(MqttChannel* channel);
 
 };
 
