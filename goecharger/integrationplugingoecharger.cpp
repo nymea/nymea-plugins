@@ -225,7 +225,9 @@ void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
         }
         break;
     case ApiVersion2:
-
+        if (m_mqttChannelsV2.contains(thing)) {
+            hardwareManager()->mqttProvider()->releaseChannel(m_mqttChannelsV2.take(thing));
+        }
         break;
     }
 
@@ -285,13 +287,16 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         if (action.actionTypeId() == goeHomePowerActionTypeId) {
             bool power = action.paramValue(goeHomePowerActionPowerParamTypeId).toBool();
             qCDebug(dcGoECharger()) << "Setting charging allowed to" << power;
+            // Warning: using QUrlQuery not always works here due to standard mixing from go-e:
+            // The url query has to be JSON encoded, i.e. <url>/set?fna="mein charger"
             QUrlQuery configuration;
+            // 0 neutral (prefere on), 1 off, 2 on force
             configuration.addQueryItem("frc", (power ? "0": "1"));
             QNetworkRequest request = buildConfigurationRequestV2(address, configuration);
-            QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed. HTTP reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
+                    qCWarning(dcGoECharger()) << "Execute action failed. TP reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -320,12 +325,12 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
             uint ampere = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
             qCDebug(dcGoECharger()) << "Setting max charging current to" << ampere << "A";
-            // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
-            // Maybe check if the user sets it or a automatism
+            // Warning: using QUrlQuery not always works here due to standard mixing from go-e:
+            // The url query has to be JSON encoded, i.e. <url>/set?fna="mein charger"
             QUrlQuery configuration;
             configuration.addQueryItem("amp", QString::number(ampere));
             QNetworkRequest request = buildConfigurationRequestV2(address, configuration);
-            QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
 
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
