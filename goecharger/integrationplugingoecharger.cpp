@@ -852,6 +852,7 @@ void IntegrationPluginGoECharger::reconfigureMqttChannelV1(Thing *thing, const Q
     QString clientId = QString("go-eCharger:%1:%2").arg(serialNumber).arg(statusMap.value("rbc").toInt());
     QString statusTopic = QString("/go-eCharger/%1/status").arg(serialNumber);
     QString commandTopic = QString("/go-eCharger/%1/cmd/req").arg(serialNumber);
+
     qCDebug(dcGoECharger()) << "Setting up mqtt channel for" << thing << address.toString() << statusTopic << commandTopic;
 
     MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(clientId, address, {statusTopic, commandTopic});

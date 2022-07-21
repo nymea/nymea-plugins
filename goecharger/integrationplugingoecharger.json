@@ -33,7 +33,7 @@
                             "name":"useMqtt",
                             "displayName": "Use MQTT interface",
                             "type": "bool",
-                            "defaultValue": true
+                            "defaultValue": false
                         },
                         {
                             "id": "3ad014e2-c948-406e-99be-eba1d866ea20",
