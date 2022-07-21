@@ -212,6 +212,22 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
             connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
             m_refreshTimer->start();
         }
+
+        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+            // make sure the connected state has been set properly
+            switch (getApiVersion(thing)) {
+            case ApiVersion1:
+                if (m_mqttChannelsV1.contains(thing)) {
+                    thing->setStateValue("connected", m_mqttChannelsV1.value(thing)->isConnected());
+                }
+                break;
+            case ApiVersion2:
+                if (m_mqttChannelsV2.contains(thing)) {
+                    thing->setStateValue("connected", m_mqttChannelsV2.value(thing)->isConnected());
+                }
+                break;
+            }
+        }
     }
 }
 
