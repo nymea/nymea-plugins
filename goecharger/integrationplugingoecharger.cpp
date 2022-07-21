@@ -638,7 +638,6 @@ void IntegrationPluginGoECharger::sendActionRequestV1(Thing *thing, ThingActionI
     // Lets use rest here since we get a reply on the rest request.
     // For using MQTT publish to topic "go-eCharger/<serialnumber>/cmd/req"
     QHostAddress address = getHostAddress(thing);
-
     QNetworkRequest request = buildConfigurationRequestV1(address, configuration);
     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -1409,8 +1408,9 @@ void IntegrationPluginGoECharger::refreshHttp()
         if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing))
             continue;
 
-        qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing;
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+        QNetworkRequest request = buildStatusRequest(thing);
+        qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing->name() << request.url().toString();
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         m_pendingReplies.insert(thing, reply);
 
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -1434,11 +1434,10 @@ void IntegrationPluginGoECharger::refreshHttp()
             }
 
             ApiVersion apiVersion = getApiVersion(thing);
-
             // Valid json data received, connected true
             thing->setStateValue("connected", true);
 
-            qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
+            //qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
             QVariantMap statusMap = jsonDoc.toVariant().toMap();
             switch (apiVersion) {
             case ApiVersion1:
