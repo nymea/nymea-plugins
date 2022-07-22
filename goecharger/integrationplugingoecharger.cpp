@@ -310,6 +310,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             configuration.addQueryItem("frc", (power ? "0": "1"));
             QNetworkRequest request = buildConfigurationRequestV2(address, configuration);
             QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+            connect(info, &ThingActionInfo::aborted, reply, &QNetworkReply::abort);
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcGoECharger()) << "Execute action failed. TP reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
@@ -347,7 +349,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             configuration.addQueryItem("amp", QString::number(ampere));
             QNetworkRequest request = buildConfigurationRequestV2(address, configuration);
             QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-
+            connect(info, &ThingActionInfo::aborted, reply, &QNetworkReply::abort);
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcGoECharger()) << "Execute action failed. HTTP status reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
@@ -387,6 +390,7 @@ void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+    connect(info, &ThingSetupInfo::aborted, reply, &QNetworkReply::abort);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
@@ -656,6 +660,7 @@ void IntegrationPluginGoECharger::sendActionRequestV1(Thing *thing, ThingActionI
     QHostAddress address = getHostAddress(thing);
     QNetworkRequest request = buildConfigurationRequestV1(address, configuration);
     QNetworkReply *reply = hardwareManager()->networkManager()->sendCustomRequest(request, "SET");
+    connect(info, &ThingActionInfo::aborted, reply, &QNetworkReply::abort);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
@@ -1525,7 +1530,7 @@ void IntegrationPluginGoECharger::onMqttClientV2Connected(MqttChannel *channel)
     }
 
     qCDebug(dcGoECharger()) << thing << "connected";
-    thing->setStateValue("connected", false);
+    thing->setStateValue("connected", true);
 }
 
 void IntegrationPluginGoECharger::onMqttClientV2Disconnected(MqttChannel *channel)
