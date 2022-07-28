@@ -247,7 +247,6 @@ void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
         break;
     }
 
-
     // Cleanup possible pending replies
     if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing)) {
         m_pendingReplies.take(thing)->abort();
