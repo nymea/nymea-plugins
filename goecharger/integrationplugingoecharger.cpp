@@ -112,6 +112,10 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
         return;
     }
 
+    // Handle reconfigure
+    if (m_monitors.contains(thing))
+        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+
     // Create the monitor
     NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
     m_monitors.insert(thing, monitor);
