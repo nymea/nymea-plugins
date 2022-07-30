@@ -1459,6 +1459,209 @@
                     ]
                 },
                 {
+                    "id": "52932a47-38cd-4dce-b338-88122ce4ab8a",
+                    "name": "shellyTrv",
+                    "displayName": "Shelly TRV",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["thermostat", "temperaturesensor", "wirelessconnectable", "battery", "update"],
+                    "paramTypes": [
+                        {
+                            "id": "20e21853-cfc1-4f78-9ba3-12682f81e021",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "ee942141-3102-4b6a-87dc-0fc6481924e5",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "bf4fead2-7a1a-44e7-bd32-ea2064944098",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "3a1dbc59-5b61-4650-a0fa-e127d337169e",
+                            "name": "boostDuration",
+                            "displayName": "Boost duration (minutes)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 120,
+                            "defaultValue": 10
+                        },
+                        {
+                            "id": "38a98b85-9c6e-4dc8-8d73-5248532d2ed8",
+                            "name": "childLock",
+                            "displayName": "Child lock",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "83cfbdb7-a807-4a81-9eb0-5e0d62efdbaf",
+                            "name": "displayFlipped",
+                            "displayName": "Display flipped",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e0f7aae7-d576-4897-9626-2cc7e452b30a",
+                            "name": "displayBrightness",
+                            "displayName": "Display brightness",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 7,
+                            "defaultValue": 7
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d9a26a08-5735-403a-ab02-7638bd0a471f",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9800babf-a6cc-4eda-b42e-8f5481b61aea",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0,
+                            "minValue": 4,
+                            "maxValue": 31,
+                            "writable": true
+                        },
+                        {
+                            "id": "e442ca7a-ee17-482b-aae4-579915029abf",
+                            "name": "valvePosition",
+                            "displayName": "Valve position",
+                            "displayNameEvent": "Valve position changed",
+                            "displayNameAction": "Set valve position",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "1935b7fa-72a5-4aee-877e-d656cd79d688",
+                            "name": "heatingOn",
+                            "displayName": "Heating",
+                            "displayNameEvent": "Heating changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ef74da4d-70f4-49cd-9697-a8e2bf25dee1",
+                            "name": "boost",
+                            "displayName": "Boost",
+                            "displayNameEvent": "Boost enabled/disabled",
+                            "displayNameAction": "Enable/disable boost",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a5944856-6b0f-4b45-9d9f-fe0f3c2de8aa",
+                            "name": "windowOpen",
+                            "displayName": "Window open",
+                            "displayNameEvent": "Window opened/closed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "92fa20b0-2b66-4d68-8819-6eeb43f1c0fb",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "42e080f3-c00c-49d2-b046-7bd26331b8f0",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f45dff98-41ac-43bb-a005-24294973611b",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "48c3a619-331e-44eb-b080-877fdcfd03f6",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "113625e0-e171-48e6-a9ca-6a13b75b9234",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "ad5cdb22-42ce-4592-ad72-61a854981f69",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "displayNameEvent": "Current firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "f3e00825-cd05-45e6-bc99-457bf74255c5",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "27e4c7f5-1828-443c-a18d-6d79382e001d",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        },
+                        {
+                            "id": "4cef8e3a-853b-4313-8f70-d22122e7bb04",
+                            "name": "reboot",
+                            "displayName": "Reboot device"
+                        }
+                    ]
+
+                },
+                {
                     "id": "6de35a17-0f54-4397-894d-4321b64c53d1",
                     "name": "shellySwitch",
                     "displayName": "Shelly switch",
