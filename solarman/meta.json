@@ -1,0 +1,13 @@
+{
+    "title": "Solarman",
+    "tagline": "Integrates Solarman compatible solar (Deye, Bosswerk...) inverters with nymea.",
+    "icon": "solarman.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
