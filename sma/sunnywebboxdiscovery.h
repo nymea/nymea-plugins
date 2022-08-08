@@ -63,7 +63,6 @@ private:
     NetworkDeviceInfos m_discoveredNetworkDeviceInfos;
     NetworkDeviceInfos m_verifiedNetworkDeviceInfos;
 
-    QTimer m_gracePeriodTimer;
     QDateTime m_startDateTime;
     QList<QNetworkReply *> m_pendingReplies;
 

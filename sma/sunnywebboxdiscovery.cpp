@@ -40,12 +40,7 @@ SunnyWebBoxDiscovery::SunnyWebBoxDiscovery(NetworkAccessManager *networkAccessMa
     m_networkAccessManager(networkAccessManager),
     m_networkDeviceDiscovery(networkDeviceDiscovery)
 {
-    m_gracePeriodTimer.setSingleShot(true);
-    m_gracePeriodTimer.setInterval(3000);
-    connect(&m_gracePeriodTimer, &QTimer::timeout, this, [this](){
-        qCDebug(dcSma()) << "Discovery: SunnyWebBox: Grace period timer triggered.";
-        finishDiscovery();
-    });
+
 }
 
 void SunnyWebBoxDiscovery::startDiscovery()
@@ -53,14 +48,13 @@ void SunnyWebBoxDiscovery::startDiscovery()
     // Clean up
     m_discoveryResults.clear();
     m_verifiedNetworkDeviceInfos.clear();
-    m_gracePeriodTimer.stop();
 
     m_startDateTime = QDateTime::currentDateTime();
 
-    qCInfo(dcSma()) << "Discovery: SunnyWebBox: Start discovering the network...";
+    qCInfo(dcSma()) << "Discovery: SunnyWebBox: Starting network discovery...";
     m_discoveryReply = m_networkDeviceDiscovery->discover();
 
-    // Check if all network device infos which might already be discovered here to save time...
+    // Check all network device infos which might already be discovered here to save time...
     foreach (const NetworkDeviceInfo &networkDeviceInfo, m_discoveryReply->networkDeviceInfos()) {
         checkNetworkDevice(networkDeviceInfo);
     }
@@ -85,7 +79,10 @@ void SunnyWebBoxDiscovery::startDiscovery()
         // If there might be some response after the grace period time,
         // we don't care any more since there might just waiting for some timeouts...
         // If there would be a device, if would have responded.
-        m_gracePeriodTimer.start();
+        QTimer::singleShot(3000, this, [this](){
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: Grace period timer triggered.";
+            finishDiscovery();
+        });
     });
 }
 
@@ -96,58 +93,62 @@ NetworkDeviceInfos SunnyWebBoxDiscovery::discoveryResults() const
 
 void SunnyWebBoxDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
 {
+    if (m_verifiedNetworkDeviceInfos.contains(networkDeviceInfo))
+        return;
+
+    m_verifiedNetworkDeviceInfos.append(networkDeviceInfo);
+
     // Make a simple request and verify if it worked and the expected data gets returned.
     SunnyWebBox webBox(m_networkAccessManager, networkDeviceInfo.address(), this);
     QNetworkReply *reply = webBox.sendRequest(networkDeviceInfo.address(), "GetPlantOverview");
     m_pendingReplies.append(reply);
     connect(reply, &QNetworkReply::finished, this, [=](){
         m_pendingReplies.removeAll(reply);
-         reply->deleteLater();
+        reply->deleteLater();
 
-         // Check HTTP reply
-         if (reply->error() != QNetworkReply::NoError) {
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: Checked" << networkDeviceInfo.address().toString()
-                              << "and a HTTP error occurred:" << reply->errorString() << "Continue...";
-             return;
-         }
+        // Check HTTP reply
+        if (reply->error() != QNetworkReply::NoError) {
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: Checked" << networkDeviceInfo.address().toString()
+                             << "and a HTTP error occurred:" << reply->errorString() << "Continue...";
+            return;
+        }
 
-         QByteArray data = reply->readAll();
+        QByteArray data = reply->readAll();
 
-         // Check JSON
-         QJsonParseError error;
-         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-         if (error.error != QJsonParseError::NoError) {
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: Checked" << networkDeviceInfo.address().toString()
-                              << "and received invalid JSON data:" << error.errorString() << "Continue...";
-             return;
-         }
+        // Check JSON
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: Checked" << networkDeviceInfo.address().toString()
+                             << "and received invalid JSON data:" << error.errorString() << "Continue...";
+            return;
+        }
 
-         if (!jsonDoc.isObject()) {
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: Response JSON is not an Object" << networkDeviceInfo.address().toString() << "Continue...";
-             return;
-         }
+        if (!jsonDoc.isObject()) {
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: Response JSON is not an Object" << networkDeviceInfo.address().toString() << "Continue...";
+            return;
+        }
 
-         QVariantMap map = jsonDoc.toVariant().toMap();
-         if (map["version"] != "1.0") {
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: API version not supported on" << networkDeviceInfo.address().toString() << "Continue...";;
-             return;
-         }
+        QVariantMap map = jsonDoc.toVariant().toMap();
+        if (map["version"] != "1.0") {
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: API version not supported on" << networkDeviceInfo.address().toString() << "Continue...";;
+            return;
+        }
 
-         if (map.contains("proc") && map.contains("result")) {
+        if (map.contains("proc") && map.contains("result")) {
             // Ok, seems to be a Sunny WebBox we are talking to...add to the discovery results...
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: --> Found Sunny WebBox on" << networkDeviceInfo;
-             m_discoveryResults.append(networkDeviceInfo);
-         } else {
-             qCDebug(dcSma()) << "Discovery: SunnyWebBox: Missing proc or result value in response from" << networkDeviceInfo.address().toString() << "Continue...";
-             return;
-         }
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: --> Found Sunny WebBox on" << networkDeviceInfo;
+            m_discoveryResults.append(networkDeviceInfo);
+        } else {
+            qCDebug(dcSma()) << "Discovery: SunnyWebBox: Missing proc or result value in response from" << networkDeviceInfo.address().toString() << "Continue...";
+            return;
+        }
     });
 }
 
 void SunnyWebBoxDiscovery::cleanupPendingReplies()
 {
     foreach (QNetworkReply *reply, m_pendingReplies) {
-        m_pendingReplies.removeAll(reply);
         reply->abort();
     }
 }
@@ -157,7 +158,7 @@ void SunnyWebBoxDiscovery::finishDiscovery()
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
     qCInfo(dcSma()) << "Discovery: SunnyWebBox: Finished the discovery process. Found" << m_discoveryResults.count()
                     << "Sunny WebBoxes in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
-    m_gracePeriodTimer.stop();
+
     cleanupPendingReplies();
     emit discoveryFinished();
 }
