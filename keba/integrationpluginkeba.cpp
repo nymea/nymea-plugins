@@ -460,7 +460,6 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
         ThingActionInfo *info = m_asyncActions.take(requestId);
         if (success) {
             qCDebug(dcKeba()) << "Action execution finished successfully. Request ID:" << requestId.toString();
-            info->finish(Thing::ThingErrorNoError);
 
             if (thing->thingClassId() == kebaThingClassId) {
                 // Set the value to the state so we don't have to wait for the report 2 response
@@ -479,6 +478,8 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
                     info->thing()->setStateValue("power", info->action().paramValue(kebaSimplePowerActionTypeId).toBool());
                 }
             }
+
+            info->finish(Thing::ThingErrorNoError);
         } else {
             qCWarning(dcKeba()) << "Action execution finished with error. Request ID:" << requestId.toString();
             info->finish(Thing::ThingErrorHardwareFailure);
