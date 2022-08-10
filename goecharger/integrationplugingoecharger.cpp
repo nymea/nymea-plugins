@@ -288,7 +288,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             qCDebug(dcGoECharger()) << "Setting charging allowed to" << power;
             // Set the allow value
             QString configuration = QString("alw=%1").arg(power ? 1: 0);
-            sendActionRequestV1(thing, info, configuration);
+            sendActionRequestV1(thing, info, configuration, QVariant(power));
             return;
         } else if (action.actionTypeId() == goeHomeMaxChargingCurrentActionTypeId) {
             uint maxChargingCurrent = action.paramValue(goeHomeMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
@@ -296,7 +296,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement amx
             // Maybe check if the user sets it or a automatism
             QString configuration = QString("amp=%1").arg(maxChargingCurrent);
-            sendActionRequestV1(thing, info, configuration);
+            sendActionRequestV1(thing, info, configuration, QVariant(maxChargingCurrent));
             return;
         } else {
             info->finish(Thing::ThingErrorActionTypeNotFound);
@@ -334,8 +334,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QVariantMap responseCode = jsonDoc.toVariant().toMap();
                 if (responseCode.value("frc", false).toBool()) {
                     qCDebug(dcGoECharger()) << "Execute action finished successfully. Power" << power;
-                    info->finish(Thing::ThingErrorNoError);
                     thing->setStateValue("power", power);
+                    info->finish(Thing::ThingErrorNoError);
                 } else {
                     qCWarning(dcGoECharger()) << "Action finished with error:" << responseCode.value("frc").toString();
                     info->finish(Thing::ThingErrorHardwareFailure);
@@ -373,8 +373,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QVariantMap responseCode = jsonDoc.toVariant().toMap();
                 if (responseCode.value("amp", false).toBool()) {
                     qCDebug(dcGoECharger()) << "Execute action finished successfully. Charging current" << ampere;
-                    info->finish(Thing::ThingErrorNoError);
                     thing->setStateValue("maxChargingCurrent", ampere);
+                    info->finish(Thing::ThingErrorNoError);
                 } else {
                     qCWarning(dcGoECharger()) << "Action finished with error:" << responseCode.value("amp").toString();
                     info->finish(Thing::ThingErrorHardwareFailure);
@@ -656,7 +656,7 @@ QNetworkRequest IntegrationPluginGoECharger::buildConfigurationRequestV1(const Q
     return QNetworkRequest(requestUrl);
 }
 
-void IntegrationPluginGoECharger::sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration)
+void IntegrationPluginGoECharger::sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration, const QVariant &value)
 {
     // Lets use rest here since we get a reply on the rest request.
     // For using MQTT publish to topic "go-eCharger/<serialnumber>/cmd/req"
@@ -681,6 +681,7 @@ void IntegrationPluginGoECharger::sendActionRequestV1(Thing *thing, ThingActionI
             return;
         }
 
+        thing->setStateValue(info->action().actionTypeId(), value);
         info->finish(Thing::ThingErrorNoError);
         updateV1(thing, jsonDoc.toVariant().toMap());
     });

@@ -119,7 +119,7 @@ private:
     // API V1
     void updateV1(Thing *thing, const QVariantMap &statusMap);
     QNetworkRequest buildConfigurationRequestV1(const QHostAddress &address, const QString &configuration);
-    void sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration);
+    void sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration, const QVariant &value);
     void setupMqttChannelV1(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
     void reconfigureMqttChannelV1(Thing *thing, const QVariantMap &statusMap);
 
