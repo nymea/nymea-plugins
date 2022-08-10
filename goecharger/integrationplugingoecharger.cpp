@@ -103,7 +103,7 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qCDebug(dcGoECharger()) << "Set up" << thing << thing->params();
+    qCDebug(dcGoECharger()) << "Setting up" << thing << thing->params();
 
     MacAddress macAddress = MacAddress(thing->paramValue(goeHomeThingMacAddressParamTypeId).toString());
     if (!macAddress.isValid()) {

@@ -39,12 +39,7 @@ GoeDiscovery::GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDe
     m_networkAccessManager(networkAccessManager),
     m_networkDeviceDiscovery(networkDeviceDiscovery)
 {
-    m_gracePeriodTimer.setSingleShot(true);
-    m_gracePeriodTimer.setInterval(3000);
-    connect(&m_gracePeriodTimer, &QTimer::timeout, this, [this](){
-        qCDebug(dcGoECharger()) << "Discovery: Grace period timer triggered.";
-        finishDiscovery();
-    });
+
 }
 
 GoeDiscovery::~GoeDiscovery()
@@ -58,7 +53,6 @@ void GoeDiscovery::startDiscovery()
     // Clean up
     m_discoveryResults.clear();
     m_verifiedNetworkDeviceInfos.clear();
-    m_gracePeriodTimer.stop();
 
     m_startDateTime = QDateTime::currentDateTime();
 
@@ -90,7 +84,10 @@ void GoeDiscovery::startDiscovery()
         // If there might be some response after the grace period time,
         // we don't care any more since there might just waiting for some timeouts...
         // If there would be a device, it would have responded.
-        m_gracePeriodTimer.start();
+        QTimer::singleShot(3000, this, [this](){
+            qCDebug(dcGoECharger()) << "Discovery: Grace period timer triggered.";
+            finishDiscovery();
+        });
     });
 }
 
@@ -176,8 +173,6 @@ void GoeDiscovery::checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDevic
             qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V1 verification returned JSON data but not the right one. Continue...";
         }
 
-        // Check if we are done with all checks
-        verifyDiscoveryFinished();
     });
 }
 
@@ -228,17 +223,7 @@ void GoeDiscovery::checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDevic
         } else {
             qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification returned JSON data but not the right one. Continue...";
         }
-
-        // Check if we are done with all checks
-        verifyDiscoveryFinished();
     });
-}
-
-void GoeDiscovery::verifyDiscoveryFinished()
-{
-    if (!m_discoveryReply && m_verifiedNetworkDeviceInfos.count() == m_discoveredNetworkDeviceInfos.count()) {
-        finishDiscovery();
-    }
 }
 
 void GoeDiscovery::cleanupPendingReplies()
@@ -253,7 +238,6 @@ void GoeDiscovery::finishDiscovery()
 {
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
     qCInfo(dcGoECharger()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
-    m_gracePeriodTimer.stop();
     cleanupPendingReplies();
     emit discoveryFinished();
 }

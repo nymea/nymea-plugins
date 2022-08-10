@@ -67,7 +67,6 @@ signals:
 
 private:
     QDateTime m_startDateTime;
-    QTimer m_gracePeriodTimer;
     NetworkAccessManager *m_networkAccessManager = nullptr;
     NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
     NetworkDeviceDiscoveryReply *m_discoveryReply = nullptr;
@@ -82,7 +81,6 @@ private slots:
     void checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDeviceInfo);
     void checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDeviceInfo);
 
-    void verifyDiscoveryFinished();
     void cleanupPendingReplies();
 
     void finishDiscovery();
