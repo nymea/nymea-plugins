@@ -9,6 +9,7 @@ The currently supported devices are:
 * Shelly 1L
 * Shelly 2
 * Shelly 2.5
+* Shelly Plus 2PM
 * Shelly Plug / PlugS
 * Shelly RGBW2
 * Shelly Dimmer / Dimmer 2
