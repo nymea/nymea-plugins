@@ -1482,7 +1482,6 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             QVariantMap switch0 = notification.value("switch:0").toMap();
             if (switch0.contains("apower") && thing->hasState("currentPower")) { // for shellyplus1pm
                 thing->setStateValue("currentPower", switch0.value("apower").toDouble());
-                qCDebug(dcShelly()) << "currentPower set to thing";
             }
             Thing *t1 = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 1)});
             if (switch0.contains("apower") && t1) {
@@ -1493,11 +1492,9 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             }
             if (switch0.contains("aenergy") && thing->hasState("totalEnergyConsumed")) { // for shellyplus1pm
                 thing->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble());
-                qCDebug(dcShelly()) << "totalEnergyConsumed set to thing";
             }
             if (switch0.contains("output") && thing->hasState("power")) { // for shellyplus1pm
                 thing->setStateValue("power", switch0.value("output").toBool());
-                qCDebug(dcShelly()) << "power set to thing";
             } else if (switch0.contains("output") && thing->hasState("channel1")) { // for shellyplus2pm
                 thing->setStateValue("channel1", switch0.value("output").toBool());
             }
