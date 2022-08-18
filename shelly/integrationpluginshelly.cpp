@@ -1482,74 +1482,77 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             QVariantMap switch0 = notification.value("switch:0").toMap();
             if (switch0.contains("apower") && thing->hasState("currentPower")) { // for shellyplus1pm
                 thing->setStateValue("currentPower", switch0.value("apower").toDouble());
+                qCDebug(dcShelly()) << "currentPower set to thing";
             }
-            Thing *t1 = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 1)});
-            if (switch0.contains("apower") && t1) {
-                t1->setStateValue("currentPower", switch0.value("apower").toDouble());
+            Thing *t = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 1)});
+            if (switch0.contains("apower") && t) {
+                t->setStateValue("currentPower", switch0.value("apower").toDouble());
             }
-            if (switch0.contains("aenergy") && t1) {
-                t1->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble());
+            if (switch0.contains("aenergy") && t) {
+                t->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble());
             }
             if (switch0.contains("aenergy") && thing->hasState("totalEnergyConsumed")) { // for shellyplus1pm
                 thing->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble());
+                qCDebug(dcShelly()) << "totalEnergyConsumed set to thing";
             }
             if (switch0.contains("output") && thing->hasState("power")) { // for shellyplus1pm
                 thing->setStateValue("power", switch0.value("output").toBool());
+                qCDebug(dcShelly()) << "power set to thing";
             } else if (switch0.contains("output") && thing->hasState("channel1")) { // for shellyplus2pm
                 thing->setStateValue("channel1", switch0.value("output").toBool());
             }
         }
-        if (notification.contains("cover:0")) {
-            QVariantMap cover0 = notification.value("cover:0").toMap();
-            Thing *t2 = myThings().filterByParentId(thing->id()).findByParams({Param(shellyRollerThingChannelParamTypeId, 1)});
-            if (cover0.contains("apower") && t2) {
-                t2->setStateValue("currentPower", cover0.value("apower").toDouble());
-            }
-            if (cover0.contains("aenergy") && t2) {
-                t2->setStateValue("totalEnergyConsumed", notification.value("cover:0").toMap().value("aenergy").toMap().value("total").toDouble());
-            }
-            if (cover0.contains("current_pos") && t2) {
-                t2->setStateValue("percentage", notification.value("cover:0").toMap().value("current_pos").toInt());
-            }
-            if (cover0.contains("state") && t2) {
-                QString coverState = notification.value("cover:0").toMap().value("state").toString();
-                bool movingBool = false;
-                if (coverState == "opening" || coverState == "closing" || coverState == "calibrating") {
-                    movingBool = true;
-                }
-                t2->setStateValue("moving", movingBool);
-            }
-            if (cover0.contains("output") && thing->hasState("channel1")) { // for shellyplus2pm
-                thing->setStateValue("power", cover0.value("output").toBool());
-            }
-        }
         if (notification.contains("switch:1")) {
             QVariantMap switch1 = notification.value("switch:1").toMap();
-            Thing *t3 = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 2)});
-            if (switch1.contains("apower") && t3) {
-                t3->setStateValue("currentPower", switch1.value("apower").toDouble());
+            Thing *t = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 2)});
+            if (switch1.contains("apower") && t) {
+                t->setStateValue("currentPower", switch1.value("apower").toDouble());
             }
-            if (switch1.contains("aenergy") && t3) {
-                t3->setStateValue("totalEnergyConsumed", notification.value("switch:1").toMap().value("aenergy").toMap().value("total").toDouble());
+            if (switch1.contains("aenergy") && t) {
+                t->setStateValue("totalEnergyConsumed", notification.value("switch:1").toMap().value("aenergy").toMap().value("total").toDouble());
             }
             if (switch1.contains("output") && thing->hasState("channel2")) { // for shellyplus2pm
                 thing->setStateValue("channel2", switch1.value("output").toBool());
             }
         }
+        if (notification.contains("cover:0")) {
+            QVariantMap cover0 = notification.value("cover:0").toMap();
+            Thing *t = myThings().filterByParentId(thing->id()).findByParams({Param(shellyRollerThingChannelParamTypeId, 1)});
+            if (cover0.contains("apower") && t) {
+                t->setStateValue("currentPower", cover0.value("apower").toDouble());
+            }
+            if (cover0.contains("aenergy") && t) {
+                t->setStateValue("totalEnergyConsumed", notification.value("cover:0").toMap().value("aenergy").toMap().value("total").toDouble());
+            }
+            if (cover0.contains("current_pos") && t) {
+                t->setStateValue("percentage", notification.value("cover:0").toMap().value("current_pos").toInt());
+            }
+            if (cover0.contains("state") && t) {
+                QString coverState = notification.value("cover:0").toMap().value("state").toString();
+                bool movingBool = false;
+                if (coverState == "opening" || coverState == "closing" || coverState == "calibrating") {
+                    movingBool = true;
+                }
+                t->setStateValue("moving", movingBool);
+            }
+            if (cover0.contains("output") && thing->hasState("channel1")) { // for shellyplus2pm
+                thing->setStateValue("power", cover0.value("output").toBool());
+            }
+        }
         if (notification.contains("input:0")) {
             QVariantMap input0 = notification.value("input:0").toMap();
-            Thing *t4 = myThings().filterByParentId(thing->id()).findByParams({Param(shellySwitchThingChannelParamTypeId, 1)});
-            if (t4) {
-                t4->setStateValue("power", input0.value("state").toBool());
-                t4->emitEvent("pressed");
+            Thing *t = myThings().filterByParentId(thing->id()).findByParams({Param(shellySwitchThingChannelParamTypeId, 1)});
+            if (t) {
+                t->setStateValue("power", input0.value("state").toBool());
+                t->emitEvent("pressed");
             }
         }
         if (notification.contains("input:1")) {
             QVariantMap input1 = notification.value("input:1").toMap();
-            Thing *t5 = myThings().filterByParentId(thing->id()).findByParams({Param(shellySwitchThingChannelParamTypeId, 2)});
-            if (t5) {
-                t5->setStateValue("power", input1.value("state").toBool());
-                t5->emitEvent("pressed");
+            Thing *t = myThings().filterByParentId(thing->id()).findByParams({Param(shellySwitchThingChannelParamTypeId, 2)});
+            if (t) {
+                t->setStateValue("power", input1.value("state").toBool());
+                t->emitEvent("pressed");
             }
         }
     });
