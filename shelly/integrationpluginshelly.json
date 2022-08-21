@@ -495,7 +495,7 @@
                 {
                     "id": "465efb0d-da68-4177-a040-940c7f451e29",
                     "name": "shelly25",
-                    "displayName": "Shelly 2.5",
+                    "displayName": "Shelly 2.5/Shelly Plus 2PM",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
