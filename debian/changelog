@@ -1,3 +1,34 @@
+nymea-plugins (1.4.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Tasmota: Allow configuring the TelePeriod
+
+  [ Christian Fetzer ]
+  * somfytahoma: Fix actions for roller shutters
+
+  [ Michael Zanetti ]
+  * PushNotifications: Allow adding custom data to push notifications
+  * Bosswerk: Improve discovery for setup
+
+  [ Simon Stürz ]
+  * SMA: Improve Sunny WebBox discovery
+  * go-eCharger:  Improve discovery and add API V2 support (Hardware V3)
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly TRV
+  * Nuki: Update to new interface definition
+  * Fronius: Fix a crash if the discovery times out
+  * DHT: Update RPi.GPIO python dependency
+
+  [ Simon Stürz ]
+  * Keba: Finish action info after updating the according state
+  * sgready: Fix set state value on mode changed
+
+  [ Michael Zanetti ]
+  * myStrom: Improve discovery mechanism
+
+ -- jenkins <developer@nymea.io>  Thu, 25 Aug 2022 15:06:59 +0200
+
 nymea-plugins (1.3.1) jammy; urgency=medium
 
 
