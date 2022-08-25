@@ -140,7 +140,7 @@ void IntegrationPluginTasmota::setupThing(ThingSetupInfo *info)
         configItems.insert("MqttUser", channel->username());
         configItems.insert("MqttPassword", channel->password());
         configItems.insert("Topic", "sonoff");
-        configItems.insert("TelePeriod", "10");
+        configItems.insert("TelePeriod", thing->setting("telePeriod").toString());
         configItems.insert("FullTopic", channel->topicPrefixList().first() + "/%topic%/");
 
         QStringList configList;
@@ -156,7 +156,7 @@ void IntegrationPluginTasmota::setupThing(ThingSetupInfo *info)
         QNetworkRequest request(url);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [this, info, channel, reply](){
+        connect(reply, &QNetworkReply::finished, info, [this, info, channel, reply, thing](){
             if (reply->error() != QNetworkReply::NoError) {
                 qCDebug(dcTasmota) << "Sonoff thing setup call failed:" << reply->error() << reply->errorString() << reply->readAll();
                 hardwareManager()->mqttProvider()->releaseChannel(channel);
@@ -171,6 +171,21 @@ void IntegrationPluginTasmota::setupThing(ThingSetupInfo *info)
 
             qCDebug(dcTasmota) << "Sonoff setup complete";
             info->finish(Thing::ThingErrorNoError);
+
+            connect(thing, &Thing::settingChanged, this, [this, thing](){
+                QUrl url(QString("http://%1/cm").arg(thing->paramValue("ipAddress").toString()));
+                QUrlQuery query;
+                QMap<QString, QString> configItems;
+                configItems.insert("TelePeriod", thing->setting("telePeriod").toString());
+                url.setQuery(query);
+                qCDebug(dcTasmota) << "Configuring Tasmota thing:" << url.toString();
+                QNetworkRequest request(url);
+                QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+                connect(reply, &QNetworkReply::finished, reply, [reply](){
+                    reply->deleteLater();
+                    qCInfo(dcTasmota()) << "Configuration on tasmota set with status:" << reply->error() << reply->errorString() << reply->readAll();
+                });
+            });
 
             foreach (Thing *child, myThings()) {
                 if (child->parentId() == info->thing()->id()) {

@@ -33,6 +33,8 @@
 
 #include "integrations/integrationplugin.h"
 
+#include "extern-plugininfo.h"
+
 class MqttChannel;
 
 class IntegrationPluginTasmota: public IntegrationPlugin
