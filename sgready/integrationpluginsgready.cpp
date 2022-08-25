@@ -91,8 +91,8 @@ void IntegrationPluginSgReady::setupThing(ThingSetupInfo *info)
         // Reflect the SG states
         connect(sgReadyInterface, &SgReadyInterface::sgReadyModeChanged, this, [thing, sgReadyInterface](SgReadyInterface::SgReadyMode mode){
             Q_UNUSED(mode)
-            thing->setSettingValue(sgReadyInterfaceGpio1StateStateTypeId, sgReadyInterface->gpio1()->value() == Gpio::ValueHigh);
-            thing->setSettingValue(sgReadyInterfaceGpio2StateStateTypeId, sgReadyInterface->gpio2()->value() == Gpio::ValueHigh);
+            thing->setStateValue(sgReadyInterfaceGpio1StateStateTypeId, sgReadyInterface->gpio1()->value() == Gpio::ValueHigh);
+            thing->setStateValue(sgReadyInterfaceGpio2StateStateTypeId, sgReadyInterface->gpio2()->value() == Gpio::ValueHigh);
         });
 
         m_sgReadyInterfaces.insert(thing, sgReadyInterface);
