@@ -142,6 +142,43 @@ void SunnyWebBox::setMacAddress(const QString &macAddress)
     m_macAddress = macAddress;
 }
 
+QNetworkReply *SunnyWebBox::sendRequest(const QHostAddress &address, const QString &procedure, const QJsonObject &params, const QString &requestId)
+{
+    qCDebug(dcSma()) << "SunnyWebBox: Send message to" << address.toString() << "Procedure:" << procedure << "Params:" << params;
+
+    QString finalRequestId = requestId;
+    if (finalRequestId.isEmpty())
+        finalRequestId = generateRequestId();
+
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["format"] = "JSON";
+    obj["id"] = requestId;
+    obj["proc"] = procedure;
+    obj["version"] = "1.0";
+
+    if (!params.isEmpty()) {
+        obj.insert("params", params);
+    }
+    doc.setObject(obj);
+
+    QUrl url;
+    url.setHost(address.toString());
+    url.setPath("/rpc");
+    url.setPort(80);
+    url.setScheme("http");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
+    data.prepend("RPC=");
+    return m_networkManager->post(request, data);
+}
+
+QString SunnyWebBox::generateRequestId()
+{
+    return QUuid::createUuid().toString().remove('{').remove('-').left(14);
+}
+
 void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result)
 {
     if (messageType == "GetPlantOverview") {
@@ -263,31 +300,8 @@ QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &pro
 
 QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {
-    qCDebug(dcSma()) << "SunnyWebBox: Send message to" << address.toString() << "Procedure:" << procedure << "Params:" << params;
-    QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
-
-    QJsonDocument doc;
-    QJsonObject obj;
-    obj["format"] = "JSON";
-    obj["id"] = requestId;
-    obj["proc"] = procedure;
-    obj["version"] = "1.0";
-
-    if (!params.isEmpty()) {
-        obj.insert("params", params);
-    }
-    doc.setObject(obj);
-
-    QUrl url;
-    url.setHost(address.toString());
-    url.setPath("/rpc");
-    url.setPort(80);
-    url.setScheme("http");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
-    data.prepend("RPC=");
-    QNetworkReply *reply = m_networkManager->post(request, data);
+    QString requestId = generateRequestId();
+    QNetworkReply *reply = sendRequest(m_hostAddresss, procedure, params, requestId);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, address, requestId, reply]{
 

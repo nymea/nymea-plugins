@@ -10,7 +10,8 @@ SOURCES += \
     speedwireinverterreply.cpp \
     speedwireinverterrequest.cpp \
     speedwiremeter.cpp \
-    sunnywebbox.cpp
+    sunnywebbox.cpp \
+    sunnywebboxdiscovery.cpp
 
 HEADERS += \
     integrationpluginsma.h \
@@ -21,4 +22,5 @@ HEADERS += \
     speedwireinverterreply.h \
     speedwireinverterrequest.h \
     speedwiremeter.h \
-    sunnywebbox.h
+    sunnywebbox.h \
+    sunnywebboxdiscovery.h

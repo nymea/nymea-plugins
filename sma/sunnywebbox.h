@@ -35,6 +35,7 @@
 #include "network/networkaccessmanager.h"
 
 #include <QObject>
+#include <QJsonObject>
 #include <QHostAddress>
 #include <QUdpSocket>
 
@@ -89,6 +90,10 @@ public:
 
     QString macAddress() const;
     void setMacAddress(const QString &macAddress);
+
+    QNetworkReply *sendRequest(const QHostAddress &address, const QString &procedure, const QJsonObject &params = QJsonObject(), const QString &requestId = QString());
+
+    static QString generateRequestId();
 
 private:
     bool m_connected = false;
