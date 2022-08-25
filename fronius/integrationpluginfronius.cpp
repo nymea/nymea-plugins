@@ -57,7 +57,7 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
 
     qCDebug(dcFronius()) << "Starting network discovery...";
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [=](){
         ThingDescriptors descriptors;
         qCDebug(dcFronius()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
         foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
