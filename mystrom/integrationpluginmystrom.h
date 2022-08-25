@@ -34,6 +34,7 @@
 #include "integrations/integrationplugin.h"
 
 #include <QUrlQuery>
+#include <QNetworkReply>
 
 class PluginTimer;
 class ZeroConfServiceBrowser;
@@ -57,6 +58,7 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    void finishDiscoveryReply(QNetworkReply* reply, ThingDiscoveryInfo* info, QList<QNetworkReply*> *pendingReplies);
     QUrl composeUrl(Thing *thing, const QString &path);
 
     ZeroConfServiceBrowser *m_zeroConf = nullptr;
