@@ -75,6 +75,7 @@ static QHash<ThingClassId, ParamTypeId> idParamTypeMap = {
     {shellyHTThingClassId, shellyHTThingIdParamTypeId},
     {shellyI3ThingClassId, shellyI3ThingIdParamTypeId},
     {shellyMotionThingClassId, shellyMotionThingIdParamTypeId},
+    {shellyTrvThingClassId, shellyTrvThingIdParamTypeId},
 };
 
 static QHash<ThingClassId, ParamTypeId> usernameParamTypeMap = {
@@ -91,7 +92,8 @@ static QHash<ThingClassId, ParamTypeId> usernameParamTypeMap = {
     {shellyEm3ThingClassId, shellyEm3ThingUsernameParamTypeId},
     {shellyHTThingClassId, shellyHTThingUsernameParamTypeId},
     {shellyI3ThingClassId, shellyI3ThingUsernameParamTypeId},
-    {shellyMotionThingClassId, shellyMotionThingUsernameParamTypeId}
+    {shellyMotionThingClassId, shellyMotionThingUsernameParamTypeId},
+    {shellyTrvThingClassId, shellyTrvThingUsernameParamTypeId},
 };
 
 static QHash<ThingClassId, ParamTypeId> passwordParamTypeMap = {
@@ -108,7 +110,8 @@ static QHash<ThingClassId, ParamTypeId> passwordParamTypeMap = {
     {shellyEm3ThingClassId, shellyEm3ThingPasswordParamTypeId},
     {shellyHTThingClassId, shellyHTThingPasswordParamTypeId},
     {shellyI3ThingClassId, shellyI3ThingPasswordParamTypeId},
-    {shellyMotionThingClassId, shellyMotionThingPasswordParamTypeId}
+    {shellyMotionThingClassId, shellyMotionThingPasswordParamTypeId},
+    {shellyTrvThingClassId, shellyTrvThingPasswordParamTypeId}
 };
 
 static QHash<ThingClassId, ParamTypeId> rollerModeParamTypeMap = {
@@ -138,6 +141,7 @@ static QHash<ActionTypeId, ThingClassId> rebootActionTypeMap = {
     {shelly2RebootActionTypeId, shelly2ThingClassId},
     {shelly25RebootActionTypeId, shelly25ThingClassId},
     {shellyI3RebootActionTypeId, shellyI3ThingClassId},
+    {shellyTrvRebootActionTypeId, shellyTrvThingClassId},
 };
 
 static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
@@ -228,7 +232,8 @@ static QHash<ActionTypeId, ThingClassId> updateActionTypesMap = {
     {shellyEm3PerformUpdateActionTypeId, shellyEm3ThingClassId},
     {shellyHTPerformUpdateActionTypeId, shellyHTThingClassId},
     {shellyI3PerformUpdateActionTypeId, shellyI3ThingClassId},
-    {shellyMotionPerformUpdateActionTypeId, shellyMotionThingClassId}
+    {shellyMotionPerformUpdateActionTypeId, shellyMotionThingClassId},
+    {shellyTrvPerformUpdateActionTypeId, shellyTrvThingClassId}
 };
 
 // Settings
@@ -294,6 +299,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("shellyix3-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyMotionThingClassId) {
             namePattern = QRegExp("shellymotionsensor-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyTrvThingClassId) {
+            namePattern = QRegExp("shellytrv-[0-9A-Z]+$");
         }
         if (!entry.name().contains(namePattern)) {
             continue;
@@ -384,8 +391,10 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     QUrl url;
     url.setScheme("http");
     url.setHost(getIP(info->thing()).toString());
-    url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
-    url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
+    if (!thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString().isEmpty()) {
+        url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
+        url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
+    }
 
     if (rebootActionTypeMap.contains(action.actionTypeId())) {
         if (shellyId.contains("Plus")) {
@@ -569,6 +578,61 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, brightness](){
             info->thing()->setStateValue("brightness", brightness);
+            info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+        });
+        return;
+    }
+
+    if (action.actionTypeId() == shellyTrvTargetTemperatureActionTypeId) {
+        double targetValue = action.paramValue(shellyTrvTargetTemperatureActionTargetTemperatureParamTypeId).toDouble();
+        url.setPath(QString("/thermostats/0"));
+        QUrlQuery query;
+        query.addQueryItem("target_t", QString::number(targetValue));
+        query.addQueryItem("target_t_enabled", "true");
+        url.setQuery(query);
+        qCDebug(dcShelly()) << "Requesting:" << url;
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [info, reply, targetValue](){
+            // The Shelly TRV seems to reply with OK, but then takes ages to actually set the value
+            // If we send another value within that time frame, it will again reply with OK but just ognore it...
+            // As a workaround we'll make nymea wait for a second until allowing to send the next action.
+            info->thing()->setStateValue(shellyTrvTargetTemperatureStateTypeId, targetValue);
+            Thing::ThingError status = reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure;
+            QTimer::singleShot(1000, info, [info, status](){
+                info->finish(status);
+            });
+        });
+        return;
+    }
+    if (action.actionTypeId() == shellyTrvValvePositionActionTypeId) {
+        int targetValue = action.paramValue(shellyTrvValvePositionActionValvePositionParamTypeId).toInt();
+        url.setPath(QString("/thermostats/0"));
+        QUrlQuery query;
+        query.addQueryItem("pos", QString::number(targetValue));
+        url.setQuery(query);
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [info, reply, targetValue](){
+            // The Shelly TRV seems to reply with OK, but then takes ages to actually set the value
+            // If we send another value within that time frame, it will again reply with OK but just ognore it...
+            // As a workaround we'll make nymea wait for a second until allowing to send the next action.
+            info->thing()->setStateValue(shellyTrvValvePositionStateTypeId, targetValue);
+            Thing::ThingError status = reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure;
+            QTimer::singleShot(1000, info, [info, status](){
+                info->finish(status);
+            });
+        });
+        return;
+    }
+    if (action.actionTypeId() == shellyTrvBoostActionTypeId) {
+        url.setPath(QString("/thermostats/0"));
+        QUrlQuery query;
+        query.addQueryItem("boost_minutes", thing->setting(shellyTrvSettingsBoostDurationParamTypeId).toString());
+        url.setQuery(query);
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
         return;
@@ -790,8 +854,12 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
         case 3101:
             thing->setStateValue("temperature", value.toDouble());
             break;
-        case 3103:
-            thing->setStateValue("humidity", value.toDouble());
+        case 3103: // This is target tempererature for the TRV, but humidity for other sensors
+            if (thing->thingClassId() == shellyTrvThingClassId) {
+                thing->setStateValue("targetTemperature", value.toDouble());
+            } else {
+                thing->setStateValue("humidity", value.toDouble());
+            }
             break;
         case 3106:
             thing->setStateValue("lightIntensity", value.toInt());
@@ -803,6 +871,13 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
                 thing->setStateValue("batteryLevel", value.toInt());
             }
             thing->setStateValue("batteryCritical", thing->stateValue("batteryLevel").toUInt() < 10);
+            break;
+        case 3121:
+            thing->setStateValue("valvePosition", value.toUInt());
+            thing->setStateValue("heatingOn", value.toUInt() > 0);
+            break;
+        case 3122:
+            thing->setStateValue("boost", value.toUInt() > 0);
             break;
         case 4101: // power meter for channel 1
             if (thing->hasState("currentPower")) {
@@ -1132,8 +1207,10 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
     url.setHost(address.toString());
     url.setPort(80);
     url.setPath("/settings");
-    url.setUserName(info->thing()->paramValue(usernameParamTypeMap.value(info->thing()->thingClassId())).toString());
-    url.setPassword(info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString());
+    if (!thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString().isEmpty()) {
+        url.setUserName(info->thing()->paramValue(usernameParamTypeMap.value(info->thing()->thingClassId())).toString());
+        url.setPassword(info->thing()->paramValue(passwordParamTypeMap.value(info->thing()->thingClassId())).toString());
+    }
 
     QUrlQuery query;
     query.addQueryItem("coiot_enable", "true");
@@ -1181,6 +1258,10 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
             info->thing()->setSettingValue(shellyI3SettingsLongpushMinDurationParamTypeId, settingsMap.value("longpush_duration_ms").toMap().value("min").toUInt());
             info->thing()->setSettingValue(shellyI3SettingsLongpushMaxDurationParamTypeId, settingsMap.value("longpush_duration_ms").toMap().value("max").toUInt());
             info->thing()->setSettingValue(shellyI3SettingsMultipushTimeBetweenPushesParamTypeId, settingsMap.value("multipush_time_between_pushes_ms").toMap().value("max").toUInt());
+        } else if (info->thing()->thingClassId() == shellyTrvThingClassId) {
+            info->thing()->setSettingValue(shellyTrvSettingsChildLockParamTypeId, settingsMap.value("child_lock").toBool());
+            info->thing()->setSettingValue(shellyTrvSettingsDisplayFlippedParamTypeId, settingsMap.value("display").toMap().value("flipped").toBool());
+            info->thing()->setSettingValue(shellyTrvSettingsDisplayBrightnessParamTypeId, settingsMap.value("display").toMap().value("brightness").toUInt());
         }
 
         ThingDescriptors autoChilds;
@@ -1235,6 +1316,7 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
         }
 
         info->finish(Thing::ThingErrorNoError);
+        info->thing()->setStateValue("connected", true);
 
         emit autoThingsAppeared(autoChilds);
 
@@ -1281,7 +1363,8 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
     // Handle thing settings of gateway devices
     if (info->thing()->thingClassId() == shellyPlugThingClassId ||
             info->thing()->thingClassId() == shellyButton1ThingClassId ||
-            info->thing()->thingClassId() == shellyI3ThingClassId) {
+            info->thing()->thingClassId() == shellyI3ThingClassId ||
+            info->thing()->thingClassId() == shellyTrvThingClassId) {
         connect(info->thing(), &Thing::settingChanged, this, [this, thing, shellyId](const ParamTypeId &settingTypeId, const QVariant &value) {
 
             pluginStorage()->beginGroup(thing->id().toString());
@@ -1316,6 +1399,15 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
                        || settingTypeId == shellyI3SettingsMultipushTimeBetweenPushesParamTypeId) {
                 url.setPath("/settings");
                 query.addQueryItem("multipush_time_between_pushes_ms_max", value.toString());
+            } else if (settingTypeId == shellyTrvSettingsChildLockParamTypeId) {
+                url.setPath("/settings");
+                query.addQueryItem("child_lock", value.toString());
+            } else if (settingTypeId == shellyTrvSettingsDisplayBrightnessParamTypeId) {
+                url.setPath("/settings");
+                query.addQueryItem("display_brightness", value.toString());
+            } else if (settingTypeId == shellyTrvSettingsDisplayFlippedParamTypeId) {
+                url.setPath("/settings");
+                query.addQueryItem("display_flipped", value.toString());
             }
 
             url.setQuery(query);
