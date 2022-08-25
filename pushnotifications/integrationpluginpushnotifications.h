@@ -33,6 +33,8 @@
 
 #include "integrations/integrationplugin.h"
 
+#include "extern-plugininfo.h"
+
 class IntegrationPluginPushNotifications: public IntegrationPlugin
 {
     Q_OBJECT

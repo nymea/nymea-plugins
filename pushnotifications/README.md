@@ -17,6 +17,8 @@ for iOS too. On Ubuntu, the UBPorts push services are used.
 
 ## More
 
+### Setup
+
 During setup, the token, the push service system and a client id needs to be provided. The token is normally
 obtained by the operating system. The push service should be selected from FB-GCM, FB-APNs or UBPorts. The client id
 must a unique per client and as persistent as possible.
@@ -29,3 +31,28 @@ when setting up a push notification thing. Normally, push tokens expire after a 
 the user clears app data, when the operating system decides to cycle tokens etc). In this case, the client
 app should reconfigure its own push notification thing, updating the token with the new one. The client ID
 parameter schould be used to find the appropriate thing to reconfigure.
+
+
+### Extra data
+When sending a push notification, additional data can be passed which will delivered to the client (e.g. nymea:app).
+
+nymea:app currently supports the following extra data:
+
+* open=view: Open a particular view in the app. This can be a main view or a thing id. 
+* execute=action&thingId=<thingId>&actionParams=<params json>
+
+Examples:
+
+Open the Dashboard view:
+
+    open=dashboard
+
+Open a particular thing by its ID:
+
+    open=5634307c-8569-4365-a78a-45e7e97966cb
+
+Turn on a light:
+
+    execute=power&thingId=5634307c-8569-4365-a78a-45e7e97966cb&actionParams="{\"power\":true}"
+
+
