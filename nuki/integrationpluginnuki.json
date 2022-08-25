@@ -131,12 +131,12 @@
                     "actionTypes": [
                         {
                             "id": "55d25891-89b9-4a9f-a2b3-774eccf30183",
-                            "name": "close",
+                            "name": "lock",
                             "displayName": "Lock"
                         },
                         {
                             "id": "76e96738-5336-4b9a-87f7-1822307b5a39",
-                            "name": "open",
+                            "name": "unlock",
                             "displayName": "Unlock"
                         },
                         {

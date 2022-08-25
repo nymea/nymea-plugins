@@ -232,12 +232,12 @@ void IntegrationPluginNuki::executeAction(ThingActionInfo *info)
         return info->finish(Thing::ThingErrorHardwareNotAvailable);
     }
 
-    if (action.actionTypeId() == nukiCloseActionTypeId) {
+    if (action.actionTypeId() == nukiLockActionTypeId) {
         if (!nuki->executeDeviceAction(Nuki::NukiActionLock, info)) {
             return info->finish(Thing::ThingErrorThingInUse);
         }
         return;
-    } else if (action.actionTypeId() == nukiOpenActionTypeId) {
+    } else if (action.actionTypeId() == nukiUnlockActionTypeId) {
         if (!nuki->executeDeviceAction(Nuki::NukiActionUnlock, info)) {
             return info->finish(Thing::ThingErrorThingInUse);
         }
