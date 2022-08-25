@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,11 +33,12 @@
 
 #include <QUuid>
 
-#include <network/networkaccessmanager.h>
+#include <plugintimer.h>
 #include <network/mqtt/mqttchannel.h>
 #include <network/mqtt/mqttprovider.h>
+#include <network/networkaccessmanager.h>
+#include <network/networkdevicemonitor.h>
 #include <integrations/integrationplugin.h>
-#include <plugintimer.h>
 
 class IntegrationPluginGoECharger: public IntegrationPlugin
 {
@@ -47,13 +48,27 @@ class IntegrationPluginGoECharger: public IntegrationPlugin
     Q_INTERFACES(IntegrationPlugin)
 
 public:
+    enum ApiVersion {
+        ApiVersion1 = 1,
+        ApiVersion2 = 2
+    };
+    Q_ENUM(ApiVersion)
+
     enum CarState {
+        CarStateUnknown = 0,
         CarStateReadyNoCar = 1,
         CarStateCharging = 2,
         CarStateWaitForCar = 3,
         CarStateChargedCarConnected = 4
     };
     Q_ENUM(CarState)
+
+    enum ForceState {
+        ForceStateNeutral = 0,
+        ForceStateOff = 1,
+        ForceStateOn = 2
+    };
+    Q_ENUM(ForceState)
 
     enum Access {
         AccessOpen = 0,
@@ -83,25 +98,48 @@ public:
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
+
     void executeAction(ThingActionInfo *info) override;
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
-    QHash<Thing *, MqttChannel *> m_channels;
-    QHash<Thing *, QNetworkReply *> m_pendingReplies;
 
-    void update(Thing *thing, const QVariantMap &statusMap);
+    QHash<Thing *, MqttChannel *> m_mqttChannelsV1;
+    QHash<Thing *, MqttChannel *> m_mqttChannelsV2;
+
+    QHash<Thing *, QNetworkReply *> m_pendingReplies;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+
+    // General methods
+    void setupGoeHome(ThingSetupInfo *info);
     QNetworkRequest buildStatusRequest(Thing *thing);
-    QNetworkRequest buildConfigurationRequest(const QHostAddress &address, const QString &configuration);
-    void sendActionRequest(Thing *thing, ThingActionInfo *info, const QString &configuration);
-    void setupMqttChannel(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    QHostAddress getHostAddress(Thing *thing);
+    ApiVersion getApiVersion(Thing *thing);
+
+    // API V1
+    void updateV1(Thing *thing, const QVariantMap &statusMap);
+    QNetworkRequest buildConfigurationRequestV1(const QHostAddress &address, const QString &configuration);
+    void sendActionRequestV1(Thing *thing, ThingActionInfo *info, const QString &configuration, const QVariant &value);
+    void setupMqttChannelV1(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    void reconfigureMqttChannelV1(Thing *thing, const QVariantMap &statusMap);
+
+    // API V2
+    void updateV2(Thing *thing, const QVariantMap &statusMap);
+    QNetworkRequest buildConfigurationRequestV2(const QHostAddress &address, const QUrlQuery &configuration);
+    void setupMqttChannelV2(ThingSetupInfo *info, const QHostAddress &address, const QVariantMap &statusMap);
+    void reconfigureMqttChannelV2(Thing *thing);
 
 private slots:
     void refreshHttp();
 
-    void onClientConnected(MqttChannel* channel);
-    void onClientDisconnected(MqttChannel* channel);
-    void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
+    // API V1
+    void onMqttClientV1Connected(MqttChannel* channel);
+    void onMqttClientV1Disconnected(MqttChannel* channel);
+    void onMqttPublishV1Received(MqttChannel* channel, const QString &topic, const QByteArray &payload);
+
+    // API V2
+    void onMqttClientV2Connected(MqttChannel* channel);
+    void onMqttClientV2Disconnected(MqttChannel* channel);
 
 };
 
