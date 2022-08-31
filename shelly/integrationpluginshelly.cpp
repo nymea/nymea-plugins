@@ -37,6 +37,7 @@
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QColor>
+#include <QNetworkInterface>
 
 #include "hardwaremanager.h"
 #include "network/networkaccessmanager.h"
@@ -769,8 +770,8 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
     }
 
     thing->setStateValue("connected", true);
-    foreach (Thing *thing, myThings().filterByParentId(thing->id())) {
-        thing->setStateValue("connected", true);
+    foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+        child->setStateValue("connected", true);
     }
 
     qCDebug(dcShelly) << "CoIoT multicast message for" << thing->name() << ":" << qUtf8Printable(jsonDoc.toJson());
@@ -1214,6 +1215,25 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
 
     QUrlQuery query;
     query.addQueryItem("coiot_enable", "true");
+    if (thing->paramValue("coapMode").toString() == "unicast") {
+        QHostAddress ourAddress;
+        foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
+            foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
+                if (address.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
+                    ourAddress = addressEntry.ip();
+                    break;
+                }
+            }
+        }
+        if (!ourAddress.isNull()) {
+            query.addQueryItem("coiot_peer", ourAddress.toString() + ":5683");
+        } else {
+            qCWarning(dcShelly) << "Unable to determine a matching interface for CoIoT unicast. Falling back to multicast.";
+            query.addQueryItem("coiot_peer", "mcast");
+        }
+    } else {
+        query.addQueryItem("coiot_peer", "mcast");
+    }
 
     // Make sure the shelly 2.5 is in the mode we expect it to be (roller or relay)
     if (info->thing()->thingClassId() == shelly25ThingClassId || info->thing()->thingClassId() == shelly2ThingClassId) {

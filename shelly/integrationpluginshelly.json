@@ -23,6 +23,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "da0587f1-2fd5-46b5-8f9c-726a853cb034",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "fa1aa0f6-93b2-410d-a2c5-7b2f45eae679",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -120,6 +128,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "4ce97119-2791-4283-a3a8-16eb31b3dc71",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "99a31711-0029-461e-9117-2834451175c1",
@@ -240,6 +256,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "988313b8-fa9e-4507-805e-8855f39e804f",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "b7c4c031-77ec-4ce7-a499-5bb8bf117fe8",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -356,6 +380,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "64e9559a-b6fa-42b9-bdd4-6e1d14c200c5",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "521303e2-ef93-47df-8acb-fb1f8f78aae9",
@@ -475,6 +507,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "1190e5e6-edc0-4584-a8eb-ee09e42bf8e0",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "4fb3c690-0183-4fc4-affa-1404788b2dcc",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -590,6 +630,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "8aa73fb6-fdb9-45f1-ac10-73933290c1b1",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "42797a00-1591-4021-8f4c-2a170189911b",
@@ -718,6 +766,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "51e32b3c-f5de-4d54-abf5-24f9373d0ed3",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "0b060c1a-3b9b-42d7-87f8-41b7b64a7eb8",
@@ -874,6 +930,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "ede766a3-ccd8-411d-b35a-d1b14422f2f3",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "2df0d509-d4b5-407a-835a-6b6392653e10",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -993,6 +1057,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "6db63b23-1513-4d63-8837-cafe51e1b283",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "cc4a3365-b302-4782-9eec-ee6b66df8ed6",
@@ -1164,6 +1236,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "e53d9a35-c5e0-42d4-8d96-cf6cd595789d",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "34a20277-bf0c-4fd5-8ae1-b3019681fa82",
@@ -1351,6 +1431,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "a9373316-4484-4be0-a153-bfbc1940c63f",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "1ea30a6f-5139-4452-8e23-0c525494c9c8",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -1471,6 +1559,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "5d898676-acc6-47de-a42d-0b9b9710286c",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "ee942141-3102-4b6a-87dc-0fc6481924e5",
@@ -1745,6 +1841,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "ec1bc52c-ca1b-4599-9ba7-7ca40d62faab",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "21e11417-b862-44e6-828f-d65207328630",
@@ -2049,6 +2153,14 @@
                             "readOnly": true
                         },
                         {
+                            "id": "a64286ea-5532-412e-9c97-fa8c7a71439c",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
                             "id": "61957e60-4b77-4aa7-893f-e94559cac15c",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -2316,6 +2428,14 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
+                        },
+                        {
+                            "id": "aeac9b68-561e-4b3c-af1c-c24af3bb0d4d",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
                         },
                         {
                             "id": "ea210ec8-37ed-4479-9454-48cc06a1df88",
