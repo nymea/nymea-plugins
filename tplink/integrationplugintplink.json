@@ -91,7 +91,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 100,
+                            "cached": false
                         },
                         {
                             "id": "f1a5fda4-87a6-46f6-9499-16811a5f4f4d",
@@ -121,7 +122,8 @@
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0,
-                            "filter": "adaptive"
+                            "filter": "adaptive",
+                            "cached": false
                         }
                     ]
                 },
@@ -159,7 +161,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 100,
+                            "cached": false
                         },
                         {
                             "id": "3b0daf6c-ba04-4ff1-a381-685c869665b1",
@@ -207,7 +210,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 100,
+                            "cached": false
                         },
                         {
                             "id": "f2992226-1f36-477f-b053-04dc5dc3a31c",
@@ -225,7 +229,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         }
                     ]
                 },
@@ -263,7 +268,8 @@
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
-                            "defaultValue": 100
+                            "defaultValue": 100,
+                            "cached": false
                         },
                         {
                             "id": "b1d006a6-f2f5-475c-ab9e-8b431b1ac5f8",
