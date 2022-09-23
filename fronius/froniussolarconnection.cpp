@@ -188,11 +188,13 @@ void FroniusSolarConnection::sendNextRequest()
 
     m_currentReply = m_requestQueue.dequeue();
 
-    qCDebug(dcFronius()) << "Connection: Sending request" << m_currentReply->request().url().toString();
+//    qCDebug(dcFronius()) << "Connection: Sending request" << m_currentReply->request().url().toString();
     m_currentReply->setNetworkReply(m_networkManager->get(m_currentReply->request()));
 
     connect(m_currentReply, &FroniusNetworkReply::finished, this, [=](){
-        qCDebug(dcFronius()) << "Connection: Request finished" << m_currentReply->networkReply()->error();
+        if (m_currentReply->networkReply()->error() != QNetworkReply::NoError) {
+            qCWarning(dcFronius()) << "Connection: Request finished with error:" << m_currentReply->networkReply()->error() << "for url" << m_currentReply->request().url().toString();
+        }
 
         // Note: the network reply will be deleted in the destructor
         m_currentReply->deleteLater();
