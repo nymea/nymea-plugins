@@ -59,7 +59,7 @@ void IntegrationPluginTempo::startPairing(ThingPairingInfo *info)
                 info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your Tempo API integration token."));
             } else {
                 qCWarning(dcTempo()) << "Got online check error" << reply->error() << reply->errorString();
-                info->finish(Thing::ThingErrorSetupFailed, tr("Tempo server not reachable, please check the internet connection."));
+                info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Tempo server not reachable, please check the internet connection."));
             }
         });
     } else {
@@ -196,6 +196,8 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
                     connect(tempo, &Tempo::accountWorklogsReceived, this, &IntegrationPluginTempo::onAccountWorkloadReceived);
                     connect(tempo, &Tempo::teamWorklogsReceived, this, &IntegrationPluginTempo::onTeamWorkloadReceived);
                     info->finish(Thing::ThingErrorNoError);
+                } else {
+                    info->finish(Thing::ThingErrorAuthenticationFailure, tr("The Token seems to be expired."));
                 }
             });
             tempo->getAccounts();

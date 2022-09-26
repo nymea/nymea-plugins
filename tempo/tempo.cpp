@@ -225,10 +225,9 @@ void Tempo::getWorkloadByTeam(int teamId, QDate from, QDate to, int offset, int 
 
 void Tempo::setAuthenticated(bool state)
 {
-    if (state != m_authenticated) {
-        m_authenticated = state;
-        emit authenticationStatusChanged(state);
-    }
+    // We'll want to emit this in any case, even if it going from false to false, so we can properly handle the expired token case
+    m_authenticated = state;
+    emit authenticationStatusChanged(state);
 }
 
 void Tempo::setConnected(bool state)
