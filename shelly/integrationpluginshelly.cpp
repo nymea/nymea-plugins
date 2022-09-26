@@ -1078,7 +1078,7 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
         }
     }
     if (thing->thingClassId() == shellyRgbw2ThingClassId) {
-        thing->setStateValue(shellyRgbw2ThingClassId, QColor(red, green, blue));
+        thing->setStateValue(shellyRgbw2ColorStateTypeId, QColor(red, green, blue));
         thing->setStateValue(shellyRgbw2WhiteChannelStateTypeId, white);
     }
 
