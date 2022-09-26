@@ -51,7 +51,7 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!hardwareManager()->networkDeviceDiscovery()->available()) {
         qCWarning(dcFronius()) << "Failed to discover network devices. The network device discovery is not available.";
-        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discovery devices in your network."));
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discover devices in your network."));
         return;
     }
 
@@ -127,7 +127,11 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             QByteArray data = reply->networkReply()->readAll();
             if (reply->networkReply()->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->networkReply()->error() << reply->networkReply()->errorString() << reply->networkReply()->url();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device is not reachable"));
+                if (reply->networkReply()->error() == QNetworkReply::ContentNotFoundError) {
+                    info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device."));
+                } else {
+                    info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device is not reachable."));
+                }
                 return;
             }
 
@@ -136,7 +140,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString() << data;
-                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to read the data. Please try again."));
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The data received from the device could not be processed because the format is unknown."));
                 return;
             }
 
@@ -146,7 +150,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             // Knwon version with broken JSON API
             if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
                 qCWarning(dcFronius()) << "The Fronius data logger has a version which is known to have a broken JSON API firmware.";
-                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger has a broken API. Please update your Fronius device."));
+                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The firmware version 1.6-2 of this Fronius data logger contains errors preventing proper operation. Please update your Fronius device and try again."));
                 return;
             }
 
