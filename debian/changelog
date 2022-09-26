@@ -1,3 +1,14 @@
+nymea-plugins (1.4.1) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Tempo: Properly handle expired tokens
+  * Fronius: Improve and translate error message for the user
+  * MyStrom: Fix discovery for Swiss plugs
+  * Shelly: Fix color state for rgbw2
+  * Fronius: Fix generating childs with multiple fronius connections
+
+ -- jenkins <developer@nymea.io>  Mon, 26 Sep 2022 17:40:12 +0200
+
 nymea-plugins (1.4.0) jammy; urgency=medium
 
   [ Michael Zanetti ]
