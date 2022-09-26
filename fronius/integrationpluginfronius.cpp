@@ -287,7 +287,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
             const QString serialNumber = inverterInfo.value("Serial").toString();
 
             // Note: we use the id to identify for backwards compatibility
-            if (myThings().filterByParam(inverterThingIdParamTypeId, inverterId).isEmpty()) {
+            if (myThings().filterByParentId(connectionThing->id()).filterByParam(inverterThingIdParamTypeId, inverterId).isEmpty()) {
                 QString thingDescription = connectionThing->name();
                 ThingDescriptor descriptor(inverterThingClassId, "Fronius Solar Inverter", thingDescription, connectionThing->id());
                 ParamList params;
@@ -302,7 +302,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
         QVariantMap meterMap = bodyMap.value("Data").toMap().value("Meter").toMap();
         foreach (const QString &meterId, meterMap.keys()) {
             // Note: we use the id to identify for backwards compatibility
-            if (myThings().filterByParam(meterThingIdParamTypeId, meterId).isEmpty()) {
+            if (myThings().filterByParentId(connectionThing->id()).filterByParam(meterThingIdParamTypeId, meterId).isEmpty()) {
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId.toInt());
                 connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
@@ -346,7 +346,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
         QVariantMap storageMap = bodyMap.value("Data").toMap().value("Storage").toMap();
         foreach (const QString &storageId, storageMap.keys()) {
             // Note: we use the id to identify for backwards compatibility
-            if (myThings().filterByParam(storageThingIdParamTypeId, storageId).isEmpty()) {
+            if (myThings().filterByParentId(connectionThing->id()).filterByParam(storageThingIdParamTypeId, storageId).isEmpty()) {
 
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId.toInt());
