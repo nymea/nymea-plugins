@@ -55,7 +55,8 @@ IntegrationPluginMeross::~IntegrationPluginMeross()
 void IntegrationPluginMeross::discoverThings(ThingDiscoveryInfo *info)
 {
     NetworkDeviceDiscoveryReply *reply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(reply, &NetworkDeviceDiscoveryReply::finished, info, [info, reply, this](){
+    connect(reply, &NetworkDeviceDiscoveryReply::finished, reply, &NetworkDeviceDiscoveryReply::deleteLater);
+        connect(reply, &NetworkDeviceDiscoveryReply::finished, info, [info, reply, this](){
         foreach (const NetworkDeviceInfo &deviceInfo, reply->networkDeviceInfos()) {
             qCDebug(dcMeross) << "Discovery result" << deviceInfo;
             if (deviceInfo.hostName().toLower().startsWith("meross_smart_plug") || deviceInfo.macAddressManufacturer().toLower().contains("meross")) {

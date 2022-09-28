@@ -126,6 +126,7 @@ bool SpeedwireDiscovery::startDiscovery()
 
     qCDebug(dcSma()) << "SpeedwireDiscovery: Start discovering network...";
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         qCDebug(dcSma()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
         m_networkDeviceInfos = discoveryReply->networkDeviceInfos();
