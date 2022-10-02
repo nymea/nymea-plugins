@@ -1,0 +1,14 @@
+{
+    "title": "ESPunio",
+    "tagline": "Remote control ESPunio (Rfid-controller musicplayer) via MQTT.",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "mqtt",
+        "network"
+    ],
+    "categories": [
+        "dyi",
+        "multimedia",
+    ]
+}

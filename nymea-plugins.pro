@@ -21,6 +21,7 @@ PLUGIN_DIRS = \
     dynatrace           \
     elgato              \
     eq-3                \
+    espuino             \
     fastcom             \
     flowercare          \
     fronius             \

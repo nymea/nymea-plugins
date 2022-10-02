@@ -210,6 +210,15 @@ Description: nymea integration plugin for elgato
  This package contains the nymea integration plugin for devices from Elgato
 
 
+Package: nymea-plugin-espuino
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for ESPuino
+ This package contains the nymea integration plugin for ESPuino devices.
+
+
 Package: nymea-plugin-fastcom
 Architecture: any
 Depends: ${misc:Depends},
