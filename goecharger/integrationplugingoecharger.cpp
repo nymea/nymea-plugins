@@ -1434,7 +1434,6 @@ void IntegrationPluginGoECharger::refreshHttp()
             continue;
 
         QNetworkRequest request = buildStatusRequest(thing);
-        qCDebug(dcGoECharger()) << "Refresh HTTP status from" << thing->name() << request.url().toString();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         m_pendingReplies.insert(thing, reply);
 
