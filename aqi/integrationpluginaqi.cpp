@@ -34,6 +34,67 @@
 
 #include <QNetworkAccessManager>
 
+// The API reports American AQI index values, but nymea interfaces require actual values
+QList<QPair<int,double>> pm10AQI = {
+    {55,54},
+    {100,154},
+    {150,254},
+    {200,354},
+    {300,424},
+    {400,504},
+    {500,604}
+};
+
+QList<QPair<int,double>> pm25AQI = {
+    {50,12},
+    {100,35.4},
+    {150,55.4},
+    {200,150.4},
+    {300,250.4},
+    {400,350.4},
+    {500,500}
+};
+
+QList<QPair<int,double>> so2AQI = {
+    {50,35},
+    {100,75},
+    {150,185},
+    {200,304},
+    {300,604},
+    {400,804},
+    {500,1004}
+};
+
+QList<QPair<int,double>> no2AQI = {
+    {50,53},
+    {100,100},
+    {150,360},
+    {200,649},
+    {300,1294},
+    {400,1649},
+    {500,2049}
+};
+
+QList<QPair<int,double>> o3AQI = {
+    {50,54},
+    {100,70},
+    {150,85},
+    {200,105},
+    {300,200},
+    {400,504},
+    {500,604}
+};
+
+QList<QPair<int,double>> coAQI = {
+    {50,4.4},
+    {100,9.4},
+    {150,12.4},
+    {200,15.4},
+    {300,30.4},
+    {400,40.4},
+    {500,50.4}
+};
+
 IntegrationPluginAqi::IntegrationPluginAqi()
 {
     connect(this, &IntegrationPluginAqi::configValueChanged, this, [this] (const ParamTypeId &paramTypeId, const QVariant &value) {
@@ -144,6 +205,26 @@ bool IntegrationPluginAqi::createAqiConnection()
     return true;
 }
 
+double IntegrationPluginAqi::convertFromAQI(int aqi, const QList<QPair<int, double>> &map) const
+{
+    int il = 0, ih = 0;
+    double vl = 0, vh = 0;
+
+    int index = 0;
+    while (aqi > map.at(index).first && index < map.count()) {
+        index++;
+    }
+
+    if (index > 0) {
+        il = map.at(index - 1).first;
+        vl = map.at(index - 1).second;
+    }
+    ih = map.at(index).first;
+    vh = map.at(index).second;
+    double value = (aqi - il) * (vh - vl) / (ih - il) + vl;
+    return value;
+}
+
 void IntegrationPluginAqi::thingRemoved(Thing *thing)
 {
     Q_UNUSED(thing)
@@ -172,37 +253,18 @@ void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityI
         if (!thing)
             return;
 
+
         thing->setStateValue(airQualityIndexConnectedStateTypeId, true);
-        thing->setStateValue(airQualityIndexCoStateTypeId, data.co);
         thing->setStateValue(airQualityIndexHumidityStateTypeId, data.humidity);
         thing->setStateValue(airQualityIndexTemperatureStateTypeId, data.temperature);
         thing->setStateValue(airQualityIndexPressureStateTypeId, data.pressure);
-        thing->setStateValue(airQualityIndexO3StateTypeId, data.o3);
-        thing->setStateValue(airQualityIndexNo2StateTypeId, data.no2);
-        thing->setStateValue(airQualityIndexSo2StateTypeId, data.so2);
-        thing->setStateValue(airQualityIndexPm10StateTypeId, data.pm10);
-        thing->setStateValue(airQualityIndexPm25StateTypeId, data.pm25);
+        thing->setStateValue(airQualityIndexCoStateTypeId, convertFromAQI(data.co, coAQI));
+        thing->setStateValue(airQualityIndexO3StateTypeId, convertFromAQI(data.o3, o3AQI));
+        thing->setStateValue(airQualityIndexNo2StateTypeId, convertFromAQI(data.no2, no2AQI));
+        thing->setStateValue(airQualityIndexSo2StateTypeId, convertFromAQI(data.so2, so2AQI));
+        thing->setStateValue(airQualityIndexPm10StateTypeId, convertFromAQI(data.pm10, pm10AQI));
+        thing->setStateValue(airQualityIndexPm25StateTypeId, convertFromAQI(data.pm25, pm25AQI));
         thing->setStateValue(airQualityIndexWindSpeedStateTypeId, data.windSpeed);
-
-        if (data.pm25 <= 50.00) {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Good");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("None"));
-        } else if ((data.pm25 > 50.00) && (data.pm25 <= 100.00)) {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Moderate");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion."));
-        } else if ((data.pm25 > 100.00) && (data.pm25 <= 150.00)) {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Unhealthy for Sensitive Groups");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion."));
-        }  else if ((data.pm25 > 150.00) && (data.pm25 <= 200.00)) {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Unhealthy");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should avoid prolonged outdoor exertion; everyone else, especially children, should limit prolonged outdoor exertion"));
-        } else if ((data.pm25 > 200.00) && (data.pm25 <= 300.00)) {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Very Unhealthy");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should avoid all outdoor exertion; everyone else, especially children, should limit outdoor exertion."));
-        } else {
-            thing->setStateValue(airQualityIndexAirQualityStateTypeId, "Hazardous");
-            thing->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Everyone should avoid all outdoor exertion"));
-        }
     }
 }
 
