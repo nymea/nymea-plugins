@@ -23,8 +23,7 @@ The currently supported devices are:
 
 ## Requirements
 The Shelly device needs to be connected to the same WiFi as nymea is in. New Shelly devices will open a WiFi named with
-their name as SSID. For instance, a Shelly 1 would appear as "shelly1-XXXXXX". Connect to this WiFi. For some devices a webpage
- will pop up. For others the website needs to be accessed by a local ip e.g. (http://192.168.33.1) for the shelly plug/s. From there, it can be configured to connect to the same network where the nymea system is located.
+their name as SSID. For instance, a Shelly 1 would appear as "shelly1-XXXXXX". Connect to this WiFi and open the webpage that will pop up or manually open http://192.168.33.1. From there, it can be configured to connect to the same network where the nymea system is located.
 No other options need to be set as they can be configured using nymea later on.
 
 
