@@ -424,7 +424,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         } else {
             url.setPath("/reboot");
             QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-            connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [info, reply](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcShelly()) << "Failed to execute reboot action:" << reply->error() << reply->errorString();
@@ -441,7 +441,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("update", "true");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -477,7 +477,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
             query.addQueryItem("turn", on ? "on" : "off");
             url.setQuery(query);
             QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-            connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [info, reply, on](){
                 info->thing()->setStateValue("power", on);
                 info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -494,7 +494,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("turn", on ? "on" : "off");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, on](){
             info->thing()->setStateValue("power", on);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -512,7 +512,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("blue", QString::number(color.blue()));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, color](){
             info->thing()->setStateValue("color", color);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -527,7 +527,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("white", QString::number(whiteValue));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, whiteValue](){
             info->thing()->setStateValue(shellyRgbw2WhiteChannelStateTypeId, whiteValue);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -546,7 +546,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("white", "255");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, ct](){
             info->thing()->setStateValue("colorTemperature", ct);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -562,7 +562,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("gain", QString::number(brightness));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, brightness](){
             info->thing()->setStateValue("brightness", brightness);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -578,7 +578,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("turn", on ? "on" : "off");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, on](){
             info->thing()->setStateValue("power", on);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -594,7 +594,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("brightness", QString::number(brightness));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, brightness](){
             info->thing()->setStateValue("brightness", brightness);
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -611,7 +611,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         url.setQuery(query);
         qCDebug(dcShelly()) << "Requesting:" << url;
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, targetValue](){
             // The Shelly TRV seems to reply with OK, but then takes ages to actually set the value
             // If we send another value within that time frame, it will again reply with OK but just ognore it...
@@ -631,7 +631,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("pos", QString::number(targetValue));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply, targetValue](){
             // The Shelly TRV seems to reply with OK, but then takes ages to actually set the value
             // If we send another value within that time frame, it will again reply with OK but just ognore it...
@@ -650,7 +650,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("boost_minutes", thing->setting(shellyTrvSettingsBoostDurationParamTypeId).toString());
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -663,7 +663,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("go", "open");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -676,7 +676,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("go", "close");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -689,7 +689,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("go", "stop");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -699,7 +699,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyRollerCalibrateActionTypeId) {
         url.setPath(QString("/roller/%1/calibrate").arg(info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1));
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -713,7 +713,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("roller_pos", info->action().paramValue(shellyRollerPercentageActionPercentageParamTypeId).toString());
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -723,7 +723,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyEmResetActionTypeId || action.actionTypeId() == shellyEm3ResetActionTypeId) {
         url.setPath("/reset_data");
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -733,7 +733,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyGasSelfTestActionTypeId) {
         url.setPath("/self_test");
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -743,7 +743,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyGasMuteActionTypeId) {
         url.setPath("/mute");
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -753,7 +753,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     if (action.actionTypeId() == shellyGasUnmuteActionTypeId) {
         url.setPath("/unmute");
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -766,7 +766,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("go", "open");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
@@ -779,7 +779,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         query.addQueryItem("go", "close");
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-        connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
