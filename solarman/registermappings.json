@@ -1,0 +1,97 @@
+{
+    "deyeString": {
+        "slaveId": 1,
+        "startRegister": 1,
+        "endRegister": 116,
+        "functionCode": "ReadHoldingRegisters",
+        "registers": [
+            {
+                "index": 3,
+                "type": "string",
+                "length": 5,
+                "name": "Inverter serial"
+            },
+            {
+                "index": 16,
+                "type": "uint16",
+                "name": "Rated power",
+                "scale": 0.1
+            },
+            {
+                "index": 59,
+                "type": "uint16",
+                "name": "Inverter status"
+            },
+            {
+                "index": 60,
+                "type": "uint16",
+                "name": "Daily production (Active)",
+                "scale": 0.1
+            },
+            {
+                "index": 63,
+                "type": "uint32",
+                "name": "Total Production (Active)",
+                "state": "totalEnergyProduced",
+                "scale": 0.1
+            },
+            {
+                "index": 73,
+                "type": "uint16",
+                "name": "AC Voltage 1",
+                "scale": 0.1
+            },
+            {
+                "index": 74,
+                "type": "uint16",
+                "name": "AC Voltage 2",
+                "scale": 0.1
+            },
+            {
+                "index": 75,
+                "type": "uint16",
+                "name": "AC Voltage 3",
+                "scale": 0.1
+            },
+            {
+                "index": 76,
+                "type": "uint16",
+                "name": "AC Current 1",
+                "scale": 0.1
+            },
+            {
+                "index": 77,
+                "type": "uint16",
+                "name": "AC Current 2",
+                "scale": 0.1
+            },
+            {
+                "index": 78,
+                "type": "uint16",
+                "name": "AC Current 3",
+                "scale": 0.1
+            },
+            {
+                "index": 79,
+                "type": "uint16",
+                "name": "AC Output Frequency",
+                "scale": 0.01
+            },
+            {
+                "index": 86,
+                "name": "Total AC Output Power (Active)",
+                "type": "uint32",
+                "state": "currentPower",
+                "scale": -0.1
+            },
+            {
+                "index": 90,
+                "name": "Temerpature",
+                "type": "uint16",
+                "state": "temperature",
+                "offset": -1000,
+                "scale": 0.01
+            }
+        ]
+    }
+}

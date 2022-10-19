@@ -53,18 +53,19 @@ PLUGIN_DIRS = \
     powerfox            \
     pushbullet          \
     pushnotifications   \
-    shelly              \
-    solarlog            \
-    systemmonitor       \
     reversessh          \
     senic               \
     serialportcommander \
     sgready             \
+    shelly              \
     simpleheatpump      \
     sma                 \
+    solarlog            \
+    solarman            \
     somfytahoma         \
     sonos               \
     sunposition         \
+    systemmonitor       \
     tado                \
     tasmota             \
     tcpcommander        \

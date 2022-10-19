@@ -1,0 +1,82 @@
+{
+    "name": "solarman",
+    "displayName": "Solarman",
+    "id": "9a37f9db-4b82-4bbc-b1ab-7eed5a1f4b70",
+    "vendors": [
+        {
+            "name": "solarman",
+            "displayName": "Solarman",
+            "id": "d6bc0ecd-8cbe-4d5d-a606-0712c5f10978",
+            "thingClasses": [
+                {
+                    "id": "9712b0f0-45a3-4c27-a675-4ef6a0f1dc1e",
+                    "name": "deyeString",
+                    "displayName": "Deye String Inverter",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "solarinverter", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "e23e8186-e3df-4dc1-87cf-59627e1d2a3d",
+                            "name":"serial",
+                            "displayName": "Serial number",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7b110485-7b12-425b-b4c2-6a0a76db69cf",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "1303b3fa-072f-468e-949c-2e1474ce8f1e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "filter": "adaptive",
+                            "cached": false
+                        },
+                        {
+                            "id": "49e29f3b-d04b-4972-94e1-d5485405f716",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "0118a424-6f93-4f37-a9da-17617b508a45",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total produced energy",
+                            "displayNameEvent": "Total produced energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "bc8ed7f6-6139-43e4-8d49-32ec5020d493",
+                            "name": "temperature",
+                            "displayName": "Inverter temperature",
+                            "displayNameEvent": "Inverter temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        }
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
