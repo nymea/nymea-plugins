@@ -36,6 +36,8 @@
 #include "network/networkaccessmanager.h"
 #include "airqualityindex.h"
 
+#include "extern-plugininfo.h"
+
 #include <QTimer>
 #include <QUrl>
 #include <QHostAddress>
@@ -64,6 +66,8 @@ private:
     QHash<QUuid, ThingId> m_asyncRequests;
     QString getApiKey();
     bool createAqiConnection();
+
+    double convertFromAQI(int aqi, const QList<QPair<int, double> > &map) const;
 
 private slots:
     void onPluginTimer();

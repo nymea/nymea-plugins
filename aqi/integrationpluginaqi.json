@@ -22,7 +22,7 @@
                     "id": "23ea32c9-38b0-4155-bacc-3afa8c09f6ee",
                     "name": "airQualityIndex",
                     "displayName": "Air quality index",
-                    "interfaces": ["windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
+                    "interfaces": ["o3sensor", "cosensor", "no2sensor", "pm10sensor", "pm25sensor", "windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
                     "createMethods": ["discovery", "user"],
                     "paramTypes": [
                         {
@@ -45,40 +45,14 @@
                             "id": "7b9135cd-2461-4d33-b2b3-3dc600983895",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
                         },
                         {
-                            "id": "33a3329a-4117-4488-aa18-91c76056ed6e",
-                            "name": "airQuality",
-                            "displayName": "Air quality",
-                            "displayNameEvent": "Air quality changed",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Good",
-                                "Moderate",
-                                "Unhealthy for Sensitive Groups",
-                                "Unhealthy",
-                                "Very unhealthy",
-                                "Hazardous"
-                            ],
-                            "defaultValue": "Good"
-                        },
-                        {
-                            "id": "cfece671-4e88-4c49-9456-e3f8f7c79ab3",
-                            "name": "cautionaryStatement",
-                            "displayName": "Cautionary statement",
-                            "displayNameEvent": "Cautionary statement changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
                             "id": "8385f3d5-62f7-482e-927c-b5d61a70d607",
                             "name": "stationName",
                             "displayName": "Station name",
-                            "displayNameEvent": "Station name changed",
                             "type": "QString",
                             "defaultValue": "Undefined"
                         },
@@ -86,50 +60,56 @@
                             "id": "bc8c4c83-d229-4be4-8732-bc4f2390f399",
                             "name": "pm25",
                             "displayName": "Fine particles pollution level (PM2.5)",
-                            "displayNameEvent": "Fine particles pollution level (PM2.5) changed",
-                            "type": "int",
-                            "defaultValue": 0
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "MicroGrammPerCubicalMeter",
+                            "minValue": 0,
+                            "maxValue": 500
                         },
                         {
                             "id": "24b41ec4-e26b-4dfb-b52c-8e2b1bbdafc6",
                             "name": "pm10",
                             "displayName": "Coarse dust particles pollution level (PM10)",
-                            "displayNameEvent": "Coarse dust particles pollution level (PM10) changed",
-                            "type": "int",
+                            "type": "double",
+                            "unit": "MicroGrammPerCubicalMeter",
+                            "minValue": 0,
+                            "maxValue": 500,
                             "defaultValue": 0
                         },
                         {
                             "id": "4e88526d-009f-4820-9a84-09b3646d23c9",
                             "name": "o3",
                             "displayName": "Ozone level (O3)",
-                            "displayNameEvent": "Ozone level (O3) changed",
-                            "unit": "",
+                            "unit": "MicroGrammPerCubicalMeter",
                             "type": "double",
+                            "minValue": 0,
+                            "maxValue": 500,
                             "defaultValue": 0
                         },
                         {
                             "id": "6ed6c505-f36e-44c4-a982-f395b04e539b",
                             "name": "no2",
                             "displayName": "Nitrogen Dioxide level (NO2)",
-                            "displayNameEvent": "Nitrogen Dioxide level (NO2) changed",
-                            "unit": "",
+                            "unit": "MicroGrammPerCubicalMeter",
                             "type": "double",
+                            "minValue": 0,
+                            "maxValue": 800,
                             "defaultValue": 0
                         },
                         {
                             "id": "54ac72f3-6444-46a8-a43d-210c2a6fbfb5",
                             "name": "co",
                             "displayName": "Carbon monoxide level (CO)",
-                            "displayNameEvent": "Carbon monoxide level (CO) changed",
-                            "unit": "",
+                            "unit": "PartsPerMillion",
                             "type": "double",
+                            "minValue": 0,
+                            "maxValue": 255,
                             "defaultValue": 0
                         },
                         {
                             "id": "f3a05e65-a9b3-48fd-be43-688d4c293cc9",
                             "name": "so2",
                             "displayName": "Sulfur dioxide level (SO2)",
-                            "displayNameEvent": "Sulfur dioxide level (SO2) changed",
                             "unit": "",
                             "type": "double",
                             "defaultValue": 0
@@ -138,7 +118,6 @@
                             "id": "94219802-0a82-4761-99b3-c6b6dfc096db",
                             "name": "temperature",
                             "displayName": "Temperature",
-                            "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -147,7 +126,6 @@
                             "id": "4fc45fca-25ab-45a0-b862-817eea1f51e3",
                             "name": "humidity",
                             "displayName": "Humidity",
-                            "displayNameEvent": "Humidity changed",
                             "unit": "Percentage",
                             "type": "double",
                             "maxValue": 100,
@@ -158,7 +136,6 @@
                             "id": "5f799040-08f8-44d1-aa0a-4cab7caad839",
                             "name": "pressure",
                             "displayName": "Pressure",
-                            "displayNameEvent": "Pressure changed",
                             "unit": "MilliBar",
                             "type": "double",
                             "defaultValue": 0
@@ -167,7 +144,6 @@
                             "id": "c4366608-2511-428b-964e-2ad9e37f8f3c",
                             "name": "windSpeed",
                             "displayName": "Wind speed",
-                            "displayNameEvent": "Wind speed changed",
                             "unit": "MeterPerSecond",
                             "type": "double",
                             "defaultValue": 0
