@@ -1,6 +1,6 @@
 {
     "title": "Shelly",
-    "tagline": "USe Shelly devices with nymea.",
+    "tagline": "Use Shelly devices with nymea.",
     "icon": "shelly.png",
     "stability": "consumer",
     "offline": true,
