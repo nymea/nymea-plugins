@@ -49,7 +49,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "16f34c5c-8dbb-4dcc-9faa-4b782d57226c",
@@ -146,7 +147,8 @@
                             "displayNameEvent": "Voltage phase A changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "56ae3555-f874-4c2d-8833-17573dce477a",
@@ -155,7 +157,8 @@
                             "displayNameEvent": "Voltage phase B changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "51cbb29b-29f0-480a-9d7d-b8f4e6a205ae",
@@ -164,7 +167,8 @@
                             "displayNameEvent": "Voltage phase C changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "45bbdbef-1832-4870-bff5-299e580fb4da",
@@ -173,7 +177,8 @@
                             "displayNameEvent": "Current phase A changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b3a4fdd2-b6b8-4c58-9da3-2084ad414022",
@@ -182,7 +187,8 @@
                             "displayNameEvent": "Current phase B changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b3655188-3854-4336-ae3c-61d3bda6fc4d",
@@ -191,7 +197,8 @@
                             "displayNameEvent": "Current phase C changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "d4ac7f37-e30a-44e4-93cb-ad16df18b8f1",
@@ -200,7 +207,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "c5d09c63-7461-4fb8-a6fe-bc7aa919be30",
@@ -209,7 +217,8 @@
                             "displayNameEvent": "Current power phase A changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "c52d4422-b521-4804-a7a7-c4398e91e760",
@@ -218,7 +227,8 @@
                             "displayNameEvent": "Current power phase B changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "555e892c-3ca7-4100-9832-6ac13b87eb04",
@@ -227,7 +237,8 @@
                             "displayNameEvent": "Current power phase C changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "4fb0a4c1-18ed-4d02-b6d0-c07e9b96a56d",
@@ -371,7 +382,8 @@
                             "displayNameEvent": "Voltage phase A changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "d9a5768b-1bf5-4933-810d-84dd7a688f71",
@@ -380,7 +392,8 @@
                             "displayNameEvent": "Voltage phase B changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "fc168dc6-eecf-40b4-b214-3e28da0dbb12",
@@ -389,7 +402,8 @@
                             "displayNameEvent": "Voltage phase C changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "2a6c59ca-853a-47d6-96fb-0c85edf32f52",
@@ -398,7 +412,8 @@
                             "displayNameEvent": "Current phase A changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "4db96fec-737c-4c4b-bf07-5ef2fd62508a",
@@ -407,7 +422,8 @@
                             "displayNameEvent": "Current phase B changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "0f23fb0e-a440-4ac2-9aff-896bc65feb2c",
@@ -416,7 +432,8 @@
                             "displayNameEvent": "Current phase C changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "d7ceb482-5df8-4c0c-82bd-62ce7ba22c43",
@@ -425,7 +442,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b366f680-6134-488b-8362-b1b824a8daca",
@@ -434,7 +452,8 @@
                             "displayNameEvent": "DC power MPP1 changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "87d9b654-5558-47a3-9db9-ffd7c23b4774",
@@ -443,7 +462,8 @@
                             "displayNameEvent": "DC power MPP2 changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "51cadd66-2cf1-485a-a2a9-191d11abfbd1",
@@ -470,7 +490,8 @@
                             "displayNameEvent": "Frequency changed",
                             "type": "double",
                             "unit": "Hertz",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "6d76cc7b-9e00-4561-be7b-4e2a6b8f7b66",
