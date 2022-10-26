@@ -59,11 +59,6 @@ void GoeDiscovery::startDiscovery()
     qCInfo(dcGoECharger()) << "Discovery: Start discovering the network...";
     m_discoveryReply = m_networkDeviceDiscovery->discover();
 
-    // Check if all network device infos which might already be discovered here to save time...
-    foreach (const NetworkDeviceInfo &networkDeviceInfo, m_discoveryReply->networkDeviceInfos()) {
-        checkNetworkDevice(networkDeviceInfo);
-    }
-
     // Test any network device beeing discovered
     connect(m_discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &GoeDiscovery::checkNetworkDevice);
 
@@ -71,6 +66,7 @@ void GoeDiscovery::startDiscovery()
     connect(m_discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         // The network device discovery is done
         m_discoveredNetworkDeviceInfos = m_discoveryReply->networkDeviceInfos();
+        m_discoveryReply->deleteLater();
         m_discoveryReply = nullptr;
 
         // Check if all network device infos have been verified

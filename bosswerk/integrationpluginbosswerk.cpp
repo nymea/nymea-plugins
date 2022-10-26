@@ -61,6 +61,7 @@ void IntegrationPluginBosswerk::discoverThings(ThingDiscoveryInfo *info)
     // Unauthorized page which looks unique enough.
     // If this proves to not be reliable enough, one more option would be to connect to TCP port 8899 which is open
     // and responds to a proprietary binary protocol which would need to be reverse engineered first.
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, info, [=](const NetworkDeviceInfo &networkDeviceInfo){
         qCDebug(dcBosswerk()) << "Probing device" << networkDeviceInfo.address();
 

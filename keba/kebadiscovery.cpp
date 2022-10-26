@@ -113,6 +113,7 @@ void KebaDiscovery::startDiscovery()
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &KebaDiscovery::sendReportRequest);
 
     // Check what might be left on finished
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         qCDebug(dcKeba()) << "Discovery: Network discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
         m_networkDeviceInfos = discoveryReply->networkDeviceInfos();

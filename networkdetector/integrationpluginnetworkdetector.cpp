@@ -69,6 +69,7 @@ void IntegrationPluginNetworkDetector::discoverThings(ThingDiscoveryInfo *info)
         qCDebug(dcNetworkDetector()) << "-->" << networkDeviceInfo;
     });
 
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [=](){
         ThingDescriptors descriptors;
         qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";

@@ -53,6 +53,7 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
 
     qCDebug(dcWakeOnLan()) << "Starting network discovery...";
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         ThingDescriptors descriptors;
         qCDebug(dcWakeOnLan()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
