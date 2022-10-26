@@ -208,7 +208,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "c6f68517-c4cd-415d-9455-b1731f7d9a1a",
@@ -217,7 +218,8 @@
                             "displayNameEvent": "Current power phase A changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "92005049-9ab9-4d7d-a7b6-6ab1a36c5f5f",
@@ -226,7 +228,8 @@
                             "displayNameEvent": "Current power phase B changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "1076fbd0-f42b-46e3-adc9-004361d6cd51",
@@ -235,7 +238,8 @@
                             "displayNameEvent": "Current power phase C changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "c8aab9e2-ba53-43b9-95db-e2c3edc97e33",
@@ -244,7 +248,8 @@
                             "displayNameEvent": "Phase A current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "f11ac403-728d-48f3-8669-0e684faf9890",
@@ -253,7 +258,8 @@
                             "displayNameEvent": "Phase B current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "55295e1c-50b0-400b-82e4-b3417b5ed4d1",
@@ -262,7 +268,8 @@
                             "displayNameEvent": "Phase C current changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "76da8f16-44a4-4242-b78b-09c9bb127623",
@@ -271,7 +278,8 @@
                             "displayNameEvent": "Phase A volatage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "7df01eb4-0d4d-400c-b1bc-001ca83a6a3c",
@@ -280,7 +288,8 @@
                             "displayNameEvent": "Phase B voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "31814cfe-626d-4168-802b-b7fc6592fc79",
@@ -289,7 +298,8 @@
                             "displayNameEvent": "Phase C voltage changed",
                             "type": "double",
                             "unit": "Volt",
-                            "defaultValue": 0.00
+                            "defaultValue": 0.00,
+                            "cached": false
                         },
                         {
                             "id": "28f59f96-4b30-4606-9a04-80c82abc346b",
@@ -298,7 +308,8 @@
                             "displayNameEvent": "Frequency changed",
                             "type": "double",
                             "unit": "Hertz",
-                            "defaultValue": 50.0
+                            "defaultValue": 50.0,
+                            "cached": false
                         },
                         {
                             "id": "b78d805a-f97c-4c9d-a647-5fc98f8d6dd1",
@@ -317,7 +328,8 @@
                             "displayNameEvent": "Temperature 1 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "558e273a-4028-495a-902a-e4e932a0ae24",
@@ -326,7 +338,8 @@
                             "displayNameEvent": "Temperature 2 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "dbf8a5dc-b8f5-437a-ac0c-c4cf8a09aacb",
@@ -335,7 +348,8 @@
                             "displayNameEvent": "Temperature 3 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "1953e29f-fe28-4016-9b05-f4baf4c311ff",
@@ -344,7 +358,8 @@
                             "displayNameEvent": "Temperature 4 changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0.0
+                            "defaultValue": 0.0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "5d18b48d-b886-409e-ab2e-336d9c94a55c",

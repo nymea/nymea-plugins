@@ -40,6 +40,8 @@
 #include <network/networkdevicemonitor.h>
 #include <integrations/integrationplugin.h>
 
+#include "extern-plugininfo.h"
+
 class IntegrationPluginGoECharger: public IntegrationPlugin
 {
     Q_OBJECT
