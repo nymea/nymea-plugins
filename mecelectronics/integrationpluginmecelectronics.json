@@ -101,7 +101,8 @@
                             "displayNameEvent": "Phase A consumed energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "b454057d-8e97-4f96-b0c3-7e4cbf4044c0",
@@ -110,7 +111,8 @@
                             "displayNameEvent": "Phase A returned energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "90fc6894-044a-45ec-83f4-f38134f35018",
@@ -150,7 +152,8 @@
                             "displayNameEvent": "Phase B consumed energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "a0407475-e770-4a74-b4b4-34b458a26801",
@@ -159,7 +162,8 @@
                             "displayNameEvent": "Phase B returned energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "ec0ed738-0e79-4db9-83df-746ec18d25f3",
@@ -199,7 +203,8 @@
                             "displayNameEvent": "Phase C consumed energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         },
                         {
                             "id": "6b08f113-204c-45c9-9b1a-118416aefcd7",
@@ -208,7 +213,8 @@
                             "displayNameEvent": "Phase C returned energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "cached": false
                         }
                     ]
                 }
