@@ -505,6 +505,8 @@ IntegrationPluginGoECharger::ApiVersion IntegrationPluginGoECharger::getApiVersi
 void IntegrationPluginGoECharger::updateV1(Thing *thing, const QVariantMap &statusMap)
 {
     // Parse status map and update states...
+    thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
+
     CarState carState = static_cast<CarState>(statusMap.value("car").toUInt());
     switch (carState) {
     case CarStateReadyNoCar:
@@ -529,7 +531,7 @@ void IntegrationPluginGoECharger::updateV1(Thing *thing, const QVariantMap &stat
         break;
     }
 
-    thing->setStateValue(goeHomeChargingStateTypeId, carState == CarStateCharging);
+    thing->setStateValue(goeHomeChargingStateTypeId, carState == CarStateCharging && thing->stateValue(goeHomePowerStateTypeId).toBool() == true);
 
     Access accessStatus = static_cast<Access>(statusMap.value("ast").toUInt());
     switch (accessStatus) {
@@ -559,7 +561,6 @@ void IntegrationPluginGoECharger::updateV1(Thing *thing, const QVariantMap &stat
 
     thing->setStateValue(goeHomeTotalEnergyConsumedStateTypeId, statusMap.value("eto").toUInt() / 10.0);
     thing->setStateValue(goeHomeSessionEnergyStateTypeId, statusMap.value("dws").toUInt() / 360000.0);
-    thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
     thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
     thing->setStateValue(goeHomeFirmwareVersionStateTypeId, statusMap.value("fwv").toString());
     // FIXME: check if we can use amx since it is better for pv charging, not all version seen implement this
@@ -1043,6 +1044,10 @@ void IntegrationPluginGoECharger::reconfigureMqttChannelV1(Thing *thing, const Q
 
 void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &statusMap)
 {
+    qCDebug(dcGoECharger()) << "Update V2:" << qUtf8Printable(QJsonDocument::fromVariant(statusMap).toJson());
+    if (statusMap.contains("alw"))
+        thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
+
     if (statusMap.contains("car")) {
         CarState carState = static_cast<CarState>(statusMap.value("car").toUInt());
         switch (carState) {
@@ -1068,7 +1073,7 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
             break;
         }
 
-        thing->setStateValue(goeHomeChargingStateTypeId, carState == CarStateCharging);
+        thing->setStateValue(goeHomeChargingStateTypeId, carState == CarStateCharging && thing->stateValue(goeHomePowerStateTypeId).toBool() == true);
     }
 
     if (statusMap.contains("ast")) {
@@ -1106,9 +1111,6 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
 
     if (statusMap.contains("wh"))
         thing->setStateValue(goeHomeSessionEnergyStateTypeId, statusMap.value("wh").toUInt() / 1000.0); // Wh -> kWh
-
-    if (statusMap.contains("alw"))
-        thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
 
     if (statusMap.contains("upd"))
         thing->setStateValue(goeHomeUpdateAvailableStateTypeId, (statusMap.value("upd").toUInt() == 0 ? false : true));
@@ -1422,16 +1424,19 @@ void IntegrationPluginGoECharger::refreshHttp()
 {
     // Update all things which don't use mqtt
     foreach (Thing *thing, myThings()) {
-        if (thing->thingClassId() != goeHomeThingClassId)
+        if (thing->thingClassId() != goeHomeThingClassId) {
             continue;
+        }
 
         // Poll thing which if not using mqtt
-        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool())
+        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
             continue;
+        }
 
         // Make sure there is not a request pending for this thing, otherwise wait for the next refresh
-        if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing))
+        if (m_pendingReplies.contains(thing) && m_pendingReplies.value(thing)) {
             continue;
+        }
 
         QNetworkRequest request = buildStatusRequest(thing);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
