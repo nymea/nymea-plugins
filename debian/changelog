@@ -1,3 +1,39 @@
+nymea-plugins (1.5.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Allow choosing between unicast and multicast CoIoT
+  * TP-Link: Disable caching for some states where it's not needed
+
+  [ Jenkins ]
+  * Bump oauthlib from 3.2.0 to 3.2.1 in /daikinairco
+
+  [ Michael Zanetti ]
+  * MecMeter: Reduce some load by uncaching and rounding some states
+
+  [ Simon Stürz ]
+  * Clean up network device discovery replies due to mechanism update
+
+  [ Michael Zanetti ]
+  * go-e: Drop flooding useless debug print
+
+  [ Jenkins ]
+  * shelly: improve shelly readme notes and fix typo in integrations
+    card
+
+  [ Michael Zanetti ]
+  * AQI: Update to new interface specification
+  * Shelly: Add support for flood, smoke and gas sensors
+
+  [ Simon Stürz ]
+  * bimmerconnected: Update python requirements
+
+  [ Michael Zanetti ]
+  * SMA: Disable caching for frequently changing states
+  * go-e: Uncache some states
+  * go-e: Fix charging state
+
+ -- jenkins <developer@nymea.io>  Wed, 26 Oct 2022 13:53:45 +0200
+
 nymea-plugins (1.4.1) jammy; urgency=medium
 
   [ Michael Zanetti ]
