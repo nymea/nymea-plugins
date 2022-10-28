@@ -710,7 +710,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         url.setPath(QString("/roller/%1").arg(info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1));
         QUrlQuery query;
         query.addQueryItem("go", "to_pos");
-        query.addQueryItem("roller_pos", info->action().paramValue(shellyRollerPercentageActionPercentageParamTypeId).toString());
+        query.addQueryItem("roller_pos", QString::number(100 - info->action().paramValue(shellyRollerPercentageActionPercentageParamTypeId).toUInt()));
         url.setQuery(query);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -869,7 +869,7 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
             break;
         case 1103: // Roller position
             foreach (Thing *roller, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
-                roller->setStateValue(shellyRollerPercentageStateTypeId, value.toUInt());
+                roller->setStateValue(shellyRollerPercentageStateTypeId, 100 - value.toUInt());
             }
             break;
         case 1105:
