@@ -91,7 +91,26 @@ void IntegrationPluginSystemMonitor::updateSystemMonitor(Thing *thing)
     thing->setStateValue(systemMonitorPercentMemoryStateTypeId, readTotalMemoryUsage());
 
     QStorageInfo storageInfo = QStorageInfo::root();
-    double percentage = 100.0 * (storageInfo.bytesTotal() - storageInfo.bytesFree()) / storageInfo.bytesTotal();
+    storageInfo.refresh();
+
+    qulonglong total = storageInfo.bytesTotal();
+    qulonglong free = storageInfo.bytesFree();
+    qulonglong available = storageInfo.bytesAvailable();
+    qulonglong used = total - free;
+    qulonglong usableTotal = used + available;
+
+    double percentage = 100.0 * used / usableTotal;
+
+    qCDebug(dcSystemMonitor()) << "total" << (total / 1024) << "usableTotal:" << (usableTotal / 1024);
+    // Debug line as close as possible to "df"
+    qCDebug(dcSystemMonitor()).noquote() << QString("Storage: %1, Total: %2, Used %3, Avail: %4, Use%: %5, Mounted on: %6")
+                                  .arg(QString(storageInfo.device()))
+                                  .arg(total / 1024)
+                                  .arg(used / 1024)
+                                  .arg(available / 1024)
+                                  .arg(percentage)
+                                  .arg(storageInfo.rootPath());
+
     thing->setStateValue(systemMonitorPercentStorageStateTypeId, percentage);
 
 }
@@ -174,23 +193,40 @@ double IntegrationPluginSystemMonitor::readTotalCpuUsage(Thing *thing)
 
 double IntegrationPluginSystemMonitor::readTotalMemoryUsage()
 {
-    struct sysinfo memInfo;
-    sysinfo(&memInfo);
+    QFile f(QString("/proc/meminfo"));
+    if (!f.open(QFile::ReadOnly)) {
+        qCWarning(dcSystemMonitor()).nospace() << "Unable to open " << f.fileName() << ". Cannot read memory usage.";
+        return false;
+    }
 
-    qulonglong totalPhysicalMem = memInfo.totalram;
-    // Multiply in next statement to avoid int overflow on right hand side...
-    totalPhysicalMem *= memInfo.mem_unit;
+    qulonglong totalPhysicalMem = 0;
+    qulonglong availableMem = 0;
+    bool foundTotal = false, foundAvailable = false;
+    QString line;
+    while (!(line = f.readLine()).isEmpty()) {
+        QStringList parts = line.split(":");
+        if (parts.count() != 2) {
+            qCWarning(dcSystemMonitor()) << "Unexpected format in" << f.fileName() << ":" << line;
+            continue;
+        }
+        QString name = parts.first();
+        QString value = parts.last().trimmed().split(" ").first();
+        if (name == "MemTotal") {
+            foundTotal = true;
+            totalPhysicalMem = value.toULongLong();
+        }
+        if (name == "MemAvailable") {
+            foundAvailable = true;
+            availableMem = value.toULongLong();
+        }
+    }
 
+    if (!foundTotal || !foundAvailable) {
+        qCWarning(dcSystemMonitor()) << "Unable to read memory use from" << f.fileName();
+        return 0;
+    }
 
-    qulonglong physicalMemUsed = (memInfo.totalram - memInfo.freeram - memInfo.bufferram);
-    // Multiply in next statement to avoid int overflow on right hand side...
-    physicalMemUsed *= memInfo.mem_unit;
-
-
-//    qCDebug(dcSystemMonitor()) << "Total RAM" << totalPhysicalMem << "used:" << physicalMemUsed;
-
-    return 100.0 * physicalMemUsed / totalPhysicalMem;
-
+    return 100.0 * (totalPhysicalMem - availableMem) / totalPhysicalMem;
 }
 
 bool IntegrationPluginSystemMonitor::readProcessMemoryUsage(qint32 pid, quint32 &total, quint32 &rss, quint32 &shared, double &percentage)
