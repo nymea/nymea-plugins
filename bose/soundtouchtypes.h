@@ -127,7 +127,7 @@ struct InfoObject {
 };
 
 struct ArtObject {
-    ART_STATUS artStatus;
+    ART_STATUS artStatus = ART_STATUS_INVALID;
     QString url;
 };
 
