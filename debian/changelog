@@ -1,3 +1,12 @@
+nymea-plugins (1.5.1) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Fix shelly 2.5 roller position
+  * Bose: Fix unitialized compiler warning
+  * Shelly: Fix total energy consumed for 1 Plus PM
+
+ -- jenkins <developer@nymea.io>  Mon, 07 Nov 2022 20:39:50 +0100
+
 nymea-plugins (1.5.0) jammy; urgency=medium
 
   [ Michael Zanetti ]
