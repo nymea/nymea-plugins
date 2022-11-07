@@ -986,14 +986,26 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
             break;
         case 4103: // totalEnergyConsumed channel 1
             if (thing->hasState("totalEnergyConsumed")) {
+                double newValue = value.toDouble() / 60 / 1000;
+                if (newValue < thing->stateValue("totalEnergyConsumed").toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed value (" << newValue << ") is lower than the current value" << thing->stateValue("totalEnergyConsumed").toDouble();
+                }
                 thing->setStateValue("totalEnergyConsumed", value.toDouble() / 60 / 1000);
             }
             foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(shellyPowerMeterChannelThingClassId).filterByParam(shellyPowerMeterChannelThingChannelParamTypeId, 1)) {
+                double newValue = value.toDouble() / 60 / 1000;
+                if (newValue < thing->stateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId).toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed from channel 1 value (" << newValue << ") is lower than the current value" << thing->stateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId).toDouble();
+                }
                 child->setStateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId, value.toDouble() / 60 / 1000); // Wmin -> kWh
             }
             break;
         case 4203: // totalEnergyConsumed channel 2
             foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(shellyPowerMeterChannelThingClassId).filterByParam(shellyPowerMeterChannelThingChannelParamTypeId, 2)) {
+                double newValue = value.toDouble() / 60 / 1000;
+                if (newValue < thing->stateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId).toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed from channel 2 value (" << newValue << ") is lower than the current value" << thing->stateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId).toDouble();
+                }
                 child->setStateValue(shellyPowerMeterChannelTotalEnergyConsumedStateTypeId, value.toDouble() / 60 / 1000); // Wmin -> kWh
             }
             break;
@@ -1025,6 +1037,10 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
                 thing->setStateValue("energyConsumedPhaseA", value.toDouble() / 1000);
             }
             foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(shellyEmChannelThingClassId).filterByParam(shellyEmChannelThingChannelParamTypeId, 1)) {
+                double newValue = value.toDouble() / 1000;
+                if (newValue < thing->stateValue(shellyEmChannelTotalEnergyConsumedStateTypeId).toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed from em channel value (" << newValue << ") is lower than the current value" << thing->stateValue(shellyEmChannelTotalEnergyConsumedStateTypeId).toDouble();
+                }
                 child->setStateValue(shellyEmChannelTotalEnergyConsumedStateTypeId, value.toDouble() / 1000);
             }
             break;
@@ -1034,11 +1050,19 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
                 thing->setStateValue("energyConsumedPhaseB", value.toDouble() / 1000);
             }
             foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(shellyEmChannelThingClassId).filterByParam(shellyEmChannelThingChannelParamTypeId, 2)) {
+                double newValue = value.toDouble() / 1000;
+                if (newValue < thing->stateValue(shellyEmChannelTotalEnergyConsumedStateTypeId).toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed from em channel value (" << newValue << ") is lower than the current value" << thing->stateValue(shellyEmChannelTotalEnergyConsumedStateTypeId).toDouble();
+                }
                 child->setStateValue(shellyEmChannelTotalEnergyConsumedStateTypeId, value.toDouble() / 1000);
             }
             break;
         case 4306:
             if (thing->hasState("energyConsumedPhaseC")) {
+                double newValue = value.toDouble() / 1000;
+                if (newValue < thing->stateValue("energyConsumedPhaseC").toDouble()) {
+                    qCInfo(dcShelly()) << "?????????????????? totalEnergyConsumed from em channel value (" << newValue << ") is lower than the current value" << thing->stateValue("energyConsumedPhaseC").toDouble();
+                }
                 thing->setStateValue("energyConsumedPhaseC", value.toDouble() / 1000);
             }
             break;
