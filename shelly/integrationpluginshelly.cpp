@@ -1621,7 +1621,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                 thing->setStateValue("currentPower", switch0.value("apower").toDouble());
             }
             if (switch0.contains("aenergy") && thing->hasState("totalEnergyConsumed")) {
-                thing->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble());
+                thing->setStateValue("totalEnergyConsumed", notification.value("switch:0").toMap().value("aenergy").toMap().value("total").toDouble() / 1000);
             }
             if (switch0.contains("output") && thing->hasState("power")) {
                 thing->setStateValue("power", switch0.value("output").toBool());
