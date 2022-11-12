@@ -19,4 +19,4 @@ This plugin allows to find and control devices from WeMo, the Belkin home automa
 
 ## More
 
-http://www.belkin.com/de/PRODUKTE/home-automation/c/wemo-home-automation/
+[Belkin Wemo Overview](https://www.belkin.com/products/wemo-smart-home/)
