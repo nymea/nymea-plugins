@@ -246,6 +246,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
                                     thing->setStateValue(sunspecStorageVersionStateTypeId, model->commonModelInfo().versionString);
 
                                     thing->setStateValue(sunspecStorageBatteryCriticalStateTypeId, storage->chaState() < 5);
+                                    thing->setStateValue(sunspecStorageMaxChargingPowerStateTypeId, storage->wChaMax());
                                     thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, qRound(storage->chaState()));
                                     thing->setStateValue(sunspecStorageGridChargingStateTypeId, storage->chaGriSet() == SunSpecStorageModel::ChagrisetGrid);
                                     thing->setStateValue(sunspecStorageEnableChargingStateTypeId, storage->storCtlMod().testFlag(SunSpecStorageModel::Storctl_modCharge));
@@ -254,31 +255,31 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
                                     switch (storage->chaSt()) {
                                     case SunSpecStorageModel::ChastOff:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Off");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Off");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
                                         break;
                                     case SunSpecStorageModel::ChastEmpty:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Empty");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Empty");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
                                         break;
                                     case SunSpecStorageModel::ChastDischarging:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Discharging");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Discharging");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "discharging");
                                         break;
                                     case SunSpecStorageModel::ChastCharging:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Charging");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Charging");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "charging");
                                         break;
                                     case SunSpecStorageModel::ChastFull:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Full");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Full");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
                                         break;
                                     case SunSpecStorageModel::ChastHolding:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Holding");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Holding");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
                                         break;
                                     case SunSpecStorageModel::ChastTesting:
-                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Testing");
+                                        thing->setStateValue(sunspecStorageStorageStatusStateTypeId, "Testing");
                                         thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
                                         break;
                                     }
@@ -323,7 +324,6 @@ void IntegrationPluginFronius::postSetupThing(Thing *thing)
 
                 foreach (SunSpecStorageModel *model, m_sunSpecStorages.values()) {
                     model->readBlockData();
-
                 }
             });
 
@@ -466,6 +466,21 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
                 }
                 info->finish(Thing::ThingErrorNoError);
             });
+        } else if (action.actionTypeId() == sunspecStorageMaxChargingPowerActionTypeId) {
+            QModbusReply *reply = storage->setWChaMax(action.param(sunspecStorageMaxChargingPowerActionMaxChargingPowerParamTypeId).value().toFloat());
+            if (!reply) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+            connect(reply, &QModbusReply::finished, reply, &QModbusReply::deleteLater);
+            connect(reply, &QModbusReply::finished, info, [info, reply]{
+                if (reply->error() != QModbusDevice::NoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+                info->finish(Thing::ThingErrorNoError);
+            });
+
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled action: %1").arg(action.actionTypeId().toString()).toUtf8());
         }

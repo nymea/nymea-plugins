@@ -482,6 +482,16 @@
                             "defaultValue": 0
                         },
                         {
+                            "id": "1747f03b-75a2-4a7c-9ab9-b51fe5e13932",
+                            "name": "maxChargingPower",
+                            "displayName": "Max charging power",
+                            "displayNameAction": "Set max charging power",
+                            "type": "int",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
                             "id": "1dd36a84-eacd-4bd7-adbd-3ab1ccfaa9ac",
                             "name": "storageStatus",
                             "displayName": "Status",
