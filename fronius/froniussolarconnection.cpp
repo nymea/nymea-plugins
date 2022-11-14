@@ -33,17 +33,17 @@
 
 #include <QUrlQuery>
 
-FroniusSolarConnection::FroniusSolarConnection(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent) :
+FroniusSolarConnection::FroniusSolarConnection(NetworkAccessManager *networkManager, const QUrl &baseUrl, QObject *parent) :
     QObject(parent),
     m_networkManager(networkManager),
-    m_address(address)
+    m_baseUrl(baseUrl)
 {
 
 }
 
-QHostAddress FroniusSolarConnection::address() const
+QUrl FroniusSolarConnection::baseUrl() const
 {
-    return m_address;
+    return m_baseUrl;
 }
 
 bool FroniusSolarConnection::available() const
@@ -58,9 +58,7 @@ bool FroniusSolarConnection::busy() const
 
 FroniusNetworkReply *FroniusSolarConnection::getVersion()
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/GetAPIVersion.cgi");
 
     FroniusNetworkReply *reply = new FroniusNetworkReply(QNetworkRequest(requestUrl), this);
@@ -71,9 +69,7 @@ FroniusNetworkReply *FroniusSolarConnection::getVersion()
 
 FroniusNetworkReply *FroniusSolarConnection::getActiveDevices()
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/v1/GetActiveDeviceInfo.cgi");
 
     QUrlQuery query;
@@ -112,9 +108,7 @@ FroniusNetworkReply *FroniusSolarConnection::getActiveDevices()
 
 FroniusNetworkReply *FroniusSolarConnection::getPowerFlowRealtimeData()
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/v1/GetPowerFlowRealtimeData.fcgi");
 
     FroniusNetworkReply *reply = new FroniusNetworkReply(QNetworkRequest(requestUrl), this);
@@ -125,9 +119,7 @@ FroniusNetworkReply *FroniusSolarConnection::getPowerFlowRealtimeData()
 
 FroniusNetworkReply *FroniusSolarConnection::getInverterRealtimeData(int inverterId)
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/v1/GetInverterRealtimeData.cgi");
 
     QUrlQuery query;
@@ -144,9 +136,7 @@ FroniusNetworkReply *FroniusSolarConnection::getInverterRealtimeData(int inverte
 
 FroniusNetworkReply *FroniusSolarConnection::getMeterRealtimeData(int meterId)
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/v1/GetMeterRealtimeData.cgi");
 
     QUrlQuery query;
@@ -162,9 +152,7 @@ FroniusNetworkReply *FroniusSolarConnection::getMeterRealtimeData(int meterId)
 
 FroniusNetworkReply *FroniusSolarConnection::getStorageRealtimeData(int meterId)
 {
-    QUrl requestUrl;
-    requestUrl.setScheme("http");
-    requestUrl.setHost(m_address.toString());
+    QUrl requestUrl = m_baseUrl;
     requestUrl.setPath("/solar_api/v1/GetStorageRealtimeData.cgi");
 
     QUrlQuery query;

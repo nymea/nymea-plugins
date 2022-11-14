@@ -33,6 +33,7 @@
 
 #include <QObject>
 
+#include <QUrl>
 #include <QQueue>
 #include <QHostAddress>
 
@@ -44,12 +45,10 @@ class FroniusSolarConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit FroniusSolarConnection(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent = nullptr);
+    explicit FroniusSolarConnection(NetworkAccessManager *networkManager, const QUrl &baseUrl, QObject *parent = nullptr);
 
-    QHostAddress address() const;
-
+    QUrl baseUrl() const;
     bool available() const;
-
     bool busy() const;
 
     FroniusNetworkReply *getVersion();
@@ -66,6 +65,7 @@ signals:
 private:
     NetworkAccessManager *m_networkManager = nullptr;
     QHostAddress m_address;
+    QUrl m_baseUrl;
 
     bool m_available = false;
 

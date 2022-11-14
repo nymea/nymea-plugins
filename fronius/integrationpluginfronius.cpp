@@ -110,8 +110,6 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == connectionThingClassId) {
 
-        QHostAddress address(thing->paramValue(connectionThingAddressParamTypeId).toString());
-
         // Handle reconfigure
         if (m_froniusConnections.values().contains(thing)) {
             FroniusSolarConnection *connection = m_froniusConnections.key(thing);
@@ -119,8 +117,16 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             connection->deleteLater();
         }
 
+        QHostAddress address(thing->paramValue(connectionThingAddressParamTypeId).toString());
+        QUrl baseUrl = QUrl(thing->paramValue(connectionThingUrlParamTypeId).toString());
+        if (!baseUrl.isValid()) {
+            baseUrl.setScheme("http");
+            baseUrl.setHost(address.toString());
+        }
+
+
         // Create the connection
-        FroniusSolarConnection *connection = new FroniusSolarConnection(hardwareManager()->networkManager(), address, thing);
+        FroniusSolarConnection *connection = new FroniusSolarConnection(hardwareManager()->networkManager(), baseUrl, thing);
 
         // Verify the version
         FroniusNetworkReply *reply = connection->getVersion();
@@ -250,7 +256,7 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)
 {
     if (connection->busy()) {
-        qCWarning(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
+        qCWarning(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->baseUrl().toString();
         return;
     }
 

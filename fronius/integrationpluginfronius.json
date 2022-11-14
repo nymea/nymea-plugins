@@ -25,6 +25,13 @@
                             "defaultValue": "88.117.152.99"
                         },
                         {
+                            "id": "2345715c-77db-47f9-adf7-9f2d265c0099",
+                            "name": "url",
+                            "displayName": "Connection URL",
+                            "type": "QString",
+                            "defaultValue": "http://hackaton-linz.doesntexist.org:21080"
+                        },
+                        {
                             "id": "2237972e-385b-4458-b5d3-1d1fb4ae8756",
                             "name": "mac",
                             "displayName": "Mac address",
