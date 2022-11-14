@@ -202,6 +202,106 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
         info->finish(Thing::ThingErrorNoError);
 
+    } else if (thing->thingClassId() == sunspecStorageThingClassId) {
+        QHostAddress address(thing->paramValue(sunspecStorageThingAddressParamTypeId).toString());
+        uint port(thing->paramValue(sunspecStorageThingPortParamTypeId).toUInt());
+
+        SunSpecConnection * connection = new SunSpecConnection(address, port, 1, SunSpecDataPoint::ByteOrderBigEndian, nullptr);
+
+        connect(info, &ThingSetupInfo::aborted, connection, &SunSpecConnection::deleteLater);
+
+        // Update all child things connected states for this connection
+        connect(connection, &SunSpecConnection::connectedChanged, thing, [this, connection, thing] (bool connected) {
+            if (connected) {
+                qCDebug(dcSunSpec()) << connection << "connected";
+            } else {
+                qCWarning(dcSunSpec()) << connection << "disconnected";
+            }
+
+            thing->setStateValue("connected", connected);
+        });
+
+        // Only during setup
+        connect(connection, &SunSpecConnection::connectedChanged, info, [this, connection, info] (bool connected) {
+            //qCDebug(dcSunSpec()) << "SunSpec connected changed during setup:" << (connected ? "connected" : "disconnected");
+            if (connected) {
+                connect(connection, &SunSpecConnection::discoveryFinished, info, [this, connection, info] (bool success) {
+                    if (success) {
+                        qCDebug(dcSunSpec()) << "Discovery finished successfully during setup of" << connection << ". Found SunSpec data on base register" << connection->baseRegister();
+                        m_sunspecConnections.insert(connection, info->thing());
+                        info->finish(Thing::ThingErrorNoError);
+
+                        Thing *thing = info->thing();
+
+                        // Get the battery model
+                        foreach (SunSpecModel *model, connection->models()) {
+                            if (model->modelId() == SunSpecModelFactory::ModelIdStorage) {
+                                SunSpecStorageModel *storage = qobject_cast<SunSpecStorageModel *>(model);
+                                m_sunSpecStorages.insert(thing, storage);
+
+                                connect(model, &SunSpecModel::blockUpdated, this, [storage, thing, model](){
+                                    qCDebug(dcSunSpec()) << thing->name() << "block data updated" << storage;
+
+                                    thing->setStateValue(sunspecStorageConnectedStateTypeId, true);
+                                    thing->setStateValue(sunspecStorageVersionStateTypeId, model->commonModelInfo().versionString);
+
+                                    thing->setStateValue(sunspecStorageBatteryCriticalStateTypeId, storage->chaState() < 5);
+                                    thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, qRound(storage->chaState()));
+                                    thing->setStateValue(sunspecStorageGridChargingStateTypeId, storage->chaGriSet() == SunSpecStorageModel::ChagrisetGrid);
+                                    thing->setStateValue(sunspecStorageEnableChargingStateTypeId, storage->storCtlMod().testFlag(SunSpecStorageModel::Storctl_modCharge));
+                                    thing->setStateValue(sunspecStorageChargingRateStateTypeId, storage->wChaGra());
+                                    thing->setStateValue(sunspecStorageDischargingRateStateTypeId, storage->wDisChaGra());
+
+                                    switch (storage->chaSt()) {
+                                    case SunSpecStorageModel::ChastOff:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Off");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
+                                        break;
+                                    case SunSpecStorageModel::ChastEmpty:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Empty");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
+                                        break;
+                                    case SunSpecStorageModel::ChastDischarging:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Discharging");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "discharging");
+                                        break;
+                                    case SunSpecStorageModel::ChastCharging:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Charging");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "charging");
+                                        break;
+                                    case SunSpecStorageModel::ChastFull:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Full");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
+                                        break;
+                                    case SunSpecStorageModel::ChastHolding:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Holding");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
+                                        break;
+                                    case SunSpecStorageModel::ChastTesting:
+                                        thing->setStateValue(sunspecStorageBatteryLevelStateTypeId, "Testing");
+                                        thing->setStateValue(sunspecStorageChargingStateStateTypeId, "idle");
+                                        break;
+                                    }
+
+                                });
+
+                            }
+                        }
+
+                    } else {
+                        qCWarning(dcSunSpec()) << "Discovery finished with errors during setup of" << connection;
+                        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The SunSpec discovery finished with errors. Please make sure this is a SunSpec device."));
+                    }
+                });
+                // Perform initial discovery, finish if a valid base register has been found
+                connection->startDiscovery();
+            } else {
+                info->finish(Thing::ThingErrorHardwareNotAvailable);
+            }
+        });
+
+        connection->connectDevice();
+
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -219,6 +319,11 @@ void IntegrationPluginFronius::postSetupThing(Thing *thing)
             connect(m_connectionRefreshTimer, &PluginTimer::timeout, this, [this]() {
                 foreach (FroniusSolarConnection *connection, m_froniusConnections.keys()) {
                     refreshConnection(connection);
+                }
+
+                foreach (SunSpecStorageModel *model, m_sunSpecStorages.values()) {
+                    model->readBlockData();
+
                 }
             });
 
@@ -250,7 +355,122 @@ void IntegrationPluginFronius::thingRemoved(Thing *thing)
 
 void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 {
-    Q_UNUSED(info)
+    Thing *thing = info->thing();
+    Action action = info->action();
+
+    if (thing->thingClassId() == sunspecStorageThingClassId) {
+        SunSpecStorageModel *storage = qobject_cast<SunSpecStorageModel *>(m_sunSpecStorages.value(thing));
+        if (!storage) {
+            qWarning(dcSunSpec()) << "Could not find sunspec model instance for thing" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        if (!thing->stateValue(sunspecStorageConnectedStateTypeId).toBool()) {
+            qWarning(dcSunSpec()) << "Could not execute action for" << thing << "because the SunSpec connection is not connected.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The SunSpec connection is not connected."));
+            return;
+        }
+
+        if (action.actionTypeId() == sunspecStorageGridChargingActionTypeId) {
+            bool gridCharging = action.param(sunspecStorageGridChargingActionGridChargingParamTypeId).value().toBool();
+            qCDebug(dcFronius()) << "Set grid charging" << (gridCharging ? SunSpecStorageModel::ChagrisetGrid : SunSpecStorageModel::ChagrisetPv);
+            QModbusReply *reply = storage->setChaGriSet(gridCharging ? SunSpecStorageModel::ChagrisetGrid : SunSpecStorageModel::ChagrisetPv);
+            if (!reply) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            connect(reply, &QModbusReply::finished, reply, &QModbusReply::deleteLater);
+            connect(reply, &QModbusReply::finished, info, [info, reply]{
+                if (reply->error() != QModbusDevice::NoError) {
+                    qCDebug(dcFronius()) << "Set grid charging failed";
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+                qCDebug(dcFronius()) << "Set grid charging finished successfully";
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else if (action.actionTypeId() == sunspecStorageEnableChargingActionTypeId || action.actionTypeId() == sunspecStorageEnableDischargingActionTypeId) {
+            SunSpecStorageModel::Storctl_modFlags controlModeFlags;
+            if (action.actionTypeId() == sunspecStorageEnableChargingActionTypeId) {
+                if (action.param(sunspecStorageEnableChargingActionEnableChargingParamTypeId).value().toBool()) {
+                    controlModeFlags.setFlag(SunSpecStorageModel::Storctl_modCharge);
+                }
+
+                if (thing->stateValue(sunspecStorageEnableDischargingStateTypeId).toBool())
+                    controlModeFlags.setFlag(SunSpecStorageModel::Storctl_modDiScharge);
+
+            }
+
+            if (action.actionTypeId() == sunspecStorageEnableDischargingActionTypeId) {
+                if (action.param(sunspecStorageEnableDischargingActionEnableDischargingParamTypeId).value().toBool()) {
+                    controlModeFlags.setFlag(SunSpecStorageModel::Storctl_modDiScharge);
+                }
+
+                if (thing->stateValue(sunspecStorageEnableChargingStateTypeId).toBool())
+                    controlModeFlags.setFlag(SunSpecStorageModel::Storctl_modCharge);
+
+            }
+
+            qCDebug(dcFronius()) << "Set charging control flag" << controlModeFlags;
+
+            QModbusReply *reply = storage->setStorCtlMod(controlModeFlags);
+            if (!reply) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+            connect(reply, &QModbusReply::finished, reply, &QModbusReply::deleteLater);
+            connect(reply, &QModbusReply::finished, info, [info, reply]{
+                if (reply->error() != QModbusDevice::NoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    qCDebug(dcFronius()) << "Set charging control flag finished with error";
+                    return;
+                }
+                if (info->action().actionTypeId() == sunspecStorageEnableChargingActionTypeId) {
+                    info->thing()->setStateValue(sunspecStorageEnableChargingStateTypeId, info->action().param(sunspecStorageEnableChargingActionEnableChargingParamTypeId).value());
+                }
+
+                if (info->action().actionTypeId() == sunspecStorageEnableDischargingActionTypeId) {
+                    info->thing()->setStateValue(sunspecStorageEnableDischargingStateTypeId, info->action().param(sunspecStorageEnableDischargingActionEnableDischargingParamTypeId).value());
+                }
+
+                info->finish(Thing::ThingErrorNoError);
+                qCDebug(dcFronius()) << "Set charging control flag finished successfully";
+            });
+        } else if (action.actionTypeId() == sunspecStorageChargingRateActionTypeId) {
+            QModbusReply *reply = storage->setInWRte(action.param(sunspecStorageChargingRateActionChargingRateParamTypeId).value().toInt());
+            if (!reply) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+            connect(reply, &QModbusReply::finished, reply, &QModbusReply::deleteLater);
+            connect(reply, &QModbusReply::finished, info, [info, reply]{
+                if (reply->error() != QModbusDevice::NoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else if (action.actionTypeId() == sunspecStorageDischargingRateActionTypeId) {
+            QModbusReply *reply = storage->setOutWRte(action.param(sunspecStorageDischargingRateActionDischargingRateParamTypeId).value().toInt());
+            if (!reply) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+            connect(reply, &QModbusReply::finished, reply, &QModbusReply::deleteLater);
+            connect(reply, &QModbusReply::finished, info, [info, reply]{
+                if (reply->error() != QModbusDevice::NoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled action: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+
+    }
 }
 
 void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)

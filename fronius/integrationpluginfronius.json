@@ -302,6 +302,7 @@
                     "createMethods": ["auto"],
                     "interfaces": [ "energystorage", "connectable"],
                     "paramTypes": [
+
                         {
                             "id": "49087f31-abf5-4bb8-946b-a3626ee80566",
                             "name": "id",
@@ -385,6 +386,190 @@
                             "displayNameEvent": "Battery level critical changed",
                             "type": "bool",
                             "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "name": "sunspecStorage",
+                    "displayName": "Fronius SunSpec Storage",
+                    "id": "5cdf938a-5680-4fdd-96cf-69a06b3b68ae",
+                    "createMethods": [ "user" ],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "115f1b9c-10f7-40e3-8dd9-7bd886e7d19c",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "84.20.187.116"
+                        },
+                        {
+                            "id": "cefe2a6d-1312-4f3f-b1fa-839c1dc22418",
+                            "name":"port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": 21502
+                        },
+                        {
+                            "id": "a63cb6d6-29c7-4961-a341-f5b7289b1145",
+                            "name":"modelId",
+                            "displayName": "Model",
+                            "type": "int",
+                            "readOnly": true,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3f107844-00c5-4f39-86e5-485b3d1f5c1a",
+                            "name":"modbusAddress",
+                            "displayName": "Modbus address",
+                            "type": "uint",
+                            "readOnly": true,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1335ae67-7597-45d3-856f-2a56449b8a5f",
+                            "name":"manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": "Unkown",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "c860d44c-af8c-4e6c-b67e-481c73a1ad68",
+                            "name":"deviceModel",
+                            "displayName": "Device model",
+                            "type": "QString",
+                            "defaultValue": "Unkown",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "fb366e44-86f2-46ad-97d0-5b20d44eb6cb",
+                            "name":"serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": "Unkown",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "47755a1c-b4a7-4d50-b718-dd43ab6ee5cd",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "f57c9418-fd16-4d9d-b7c5-54c734754dd2",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "56930aec-93c7-4609-a0d1-0e24fc45e3da",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1dd36a84-eacd-4bd7-adbd-3ab1ccfaa9ac",
+                            "name": "storageStatus",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Off",
+                                "Empty",
+                                "Discharging",
+                                "Charging",
+                                "Full",
+                                "Holding",
+                                "Testing"
+                            ],
+                            "defaultValue": "Off"
+                        },
+                        {
+                            "id": "c8f9cd0a-423a-40d0-94cc-8775cdf075fe",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "displayNameEvent": "Charging state changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "12435c63-0a73-4b49-95e1-1d8c8f7e4578",
+                            "name": "gridCharging",
+                            "displayName": "Grid charging",
+                            "displayNameEvent": "Grid charging changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameAction": "Set grid charging"
+                        },
+                        {
+                            "id": "b80df52f-47aa-44cf-8199-54dc96eba2ad",
+                            "name": "enableCharging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging changed",
+                            "displayNameAction": "Enable charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "80924163-d2a7-409a-a5c2-e30dc2cd30a3",
+                            "name": "enableDischarging",
+                            "displayName": "Discharging",
+                            "displayNameEvent": "Discharging changed",
+                            "displayNameAction": "Enable discharging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a8954186-4264-4edf-873e-1507d45e40e4",
+                            "name": "chargingRate",
+                            "displayName": "Charging rate",
+                            "displayNameEvent": "Charging rate changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameAction": "Set charging rate"
+                        },
+                        {
+                            "id": "67bc1367-453f-4f24-8942-978d9ffd43f5",
+                            "name": "dischargingRate",
+                            "displayName": "Discharging rate",
+                            "displayNameEvent": "Discharging rate changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameAction": "Set discharging rate"
+                        },
+                        {
+                            "id": "6364e277-b168-4acf-b0f6-fe32ced05f0e",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 }

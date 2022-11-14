@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-QT += network
+PKGCONFIG += nymea-sunspec
+
+QT += network serialbus
 
 SOURCES += \
     froniusnetworkreply.cpp \

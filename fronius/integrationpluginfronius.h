@@ -34,6 +34,10 @@
 #include "integrations/integrationplugin.h"
 #include "froniussolarconnection.h"
 
+#include <nymea-sunspec/sunspecconnection.h>
+#include <nymea-sunspec/home/jenkins/nymea-plugins-modbus/libnymea-sunspec/models/sunspecstoragemodel.h>
+#include <nymea-sunspec/home/jenkins/nymea-plugins-modbus/libnymea-sunspec/models/sunspecmodelfactory.h>
+
 #include <QHash>
 #include <QNetworkReply>
 #include <QTimer>
@@ -60,6 +64,8 @@ private:
     PluginTimer *m_connectionRefreshTimer = nullptr;
 
     QHash<FroniusSolarConnection *, Thing *> m_froniusConnections;
+    QHash<SunSpecConnection *, Thing *> m_sunspecConnections;
+    QHash<Thing *, SunSpecStorageModel *> m_sunSpecStorages;
 
     void refreshConnection(FroniusSolarConnection *connection);
 
