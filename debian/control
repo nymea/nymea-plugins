@@ -219,6 +219,15 @@ Description: nymea integration plugin for ESPuino
  This package contains the nymea integration plugin for ESPuino devices.
 
 
+Package: nymea-plugin-evbox
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for EVBox
+ This package contains the nymea integration plugin for EVBox wallboxes
+ implementing the Protocol Max v4.
+
+
 Package: nymea-plugin-fastcom
 Architecture: any
 Depends: ${misc:Depends},

@@ -1,0 +1,97 @@
+{
+    "name": "EVBox",
+    "displayName": "EVBox",
+    "id": "3362ac5c-5e2f-43c0-b3fc-70a98773e119",
+    "vendors": [
+        {
+            "name": "evbox",
+            "displayName": "EVBox",
+            "id": "435d8843-887a-4642-b2f5-cd27d18bdb95",
+            "thingClasses": [
+                {
+                    "id": "d73a14e3-10af-47bc-9bc7-a5ff6e52f72c",
+                    "name": "evbox",
+                    "displayName": "Elvi",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "justadd",
+                    "interfaces": [ "evcharger", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "bce7c412-c19a-4e60-a11f-fe8308408abf",
+                            "name":"serialPort",
+                            "displayName": "Serial port",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5ef06038-9fa9-4d5d-8d9b-0375b8aa343a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "e3ed9334-68bf-47eb-bd9a-d9a800529bce",
+                            "name": "power",
+                            "displayName": "Charging enabled",
+                            "displayNameAction": "Enable/disable charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "cc9ae86d-fc86-473f-ae90-d9eb20d7a011",
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "uint",
+                            "writable": true,
+                            "unit": "Ampere",
+                            "minValue": "6",
+                            "maxValue": "22",
+                            "defaultValue": 6,
+                            "cached": false
+                        },
+                        {
+                            "id": "8d3c80b7-f1f1-48de-8b7a-f99b9bc688b7",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "9fd15d14-c228-4af6-85af-4cb171d6f9f0",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6439fdba-dc03-454f-bc33-0f6e2619d2ab",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "1120abe3-1878-4301-a701-014b24fd1e41",
+                            "name": "phaseCount",
+                            "displayName": "Used phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

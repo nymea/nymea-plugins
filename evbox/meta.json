@@ -1,0 +1,13 @@
+{
+    "title": "EVBox",
+    "tagline": "Integrates EVBox wallboxes with nymea.",
+    "icon": "evbox-logo-blue.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "serial-port"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
