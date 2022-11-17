@@ -41,7 +41,7 @@ it will shut down right after a button press which might interrupt the setup. Ho
 perfectly fine in the low power mode.
 
 ### Note for Shelly power meters
-To display the total consumed power by a meter device, it needs to sync the time once with an internet time server so it can set the timestamp for comparing. Without that, the total is always returned as zero.
+Shelly devices require an internet connection to sync the time for the total energy counters to work. The timeserver can be configured in the devices webinterface.
 
 ### Note regarding firmware updates
 Some shelly devices get sold with an old firmware version installed. Some functionality will be missing. Since some point in 2021, shelly devices need to connect to the shelly cloud once to pull firmware updates. So please enable cloud access in the settings under "Internet & Security" -> "Cloud" and wait a few minutes.
