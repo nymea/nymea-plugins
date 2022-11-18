@@ -2,6 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>IntegrationPluginMqttClient</name>
+    <message>
+        <source>Unable to to connect to internal MQTT broker. Verify the MQTT broker is set up and running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error happened connecting to the MQTT broker. Please make sure the login credentials are correct and your user has apprpriate permissions to subscribe to the given topic filter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>mqttclient</name>
     <message>
         <source>MQTT client</source>
@@ -98,6 +109,36 @@ The name of the ParamType (ThingClass: internalMqttClient, EventType: triggered,
     <message>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Id</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {621f9054-2b64-4de9-93d2-65bba96a14a3})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retain will</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {c7fba1f0-a7b0-4162-8b50-fb85697fe678})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use SSL</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {714074bd-1ab1-4ee6-b6db-7594b3dbf56f})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Will QoS</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {470b600d-e1c1-4ae7-83d4-0179600e4187})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Will message</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {acb19fba-d140-4ff1-b4ec-3b933c04417e})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Will topic</source>
+        <extracomment>The name of the ParamType (ThingClass: mqttClient, Type: thing, ID: {04aa1f25-4ee9-4bce-9844-a9860642c938})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

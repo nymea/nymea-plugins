@@ -50,6 +50,11 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
     }
     if (thing->thingClassId() == internalMqttClientThingClassId) {
         client = hardwareManager()->mqttProvider()->createInternalClient(thing->id().toString());
+        if (!client) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to to connect to internal MQTT broker. Verify the MQTT broker is set up and running."));
+            return;
+        }
+
     } else if (thing->thingClassId() == mqttClientThingClassId){
         client = new MqttClient(thing->paramValue(mqttClientThingClientIdParamTypeId).toString(), this);
         client->setUsername(thing->paramValue(mqttClientThingUsernameParamTypeId).toString());
