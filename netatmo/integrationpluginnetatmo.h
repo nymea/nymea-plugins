@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2022, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,14 +31,15 @@
 #ifndef INTEGRATIONPLUGINNETATMO_H
 #define INTEGRATIONPLUGINNETATMO_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/oauth2.h"
-#include "netatmobasestation.h"
-#include "netatmooutdoormodule.h"
+#include <integrations/integrationplugin.h>
+
+#include "extern-plugininfo.h"
 
 #include <QHash>
 #include <QTimer>
+
+class PluginTimer;
+class NetatmoConnection;
 
 class IntegrationPluginNetatmo : public IntegrationPlugin
 {
@@ -48,41 +49,44 @@ class IntegrationPluginNetatmo : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginNetatmo();
+
     void init() override;
+
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
-    void thingRemoved(Thing *thing) override;
     void postSetupThing(Thing *thing) override;
+    void thingRemoved(Thing *thing) override;
 
 private:
-    PluginTimer *m_pluginTimer3s = nullptr;
-    PluginTimer *m_pluginTimer10m = nullptr;
+    QByteArray m_clientId;
+    QByteArray m_clientSecret;
 
-    QHash<QString, QVariantMap> m_indoorStationInitData;
-    QHash<QString, QVariantMap> m_outdoorStationInitData;
+    PluginTimer *m_pluginTimer = nullptr;
 
-    QHash<OAuth2 *, ThingId> m_pairingAuthentications;
-    QHash<OAuth2 *, ThingId> m_authentications;
-    QHash<NetatmoBaseStation *, Thing *> m_indoorDevices;
-    QHash<NetatmoOutdoorModule *, Thing *> m_outdoorDevices;
+    QHash<Thing *, NetatmoConnection *> m_connections;
+    QHash<ThingId, NetatmoConnection *> m_pendingSetups;
 
-    QHash<QNetworkReply *, Thing *> m_refreshRequest;
+    QHash<QString, QVariantMap> m_temporaryInitData;
 
-    void refreshData(Thing *thing, const QString &token);
-    void processRefreshData(const QVariantMap &data, Thing *connectionDevice);
+    void setupConnection(ThingSetupInfo *info);
+    void refreshConnection(Thing *thing);
+    void processRefreshData(Thing *connectionThing, const QVariantList &devices);
 
-    Thing *findIndoorDevice(const QString &macAddress);
-    Thing *findOutdoorDevice(const QString &macAddress);
+    Thing *findIndoorStationThing(const QString &macAddress);
+    Thing *findOutdoorModuleThing(const QString &macAddress);
+    Thing *findIndoorModuleThing(const QString &macAddress);
+    Thing *findWindModuleThing(const QString &macAddress);
+    Thing *findRainGaugeModuleThing(const QString &macAddress);
 
-    QString m_clientId;
-    QString m_clientSecret;
+    void updateModuleStates(Thing *thing, const QVariantMap &data);
 
-private slots:
-    void onPluginTimer();
-    void onIndoorStatesChanged();
-    void onOutdoorStatesChanged();
-    void updateClientCredentials();
+    bool doingLoginMigration(ThingSetupInfo *info);
+
+    bool loadClientCredentials();
+    QString censorDebugOutput(const QString &text);
+
 };
 
 #endif // INTEGRATIONPLUGINNETATMO_H
