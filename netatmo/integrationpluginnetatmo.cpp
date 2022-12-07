@@ -61,7 +61,7 @@ void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
     NetatmoConnection *connection = new NetatmoConnection(hardwareManager()->networkManager(), m_clientId, m_clientSecret, this);
     QUrl loginUrl = connection->getLoginUrl();
 
-    // Checking the internet connection
+    // Checking the internet connect^ion
     QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(QUrl("https://api.netatmo.net")));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, reply, info, connection, loginUrl]() {
@@ -539,7 +539,7 @@ void IntegrationPluginNetatmo::updateModuleStates(Thing *thing, const QVariantMa
         thing->setStateValue("batteryCritical", thing->stateValue("batteryLevel").toInt() < 10);
     }
 
-    // Signal strength
+    // Signal strength (RF, 90 low, 60 highest)
     if (data.contains("rf_status")) {
         int signalStrength = data.value("rf_status").toInt();
         if (signalStrength <= 60) {
@@ -548,6 +548,20 @@ void IntegrationPluginNetatmo::updateModuleStates(Thing *thing, const QVariantMa
             thing->setStateValue("signalStrength", 0);
         } else {
             int delta = 30 - (signalStrength - 60);
+            thing->setStateValue("signalStrength", qRound(100.0 * delta / 30.0));
+        }
+    }
+
+    // Wifi status (86=bad, 56=good)"
+
+    if (data.contains("wifi_status")) {
+        int signalStrength = data.value("wifi_status").toInt();
+        if (signalStrength <= 56) {
+            thing->setStateValue("signalStrength", 100);
+        } else if (signalStrength >= 86) {
+            thing->setStateValue("signalStrength", 0);
+        } else {
+            int delta = 30 - (signalStrength - 56);
             thing->setStateValue("signalStrength", qRound(100.0 * delta / 30.0));
         }
     }
