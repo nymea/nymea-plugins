@@ -711,6 +711,15 @@ Description: nymea integration plugin for Sonos smart speakers
  This package contains the nymea integration plugin for Sonos smart speakers.
 
 
+Package: nymea-plugin-spothinta
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for spot-hinta.fi
+ This package contains the nymea integration plugin to retrieve Finlands 
+ spotmarket energy prices from spot-hinta.fi.
+
+
 Package: nymea-plugin-sunposition
 Architecture: any
 Depends: ${misc:Depends},

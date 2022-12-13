@@ -1,0 +1,13 @@
+{
+    "title": "spot-hinta",
+    "tagline": "Get Findlands current energy price from spot-hinta.fi.",
+    "icon": "",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "online-service"
+    ]
+}
