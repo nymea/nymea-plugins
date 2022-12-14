@@ -1,0 +1,261 @@
+{
+    "name": "ESPuino",
+    "displayName": "ESPuino",
+    "id": "5f8ba72b-d3fb-4efe-952d-a927bed20cfe",
+    "vendors": [
+        {
+            "name": "ESPuino",
+            "displayName": "ESPuino",
+            "id": "58c8eb30-98a4-44fd-aaac-cb2a7aae7e8a",
+            "thingClasses": [
+                {
+                    "id": "ee24ce2b-d34a-4c2c-85f3-9d895d17f414",
+                    "name": "espuino",
+                    "displayName": "ESPuino",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["mediaplayer", "mediametadataprovider", "volumecontroller", "wirelessconnectable", "battery", "childlock"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "2a9c9427-3e4e-4473-805e-c25242cfc621",
+                            "name": "hostname",
+                            "displayName": "Hostname",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "edbff474-0cdc-488c-a9e9-970b25ce7548",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "57bd1bab-d872-4315-b53e-1157fe3889d4",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "bee497e6-a320-458a-9006-ddfe4c7c37c2",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "9fd8f882-8240-492f-8c6b-b5477e26623e",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "dd1cfb1f-fec4-4035-9c02-562a6fba683d",
+                            "name": "playbackStatus",
+                            "displayName": "Playback status",
+                            "type": "QString",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "defaultValue": "Stopped",
+                            "writable": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a274e048-9820-444a-b5de-a3a421c855a2",
+                            "name": "title",
+                            "displayName": "Title",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "5acce950-cdac-44ea-963d-0635afcabdca",
+                            "name": "playmode",
+                            "displayName": "Playmode",
+                            "type": "QString",
+                            "possibleValues": [
+                                "None",
+                                "Single track",
+                                "Single track (loop)",
+                                "Single track of a directory (random). Followed by sleep.",
+                                "Audiobook",
+                                "Audiobook (loop)",
+                                "All tracks of a directory (sorted alph.)",
+                                "All tracks of a directory (random)",
+                                "All tracks of a directory (sorted alph., loop)",
+                                "All tracks of a directory (random, loop)",
+                                "Webradio",
+                                "List (files from SD and/or webstreams) from local .m3u-File",
+                                "Busy"],
+                            "defaultValue": "None",
+                            "writable": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "27b5ff3b-bd60-411f-b8e3-b1c8f6897bec",
+                            "name": "repeat",
+                            "displayName": "Repeat mode",
+                            "type": "QString",
+                            "possibleValues": [
+                              "None",
+                              "One",
+                              "All"
+                            ],
+                            "displayNameAction": "Set repeat",
+                            "defaultValue": "None",
+                            "writable": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "93a5098a-a41a-46ee-8613-266d4f9ed69a",
+                            "displayName": "Volume",
+                            "name": "volume",
+                            "type": "int",
+                            "minValue": "0",
+                            "maxValue": "21",
+                            "displayNameAction": "Set volume",
+                            "defaultValue": 0,
+                            "writable": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "595908c1-57b1-4303-a0ca-4c64f3cb1907",
+                            "name": "brightness",
+                            "displayName": "LED brightness",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 255,
+                            "displayNameAction": "Set LED brightness",
+                            "writable": true,
+                            "defaultValue": 0,
+                            "ioType": "analogOutput",
+                            "cached": false
+                        },
+                        {
+                            "id": "03e7a5e2-9434-47e8-91ad-03610601b925",
+                            "name": "childLock",
+                            "displayName": "Locl controls",
+                            "type": "bool",
+                            "displayNameAction": "Enable/disable control lock",
+                            "writable": true,
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "19bd1456-2e4f-444a-a586-75bf6cc9fb73",
+                            "name": "sleepmode",
+                            "displayName": "Sleepmode",
+                            "type": "QString",
+                            "possibleValues": ["None", "End of playlist", "End of track", "End of five tracks", "Timer"],
+                            "defaultValue": "None",
+                            "displayNameAction": "Set Sleepmode",
+                            "writable": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "4c7594e4-70e7-4f0c-aae4-02e3993ffa1d",
+                            "name": "sleeptimer",
+                            "displayName": "Sleeptimer",
+                            "type": "uint",
+                            "unit": "Minutes",
+                            "defaultValue": 10,
+                            "displayNameAction": "Set Sleeptimer",
+                            "writable": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "f84ccfc3-0698-40ff-b413-53f0064ce663",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "67a5b71e-ec88-4272-8d68-9562b7f786cf",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "c1af97a6-f061-4082-8bf5-595728b03ab1",
+                            "name": "collection",
+                            "displayName": "Collection",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "c7814ee8-52b1-4cc9-b8f4-f3f91ad8f33e",
+                            "displayName": "Player Type",
+                            "name": "playerType",
+                            "type": "QString",
+                            "possibleValues": ["audio", "video"],
+                            "defaultValue": "audio",
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "d045e491-c83b-4155-85ef-abc28a391402",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume"
+                        },
+                        {
+                            "id": "16ae2d6a-68cc-497f-9e5d-2fa1f5f7107a",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume"
+                        },
+                        {
+                            "id": "e04b74cc-cf74-482c-908d-8df294bd5ec8",
+                            "name": "skipBack",
+                            "displayName": "Prev"
+                        },
+                        {
+                            "id": "d46f0b61-d406-4302-adc3-6bbc00fc2a8f",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "4e3b2f50-82dc-4f51-a9e5-69012985b491",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "b7128827-b429-4583-bc34-1ef4e7987809",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "25301c30-727c-43fd-bf3b-f7b3916947c7",
+                            "name": "skipNext",
+                            "displayName": "Next"
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "ccb210ac-5819-4614-897b-e5a0b130a38a",
+                            "name": "playAll",
+                            "displayName": "Play All"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
