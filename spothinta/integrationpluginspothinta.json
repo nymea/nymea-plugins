@@ -1,0 +1,90 @@
+{
+    "displayName": "spot-hinta",
+    "name": "spothinta",
+    "id": "d309bf72-b28a-49c8-9889-09752210729d",
+    "vendors": [
+        {
+            "displayName": "spot-hinta",
+            "name": "spothinta",
+            "id": "5a7a9eeb-7b11-44a8-97c6-8a7f3dfc27b2",
+            "thingClasses": [
+                {
+                    "id": "11ac3def-e99d-466a-94a5-b68d8af97d8b",
+                    "displayName": "spot-hinta",
+                    "name": "spothinta",
+                    "createMethods": ["user"],
+                    "setupMethod": "justAdd",
+                    "interfaces": ["connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "e778644e-bc4a-4864-9f9c-e5c374121f9e",
+                            "name": "connected",
+                            "displayName": "Online",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "067c4bbb-edb9-4dbb-b8fc-c3a57d529850",
+                            "name": "currentMarketPrice",
+                            "displayName": "Current market price",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "6475f494-eebb-4dcc-8617-61a3e7e18871",
+                            "name": "currentRank",
+                            "displayName": "Current rank",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 24,
+                            "defaultValue": 12
+                        },
+                        {
+                            "id": "a52af483-e0d0-4a3e-8e12-481836730f9b",
+                            "name": "validUntil",
+                            "displayName": "Valid until",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2835aea6-61e3-4e0f-a65b-5e2d9988bde1",
+                            "name": "averagePrice",
+                            "displayName": "Average market price today",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a0cf5dc9-b9de-4566-b297-3ff26b8ac888",
+                            "name": "lowestPrice",
+                            "displayName": "Lowest market price today",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ab03aa5c-5097-44b1-b810-11d78c8d1c18",
+                            "name": "highestPrice",
+                            "displayName": "Highest market price today",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "72ba6521-97fe-45dc-9dbc-34509fb29c4f",
+                            "name": "averageDeviation",
+                            "displayName": "Average deviation",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
