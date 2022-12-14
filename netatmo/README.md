@@ -2,25 +2,41 @@
 
 This plugin integrates the Netatmo Smart Home Weather Station.
 
-## Supported Things
+Once you add your Netatmo account, all connected and supported devices will appear automatically in your system.
 
-* Netatmo Connection
-    * Netatmo account
-    * Username and password login
-* Indoor Station
-    * Appears automatically
+## Supported modules
+
+* Indoor main station
     * Temperature
     * Temperature minimum & maximum
     * Humidity
     * Pressure
-    * Noise
     * CO2
+    * Noise
     * WiFi signal strength
-* Outdoor Station
-    * Appears automatically
+* Outdoor module
     * Temperature
     * Temperature minimum & maximum
-    * Humidity 
+    * Humidity
+    * Battery information
+    * Signal strength
+* Additional indoor module
+    * Temperature
+    * Temperature minimum & maximum
+    * Humidity
+    * Pressure
+    * CO2
+    * Battery information
+    * Signal strength
+* Smart Anemometer (Wind module):
+    * Wind direction
+    * Wind speed
+    * Battery information
+    * Signal strength
+* Rain gauge:
+    * Rainfall last hour
+    * Rainfall last 24 hours
+    * Battery information
     * Signal strength
 
 ## Requirements

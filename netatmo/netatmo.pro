@@ -6,12 +6,10 @@ TARGET = $$qtLibraryTarget(nymea_integrationpluginnetatmo)
 
 SOURCES += \
     integrationpluginnetatmo.cpp \
-    netatmobasestation.cpp \
-    netatmooutdoormodule.cpp
+    netatmoconnection.cpp
 
 HEADERS += \
     integrationpluginnetatmo.h \
-    netatmobasestation.h \
-    netatmooutdoormodule.h
+    netatmoconnection.h
 
 
