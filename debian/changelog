@@ -1,3 +1,43 @@
+nymea-plugins (1.6.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * AQI: Reorder interfaces based on their relevancy
+
+  [ Jenkins ]
+  * Wemo: Change link in Readme
+  * TP-Link: Added urls to read me
+
+  [ Christian Fetzer ]
+  * New plugin: ESPuino
+
+  [ Jenkins ]
+  * Shelly: Add note regarding time sync needed to display total power
+    measurements
+
+  [ Simon Stürz ]
+  * Move SMA plugin to nymea-plugins-modbus repository
+
+  [ Michael Zanetti ]
+  * New plugin: EVBox
+  * MQTT client: Fix a crash when failing to connect to the internal
+    broker
+  * MCP3008: Upate RPi.GPIO dependency
+
+  [ Simon Stürz ]
+  * Netatmo: Update login mechanism and add missing modules
+
+  [ Jenkins ]
+  * Bump certifi from 2017.4.17 to 2022.12.7 in /fastcom
+  * Bump certifi from 2020.12.5 to 2022.12.7 in /neatobotvac
+  * Bump certifi from 2020.12.5 to 2022.12.7 in /yamahaavr
+  * Bump certifi from 2021.10.8 to 2022.12.7 in /daikinairco
+  * Bump certifi from 2021.10.8 to 2022.12.7 in /bimmerconnected
+
+  [ Michael Zanetti ]
+  * New Plugin: spothinta
+
+ -- jenkins <developer@nymea.io>  Wed, 14 Dec 2022 23:58:37 +0100
+
 nymea-plugins (1.5.1) jammy; urgency=medium
 
   [ Michael Zanetti ]
