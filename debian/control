@@ -765,15 +765,6 @@ Description: nymea integration plugin to send and receive strings over a serial 
  arbitrary data via serial ports.
 
 
-Package: nymea-plugin-sma
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-Conflicts: nymea-plugins-translations (< 1.0.1)
-Description: nymea integration plugin for SMA solar inverters
- This package contains the nymea integration plugin for SMA solar inverters.
-
-
 Package: nymea-plugin-systemmonitor
 Architecture: any
 Depends: ${shlibs:Depends},

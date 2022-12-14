@@ -62,7 +62,6 @@ PLUGIN_DIRS = \
     serialportcommander \
     sgready             \
     simpleheatpump      \
-    sma                 \
     somfytahoma         \
     sonos               \
     sunposition         \
