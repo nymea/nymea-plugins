@@ -22,7 +22,7 @@
                     "id": "23ea32c9-38b0-4155-bacc-3afa8c09f6ee",
                     "name": "airQualityIndex",
                     "displayName": "Air quality index",
-                    "interfaces": ["o3sensor", "cosensor", "no2sensor", "pm10sensor", "pm25sensor", "windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
+                    "interfaces": ["pm25sensor", "pm10sensor", "cosensor", "no2sensor", "o3sensor", "temperaturesensor", "humiditysensor", "pressuresensor", "windspeedsensor", "connectable"],
                     "createMethods": ["discovery", "user"],
                     "paramTypes": [
                         {
