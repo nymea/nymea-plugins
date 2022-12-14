@@ -1,0 +1,2 @@
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginevbox.so
+evbox/translations/*qm usr/share/nymea/translations/
