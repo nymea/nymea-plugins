@@ -636,7 +636,7 @@ bool IntegrationPluginNetatmo::loadClientCredentials()
     QByteArray clientId = configValue(netatmoPluginCustomClientIdParamTypeId).toByteArray();
     QByteArray clientSecret = configValue(netatmoPluginCustomClientSecretParamTypeId).toByteArray();
     if (clientId.isEmpty() || clientSecret.isEmpty()) {
-        clientId = apiKeyStorage()->requestKey("netatmo").data("clientKey");
+        clientId = apiKeyStorage()->requestKey("netatmo").data("clientId");
         clientSecret = apiKeyStorage()->requestKey("netatmo").data("clientSecret");
     } else {
         qCDebug(dcNetatmo()) << "Using custom client  id and secret from plugin configuration.";
