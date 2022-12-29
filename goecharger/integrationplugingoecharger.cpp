@@ -317,7 +317,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed. TP reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -326,7 +326,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed. Failed to parse data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Parsing data failed:" << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -356,7 +356,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed. HTTP status reply returned error:" << thing->name() << reply->errorString() << reply->readAll();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -365,7 +365,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed. Failed to parse data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -1289,7 +1289,7 @@ void IntegrationPluginGoECharger::setupMqttChannelV2(ThingSetupInfo *info, const
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
+            qCWarning(dcGoECharger()) << "Failed to set MQTT config for" << thing->name() << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
             return;
         }
@@ -1298,7 +1298,7 @@ void IntegrationPluginGoECharger::setupMqttChannelV2(ThingSetupInfo *info, const
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcGoECharger()) << "Failed to set mqtt configuration for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+            qCWarning(dcGoECharger()) << "Failed to parse MQTT config reply from" << thing->name() << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
             return;
         }
@@ -1378,7 +1378,7 @@ void IntegrationPluginGoECharger::reconfigureMqttChannelV2(Thing *thing)
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, thing, [=](){
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
+            qCWarning(dcGoECharger()) << "Configuring MQTT for" << thing->name() << "failed:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
             hardwareManager()->mqttProvider()->releaseChannel(m_mqttChannelsV2.take(thing));
             return;
         }
@@ -1387,7 +1387,7 @@ void IntegrationPluginGoECharger::reconfigureMqttChannelV2(Thing *thing)
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcGoECharger()) << "Failed to set mqtt configuration for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+            qCWarning(dcGoECharger()) << "Failed to parse MQTT config reply for" << thing->name() << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
             hardwareManager()->mqttProvider()->releaseChannel(m_mqttChannelsV2.take(thing));
             return;
         }
@@ -1448,7 +1448,7 @@ void IntegrationPluginGoECharger::refreshHttp()
             m_pendingReplies.remove(thing);
 
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString();
+                qCWarning(dcGoECharger()) << "HTTP status reply error for thing" << thing->name() << reply->errorString() << "Request was:" << request.url().toString();
                 thing->setStateValue("connected", false);
                 return;
             }
@@ -1457,7 +1457,7 @@ void IntegrationPluginGoECharger::refreshHttp()
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+                qCWarning(dcGoECharger()) << "Failed to parse status data for thing" << thing->name() << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                 thing->setStateValue("connected", false);
                 return;
             }
@@ -1517,7 +1517,7 @@ void IntegrationPluginGoECharger::onMqttPublishV1Received(MqttChannel *channel, 
     QJsonParseError error;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
     if (error.error != QJsonParseError::NoError) {
-        qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(payload) << error.errorString();
+        qCWarning(dcGoECharger()) << "Failed to parse MQTT status data for thing" << thing->name() << "on topic" << topic << error.errorString() << qUtf8Printable(payload);
         return;
     }
 
@@ -1525,7 +1525,7 @@ void IntegrationPluginGoECharger::onMqttPublishV1Received(MqttChannel *channel, 
     if (topic == QString("go-eCharger/%1/status").arg(serialNumber)) {
         updateV1(thing, jsonDoc.toVariant().toMap());
     } else {
-        qCDebug(dcGoECharger()) << "Unhandled topic publish received:" << topic << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
+        qCDebug(dcGoECharger()) << "Unhandled MQTT topic publish received for thing" << thing->name() << "on topic" << topic << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
     }
 }
 
