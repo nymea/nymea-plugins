@@ -45,6 +45,7 @@ PLUGIN_DIRS = \
     nanoleaf            \
     netatmo             \
     networkdetector     \
+    notifyevents        \
     nuki                \
     mcp3008             \
     onewire             \
