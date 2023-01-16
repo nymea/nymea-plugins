@@ -14,6 +14,7 @@
                     "displayName": "Elvi",
                     "createMethods": ["discovery"],
                     "setupMethod": "justadd",
+                    "discoveryType": "weak",
                     "interfaces": [ "evcharger", "connectable" ],
                     "paramTypes": [
                         {
