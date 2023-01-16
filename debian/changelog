@@ -1,3 +1,12 @@
+nymea-plugins (1.6.2) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * go-e: Improve error messages
+  * Update python deps to certifi
+  * EVBox: Mark discovery as weak
+
+ -- jenkins <developer@nymea.io>  Mon, 16 Jan 2023 14:35:44 +0100
+
 nymea-plugins (1.6.1) jammy; urgency=medium
 
   [ Simon Stürz ]
