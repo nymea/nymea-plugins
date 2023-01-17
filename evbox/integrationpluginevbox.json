@@ -14,13 +14,18 @@
                     "displayName": "Elvi",
                     "createMethods": ["discovery"],
                     "setupMethod": "justadd",
-                    "discoveryType": "weak",
                     "interfaces": [ "evcharger", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "bce7c412-c19a-4e60-a11f-fe8308408abf",
                             "name":"serialPort",
                             "displayName": "Serial port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "abc607a7-7dc5-48d4-b3d0-1545ddc63592",
+                            "name":"serialNumber",
+                            "displayName": "Serial number",
                             "type": "QString"
                         }
                     ],
@@ -41,8 +46,7 @@
                             "displayNameAction": "Enable/disable charging",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true,
-                            "cached": false
+                            "writable": true
                         },
                         {
                             "id": "cc9ae86d-fc86-473f-ae90-d9eb20d7a011",
@@ -53,9 +57,8 @@
                             "writable": true,
                             "unit": "Ampere",
                             "minValue": "6",
-                            "maxValue": "22",
-                            "defaultValue": 6,
-                            "cached": false
+                            "maxValue": "32",
+                            "defaultValue": 6
                         },
                         {
                             "id": "8d3c80b7-f1f1-48de-8b7a-f99b9bc688b7",

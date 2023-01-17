@@ -32,6 +32,7 @@
 #include "integrationpluginevbox.h"
 #include "plugininfo.h"
 #include "plugintimer.h"
+#include "evboxport.h"
 
 #include <QSerialPortInfo>
 #include <QSerialPort>
@@ -51,279 +52,135 @@ IntegrationPluginEVBox::~IntegrationPluginEVBox()
 
 void IntegrationPluginEVBox::discoverThings(ThingDiscoveryInfo *info)
 {
-    // Create the list of available serial interfaces
-
-    foreach(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-
-        qCDebug(dcEVBox()) << "Found serial port:" << port.portName();
-        QString description = port.portName() + " " + port.manufacturer() + " " + port.description();
-        ThingDescriptor thingDescriptor(info->thingClassId(), "EVBox Elvi", description);
-        ParamList parameters;
-        foreach (Thing *existingThing, myThings()) {
-            if (existingThing->paramValue(evboxThingSerialPortParamTypeId).toString() == port.portName()) {
-                thingDescriptor.setThingId(existingThing->id());
-                break;
-            }
-        }
-        parameters.append(Param(evboxThingSerialPortParamTypeId, port.portName()));
-        thingDescriptor.setParams(parameters);
-        info->addThingDescriptor(thingDescriptor);
+    if (QSerialPortInfo::availablePorts().isEmpty()) {
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("No serial ports are available on this system. Please connect a RS485 adapter first."));
+        return;
     }
 
-    info->finish(Thing::ThingErrorNoError);
+    int discoveryCount = 0;
+
+    foreach(const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
+        // Reusing existing ports as multiple boxes could be connected to a single adapter
+        EVBoxPort *port = m_ports.value(portInfo.portName());
+        if (!port) {
+            // But if we don't have one yet, create it just for the discovery and delete it when the discovery info ends
+            port = new EVBoxPort(portInfo.portName(), info);
+            if (!port->open()) {
+                qCWarning(dcEVBox()) << "Unable to open serial port" << portInfo.portName() << "for discovery.";
+                delete port;
+                continue;
+            }
+            qCInfo(dcEVBox()) << "Serial port" << portInfo.portName() << "opened for discovery.";
+        } else {
+            qCDebug(dcEVBox()) << "Discovering on already open serial port:" << portInfo.portName();
+        }
+
+        discoveryCount++;
+        port->sendCommand(EVBoxPort::Command68, 10, 1);
+
+        connect(port, &EVBoxPort::responseReceived, info, [=](EVBoxPort::Command command, const QString &serial){
+            if (command != EVBoxPort::Command68) {
+                return;
+            }
+
+            ThingDescriptor thingDescriptor(info->thingClassId(), "EVBox Elvi", serial);
+            ParamList params{
+                {evboxThingSerialPortParamTypeId, portInfo.portName()},
+                {evboxThingSerialNumberParamTypeId, serial}
+            };
+            thingDescriptor.setParams(params);
+            Thing *existingThing = myThings().findByParams(params);
+            if (existingThing) {
+                thingDescriptor.setThingId(existingThing->id());
+            }
+
+            if (!info->property("foundSerials").toStringList().contains(serial)) {
+                qCInfo(dcEVBox()) << "Adding descriptor for port" << portInfo.portName() << "Serial:" << serial << "Existing:" << (existingThing != nullptr ? "yes" : "no");
+                info->addThingDescriptor(thingDescriptor);
+                info->setProperty("foundSerials", QStringList{serial} + info->property("foundSerials").toStringList());
+            } else {
+                qCInfo(dcEVBox()) << "Discarding duplicate descriptor for port" << portInfo.portName() << "Serial:" << serial;
+            }
+        });
+    }
+
+    if (discoveryCount == 0) {
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to open the RS485 port. Please make sure the RS485 adapter is connected properly and not in use by anything else."));
+        return;
+    }
+
+    QTimer::singleShot(3000, info, [info](){
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    QString interface = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
-    QSerialPort *serialPort = new QSerialPort(interface, info->thing());
+    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
+    QString serialNumber = thing->paramValue(evboxThingSerialNumberParamTypeId).toString();
 
-    serialPort->setBaudRate(QSerialPort::Baud38400);
-    serialPort->setDataBits(QSerialPort::Data8);
-    serialPort->setStopBits(QSerialPort::OneStop);
-    serialPort->setParity(QSerialPort::NoParity);
+    // Opening the port, sharing with others if already opened.
+    EVBoxPort *port = m_ports.value(portName);
+    if (!port) {
+        qCInfo(dcEVBox()) << "Port" << portName << "not open yet. Opening.";
+        port = new EVBoxPort(portName, this);
+        if (!port->open()) {
+            qCWarning(dcEVBox()) << "Unable to open port" << portName << "for EVBox" << serialNumber;
+            delete port;
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to open the RS485 port. Please make sure the RS485 adapter is connected properly."));
+            return;
+        }
+        m_ports.insert(portName, port);
+    }
 
-    connect(serialPort, &QSerialPort::readyRead, thing, [=]() {
+
+
+    // Setup routine: Try to set the max charging current to 6A and see if we get a valid answer
+    port->sendCommand(EVBoxPort::Command68, 60, 6, serialNumber);
+    connect(port, &EVBoxPort::closed, info, [info](){
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The EVBox is not responding."));
+    });
+    connect(port, &EVBoxPort::responseReceived, info, [info, serialNumber](EVBoxPort::Command /*command*/, const QString &serial){
+        if (serial == serialNumber) {
+            info->finish(Thing::ThingErrorNoError);
+        }
+    });
+    QTimer::singleShot(3000, info, [info](){
+        info->finish(Thing::ThingErrorTimeout, QT_TR_NOOP("The EVBox is not responding."));
+    });
+
+
+    // And connect the signals to the thing for when the setup went well
+    connect(port, &EVBoxPort::closed, thing, [thing, portName](){
+        qCInfo(dcEVBox()) << "Port" << portName << "closed. Marking thing as offline:" << thing->name();
+        thing->setStateValue(evboxConnectedStateTypeId, false);
+    });
+    connect(port, &EVBoxPort::opened, thing, [portName](){
+        qCInfo(dcEVBox()) << "Port" << portName << "opened.";
+    });
+
+    connect(port, &EVBoxPort::shortResponseReceived, thing, [this, thing, serialNumber](EVBoxPort::Command /*command*/, const QString &serial){
+        if (serial != serialNumber) {
+            return;
+        }
         thing->setStateValue(evboxConnectedStateTypeId, true);
-        QByteArray data = serialPort->readAll();
-//        qCDebug(dcEVBox()) << "Data received from serial port:" << data;
-        m_inputBuffers[thing].append(data);
-        processInputBuffer(thing);
+        finishPendingAction(thing);
+        m_waitingForResponses[thing] = false;
     });
 
-    connect(serialPort, static_cast<void(QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error), thing, [=](){
-        qCWarning(dcEVBox()) << "Serial Port error" << serialPort->error() << serialPort->errorString();
-        if (serialPort->error() != QSerialPort::NoError) {
-            if (serialPort->isOpen()) {
-                serialPort->close();
-            }
-            thing->setStateValue(evboxConnectedStateTypeId, false);
-            QTimer::singleShot(1000, this, [=](){
-                serialPort->open(QSerialPort::ReadWrite);
-            });
+    connect(port, &EVBoxPort::responseReceived, thing, [this, thing, serialNumber](EVBoxPort::Command /*command*/, const QString &serial, quint16 minChargingCurrent, quint16 maxChargingCurrent, quint16 chargingCurrentL1, quint16 chargingCurrentL2, quint16 chargingCurrentL3, quint32 totalEnergyConsumed){
+        if (serial != serialNumber) {
+            return;
         }
-    });
-
-    if (!serialPort->open(QSerialPort::ReadWrite)) {
-        qCWarning(dcEVBox()) << "Unable to open serial port";
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to open the RS485 port. Please make sure the RS485 adapter is connected properly."));
-        return;
-    }
-
-    m_serialPorts.insert(thing, serialPort);
-
-    m_pendingSetups.insert(thing, info);
-    connect(info, &ThingSetupInfo::finished, this, [=](){
-        m_pendingSetups.remove(thing);
-    });
-    QTimer::singleShot(2000, info, [=](){
-        qCDebug(dcEVBox()) << "Timeout during setup";
-        delete m_serialPorts.take(info->thing());
-        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The EVBox is not responding."));
-    });
-
-
-    sendCommand(thing, Command69, 1);
-}
-
-void IntegrationPluginEVBox::thingRemoved(Thing *thing)
-{
-    m_timers.remove(thing);
-    delete m_serialPorts.take(thing);
-}
-
-void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
-{
-    Thing *thing = info->thing();
-
-    if (info->action().actionTypeId() == evboxPowerActionTypeId) {
-        bool power = info->action().paramValue(evboxPowerActionPowerParamTypeId).toBool();
-        sendCommand(info->thing(), Command69, power ? info->thing()->stateValue(evboxMaxChargingCurrentStateTypeId).toUInt() : 0);
-    } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
-        int maxChargingCurrent = info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toInt();
-        sendCommand(info->thing(), Command69, maxChargingCurrent);
-    }
-
-    m_pendingActions[thing].append(info);
-    connect(info, &ThingActionInfo::finished, this, [=](){
-        m_pendingActions[thing].removeAll(info);
-    });
-
-}
-
-bool IntegrationPluginEVBox::sendCommand(Thing *thing, Command command, quint16 maxChargingCurrent)
-{
-    QByteArray commandData;
-
-    commandData += "80"; // Dst addr
-    commandData += "A0"; // Sender address
-    commandData += QString::number(command);
-    commandData += QString("%1").arg(maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += "003C"; // Timeout (60 sec)
-    // If we fail to refresh the wallbox after the timeout, it shall turn off, which is what we'll use as default
-    // when we don't know what its set to (as we can't read it).
-    // Hence we do *not* cache the power and maxChargingCurrent states for this one
-    commandData += QString("%1").arg(0, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(0, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(0, 4, 10, QChar('0'));
-
-    commandData += createChecksum(commandData);
-
-    QByteArray data;
-    QDataStream stream(&data, QIODevice::WriteOnly);
-    stream << static_cast<quint8>(STX);
-    stream.writeRawData(commandData.data(), commandData.length());
-    stream << static_cast<quint8>(ETX);
-
-    qCDebug(dcEVBox()) << "Writing data:" << data << "->" << data.toHex();
-    QSerialPort *serialPort = m_serialPorts.value(thing);
-    qint64 count = serialPort->write(data);
-    if (count == data.length()) {
-        m_waitingForResponses[thing] = true;
-    }
-    return count == data.length();
-}
-
-QByteArray IntegrationPluginEVBox::createChecksum(const QByteArray &data) const
-{
-    QDataStream checksumStream(data);
-    quint8 sum = 0;
-    quint8 xOr = 0;
-    while (!checksumStream.atEnd()) {
-        quint8 byte;
-        checksumStream >> byte;
-        sum += byte;
-        xOr ^= byte;
-    }
-    return QString("%1%2").arg(sum,2,16, QChar('0')).arg(xOr,2,16, QChar('0')).toUpper().toLocal8Bit();
-}
-
-void IntegrationPluginEVBox::processInputBuffer(Thing *thing)
-{
-    QByteArray packet;
-    QDataStream inputStream(m_inputBuffers.value(thing));
-    QDataStream outputStream(&packet, QIODevice::WriteOnly);
-    bool startFound = false, endFound = false;
-
-    while (!inputStream.atEnd()) {
-        quint8 byte;
-        inputStream >> byte;
-        if (!startFound) {
-            if (byte == STX) {
-                startFound = true;
-                continue;
-            } else {
-                qCWarning(dcEVBox()) << "Discarding byte not matching start of frame 0x" + QString::number(byte, 16);
-                continue;
-            }
-        }
-
-        if (byte == ETX) {
-            endFound = true;
-            break;
-        }
-
-        outputStream << byte;
-    }
-
-    if (startFound && endFound) {
-        m_inputBuffers[thing].remove(0, packet.length() + 2);
-    } else {
-//        qCDebug(dcEVBox()) << "Data is incomplete... Waiting for more...";
-        return;
-    }
-
-    if (packet.length() < 2) { // In practice it'll be longer, but let's make sure we won't crash checking the checksum on erraneous data
-        qCWarning(dcEVBox()) << "Packet is too short. Discarding packet...";
-        return;
-    }
-
-    qCDebug(dcEVBox()) << "Packet received:" << packet;
-
-    QByteArray checksum = createChecksum(packet.left(packet.length() - 4));
-    if (checksum != packet.right(4)) {
-        qCWarning(dcEVBox()) << "Checksum mismatch for incoming packet:" << packet << "Given checksum:" << packet.right(4) << "Expected:" << checksum;
-        return;
-    }
-
-    // We received something valid... Assuming the last command we've sent is OK.
-    // There's no way to properly match a response to a command, so...
-    if (m_pendingSetups.contains(thing)) {
-        qCDebug(dcEVBox()) << "Finishing setup";
-
-        // Can't use a pluginTimer because it may collide with data on the wire, so we're
-        // manually re-starting the timer whenever we receive something.
-        QTimer *timer = new QTimer(thing);
-        m_timers.insert(thing, timer);
-        timer->setInterval(1000);
-
-        connect(timer, &QTimer::timeout, thing, [=](){
-            thing->setStateValue(evboxConnectedStateTypeId, !m_waitingForResponses[thing]);
-
-            if (thing->stateValue(evboxPowerStateTypeId).toBool()) {
-                sendCommand(thing, Command69, thing->stateValue(evboxMaxChargingCurrentStateTypeId).toDouble());
-            } else {
-                sendCommand(thing, Command69, 0);
-            }
-        });
-
-        m_pendingSetups.take(thing)->finish(Thing::ThingErrorNoError);
-    }
-    if (!m_pendingActions.value(thing).isEmpty()) {
-        ThingActionInfo *info = m_pendingActions.value(thing).first();
-        if (info->action().actionTypeId() == evboxPowerActionTypeId) {
-            thing->setStateValue(evboxPowerStateTypeId, info->action().paramValue(evboxPowerActionPowerParamTypeId));
-        } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
-            thing->setStateValue(evboxMaxChargingCurrentStateTypeId, info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId));
-        }
-        info->finish(Thing::ThingErrorNoError);
-    }
-
-    processDataPacket(thing, packet);
-}
-
-void IntegrationPluginEVBox::processDataPacket(Thing *thing, const QByteArray &packet)
-{
-
-    // The data is a mess of hex and dec values... So do not wonder about the weird from/to hex mess in here...
-    QDataStream stream(QByteArray::fromHex(packet));
-
-    quint8 from, to, commandId, wallboxCount;
-    quint16 minPollInterval, maxChargingCurrent;
-    stream >> from >> to >> commandId >> minPollInterval >> maxChargingCurrent >> wallboxCount;
-
-    commandId = QString::number(commandId, 16).toInt();
-
-    qCDebug(dcEVBox()) << QString("From: %1, To: %2, CMD: %3, MinPollInterval: %4, maxChargingCurrent: %5, Wallbox data count: %6")
-                          .arg(from).arg(to).arg(commandId).arg(minPollInterval).arg(maxChargingCurrent).arg(wallboxCount);
-
-    if (commandId != Command69) {
-        qCWarning(dcEVBox()) << "Only command 69 is implemented! Adjust response parsing if sending other commands.";
-        return;
-    }
-
-    m_waitingForResponses[thing] = false;
-
-    // Command 69 would give a list of wallboxes (they can be chained apparently) but we only support a single one for now
-//    for (int i = 0; i < wallboxCount; i++) {
-
-    if (wallboxCount > 0) {
-        quint16 minChargingCurrent, chargingCurrentL1, chargingCurrentL2, chargingCurrentL3, cosinePhiL1, cosinePhiL2, cosinePhiL3, totalEnergyConsumed;
-        stream >> minChargingCurrent >> chargingCurrentL1 >> chargingCurrentL2 >> chargingCurrentL3 >> cosinePhiL1 >> cosinePhiL2 >> cosinePhiL3 >> totalEnergyConsumed;
-
-        qCDebug(dcEVBox()) << QString("Min current: %1, actual current L1: %2, L2: %3, L3: %4, Total energy: %5")
-                           .arg(minChargingCurrent).arg(chargingCurrentL1).arg(chargingCurrentL2).arg(chargingCurrentL3).arg(totalEnergyConsumed);
-
-        thing->setStateMinMaxValues(evboxMaxChargingCurrentStateTypeId, minChargingCurrent / 10, maxChargingCurrent / 10);
+        thing->setStateValue(evboxConnectedStateTypeId, true);
+        finishPendingAction(thing);
+        m_waitingForResponses[thing] = false;
 
         double currentPower = (chargingCurrentL1 + chargingCurrentL2 + chargingCurrentL3) * 23;
         thing->setStateValue(evboxCurrentPowerStateTypeId, currentPower);
-
+        thing->setStateMinMaxValues(evboxMaxChargingCurrentStateTypeId, minChargingCurrent / 10, maxChargingCurrent / 10);
         thing->setStateValue(evboxTotalEnergyConsumedStateTypeId, totalEnergyConsumed / 1000.0);
-
         thing->setStateValue(evboxChargingStateTypeId, currentPower > 0);
 
         int phaseCount = 0;
@@ -336,13 +193,92 @@ void IntegrationPluginEVBox::processDataPacket(Thing *thing, const QByteArray &p
         if (chargingCurrentL3 > 0) {
             phaseCount++;
         }
-        // If all phases are on 0, we aren't charging and don't know how may phases are used...
-        // so only updating the count if we actually do know that at least one is charging.
+        // If all phases are on 0, we aren't charging and don't know how many phases are available...
+        // Only updating the count if we actually do know that at least one is charging.
         if (phaseCount > 0) {
             thing->setStateValue(evboxPhaseCountStateTypeId, phaseCount);
         }
+    });
+}
+
+void IntegrationPluginEVBox::postSetupThing(Thing */*thing*/)
+{
+    if (!m_timer) {
+        m_timer = hardwareManager()->pluginTimerManager()->registerTimer(5);
+        connect(m_timer, &PluginTimer::timeout, this, [this](){
+            foreach (Thing *t, myThings()) {
+                QString portName = t->paramValue(evboxThingSerialPortParamTypeId).toString();
+                QString serial = t->paramValue(evboxThingSerialNumberParamTypeId).toString();
+
+                if (m_waitingForResponses.value(t)) {
+                    qCInfo(dcEVBox()) << "Wallbox" << t->name() << "did not respond to last command. Marking offline.";
+                    t->setStateValue(evboxConnectedStateTypeId, false);
+                }
+
+                EVBoxPort *port = m_ports.value(portName);
+                if (port->isOpen()) {
+                    quint16 maxChargingCurrent = 0;
+                    if (t->stateValue(evboxPowerStateTypeId).toBool()) {
+                        maxChargingCurrent = t->stateValue(evboxMaxChargingCurrentStateTypeId).toUInt();
+                    }
+                    port->sendCommand(EVBoxPort::Command68, 60, maxChargingCurrent, serial);
+                    m_waitingForResponses[t] = true;
+                }
+            }
+        });
+    }
+}
+
+void IntegrationPluginEVBox::thingRemoved(Thing *thing)
+{
+    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
+    if (myThings().filterByParam(evboxThingSerialPortParamTypeId, portName).isEmpty()) {
+        qCInfo(dcEVBox()).nospace() << "No more EVBox devices using port " << portName << ". Destroying port.";
+        delete m_ports.take(portName);
     }
 
-    m_timers.value(thing)->start();
+    if (myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer);
+        m_timer = nullptr;
+    }
+}
+
+void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
+{
+    Thing *thing = info->thing();
+
+    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
+    QString serial = thing->paramValue(evboxThingSerialNumberParamTypeId).toString();
+    EVBoxPort *port = m_ports.value(portName);
+
+    qCDebug(dcEVBox()) << "Executing action" << info->action().actionTypeId().toString();
+    if (info->action().actionTypeId() == evboxPowerActionTypeId) {
+        bool power = info->action().paramValue(evboxPowerActionPowerParamTypeId).toBool();
+        quint16 maxChargingCurrent = thing->stateValue(evboxMaxChargingCurrentStateTypeId).toUInt();
+        port->sendCommand(EVBoxPort::Command68, 60, power ? maxChargingCurrent : 0, serial);
+    } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
+        int maxChargingCurrent = info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toInt();
+        port->sendCommand(EVBoxPort::Command68, 60, maxChargingCurrent, serial);
+    }
+
+    m_pendingActions[thing].append(info);
+    connect(info, &ThingActionInfo::finished, this, [=](){
+        m_pendingActions[thing].removeAll(info);
+    });
+
+}
+
+void IntegrationPluginEVBox::finishPendingAction(Thing *thing)
+{
+    if (!m_pendingActions.value(thing).isEmpty()) {
+        ThingActionInfo *info = m_pendingActions.value(thing).first();
+        qCDebug(dcEVBox()) << "Finishing action:" << info->action().actionTypeId().toString();
+        if (info->action().actionTypeId() == evboxPowerActionTypeId) {
+            thing->setStateValue(evboxPowerStateTypeId, info->action().paramValue(evboxPowerActionPowerParamTypeId));
+        } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
+            thing->setStateValue(evboxMaxChargingCurrentStateTypeId, info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId));
+        }
+        info->finish(Thing::ThingErrorNoError);
+    }
 }
 

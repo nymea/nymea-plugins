@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2023, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,45 +28,24 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINEVBOX_H
-#define INTEGRATIONPLUGINEVBOX_H
+#ifndef EVBOXDISCOVERY_H
+#define EVBOXDISCOVERY_H
 
-#include "integrations/integrationplugin.h"
-
+#include <QObject>
 #include "evboxport.h"
 
-#include "extern-plugininfo.h"
-
-#include <plugintimer.h>
-#include <QTimer>
-
-class QSerialPort;
-
-class IntegrationPluginEVBox: public IntegrationPlugin
+class EVBoxDiscovery : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginevbox.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginEVBox();
-    ~IntegrationPluginEVBox();
+    explicit EVBoxDiscovery(EVBoxPort *evboxPort, QObject *parent = nullptr);
 
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
+signals:
+
 
 private:
-    void finishPendingAction(Thing *thing);
+    EVBoxPort *m_port = nullptr;
 
-private:
-    QHash<QString, EVBoxPort*> m_ports;
-    QHash<Thing*, QList<ThingActionInfo*>> m_pendingActions;
-    QHash<Thing*, bool> m_waitingForResponses;
-    PluginTimer *m_timer = nullptr;
 };
 
-#endif // INTEGRATIONPLUGINEVBOX_H
+#endif // EVBOXDISCOVERY_H
