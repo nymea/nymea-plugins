@@ -158,17 +158,14 @@ void IntegrationPluginPowerfox::postSetupThing(Thing */*thing*/)
                     query.addQueryItem("unit", "kWh");
                     // Can be called at max once per 3 secs. Not sure if that's per account or per meter ID yet. Assuming per meter ID for now.
                     QNetworkReply *reply = request(account, "/" + powerMeter->paramValue(powerMeterThingIdParamTypeId).toString() + "/current", query);
-                    connect(reply, &QNetworkReply::finished, powerMeter, [account, powerMeter, reply](){
+                    connect(reply, &QNetworkReply::finished, powerMeter, [this, account, powerMeter, reply](){
                         if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
-                            account->setStateValue(accountConnectedStateTypeId, false);
                             account->setStateValue(accountLoggedInStateTypeId, false);
+                            markAsDisconnected(powerMeter);
                         }
                         if (reply->error() != QNetworkReply::NoError) {
                             qCWarning(dcPowerfox()) << "Failed to poll power meter:" << reply->error() << reply->errorString();
-                            powerMeter->setStateValue(powerMeterConnectedStateTypeId, false);
-                            powerMeter->setStateValue(powerMeterCurrentPowerStateTypeId, 0);
-                            powerMeter->setStateValue(powerMeterCurrentPhaseAStateTypeId, 0);
-                            powerMeter->setStateValue(powerMeterVoltagePhaseAStateTypeId, 0);
+                            markAsDisconnected(powerMeter);
                             return;
                         }
 
@@ -229,4 +226,14 @@ QNetworkReply *IntegrationPluginPowerfox::request(Thing *thing, const QString &p
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     return reply;
 }
+
+void IntegrationPluginPowerfox::markAsDisconnected(Thing *thing)
+{
+    qCDebug(dcPowerfox()) << "Mark thing as disconnected" << thing;
+    thing->setStateValue(powerMeterConnectedStateTypeId, false);
+    thing->setStateValue(powerMeterCurrentPowerStateTypeId, 0);
+    thing->setStateValue(powerMeterCurrentPhaseAStateTypeId, 0);
+    thing->setStateValue(powerMeterVoltagePhaseAStateTypeId, 0);
+}
+
 
