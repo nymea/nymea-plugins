@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2023, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -68,6 +68,9 @@ private:
     void updateMeters(FroniusSolarConnection *connection);
     void updateStorages(FroniusSolarConnection *connection);
 
+    void markInverterAsDisconnected(Thing *thing);
+    void markMeterAsDisconnected(Thing *thing);
+    void markStorageAsDisconnected(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINFRONIUS_H
