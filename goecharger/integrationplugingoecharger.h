@@ -143,6 +143,7 @@ private slots:
     void onMqttClientV2Connected(MqttChannel* channel);
     void onMqttClientV2Disconnected(MqttChannel* channel);
 
+    void markAsDisconnected(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINGOECHARGER_H

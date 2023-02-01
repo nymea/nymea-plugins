@@ -223,11 +223,17 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
             case ApiVersion1:
                 if (m_mqttChannelsV1.contains(thing)) {
                     thing->setStateValue("connected", m_mqttChannelsV1.value(thing)->isConnected());
+                    if (!m_mqttChannelsV1.value(thing)->isConnected()) {
+                        markAsDisconnected(thing);
+                    }
                 }
                 break;
             case ApiVersion2:
                 if (m_mqttChannelsV2.contains(thing)) {
                     thing->setStateValue("connected", m_mqttChannelsV2.value(thing)->isConnected());
+                    if (!m_mqttChannelsV2.value(thing)->isConnected()) {
+                        markAsDisconnected(thing);
+                    }
                 }
                 break;
             }
@@ -1449,7 +1455,7 @@ void IntegrationPluginGoECharger::refreshHttp()
 
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcGoECharger()) << "HTTP status reply error for thing" << thing->name() << reply->errorString() << "Request was:" << request.url().toString();
-                thing->setStateValue("connected", false);
+                markAsDisconnected(thing);
                 return;
             }
 
@@ -1458,7 +1464,7 @@ void IntegrationPluginGoECharger::refreshHttp()
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(dcGoECharger()) << "Failed to parse status data for thing" << thing->name() << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
-                thing->setStateValue("connected", false);
+                markAsDisconnected(thing);
                 return;
             }
 
@@ -1502,7 +1508,7 @@ void IntegrationPluginGoECharger::onMqttClientV1Disconnected(MqttChannel *channe
     }
 
     qCDebug(dcGoECharger()) << thing << "connected";
-    thing->setStateValue("connected", false);
+    markAsDisconnected(thing);
 }
 
 void IntegrationPluginGoECharger::onMqttPublishV1Received(MqttChannel *channel, const QString &topic, const QByteArray &payload)
@@ -1550,5 +1556,22 @@ void IntegrationPluginGoECharger::onMqttClientV2Disconnected(MqttChannel *channe
     }
 
     qCDebug(dcGoECharger()) << thing << "connected";
+    markAsDisconnected(thing);
+}
+
+void IntegrationPluginGoECharger::markAsDisconnected(Thing *thing)
+{
+    qCDebug(dcGoECharger()) << "Mark device as disconnected" << thing;
     thing->setStateValue("connected", false);
+    thing->setStateValue("currentPower", 0);
+    thing->setStateValue("voltagePhaseA", 0);
+    thing->setStateValue("voltagePhaseB", 0);
+    thing->setStateValue("voltagePhaseC", 0);
+    thing->setStateValue("currentPhaseA", 0);
+    thing->setStateValue("currentPhaseB", 0);
+    thing->setStateValue("currentPhaseC", 0);
+    thing->setStateValue("currentPowerPhaseA", 0);
+    thing->setStateValue("currentPowerPhaseB", 0);
+    thing->setStateValue("currentPowerPhaseC", 0);
+    thing->setStateValue("frequency", 0);
 }
