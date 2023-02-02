@@ -78,6 +78,7 @@ private:
     QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
 
     void getData(Thing *thing);
+    void markThingDisconnected(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINSOLARLOG_H

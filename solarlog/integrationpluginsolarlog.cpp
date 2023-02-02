@@ -96,12 +96,12 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            thing->setStateValue(solarlogConnectedStateTypeId, false);
             qCWarning(dcSolarlog()) << "Request error:" << status << reply->errorString();
             if (m_asyncSetup.contains(thing)) {
                 ThingSetupInfo *info = m_asyncSetup.take(thing);
                 info->finish(Thing::ThingErrorHardwareNotAvailable, tr("No Solar-Log device at given IP-Address"));
             }
+            markThingDisconnected(thing);
             return;
         }
 
@@ -142,4 +142,16 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         thing->setStateValue(solarlogConsYieldTotalStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldTotal)));
         thing->setStateValue(solarlogTotalPowerStateTypeId, (map.value(QString::number(JsonObjectNumbers::TotalPower)).toDouble()/1000.00));
     });
+}
+
+void IntegrationPluginSolarLog::markThingDisconnected(Thing *thing)
+{
+    qCDebug(dcSolarlog()) << "Resetting states of" << thing;
+    thing->setStateValue(solarlogConnectedStateTypeId, false);
+    thing->setStateValue(solarlogCurrentPowerStateTypeId, 0);
+    thing->setStateValue(solarlogPdcStateTypeId, 0);
+    thing->setStateValue(solarlogUacStateTypeId, 0);
+    thing->setStateValue(solarlogDcVoltageStateTypeId, 0);
+    thing->setStateValue(solarlogPowerUsageStateTypeId, 0);
+    thing->setStateValue(solarlogTotalPowerStateTypeId, 0);
 }
