@@ -1,0 +1,155 @@
+{
+    "name": "easee",
+    "displayName": "Easee",
+    "id": "471aa296-78de-4917-84ed-c9a4216f5ae9",
+    "vendors": [
+        {
+            "name": "easee",
+            "displayName": "Easee",
+            "id": "e43f66da-4e8c-4e2c-b821-c1eb8ac6bbf8",
+            "thingClasses": [
+                {
+                    "id": "2c93c25e-d12a-4709-b537-b5619ab1145a",
+                    "name": "account",
+                    "displayName": "Easee account",
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": [ "account" ],
+                    "providedInterfaces": ["evcharger"],
+                    "stateTypes": [
+                        {
+                            "id": "568d5896-813e-4f66-b430-ed8c8b1ad8c4",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "69d01e58-c1a3-4b9c-a4b3-f1de7c67febd",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "9fe4d708-70d2-47bd-8433-54c5f3e8a110",
+                    "name": "charger",
+                    "displayName": "Easee charger",
+                    "createMethods": ["auto"],
+                    "interfaces": ["evcharger", "smartmeterconsumer", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "b9f0573e-bf41-45f0-a53e-b2457d51ecb5",
+                            "name": "id",
+                            "displayName": "Charger ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1c818574-5aa8-43f5-8fa5-9a620ba86ccc",
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "minValue": 6,
+                            "maxValue": 16,
+                            "defaultValue": 6,
+                            "writable": true
+                        },
+                        {
+                            "id": "b5070800-3556-4156-aed5-ecbad7fa455d",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "6b0c22e9-cdb4-49a0-9c18-97b776b63c59",
+                            "name": "currentPower",
+                            "displayName": "Current charting power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "0ac13ef2-e646-491f-9336-f39d5110f8bb",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d95137ad-4f32-4ffd-851b-593fc40f5c0c",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b55297a8-f1bd-44eb-8309-691d674ef4a0",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2f0c3491-d524-4ee5-8214-8e3d2f750b66",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3a68d6c5-d48f-4cd6-b9ca-fc21cbcc8808",
+                            "name": "phaseCount",
+                            "displayName": "Used phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "1baac39e-0e0e-4638-bd8d-09f04fd7bd62",
+                            "name": "desiredPhaseCount",
+                            "displayName": "Desired phase count",
+                            "displayNameAction": "Set desired phase count",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "possibleValues": [1,3],
+                            "writable": true,
+                            "defaultValue": 3
+                        },
+                        {
+                            "id": "2a9b4c84-7b1d-4b32-b26f-84eff54fb04f",
+                            "name": "connected",
+                            "displayName": "Online",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7effe12e-2884-4597-ad0c-6b4aa9cdacfd",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
