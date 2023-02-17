@@ -11,6 +11,7 @@ The currently supported devices are:
 * Shelly 2.5
 * Shelly Plus 2PM
 * Shelly Plug / PlugS
+* Shelly Plus Plug S
 * Shelly RGBW2
 * Shelly Dimmer / Dimmer 2
 * Shelly Button 1

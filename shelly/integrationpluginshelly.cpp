@@ -66,6 +66,7 @@ static QHash<ThingClassId, ParamTypeId> idParamTypeMap = {
     {shelly1pmThingClassId, shelly1pmThingIdParamTypeId},
     {shelly1lThingClassId, shelly1lThingIdParamTypeId},
     {shellyPlugThingClassId, shellyPlugThingIdParamTypeId},
+    {shellyPlusPlugThingClassId, shellyPlusPlugThingIdParamTypeId},
     {shellyRgbw2ThingClassId, shellyRgbw2ThingIdParamTypeId},
     {shellyDimmerThingClassId, shellyDimmerThingIdParamTypeId},
     {shelly2ThingClassId, shelly2ThingIdParamTypeId},
@@ -87,6 +88,7 @@ static QHash<ThingClassId, ParamTypeId> usernameParamTypeMap = {
     {shelly1pmThingClassId, shelly1pmThingUsernameParamTypeId},
     {shelly1lThingClassId, shelly1lThingUsernameParamTypeId},
     {shellyPlugThingClassId, shellyPlugThingUsernameParamTypeId},
+    {shellyPlusPlugThingClassId, shellyPlusPlugThingUsernameParamTypeId},
     {shellyRgbw2ThingClassId, shellyRgbw2ThingUsernameParamTypeId},
     {shellyDimmerThingClassId, shellyDimmerThingUsernameParamTypeId},
     {shelly2ThingClassId, shelly2ThingUsernameParamTypeId},
@@ -108,6 +110,7 @@ static QHash<ThingClassId, ParamTypeId> passwordParamTypeMap = {
     {shelly1pmThingClassId, shelly1pmThingPasswordParamTypeId},
     {shelly1lThingClassId, shelly1lThingPasswordParamTypeId},
     {shellyPlugThingClassId, shellyPlugThingPasswordParamTypeId},
+    {shellyPlusPlugThingClassId, shellyPlusPlugThingPasswordParamTypeId},
     {shellyRgbw2ThingClassId, shellyRgbw2ThingPasswordParamTypeId},
     {shellyDimmerThingClassId, shellyDimmerThingPasswordParamTypeId},
     {shelly2ThingClassId, shelly2ThingPasswordParamTypeId},
@@ -146,6 +149,7 @@ static QHash<ActionTypeId, ThingClassId> rebootActionTypeMap = {
     {shelly1pmRebootActionTypeId, shelly1pmThingClassId},
     {shelly1lRebootActionTypeId, shelly1lThingClassId},
     {shellyPlugRebootActionTypeId, shellyPlugThingClassId},
+    {shellyPlusPlugRebootActionTypeId, shellyPlusPlugThingClassId},
     {shellyRgbw2RebootActionTypeId, shellyRgbw2ThingClassId},
     {shellyDimmerRebootActionTypeId, shellyDimmerThingClassId},
     {shelly2RebootActionTypeId, shelly2ThingClassId},
@@ -159,6 +163,7 @@ static QHash<ActionTypeId, ThingClassId> powerActionTypesMap = {
     {shelly1pmPowerActionTypeId, shelly1pmThingClassId},
     {shelly1lPowerActionTypeId, shelly1lThingClassId},
     {shellyPlugPowerActionTypeId, shellyPlugThingClassId},
+    {shellyPlusPlugPowerActionTypeId, shellyPlusPlugThingClassId},
     {shellyEmPowerActionTypeId, shellyEmThingClassId},
     {shellyEm3PowerActionTypeId, shellyEm3ThingClassId},
     {shelly2Channel1ActionTypeId, shelly2ThingClassId},
@@ -172,6 +177,7 @@ static QHash<ActionTypeId, ThingClassId> powerActionParamTypesMap = {
     {shelly1pmPowerActionTypeId, shelly1pmPowerActionPowerParamTypeId},
     {shelly1lPowerActionTypeId, shelly1lPowerActionPowerParamTypeId},
     {shellyPlugPowerActionTypeId, shellyPlugPowerActionPowerParamTypeId},
+    {shellyPlusPlugPowerActionTypeId, shellyPlusPlugPowerActionPowerParamTypeId},
     {shellyEmPowerActionTypeId, shellyEmPowerActionPowerParamTypeId},
     {shellyEm3PowerActionTypeId, shellyEm3PowerActionPowerParamTypeId},
     {shelly2Channel1ActionTypeId, shelly2Channel1ActionChannel1ParamTypeId},
@@ -235,6 +241,7 @@ static QHash<ActionTypeId, ThingClassId> updateActionTypesMap = {
     {shelly2PerformUpdateActionTypeId, shelly2ThingClassId},
     {shelly25PerformUpdateActionTypeId, shelly25ThingClassId},
     {shellyPlugPerformUpdateActionTypeId, shellyPlugThingClassId},
+    {shellyPlusPlugPerformUpdateActionTypeId, shellyPlusPlugThingClassId},
     {shellyRgbw2PerformUpdateActionTypeId, shellyRgbw2ThingClassId},
     {shellyDimmerPerformUpdateActionTypeId, shellyDimmerThingClassId},
     {shellyButton1PerformUpdateActionTypeId, shellyButton1ThingClassId},
@@ -260,6 +267,12 @@ static QHash<ThingClassId, ParamTypeId> longpushMaxDurationSettingIds = {
 static QHash<ThingClassId, ParamTypeId> multipushTimeBetweenPushesSettingIds = {
     {shellyButton1ThingClassId, shellyButton1SettingsMultipushTimeBetweenPushesParamTypeId},
     {shellyI3ThingClassId, shellyI3SettingsMultipushTimeBetweenPushesParamTypeId}
+};
+static QHash<ThingClassId, ParamTypeId> defaultStateSettingIds = {
+    {shellyPlusPlugThingClassId, shellyPlusPlugSettingsDefaultStateParamTypeId}
+};
+static QHash<ThingClassId, ParamTypeId> ledModeSettingIds = {
+    {shellyPlusPlugThingClassId, shellyPlusPlugSettingsLedModeParamTypeId}
 };
 
 IntegrationPluginShelly::IntegrationPluginShelly()
@@ -292,6 +305,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("^shelly1l-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlugThingClassId) {
             namePattern = QRegExp("^shellyplug(-s)?-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyPlusPlugThingClassId) {
+            namePattern = QRegExp("^(ShellyPlusPlugS)-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
@@ -1690,6 +1705,45 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     channel2Child.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 2));
                     emit autoThingsAppeared({channel2Child});
                 }
+
+                // Set default state & led mode of the Plus Plug (S)
+
+                QString defaultState = "off";
+                QString ledMode = "switch";
+                if (info->thing()->thingClassId() == shellyPlusPlugThingClassId) {
+                    defaultState = info->thing()->setting(defaultStateSettingIds.value(info->thing()->thingClassId())).toString();
+                    QVariantMap config;
+                    config.insert("initial_state", defaultState);
+                    QVariantMap params;
+                    params.insert("id", 0);
+                    params.insert("config", config);
+
+                    ShellyRpcReply *reply2 = client->sendRequest("Switch.SetConfig", params);
+                    connect(reply2, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                        if (status != ShellyRpcReply::StatusSuccess) {
+                            qCWarning(dcShelly) << "Error during shelly setup";
+                            info->finish(Thing::ThingErrorHardwareFailure);
+                            return;
+                        }
+                    });
+
+                    ledMode = info->thing()->setting(ledModeSettingIds.value(info->thing()->thingClassId())).toString();
+                    QVariantMap leds;
+                    leds.insert("mode", ledMode);
+                    QVariantMap config2;
+                    config2.insert("leds", leds);
+                    QVariantMap params2;
+                    params2.insert("config", config2);
+
+                    ShellyRpcReply *reply3 = client->sendRequest("PLUGS_UI.SetConfig", params2);
+                    connect(reply3, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                        if (status != ShellyRpcReply::StatusSuccess) {
+                            qCWarning(dcShelly) << "Error during shelly setup";
+                            info->finish(Thing::ThingErrorHardwareFailure);
+                            return;
+                        }
+                    });
+                }
             }
         });
     });
@@ -1788,6 +1842,47 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             }
         }
     });
+
+    // Handle thing settings of devices
+    if (info->thing()->thingClassId() == shellyPlusPlugThingClassId) {
+        connect(info->thing(), &Thing::settingChanged, this, [this, thing, client, shellyId](const ParamTypeId &settingTypeId, const QVariant &value) {
+            if (settingTypeId == shellyPlusPlugSettingsDefaultStateParamTypeId) { // this works
+                QString defaultState = value.toString();
+                QVariantMap config;
+                config.insert("initial_state", defaultState);
+                QVariantMap params;
+                params.insert("id", 0);
+                params.insert("config", config);
+
+                ShellyRpcReply *reply3 = client->sendRequest("Switch.SetConfig", params);
+                connect(reply3, &ShellyRpcReply::finished, thing, [thing](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                    if (status != ShellyRpcReply::StatusSuccess) {
+                        qCWarning(dcShelly) << "Error setting new value";
+                        return;
+                    }
+                });
+            };
+            if (settingTypeId == shellyPlusPlugSettingsLedModeParamTypeId) { // this gives a segmentation fault
+                QString ledMode = value.toString();
+                QVariantMap leds;
+                leds.insert("mode", ledMode);
+                QVariantMap config;
+                config.insert("leds", leds);
+                QVariantMap params;
+                params.insert("config", config);
+
+                ShellyRpcReply *reply3 = client->sendRequest("PLUGS_UI.SetConfig", params);
+                connect(reply3, &ShellyRpcReply::finished, thing, [thing](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                    if (status != ShellyRpcReply::StatusSuccess) {
+                        qCWarning(dcShelly) << "Error setting LED mode";
+                        return;
+                    }
+                });
+            }
+
+        });
+    }
+
 }
 
 void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
