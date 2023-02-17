@@ -28,7 +28,6 @@ ShellyJsonRpcClient::ShellyJsonRpcClient(QObject *parent)
 {
     m_socket = new QWebSocket("nymea", QWebSocketProtocol::VersionLatest, this);
     connect(m_socket, &QWebSocket::stateChanged, this, &ShellyJsonRpcClient::stateChanged);
-
     connect(m_socket, &QWebSocket::textMessageReceived, this, &ShellyJsonRpcClient::onTextMessageReceived);
 }
 
