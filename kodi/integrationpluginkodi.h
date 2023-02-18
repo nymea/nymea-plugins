@@ -53,6 +53,7 @@ public:
 
     void init() override;
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void executeAction(ThingActionInfo *info) override;
@@ -63,9 +64,17 @@ public:
     void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
-    PluginTimer *m_pluginTimer;
-    QHash<Kodi*, Thing*> m_kodis;
-    QHash<Kodi*, ThingSetupInfo*> m_asyncSetups;
+    struct KodiHostInfo {
+        QHostAddress address;
+        uint rpcPort = 9090;
+        uint httpPort = 8080;
+    };
+
+    KodiHostInfo resolve(Thing *thing);
+
+private:
+    PluginTimer *m_pluginTimer = nullptr;
+    QHash<Thing*, Kodi*> m_kodis;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
     ZeroConfServiceBrowser *m_httpServiceBrowser = nullptr;
 
@@ -74,7 +83,6 @@ private:
     QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
 private slots:
-    void onPluginTimer();
     void onConnectionChanged(bool connected);
     void onStateChanged();
     void onActionExecuted(int actionId, bool success);
