@@ -24,6 +24,7 @@ PLUGIN_DIRS = \
     espuino             \
     evbox               \
     fastcom             \
+    fems		        \
     flowercare          \
     fronius             \
     garadget            \
