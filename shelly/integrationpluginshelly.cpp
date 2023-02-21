@@ -1152,14 +1152,24 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
                              thing->stateValue(shellyEm3CurrentPowerPhaseAStateTypeId).toDouble() +
                              thing->stateValue(shellyEm3CurrentPowerPhaseBStateTypeId).toDouble() +
                              thing->stateValue(shellyEm3CurrentPowerPhaseCStateTypeId).toDouble());
-        thing->setStateValue(shellyEm3TotalEnergyConsumedStateTypeId,
-                             thing->stateValue(shellyEm3EnergyConsumedPhaseAStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3EnergyConsumedPhaseBStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3EnergyConsumedPhaseCStateTypeId).toDouble());
-        thing->setStateValue(shellyEm3TotalEnergyProducedStateTypeId,
-                             thing->stateValue(shellyEm3EnergyProducedPhaseAStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3EnergyProducedPhaseBStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3EnergyProducedPhaseCStateTypeId).toDouble());
+        double totalConsumption = thing->stateValue(shellyEm3EnergyConsumedPhaseAStateTypeId).toDouble() +
+                thing->stateValue(shellyEm3EnergyConsumedPhaseBStateTypeId).toDouble() +
+                thing->stateValue(shellyEm3EnergyConsumedPhaseCStateTypeId).toDouble();
+        if (totalConsumption >= 0) {
+            thing->setStateValue(shellyEm3TotalEnergyConsumedStateTypeId, totalConsumption);
+        } else {
+            // There seems to be a bug in the Shelly 3EM that occationally gives -0.001 for the totals.
+            qCWarning(dcShelly()) << "Detected negative value on shelly total consumption counter. Ignoring value." << qUtf8Printable(jsonDoc.toJson());
+        }
+        double totalProduction = thing->stateValue(shellyEm3EnergyProducedPhaseAStateTypeId).toDouble() +
+                thing->stateValue(shellyEm3EnergyProducedPhaseBStateTypeId).toDouble() +
+                thing->stateValue(shellyEm3EnergyProducedPhaseCStateTypeId).toDouble();
+        if (totalProduction >= 0) {
+            thing->setStateValue(shellyEm3TotalEnergyProducedStateTypeId, totalProduction);
+        } else {
+            // There seems to be a bug in the Shelly 3EM that occationally gives -0.001 for the totals.
+            qCWarning(dcShelly()) << "Detected negative value on shelly total production counter. Ignoring value." << qUtf8Printable(jsonDoc.toJson());
+        }
     }
     if (thing->thingClassId() == shellyEmThingClassId) {
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(shellyEmChannelThingClassId)) {
