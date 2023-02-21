@@ -1,0 +1,101 @@
+{
+    "name": "kostalpico",
+    "displayName": "Kostal Pico MP Plus",
+    "id": "9f3b66c7-3ca1-4f2a-9659-348627ee1ae3",
+    "vendors": [
+        {
+            "name": "kostalpico",
+            "displayName": "Kostal Pico MP Plus",
+            "id": "43da1800-ebf8-45bd-9b58-66e3475d41d7",
+            "thingClasses": [
+            {
+                "name": "connection",
+                "displayName": "Kostal System",
+                "id": "74c35c37-56fb-4fa1-8404-5ffa7f10612c",
+                "setupMethod": "JustAdd",
+                "createMethods": ["Discovery"],
+                "interfaces": ["connectable"],
+                "paramTypes": [
+                {
+                    "id": "990e01f6-c887-451a-8a36-88fb8e91819e",
+                    "name":"macAddress",
+                    "displayName": "MAC address",
+                    "type": "QString",
+                    "inputType": "MacAddress",
+                    "defaultValue": ""
+                                        }
+                ],
+                "stateTypes": [
+                {
+                    "id": "0b828d1d-ca58-4fef-a437-e5ee7fd1ddea",
+                    "name": "connected",
+                    "displayName": "Reachable",
+                    "displayNameEvent": "Reachable changed",
+                    "type": "bool",
+                    "defaultValue": false,
+                    "cached": false
+                }
+                ],
+                "actionTypes": [
+
+                ],
+                "eventTypes": [
+
+                ]
+            },
+
+
+                {
+                    "name": "kostalpico",
+                    "displayName": "Kostal Pico MP Plus",
+                    "id": "67dbb390-5267-40af-bde9-80fbca07e82a",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["Discovery"],
+                    "interfaces": ["smartmeterproducer", "solarinverter", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "977ce7ea-9207-4d90-acb4-a0dfcb467c5f",
+                            "name": "id",
+                            "displayName": "Device ID",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5a60a17f-cd0e-4677-b530-f83eb1dc1642",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "b2941f3a-7225-40f9-bda7-68203662e305",
+                            "name": "currentPower",
+                            "displayName": "Active power",
+                            "displayNameEvent": "Active power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": true
+                        },
+                        {
+                            "id": "95995c1d-ac00-41d7-83f0-b897670a1fd0",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total power yields",
+                            "displayNameEvent": "Total power yields changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        }
+                    ],
+                    "actionTypes": []
+
+                }
+            ]
+        }
+    ]
+}
