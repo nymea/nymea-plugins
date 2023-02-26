@@ -1658,6 +1658,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             m_rpcClients.insert(info->thing(), client);
 
             if (info->thing()->thingClassId() == shelly1pmThingClassId) {
+
                 info->finish(Thing::ThingErrorNoError);
 
                 if (myThings().filterByParentId(info->thing()->id()).count() == 0) {
@@ -1665,45 +1666,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                     emit autoThingsAppeared({switchChild});
                 }
-
-                // Set default state & led mode of the Plus Plug (S)
-
-                QString defaultState = "off";
-                QString ledMode = "switch";
-                if (info->thing()->thingClassId() == shellyPlusPlugThingClassId) {
-                    defaultState = info->thing()->setting(defaultStateSettingIds.value(info->thing()->thingClassId())).toString();
-                    QVariantMap config;
-                    config.insert("initial_state", defaultState);
-                    QVariantMap params;
-                    params.insert("id", 0);
-                    params.insert("config", config);
-
-                    ShellyRpcReply *reply2 = client->sendRequest("Switch.SetConfig", params);
-                    connect(reply2, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
-                        if (status != ShellyRpcReply::StatusSuccess) {
-                            qCWarning(dcShelly) << "Error during shelly setup";
-                            info->finish(Thing::ThingErrorHardwareFailure);
-                            return;
-                        }
-                    });
-
-                    ledMode = info->thing()->setting(ledModeSettingIds.value(info->thing()->thingClassId())).toString();
-                    QVariantMap leds;
-                    leds.insert("mode", ledMode);
-                    QVariantMap config2;
-                    config2.insert("leds", leds);
-                    QVariantMap params2;
-                    params2.insert("config", config2);
-
-                    ShellyRpcReply *reply3 = client->sendRequest("PLUGS_UI.SetConfig", params2);
-                    connect(reply3, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
-                        if (status != ShellyRpcReply::StatusSuccess) {
-                            qCWarning(dcShelly) << "Error during shelly setup";
-                            info->finish(Thing::ThingErrorHardwareFailure);
-                            return;
-                        }
-                    });
-                }
+                return;
             }
 
             if (info->thing()->thingClassId() == shelly25ThingClassId) {
@@ -1747,6 +1710,48 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     channel2Child.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 2));
                     emit autoThingsAppeared({channel2Child});
                 }
+                return;
+            }
+
+            if (info->thing()->thingClassId() == shellyPlusPlugThingClassId) {
+                // Set default state & led mode of the Plus Plug (S)
+                QString defaultState = "off";
+                QString ledMode = "switch";
+                defaultState = info->thing()->setting(defaultStateSettingIds.value(info->thing()->thingClassId())).toString();
+                QVariantMap config;
+                config.insert("initial_state", defaultState);
+                QVariantMap params;
+                params.insert("id", 0);
+                params.insert("config", config);
+
+                ShellyRpcReply *reply2 = client->sendRequest("Switch.SetConfig", params);
+                connect(reply2, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                    if (status != ShellyRpcReply::StatusSuccess) {
+                        qCWarning(dcShelly) << "Error during shelly setup";
+                        info->finish(Thing::ThingErrorHardwareFailure);
+                        return;
+                    }
+                    info->finish(Thing::ThingErrorNoError);
+                });
+
+                ledMode = info->thing()->setting(ledModeSettingIds.value(info->thing()->thingClassId())).toString();
+                QVariantMap leds;
+                leds.insert("mode", ledMode);
+                QVariantMap config2;
+                config2.insert("leds", leds);
+                QVariantMap params2;
+                params2.insert("config", config2);
+
+                ShellyRpcReply *reply3 = client->sendRequest("PLUGS_UI.SetConfig", params2);
+                connect(reply3, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                    if (status != ShellyRpcReply::StatusSuccess) {
+                        qCWarning(dcShelly) << "Error during shelly setup";
+                        info->finish(Thing::ThingErrorHardwareFailure);
+                        return;
+                    }
+                });
+                return;
+
             }
         });
     });
