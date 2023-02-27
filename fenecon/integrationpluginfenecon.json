@@ -30,14 +30,6 @@
                         "displayName": "Port",
                         "type": "QString",
                         "defaultValue": "80"
-                    },
-                    {
-
-                       "id": "ede7a93e-36a1-4873-8ff8-d71e621baa6f",
-                       "name": "edge",
-                       "displayName": "Connect to OpenEMS Edge",
-                       "type": "bool",
-                       "defaultValue": "false"
                     }
                     ],
                     "stateTypes": [

@@ -1,23 +1,20 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2022 Consolinno Energy GmbH                              *
- * <felix.stoecker@consolinno.de>                                          *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation;                  *
- *  version 3 of the License.                                              *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * Copyright 2022 - 2023, Consolinno Energy GmbH
+ * Contact: info@consolinno.de
+ *
+ * GNU Lesser General Public License Usage
+ * Alternatively, this project may be redistributed and/or modified under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; version 3. This project is distributed in the hope that
+ * it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this project. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginfenecon.h"
 #include "network/networkaccessmanager.h"
@@ -98,7 +95,6 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
     qCDebug(dcFenecon()) << "Password: " << password;
     FemsConnection *connection = new FemsConnection(
         hardwareManager()->networkManager(), address, thing, user, password,
-        thing->paramValue(connectionThingEdgeParamTypeId).toBool(),
         thing->paramValue(connectionThingPortParamTypeId).toString());
     qCDebug(dcFenecon()) << "Creating isAvailableDevice By Checking _sum/State";
     FemsNetworkReply *reply = connection->isAvailable();

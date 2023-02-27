@@ -14,7 +14,6 @@ class FemsConnection : public QObject {
   Q_OBJECT
 
 private:
-  bool m_use_edge;
   QString m_user;
   QString m_password;
   QString m_port;
@@ -36,7 +35,7 @@ public:
   explicit FemsConnection(NetworkAccessManager *networkManager,
                           const QHostAddress &address,
                           QObject *parent = nullptr, QString user = "",
-                          QString pwd = "", bool useEdge = false,
+                          QString pwd = "",
                           QString port = "80");
 
   QHostAddress address() const;
