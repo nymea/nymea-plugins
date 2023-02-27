@@ -8,11 +8,11 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
 SOURCES += \
     femsconnection.cpp \
     femsnetworkreply.cpp \
-    integrationpluginfems.cpp
+    integrationpluginfenecon.cpp
 
 HEADERS += \
     constFemsPaths.h \
     femsconnection.h \
     femsnetworkreply.h \
-    integrationpluginfems.h
+    integrationpluginfenecon.h
 

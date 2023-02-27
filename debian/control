@@ -236,7 +236,13 @@ Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for fast.com based internet speed test
  This package contains the nymea integration plugin for performing ineternet speed
  tests using fast.com
-
+ 
+Package: nymea-plugin-fenecon
+Architecture: any
+Depends: ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for fenecon FEMS and general OpenEMS-Edge.
+ATM: only read values from _sum, ess0 and meter, easy to expand.
 
 Package: nymea-plugin-flowercare
 Architecture: any

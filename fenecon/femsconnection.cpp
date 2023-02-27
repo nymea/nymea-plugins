@@ -105,7 +105,7 @@ void FemsConnection::sendNextRequest() {
 
   connect(m_currentReply, &FemsNetworkReply::finished, this, [=]() {
     if (m_currentReply->networkReply()->error() != QNetworkReply::NoError) {
-      // qCWarning(dcFems()) << "Connection: Request finished with error:" <<
+      // qCWarning(dcFenecon()) << "Connection: Request finished with error:" <<
       // m_currentReply->networkReply()->error() << "for url" <<
       // m_currentReply->request().url().toString();
     }

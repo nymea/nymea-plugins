@@ -1,4 +1,5 @@
-# fems
+# Fenecon
+## FEMS
 --------------------------------
 
 Nymea plugin to read some data from a FEMS. This can be extended in the future easily by adding different "Natures" of OpenEMS etc.
@@ -78,7 +79,7 @@ Consolinno Energy Gmbh
 
 "Device": Not really a device, its a connection to a FEMS / OpenEMS System. You can read ANY data that the EMS holds. However I did implement only: The Battery, thinking its alway ess0 (documented here: [FEMS_App_REST_JSON_Benutzerhandbuch](https://docs.fenecon.de/de/_/latest/fems/apis.html#_fems_app_restjson_lese_und_schreibzugriff)) as well as sum. The device tries to find meter consumption/inverter by checking meter0,meter1 and meter2)
 
-Additional Components are easy to implement, and the plugin is easy to expand. 
+Additional Components are easy to implement, and the plugin is easy to expand.
 
 \
 Leaflet: Probably only 1U0022.

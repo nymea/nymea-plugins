@@ -1,11 +1,11 @@
 {
-    "name": "fems",
-    "displayName": "Fems",
+    "name": "fenecon",
+    "displayName": "Fenecon",
     "id": "19e10c9b-2dea-4aaf-bbfc-3c28b6450749",
     "vendors": [
         {
-            "name": "fems",
-            "displayName": "Fems",
+            "name": "fenecon",
+            "displayName": "Fenecon",
             "id": "c241f100-35fc-498f-a4a0-61b7ee274470",
             "thingClasses": [
                 {

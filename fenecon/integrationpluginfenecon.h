@@ -18,8 +18,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINFEMS_H
-#define INTEGRATIONPLUGINFEMS_H
+#ifndef INTEGRATIONPLUGINFENECON_H
+#define INTEGRATIONPLUGINFENECON_H
 
 #include "femsconnection.h"
 #include "constFemsPaths.h"
@@ -31,17 +31,17 @@
 
 class PluginTimer;
 
-class IntegrationPluginFems : public IntegrationPlugin {
+class IntegrationPluginFenecon : public IntegrationPlugin {
   Q_OBJECT
 
   Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE
-                        "integrationpluginfems.json")
+                        "integrationpluginfenecon.json")
   Q_INTERFACES(IntegrationPlugin)
 
 public:
 
 
-  explicit IntegrationPluginFems(QObject *parent = nullptr);
+  explicit IntegrationPluginFenecon(QObject *parent = nullptr);
 
   void init() override;
   void startPairing(ThingPairingInfo *info) override;
@@ -92,10 +92,9 @@ private:
 
   QString meter;
 
-  int connectionSwitch = 0;
   bool batteryCreated = false;
   bool meterCreated = false;
   bool statusCreated = false;
 };
 
-#endif // INTEGRATIONPLUGINFEMS_H
+#endif // INTEGRATIONPLUGINFENECON_H
