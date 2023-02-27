@@ -1,0 +1,136 @@
+{
+    "name": "easee",
+    "displayName": "Easee",
+    "id": "da7e8f41-ce86-408c-932e-5ce4cc00df8c",
+    "vendors": [
+        {
+            "name": "easee",
+            "displayName": "Easee",
+            "id": "8f676c8a-22a4-430c-90b3-7250fc2e5cd3",
+            "thingClasses": [
+                {
+                    "name": "wallbox",
+                    "displayName": "Easee Home Wallbox",
+                    "id": "651fce83-682f-4957-a9f2-778e07ed59ae",
+                    "setupMethod": "userandpassword",
+                    "createMethods": ["User"],
+                    "interfaces": [ "evcharger", "smartmeterconsumer","connectable"],
+                    "paramTypes": [
+                    {
+
+                    "id": "2ca038e4-8b09-42c4-a0c6-555fa65d0d45",
+                    "name": "chargerId",
+                    "displayName": "Charger ID",
+                    "type": "QString",
+                    "inputType": "TextLine",
+                    "defaultValue":""
+                    }
+
+                    ],
+                    "stateTypes": [
+                    {
+                        "id": "7fecdb0e-3fa5-4d9a-acc6-249eb7b01b30",
+                        "name": "maxChargingCurrent",
+                        "displayName": "Maximal charging current",
+                        "displayNameEvent": "Maximal charging current changed",
+                        "displayNameAction": "Set maximal charging current",
+                        "type": "uint",
+                        "unit": "Ampere",
+                        "defaultValue": 6,
+                        "minValue": 6,
+                        "maxValue": 32,
+                        "writable": true,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "1b72caef-8f95-4f90-8bb0-ef77d00892c8",
+                        "name": "pluggedIn",
+                        "displayName": "Car plugged in",
+                        "displayNameEvent": "Car plugged in changed",
+                        "type": "bool",
+                        "defaultValue": false
+                    },
+                    {
+                        "id": "2009b3e6-66fb-4563-9dad-3c9c6dbdb0f3",
+                        "name": "charging",
+                        "displayName": "Charging",
+                        "displayNameEvent": "Charging changed",
+                        "type": "bool",
+                        "defaultValue": false
+                    },
+                    {
+                        "id": "e6f6bffa-14f2-4485-b0a0-de73d5aa5c1a",
+                        "name": "phaseCount",
+                        "displayName": "Number of connected phases",
+                        "displayNameEvent": "Number of connected phases changed",
+                        "type": "uint",
+                        "minValue": 1,
+                        "maxValue": 3,
+                        "defaultValue": 1
+                    },
+                    {
+                        "id": "e812dc3f-46cf-4c9a-b54e-8d629ef5a553",
+                        "name": "sessionEnergy",
+                        "displayName": "Session energy",
+                        "displayNameEvent": "Session energy changed",
+                        "type": "double",
+                        "unit": "KiloWattHour",
+                        "defaultValue": 0,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "e348f99c-1e65-4d47-ac1c-8327be970dc3",
+                        "name": "connected",
+                        "displayName": "Connected",
+                        "displayNameEvent": "Connected changed",
+                        "type": "bool",
+                        "defaultValue": false,
+                        "cached": false
+                    },
+                    {
+                         "id": "0316a57e-0d73-4fe6-9873-0e0f73fbff70",
+                         "name": "totalEnergyConsumed",
+                         "displayName": "Total energy consumed",
+                         "displayNameEvent": "Total energy consumption changed",
+                         "type": "double",
+                         "unit": "KiloWattHour",
+                         "defaultValue": 0,
+                         "suggestLogging": true
+                     },
+                     {
+                         "id": "50099a93-ee7b-4c86-b739-33f611cba7a0",
+                         "name": "currentPower",
+                         "displayName": "Power consumption",
+                         "displayNameEvent": "Power consumtion changed",
+                         "type": "double",
+                         "unit": "Watt",
+                         "defaultValue": 0.00,
+                         "suggestLogging": true
+                      },
+                      {
+                         "id": "25b2b46c-90c8-412a-ae62-c8ff6caa4be1",
+                         "name": "power",
+                         "displayName": "Charging enabled",
+                         "displayNameEvent": "Charging enabled changed",
+                         "displayNameAction": "Set charging enabled",
+                         "type": "bool",
+                         "writable": true,
+                         "defaultValue": false,
+                         "suggestLogging": true
+                       }
+
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

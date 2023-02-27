@@ -200,6 +200,13 @@ Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for dynatrace
  This package contains the nymea integration plugin for the dynatrace UFO
 
+Package: nymea-plugin-easee
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for easee
+ This package contains the nymea integration plugin for devices from Easee
 
 Package: nymea-plugin-elgato
 Architecture: any
