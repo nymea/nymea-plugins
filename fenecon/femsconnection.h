@@ -36,7 +36,7 @@ public:
                           const QHostAddress &address,
                           QObject *parent = nullptr, QString user = "",
                           QString pwd = "",
-                          QString port = "80");
+                          QString port = "8084");
 
   QHostAddress address() const;
 

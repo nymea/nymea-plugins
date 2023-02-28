@@ -79,11 +79,11 @@ private:
   QString getValueOfRequestedData(QJsonDocument *json);
 
   void addValueToThing(Thing *parentThing, ThingClassId identifier,
-                       StateTypeId stateName, const QVariant *value,
+                       StateTypeId stateName, const QVariant &value,
                        ValueType valueType, int scale);
 
   void addValueToThing(Thing *childThing, StateTypeId stateName,
-                       const QVariant *value, ValueType valueType,
+                       const QVariant &value, ValueType valueType,
                        int scale = 0);
 
   QString batteryState;

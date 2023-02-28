@@ -23,13 +23,6 @@
                         "type": "QString",
                         "inputType": "IPv4Address",
                         "defaultValue": "192.168.158.2"
-                    },
-                    {
-                        "id": "73814aef-571d-4a42-ba76-5751f128d86b",
-                        "name": "Port",
-                        "displayName": "Port",
-                        "type": "QString",
-                        "defaultValue": "80"
                     }
                     ],
                     "stateTypes": [

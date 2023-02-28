@@ -95,7 +95,7 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
     qCDebug(dcFenecon()) << "Password: " << password;
     FemsConnection *connection = new FemsConnection(
         hardwareManager()->networkManager(), address, thing, user, password,
-        thing->paramValue(connectionThingPortParamTypeId).toString());
+        "8084");
     qCDebug(dcFenecon()) << "Creating isAvailableDevice By Checking _sum/State";
     FemsNetworkReply *reply = connection->isAvailable();
     qCDebug(dcFenecon()) << "Connecting Signal and Slot";
@@ -371,10 +371,10 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
               return;
             }
             qCDebug(dcFenecon()) << "Getting Variant for ESS ACTIVE ENERGY";
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             qCDebug(dcFenecon())
-                << "Value of ESS ACTIVE ENERGY received: " << var->toString();
+                << "Value of ESS ACTIVE ENERGY received: " << var.toString();
             qCDebug(dcFenecon()) << "Value of things: " << batteryThingClassId
                                  << " and" << batteryChargingEnergyStateTypeId;
 
@@ -387,8 +387,6 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
                                     var, DOUBLE, 0);
             }
             qCDebug(dcFenecon()) << "Add Value to thing done";
-            var = NULL;
-            delete var;
             checkBatteryState(parentThing);
           });
 
@@ -418,12 +416,10 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
               return;
             }
             // GET "value" of data
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, batteryThingClassId,
                             batteryDischarginEnergyStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
             checkBatteryState(parentThing);
           });
 
@@ -452,13 +448,11 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCurrentPowerStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // CurrentPowerA
@@ -486,13 +480,11 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCurrentPowerAStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // CurrentPowerB
@@ -520,13 +512,11 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCurrentPowerBStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // CurrentPowerC
@@ -556,12 +546,10 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
           return;
         }
-        QVariant *var = new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+        QVariant var = QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
         // GET "value" of data
         this->addValueToThing(parentThing, batteryThingClassId,
                               batteryCurrentPowerCStateTypeId, var, DOUBLE, 0);
-        var = NULL;
-        delete var;
       });
 
   // Capacity
@@ -587,13 +575,11 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCapacityStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // BatteryLevel (SoC)
@@ -619,13 +605,11 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryBatteryLevelStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
 
             // Calc state of Health
             Thing *thing =
@@ -640,7 +624,7 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
               }
               QVariant var = critical ? "true" : "false";
               ;
-              addValueToThing(thing, batteryBatteryCriticalStateTypeId, &var,
+              addValueToThing(thing, batteryBatteryCriticalStateTypeId, var,
                               MY_BOOLEAN, 0);
             }
           });
@@ -669,12 +653,10 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCellTemperatureStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
   qCDebug(dcFenecon()) << "Battery Done";
 }
@@ -709,18 +691,18 @@ void IntegrationPluginFenecon::updateSumState(FemsConnection *connection) {
 
           return;
         }
-        QVariant *var = new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+        QVariant var = QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
         // GET "value" of data
         qCDebug(dcFenecon()) << "Adding SUM STATE";
         addValueToThing(parentThing, femsstatusThingClassId,
                         femsstatusStatusStateTypeId, var, MY_INT, 0);
 
-        if (var != nullptr) {
+        if (!var.isNull()) {
           qCDebug(dcFenecon()) << "Checking fo Updating States";
-          QVariant *varBool = new QVariant(true);
+          QVariant varBool = QVariant::fromValue(true);
           // FEMS STATE == FAULT on 3
-          if (var->toInt() == 3) {
-            varBool->setValue(false);
+          if (var.toInt() == 3) {
+            varBool.setValue(false);
           }
           qCDebug(dcFenecon()) << "ADDING CONNECTION STATE: " << varBool;
           // TODO addValueToThingOverload( instead of QVariant -> boolean)
@@ -733,11 +715,7 @@ void IntegrationPluginFenecon::updateSumState(FemsConnection *connection) {
           addValueToThing(parentThing, femsstatusThingClassId,
                           femsstatusConnectedStateTypeId, varBool, MY_BOOLEAN,
                           0);
-          varBool = NULL;
-          delete varBool;
         }
-        var = NULL;
-        delete var;
       });
 }
 
@@ -775,11 +753,9 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentGridPowerStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // ProductionActivePower
@@ -805,12 +781,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerProductionStateTypeId, var, DOUBLE,
                             0);
-            var = NULL;
-            delete var;
           });
 
   // ProductionAcActivePower
@@ -837,13 +811,11 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var =
-                new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerProductionAcStateTypeId, var,
                             DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
 
   // ProductionDcActivePower
@@ -869,12 +841,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerProductionDcStateTypeId, var,
                             DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
   // CurrentPower
   FemsNetworkReply *currentPower =
@@ -898,11 +868,9 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerStateTypeId, var, DOUBLE, 0);
-            var = NULL;
-            delete var;
           });
   // ProductionActiveEnergy
   FemsNetworkReply *totalEnergyProduced =
@@ -926,12 +894,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterTotalEnergyProducedStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
   // ConsumptionActiveEnergy
   FemsNetworkReply *totalEnergyConsumed =
@@ -956,12 +922,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterTotalEnergyConsumedStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
   // Grid BUY
   FemsNetworkReply *currentGridBuyEnergy =
@@ -986,12 +950,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentGridBuyEnergyStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
   // Grid SELL
   FemsNetworkReply *currentGridSellEnergy =
@@ -1016,12 +978,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentGridSellEnergyStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
 
   // GridActivePowerL1
@@ -1047,12 +1007,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerPhaseAStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
 
   // GridActivePowerL2
@@ -1078,12 +1036,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerPhaseBStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
 
   // GridActivePowerL3
@@ -1109,12 +1065,10 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
               return;
             }
 
-            QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerPhaseCStateTypeId, var, DOUBLE,
                             -3);
-            var = NULL;
-            delete var;
           });
 
   // HERE TEST CONNECTION! if Meter asymmetric -> check meter0 first -> if
@@ -1151,13 +1105,11 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
                 return;
               }
-              QVariant *var =
-                  new QVariant((this->getValueOfRequestedData(&jsonDoc)));
+              QVariant var =
+                  QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
               this->addValueToThing(parentThing, meterThingClassId,
                                     meterCurrentPhaseAStateTypeId, var, DOUBLE,
                                     -3);
-              var = NULL;
-              delete var;
             });
     // Current L2
     FemsNetworkReply *currentPhaseB = connection->getFemsDataPoint(PhaseB);
@@ -1183,11 +1135,9 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
                 return;
               }
 
-              QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterCurrentPhaseBStateTypeId, var, DOUBLE, -3);
-              var = NULL;
-              delete var;
             });
     // Current L3
     FemsNetworkReply *currentPhaseC = connection->getFemsDataPoint(PhaseC);
@@ -1212,11 +1162,9 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
                 return;
               }
-              QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterCurrentPhaseCStateTypeId, var, DOUBLE, -3);
-              var = NULL;
-              delete var;
             });
 
     // Frequency
@@ -1242,11 +1190,9 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
                 return;
               }
-              QVariant *var = new QVariant((getValueOfRequestedData(&jsonDoc)));
+              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterFrequencyStateTypeId, var, DOUBLE, -3);
-              var = NULL;
-              delete var;
             });
   }
   qCDebug(dcFenecon()) << "METERS DONE";
@@ -1269,7 +1215,7 @@ QString IntegrationPluginFenecon::getValueOfRequestedData(QJsonDocument *json) {
 void IntegrationPluginFenecon::addValueToThing(Thing *parentThing,
                                                ThingClassId identifier,
                                                StateTypeId stateName,
-                                               const QVariant *value,
+                                               const QVariant &value,
                                                ValueType valueType, int scale) {
   qCDebug(dcFenecon()) << "addValueToThing is called with parentThing etc";
   Thing *child = this->GetThingByParentAndClassId(parentThing, identifier);
@@ -1280,31 +1226,31 @@ void IntegrationPluginFenecon::addValueToThing(Thing *parentThing,
 
 void IntegrationPluginFenecon::addValueToThing(Thing *childThing,
                                                StateTypeId stateName,
-                                               const QVariant *value,
+                                               const QVariant &value,
                                                ValueType valueType, int scale) {
   qCDebug(dcFenecon()) << "Add Value to thing called";
 
-  qCDebug(dcFenecon()) << "Adding Value : " << value->toString()
+  qCDebug(dcFenecon()) << "Adding Value : " << value.toString()
                        << " to child: " << childThing->id()
                        << " with state: " << stateName;
   // void setStateValue(const QString &stateName, const QVariant &value);
-  if (value != nullptr && value->toString() != "null" &&
-      value->toString() != "") {
+  if (!value.isNull() && value.toString() != "null" &&
+      value.toString() != "") {
     // TODO Low Prio -> Switch case cast enum to int ValueType::Double etc
     if (valueType == DOUBLE) {
-      double doubleValue = (value->toDouble()) * pow(10, scale);
+      double doubleValue = (value.toDouble()) * pow(10, scale);
       qCDebug(dcFenecon()) << "Value will be added: " << doubleValue;
       childThing->setStateValue(stateName, doubleValue);
     } else if (valueType == QSTRING) {
-      QString myString = value->toString();
+      QString myString = value.toString();
       qCDebug(dcFenecon()) << "Value will be added: " << myString;
       childThing->setStateValue(stateName, myString);
     } else if (valueType == MY_BOOLEAN) {
-      bool booleanValue = value->toBool();
+      bool booleanValue = value.toBool();
       qCDebug(dcFenecon()) << "Value will be added: " << booleanValue;
       childThing->setStateValue(stateName, booleanValue);
     } else if (valueType == MY_INT) {
-      int intValue = (value->toInt()) * pow(10, scale);
+      int intValue = (value.toInt()) * pow(10, scale);
       qCDebug(dcFenecon()) << "Value will be added: " << intValue;
       childThing->setStateValue(stateName, intValue);
     }
@@ -1380,7 +1326,7 @@ void IntegrationPluginFenecon::checkBatteryState(Thing *parentThing) {
 
     QVariant var = this->batteryState;
     qCDebug(dcFenecon()) << "Setting Battery State: " << this->batteryState;
-    this->addValueToThing(thing, batteryChargingStateStateTypeId, &var, QSTRING,
+    this->addValueToThing(thing, batteryChargingStateStateTypeId, var, QSTRING,
                           0);
   }
 }
