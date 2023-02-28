@@ -13,16 +13,16 @@
                     "displayName": "Fems System",
                     "id": "2649f540-8f17-462d-93f7-79aa9cfc3734",
                     "setupMethod": "userandpassword",
-                    "createMethods": ["user"],
+                    "createMethods": ["Discovery","user"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                     {
                         "id": "297e85cc-e2aa-41fe-a27a-c3904b2e7f70",
-                        "name": "address",
-                        "displayName": "Host address",
+                        "name": "macAddress",
+                        "displayName": "MAC address",
                         "type": "QString",
-                        "inputType": "IPv4Address",
-                        "defaultValue": "192.168.158.2"
+                        "inputType": "MacAddress",
+                        "defaultValue": ""
                     }
                     ],
                     "stateTypes": [

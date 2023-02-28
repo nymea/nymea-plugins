@@ -42,6 +42,7 @@ public:
   explicit IntegrationPluginFenecon(QObject *parent = nullptr);
 
   void init() override;
+  void discoverThings(ThingDiscoveryInfo *info) override;
   void startPairing(ThingPairingInfo *info) override;
   void confirmPairing(ThingPairingInfo *info, const QString &username,
                       const QString &secret) override;

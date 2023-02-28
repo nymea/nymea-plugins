@@ -22,6 +22,7 @@
 #include "plugininfo.h"
 #include "plugintimer.h"
 
+#include <QNetworkInterface>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QPointer>
@@ -44,6 +45,76 @@ void IntegrationPluginFenecon::init() {
   batteryState = "idle";
   qCDebug(dcFenecon()) << "Plugin initialized.";
 }
+
+
+void IntegrationPluginFenecon::discoverThings(ThingDiscoveryInfo *info) {
+  if (info->thingClassId() == connectionThingClassId) {
+    if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+      qCWarning(dcFenecon())
+          << "Failed to discover network devices. The network device discovery "
+             "is not available.";
+      info->finish(Thing::ThingErrorHardwareNotAvailable,
+                   QT_TR_NOOP("The discovery is not available. Please enter "
+                              "the IP address manually."));
+      return;
+    }
+
+    qCDebug(dcFenecon()) << "Starting network discovery...";
+    NetworkDeviceDiscoveryReply *discoveryReply =
+        hardwareManager()->networkDeviceDiscovery()->discover();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished,
+            discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
+    connect(
+        discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [=]() {
+          qCDebug(dcFenecon())
+              << "Discovery finished. Found"
+              << discoveryReply->networkDeviceInfos().count() << "devices";
+          foreach (const NetworkDeviceInfo &networkDeviceInfo,
+                   discoveryReply->networkDeviceInfos()) {
+            qCDebug(dcFenecon()) << networkDeviceInfo;
+
+            QString title;
+            if (networkDeviceInfo.hostName().isEmpty()) {
+              title = networkDeviceInfo.address().toString();
+            } else {
+              title = networkDeviceInfo.hostName() + " (" +
+                      networkDeviceInfo.address().toString() + ")";
+            }
+
+            QString description;
+            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
+              description = networkDeviceInfo.macAddress();
+            } else {
+              description = networkDeviceInfo.macAddress() + " (" +
+                            networkDeviceInfo.macAddressManufacturer() + ")";
+            }
+
+            ThingDescriptor descriptor(info->thingClassId(), title,
+                                       description);
+            ParamList params;
+            params << Param(connectionThingMacAddressParamTypeId,
+                            networkDeviceInfo.macAddress());
+            descriptor.setParams(params);
+
+            // Check if we already have set up this device
+            Things existingThings =
+                myThings().filterByParam(connectionThingMacAddressParamTypeId,
+                                         networkDeviceInfo.macAddress());
+            if (existingThings.count() == 1) {
+              qCDebug(dcFenecon())
+                  << "This connection already exists in the system:"
+                  << networkDeviceInfo;
+              descriptor.setThingId(existingThings.first()->id());
+            }
+
+            info->addThingDescriptor(descriptor);
+          }
+          info->finish(Thing::ThingErrorNoError);
+        });
+  }
+}
+
+
 
 void IntegrationPluginFenecon::startPairing(ThingPairingInfo *info) {
   qCDebug(dcFenecon()) << "Start Pairing called";
@@ -75,9 +146,18 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
 
   if (thing->thingClassId() == connectionThingClassId) {
     qCDebug(dcFenecon()) << "ConnectionThingClass found";
-
-    QHostAddress address(
-        thing->paramValue(connectionThingAddressParamTypeId).toString());
+    MacAddress mac = MacAddress(
+            thing->paramValue(connectionThingMacAddressParamTypeId).toString());
+    if (!mac.isValid()) {
+         info->finish(Thing::ThingErrorInvalidParameter,
+                      QT_TR_NOOP("The given MAC address is not valid."));
+         return;
+       }
+    NetworkDeviceMonitor *monitor =
+            hardwareManager()->networkDeviceDiscovery()->registerMonitor(mac);
+        connect(info, &ThingSetupInfo::aborted, monitor, [monitor, this]() {
+          hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
+        });
 
     // Handle reconfigure
     if (m_femsConnections.values().contains(thing)) {
@@ -94,7 +174,7 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
     qCDebug(dcFenecon()) << "Username: " << user;
     qCDebug(dcFenecon()) << "Password: " << password;
     FemsConnection *connection = new FemsConnection(
-        hardwareManager()->networkManager(), address, thing, user, password,
+        hardwareManager()->networkManager(), monitor->networkDeviceInfo().address(), thing, user, password,
         "8084");
     qCDebug(dcFenecon()) << "Creating isAvailableDevice By Checking _sum/State";
     FemsNetworkReply *reply = connection->isAvailable();
