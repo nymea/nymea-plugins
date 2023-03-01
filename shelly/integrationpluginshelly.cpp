@@ -306,7 +306,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyPlugThingClassId) {
             namePattern = QRegExp("^shellyplug(-s)?-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlusPlugThingClassId) {
-            namePattern = QRegExp("^(ShellyPlusPlugS)-[0-9A-Z]+$");
+            namePattern = QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
@@ -371,10 +371,12 @@ void IntegrationPluginShelly::setupThing(ThingSetupInfo *info)
     if (idParamTypeMap.contains(thing->thingClassId())) {
 
         QString shellyId = info->thing()->paramValue(idParamTypeMap.value(info->thing()->thingClassId())).toString();
-        if (!shellyId.contains("Plus")) {
-            setupGen1(info);
-        } else {
+        if (shellyId.contains("Plus")
+                || shellyId.startsWith("ShellyPlug") // Plus plug variants don't have Plus in the name, but are camelcased as opposed to 1st gen plugs
+                ) {
             setupGen2(info);
+        } else {
+            setupGen1(info);
         }
 
         return;
