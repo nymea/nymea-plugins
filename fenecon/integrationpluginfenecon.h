@@ -93,7 +93,6 @@ private:
 
   bool batteryCreated = false;
   bool meterCreated = false;
-  bool statusCreated = false;
 };
 
 #endif // INTEGRATIONPLUGINFENECON_H

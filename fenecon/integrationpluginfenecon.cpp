@@ -323,7 +323,6 @@ void IntegrationPluginFenecon::thingRemoved(Thing *thing) {
     qCDebug(dcFenecon()) << "Unregistering Timer";
     this->meterCreated = false;
     this->batteryCreated = false;
-    this->statusCreated = false;
     hardwareManager()->pluginTimerManager()->unregisterTimer(
         m_connectionRefreshTimer);
     m_connectionRefreshTimer = nullptr;
