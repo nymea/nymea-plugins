@@ -22,9 +22,9 @@
 #include "plugininfo.h"
 #include "plugintimer.h"
 
-#include <QNetworkInterface>
 #include <QDebug>
 #include <QJsonDocument>
+#include <QNetworkInterface>
 #include <QPointer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -45,7 +45,6 @@ void IntegrationPluginFenecon::init() {
   batteryState = "idle";
   qCDebug(dcFenecon()) << "Plugin initialized.";
 }
-
 
 void IntegrationPluginFenecon::discoverThings(ThingDiscoveryInfo *info) {
   if (info->thingClassId() == connectionThingClassId) {
@@ -114,8 +113,6 @@ void IntegrationPluginFenecon::discoverThings(ThingDiscoveryInfo *info) {
   }
 }
 
-
-
 void IntegrationPluginFenecon::startPairing(ThingPairingInfo *info) {
   qCDebug(dcFenecon()) << "Start Pairing called";
   info->finish(
@@ -147,17 +144,17 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
   if (thing->thingClassId() == connectionThingClassId) {
     qCDebug(dcFenecon()) << "ConnectionThingClass found";
     MacAddress mac = MacAddress(
-            thing->paramValue(connectionThingMacAddressParamTypeId).toString());
+        thing->paramValue(connectionThingMacAddressParamTypeId).toString());
     if (!mac.isValid()) {
-         info->finish(Thing::ThingErrorInvalidParameter,
-                      QT_TR_NOOP("The given MAC address is not valid."));
-         return;
-       }
+      info->finish(Thing::ThingErrorInvalidParameter,
+                   QT_TR_NOOP("The given MAC address is not valid."));
+      return;
+    }
     NetworkDeviceMonitor *monitor =
-            hardwareManager()->networkDeviceDiscovery()->registerMonitor(mac);
-        connect(info, &ThingSetupInfo::aborted, monitor, [monitor, this]() {
-          hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
-        });
+        hardwareManager()->networkDeviceDiscovery()->registerMonitor(mac);
+    connect(info, &ThingSetupInfo::aborted, monitor, [monitor, this]() {
+      hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
+    });
 
     // Handle reconfigure
     if (m_femsConnections.values().contains(thing)) {
@@ -174,8 +171,8 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
     qCDebug(dcFenecon()) << "Username: " << user;
     qCDebug(dcFenecon()) << "Password: " << password;
     FemsConnection *connection = new FemsConnection(
-        hardwareManager()->networkManager(), monitor->networkDeviceInfo().address(), thing, user, password,
-        "8084");
+        hardwareManager()->networkManager(),
+        monitor->networkDeviceInfo().address(), thing, user, password, "8084");
     qCDebug(dcFenecon()) << "Creating isAvailableDevice By Checking _sum/State";
     FemsNetworkReply *reply = connection->isAvailable();
     qCDebug(dcFenecon()) << "Connecting Signal and Slot";
@@ -252,8 +249,7 @@ void IntegrationPluginFenecon::setupThing(ThingSetupInfo *info) {
             });
     qCDebug(dcFenecon()) << "Here is line after callback declaration";
   } else if ((thing->thingClassId() == meterThingClassId) ||
-             (thing->thingClassId() == batteryThingClassId) ||
-             (thing->thingClassId() == femsstatusThingClassId)) {
+             (thing->thingClassId() == batteryThingClassId)) {
     qCDebug(dcFenecon())
         << "This line appears because Parent was setup and now children "
            "are created";
@@ -391,25 +387,6 @@ void IntegrationPluginFenecon::refreshConnection(FemsConnection *connection) {
     emit autoThingsAppeared(ThingDescriptors() << descriptor);
     this->meterCreated = true;
   }
-
-  qCDebug(dcFenecon()) << "#################################################";
-  qCDebug(dcFenecon()) << "#################################################";
-  qCDebug(dcFenecon()) << "#################################################";
-  qCDebug(dcFenecon()) << "#################################################";
-  qCDebug(dcFenecon()) << "Updating Sum";
-  if (myThings()
-              .filterByParentId(m_femsConnections.value(connection)->id())
-              .filterByThingClassId(femsstatusThingClassId)
-              .length() < 1 &&
-      !this->statusCreated) {
-    ThingDescriptor descriptor(femsstatusThingClassId, "FEMS Status", QString(),
-                               connectionThing->id());
-    ParamList params;
-    params.append(Param(femsstatusThingIdParamTypeId, "Status"));
-    descriptor.setParams(params);
-    emit autoThingsAppeared(ThingDescriptors() << descriptor);
-    this->statusCreated = true;
-  }
   this->updateSumState(connection);
 }
 
@@ -451,7 +428,8 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
               return;
             }
             qCDebug(dcFenecon()) << "Getting Variant for ESS ACTIVE ENERGY";
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             qCDebug(dcFenecon())
                 << "Value of ESS ACTIVE ENERGY received: " << var.toString();
@@ -605,32 +583,33 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
   FemsNetworkReply *essActivePowerL3 =
       connection->getFemsDataPoint(ESS_ACTIVE_POWER_L3);
 
-  connect(
-      essActivePowerL3, &FemsNetworkReply::finished, this,
-      [this, essActivePowerL3, parentThing]() {
-        qCDebug(dcFenecon()) << "Ess Active Power L3";
+  connect(essActivePowerL3, &FemsNetworkReply::finished, this,
+          [this, essActivePowerL3, parentThing]() {
+            qCDebug(dcFenecon()) << "Ess Active Power L3";
 
-        if (this->connectionError(essActivePowerL3)) {
+            if (this->connectionError(essActivePowerL3)) {
 
-          return;
-        }
-        QByteArray data = essActivePowerL3->networkReply()->readAll();
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+              return;
+            }
+            QByteArray data = essActivePowerL3->networkReply()->readAll();
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-        // Check JSON Reply
-        bool jsonE = this->jsonError(data);
-        if (jsonE) {
-          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
-                                 << ":" << error.errorString();
+            // Check JSON Reply
+            bool jsonE = this->jsonError(data);
+            if (jsonE) {
+              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
+                                     << data << ":" << error.errorString();
 
-          return;
-        }
-        QVariant var = QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
-        // GET "value" of data
-        this->addValueToThing(parentThing, batteryThingClassId,
-                              batteryCurrentPowerCStateTypeId, var, DOUBLE, 0);
-      });
+              return;
+            }
+            QVariant var =
+                QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
+            // GET "value" of data
+            this->addValueToThing(parentThing, batteryThingClassId,
+                                  batteryCurrentPowerCStateTypeId, var, DOUBLE,
+                                  0);
+          });
 
   // Capacity
   // Try ess0/Capacity
@@ -733,7 +712,8 @@ void IntegrationPluginFenecon::updateStorages(FemsConnection *connection) {
 
               return;
             }
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             // GET "value" of data
             addValueToThing(parentThing, batteryThingClassId,
                             batteryCellTemperatureStateTypeId, var, DOUBLE, 0);
@@ -771,11 +751,12 @@ void IntegrationPluginFenecon::updateSumState(FemsConnection *connection) {
 
           return;
         }
-        QVariant var = QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
+        QVariant var =
+            QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
         // GET "value" of data
         qCDebug(dcFenecon()) << "Adding SUM STATE";
-        addValueToThing(parentThing, femsstatusThingClassId,
-                        femsstatusStatusStateTypeId, var, MY_INT, 0);
+        addValueToThing(parentThing, connectionThingClassId,
+                        connectionStatusStateTypeId, var, MY_INT, 0);
 
         if (!var.isNull()) {
           qCDebug(dcFenecon()) << "Checking fo Updating States";
@@ -791,10 +772,6 @@ void IntegrationPluginFenecon::updateSumState(FemsConnection *connection) {
 
           addValueToThing(parentThing, batteryThingClassId,
                           batteryConnectedStateTypeId, varBool, MY_BOOLEAN, 0);
-
-          addValueToThing(parentThing, femsstatusThingClassId,
-                          femsstatusConnectedStateTypeId, varBool, MY_BOOLEAN,
-                          0);
         }
       });
 }
@@ -833,7 +810,8 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentGridPowerStateTypeId, var, DOUBLE, 0);
           });
@@ -841,31 +819,31 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
   // ProductionActivePower
   FemsNetworkReply *currentPowerProduction =
       connection->getFemsDataPoint(PRODCUTION_ACTIVE_POWER);
-  connect(currentPowerProduction, &FemsNetworkReply::finished, this,
-          [this, currentPowerProduction, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Power Production";
-            if (connectionError(currentPowerProduction)) {
+  connect(
+      currentPowerProduction, &FemsNetworkReply::finished, this,
+      [this, currentPowerProduction, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Power Production";
+        if (connectionError(currentPowerProduction)) {
 
-              return;
-            }
-            QByteArray data = currentPowerProduction->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentPowerProduction->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentPowerProductionStateTypeId, var, DOUBLE,
-                            0);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentPowerProductionStateTypeId, var, DOUBLE, 0);
+      });
 
   // ProductionAcActivePower
   FemsNetworkReply *currentPowerProductionAc =
@@ -921,7 +899,8 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerProductionDcStateTypeId, var,
                             DOUBLE, 0);
@@ -948,208 +927,209 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
               return;
             }
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+            QVariant var =
+                QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
             addValueToThing(parentThing, meterThingClassId,
                             meterCurrentPowerStateTypeId, var, DOUBLE, 0);
           });
   // ProductionActiveEnergy
   FemsNetworkReply *totalEnergyProduced =
       connection->getFemsDataPoint(GRID_PRODUCTION_ACTIVE_ENERGY);
-  connect(totalEnergyProduced, &FemsNetworkReply::finished, this,
-          [this, totalEnergyProduced, parentThing]() {
-            qCDebug(dcFenecon()) << "Total Energy Produced";
-            if (connectionError(totalEnergyProduced)) {
+  connect(
+      totalEnergyProduced, &FemsNetworkReply::finished, this,
+      [this, totalEnergyProduced, parentThing]() {
+        qCDebug(dcFenecon()) << "Total Energy Produced";
+        if (connectionError(totalEnergyProduced)) {
 
-              return;
-            }
-            QByteArray data = totalEnergyProduced->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = totalEnergyProduced->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterTotalEnergyProducedStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterTotalEnergyProducedStateTypeId, var, DOUBLE, -3);
+      });
   // ConsumptionActiveEnergy
   FemsNetworkReply *totalEnergyConsumed =
       connection->getFemsDataPoint(GRID_CONSUMPTION_ACTIVE_ENERGY);
-  connect(totalEnergyConsumed, &FemsNetworkReply::finished, this,
-          [this, totalEnergyConsumed, parentThing]() {
-            qCDebug(dcFenecon()) << "Total Energy Consumed";
-            if (connectionError(totalEnergyConsumed)) {
+  connect(
+      totalEnergyConsumed, &FemsNetworkReply::finished, this,
+      [this, totalEnergyConsumed, parentThing]() {
+        qCDebug(dcFenecon()) << "Total Energy Consumed";
+        if (connectionError(totalEnergyConsumed)) {
 
-              return;
-            }
-            QByteArray data = totalEnergyConsumed->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = totalEnergyConsumed->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterTotalEnergyConsumedStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterTotalEnergyConsumedStateTypeId, var, DOUBLE, -3);
+      });
   // Grid BUY
   FemsNetworkReply *currentGridBuyEnergy =
       connection->getFemsDataPoint(GRID_BUY_ACTIVE_ENERGY);
-  connect(currentGridBuyEnergy, &FemsNetworkReply::finished, this,
-          [this, currentGridBuyEnergy, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Grid Buy Energy";
-            if (connectionError(currentGridBuyEnergy)) {
+  connect(
+      currentGridBuyEnergy, &FemsNetworkReply::finished, this,
+      [this, currentGridBuyEnergy, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Grid Buy Energy";
+        if (connectionError(currentGridBuyEnergy)) {
 
-              return;
-            }
-            QByteArray data = currentGridBuyEnergy->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentGridBuyEnergy->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentGridBuyEnergyStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentGridBuyEnergyStateTypeId, var, DOUBLE, -3);
+      });
   // Grid SELL
   FemsNetworkReply *currentGridSellEnergy =
       connection->getFemsDataPoint(GRID_SELL_ACTIVE_ENERGY);
-  connect(currentGridSellEnergy, &FemsNetworkReply::finished, this,
-          [this, currentGridSellEnergy, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Grid Sell Energy";
-            if (connectionError(currentGridSellEnergy)) {
+  connect(
+      currentGridSellEnergy, &FemsNetworkReply::finished, this,
+      [this, currentGridSellEnergy, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Grid Sell Energy";
+        if (connectionError(currentGridSellEnergy)) {
 
-              return;
-            }
-            QByteArray data = currentGridSellEnergy->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentGridSellEnergy->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentGridSellEnergyStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentGridSellEnergyStateTypeId, var, DOUBLE, -3);
+      });
 
   // GridActivePowerL1
   FemsNetworkReply *currentPowerPhaseA =
       connection->getFemsDataPoint(GRID_ACTIVE_POWER_L1);
-  connect(currentPowerPhaseA, &FemsNetworkReply::finished, this,
-          [this, currentPowerPhaseA, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Power Phase A";
-            if (connectionError(currentPowerPhaseA)) {
+  connect(
+      currentPowerPhaseA, &FemsNetworkReply::finished, this,
+      [this, currentPowerPhaseA, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Power Phase A";
+        if (connectionError(currentPowerPhaseA)) {
 
-              return;
-            }
-            QByteArray data = currentPowerPhaseA->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentPowerPhaseA->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentPowerPhaseAStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentPowerPhaseAStateTypeId, var, DOUBLE, -3);
+      });
 
   // GridActivePowerL2
   FemsNetworkReply *currentPowerPhaseB =
       connection->getFemsDataPoint(GRID_ACTIVE_POWER_L2);
-  connect(currentPowerPhaseB, &FemsNetworkReply::finished, this,
-          [this, currentPowerPhaseB, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Power Phase B";
-            if (connectionError(currentPowerPhaseB)) {
+  connect(
+      currentPowerPhaseB, &FemsNetworkReply::finished, this,
+      [this, currentPowerPhaseB, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Power Phase B";
+        if (connectionError(currentPowerPhaseB)) {
 
-              return;
-            }
-            QByteArray data = currentPowerPhaseB->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentPowerPhaseB->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentPowerPhaseBStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentPowerPhaseBStateTypeId, var, DOUBLE, -3);
+      });
 
   // GridActivePowerL3
   FemsNetworkReply *currentPowerPhaseC =
       connection->getFemsDataPoint(GRID_ACTIVE_POWER_L3);
-  connect(currentPowerPhaseC, &FemsNetworkReply::finished, this,
-          [this, currentPowerPhaseC, parentThing]() {
-            qCDebug(dcFenecon()) << "Current Power Phase C";
-            if (connectionError(currentPowerPhaseC)) {
+  connect(
+      currentPowerPhaseC, &FemsNetworkReply::finished, this,
+      [this, currentPowerPhaseC, parentThing]() {
+        qCDebug(dcFenecon()) << "Current Power Phase C";
+        if (connectionError(currentPowerPhaseC)) {
 
-              return;
-            }
-            QByteArray data = currentPowerPhaseC->networkReply()->readAll();
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+          return;
+        }
+        QByteArray data = currentPowerPhaseC->networkReply()->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-            // Check JSON Reply
-            bool jsonE = jsonError(data);
-            if (jsonE) {
-              qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                     << data << ":" << error.errorString();
+        // Check JSON Reply
+        bool jsonE = jsonError(data);
+        if (jsonE) {
+          qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                 << ":" << error.errorString();
 
-              return;
-            }
+          return;
+        }
 
-            QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
-            addValueToThing(parentThing, meterThingClassId,
-                            meterCurrentPowerPhaseCStateTypeId, var, DOUBLE,
-                            -3);
-          });
+        QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+        addValueToThing(parentThing, meterThingClassId,
+                        meterCurrentPowerPhaseCStateTypeId, var, DOUBLE, -3);
+      });
 
   // HERE TEST CONNECTION! if Meter asymmetric -> check meter0 first -> if
   // normally connection available -> test meter0 if no conn. test meter1 up to
@@ -1162,35 +1142,35 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
     QString Frequency = this->meter + "/" + FREQUENCY;
     // CurrentL1
     FemsNetworkReply *currentPhaseA = connection->getFemsDataPoint(PhaseA);
-    connect(currentPhaseA, &FemsNetworkReply::finished, this,
-            [this, currentPhaseA, parentThing]() {
-              qCDebug(dcFenecon()) << "current Phase A";
-              // TODO Possible error -> when not connected at all -> meterString
-              // changes either way! -> _sum/State == 3
-              if (connectionError(currentPhaseA)) {
-                changeMeterString();
+    connect(
+        currentPhaseA, &FemsNetworkReply::finished, this,
+        [this, currentPhaseA, parentThing]() {
+          qCDebug(dcFenecon()) << "current Phase A";
+          // TODO Possible error -> when not connected at all -> meterString
+          // changes either way! -> _sum/State == 3
+          if (connectionError(currentPhaseA)) {
+            changeMeterString();
 
-                return;
-              }
-              QByteArray data = currentPhaseA->networkReply()->readAll();
-              QJsonParseError error;
-              QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            return;
+          }
+          QByteArray data = currentPhaseA->networkReply()->readAll();
+          QJsonParseError error;
+          QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
 
-              // Check JSON Reply
-              bool jsonE = this->jsonError(data);
-              if (jsonE) {
-                qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data"
-                                       << data << ":" << error.errorString();
-                this->changeMeterString();
+          // Check JSON Reply
+          bool jsonE = this->jsonError(data);
+          if (jsonE) {
+            qCWarning(dcFenecon()) << "Meter: Failed to parse JSON data" << data
+                                   << ":" << error.errorString();
+            this->changeMeterString();
 
-                return;
-              }
-              QVariant var =
-                  QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
-              this->addValueToThing(parentThing, meterThingClassId,
-                                    meterCurrentPhaseAStateTypeId, var, DOUBLE,
-                                    -3);
-            });
+            return;
+          }
+          QVariant var =
+              QVariant::fromValue((this->getValueOfRequestedData(&jsonDoc)));
+          this->addValueToThing(parentThing, meterThingClassId,
+                                meterCurrentPhaseAStateTypeId, var, DOUBLE, -3);
+        });
     // Current L2
     FemsNetworkReply *currentPhaseB = connection->getFemsDataPoint(PhaseB);
     connect(currentPhaseB, &FemsNetworkReply::finished, this,
@@ -1215,7 +1195,8 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
                 return;
               }
 
-              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+              QVariant var =
+                  QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterCurrentPhaseBStateTypeId, var, DOUBLE, -3);
             });
@@ -1242,7 +1223,8 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
                 return;
               }
-              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+              QVariant var =
+                  QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterCurrentPhaseCStateTypeId, var, DOUBLE, -3);
             });
@@ -1270,7 +1252,8 @@ void IntegrationPluginFenecon::updateMeters(FemsConnection *connection) {
 
                 return;
               }
-              QVariant var = QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
+              QVariant var =
+                  QVariant::fromValue((getValueOfRequestedData(&jsonDoc)));
               addValueToThing(parentThing, meterThingClassId,
                               meterFrequencyStateTypeId, var, DOUBLE, -3);
             });
@@ -1314,8 +1297,7 @@ void IntegrationPluginFenecon::addValueToThing(Thing *childThing,
                        << " to child: " << childThing->id()
                        << " with state: " << stateName;
   // void setStateValue(const QString &stateName, const QVariant &value);
-  if (!value.isNull() && value.toString() != "null" &&
-      value.toString() != "") {
+  if (!value.isNull() && value.toString() != "null" && value.toString() != "") {
     // TODO Low Prio -> Switch case cast enum to int ValueType::Double etc
     if (valueType == DOUBLE) {
       double doubleValue = (value.toDouble()) * pow(10, scale);

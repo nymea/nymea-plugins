@@ -33,6 +33,14 @@
                         "displayNameEvent": "Reachable changed",
                         "type": "bool",
                         "defaultValue": false
+                    },
+                    {
+                    "id": "d0c8d4c7-3e6c-4ac0-80ae-247cec9fc4b0",
+                    "name": "status",
+                    "displayName": "Fems Status",
+                    "displayNameEvent": "Status changed",
+                    "type": "int",
+                    "defaultValue": false
                     }
                     ],
                     "actionTypes": [
@@ -42,42 +50,6 @@
 
                     ]
                 },
-                {
-
-                "id": "02b61fba-8a08-46ff-bccc-3a4dfcddf351",
-                "name": "femsstatus",
-                "displayName": "Fems Status",
-                "createMethods": ["auto"],
-                "interfaces" : ["connectable"],
-                "paramTypes": [{
-                        "id": "c8dbc321-6c04-412c-a9ee-a06d187f9e76",
-                        "name": "id",
-                        "displayName": "Device ID",
-                        "type": "QString",
-                        "readOnly": true
-                        }
-                      ],
-                "stateTypes": [
-                      {
-                          "id": "37f2eaa7-11da-4868-b945-1dc518ffd6b0",
-                          "name": "connected",
-                          "displayName": "Reachable",
-                          "displayNameEvent": "Reachable changed",
-                          "type": "bool",
-                          "defaultValue": false
-                      },
-                      {
-                          "id": "d0c8d4c7-3e6c-4ac0-80ae-247cec9fc4b0",
-                          "name": "status",
-                          "displayName": "Fems Status",
-                          "displayNameEvent": "Status changed",
-                          "type": "int",
-                          "defaultValue": false
-                      }
-
-                      ]
-                },
-
                 {
                     "id": "62a9f542-4270-4a48-bb4f-bc2f361e734c",
                     "name": "battery",
