@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2023, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,45 +28,59 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINEVBOX_H
-#define INTEGRATIONPLUGINEVBOX_H
+#ifndef EVBOXPORT_H
+#define EVBOXPORT_H
 
-#include "integrations/integrationplugin.h"
-
-#include "evboxport.h"
-
-#include "extern-plugininfo.h"
-
-#include <plugintimer.h>
+#include <QObject>
+#include <QSerialPort>
+#include <QQueue>
 #include <QTimer>
 
-class QSerialPort;
-
-class IntegrationPluginEVBox: public IntegrationPlugin
+class EVBoxPort : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginevbox.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginEVBox();
-    ~IntegrationPluginEVBox();
+    enum Command {
+        Command68 = 68,
+        Command69 = 69
+    };
+    Q_ENUM(Command)
 
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
+    explicit EVBoxPort(const QString &portName, QObject *parent = nullptr);
+
+    bool open();
+    bool isOpen();
+    void close();
+
+    void sendCommand(Command command, quint16 timeout, quint16 maxChargingCurrent, const QString &serial = "00000000");
+
+signals:
+    void opened();
+    void closed();
+    void shortResponseReceived(EVBoxPort::Command command, const QString &serial);
+    void responseReceived(EVBoxPort::Command command, const QString &serial, quint16 minChargingCurrent, quint16 maxChargingCurrent, quint16 chargingCurrentL1, quint16 chargingCurrentL2, quint16 chargingCurrentL3, quint32 totalEnergyConsumed);
+
+private slots:
+    void processQueue();
+    void onReadyRead();
+    void processDataPacket(const QByteArray &packet);
 
 private:
-    void finishPendingAction(Thing *thing);
+    QByteArray createChecksum(const QByteArray &data) const;
 
 private:
-    QHash<QString, EVBoxPort*> m_ports;
-    QHash<Thing*, QList<ThingActionInfo*>> m_pendingActions;
-    QHash<Thing*, bool> m_waitingForResponses;
-    PluginTimer *m_timer = nullptr;
+    QSerialPort *m_serialPort = nullptr;
+
+    QByteArray m_inputBuffer;
+
+    struct CommandWrapper {
+        Command command = Command68;
+        QString serial;
+        quint16 timeout = 0;
+        quint16 maxChargingCurrent = 0;
+    };
+    QQueue<CommandWrapper> m_commandQueue;
+    QTimer m_waitTimer;
 };
 
-#endif // INTEGRATIONPLUGINEVBOX_H
+#endif // EVBOXPORT_H
