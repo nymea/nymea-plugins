@@ -186,9 +186,29 @@ QHostAddress Kodi::hostAddress() const
     return m_connection->hostAddress();
 }
 
-int Kodi::port() const
+void Kodi::setHostAddress(const QHostAddress &address)
+{
+    m_connection->setHostAddress(address);
+}
+
+uint Kodi::port() const
 {
     return m_connection->port();
+}
+
+void Kodi::setPort(uint port)
+{
+    m_connection->setPort(port);
+}
+
+uint Kodi::httpPort() const
+{
+    return m_httpPort;
+}
+
+void Kodi::setHttpPort(uint httpPort)
+{
+    m_httpPort = httpPort;
 }
 
 bool Kodi::connected() const

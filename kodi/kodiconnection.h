@@ -46,8 +46,10 @@ public:
     void disconnectKodi();
 
     QHostAddress hostAddress() const;
+    void setHostAddress(const QHostAddress &address);
+
     int port() const;
-    int httpPort() const;
+    void setPort(int port);
 
     bool connected();
 

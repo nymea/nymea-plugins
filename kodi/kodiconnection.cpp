@@ -51,6 +51,7 @@ KodiConnection::KodiConnection(const QHostAddress &hostAddress, int port, QObjec
 void KodiConnection::connectKodi()
 {
     if (m_socket->state() == QAbstractSocket::ConnectingState) {
+        qCDebug(dcKodi) << "Aready connecting... skipping request";
         return;
     }
     m_socket->connectToHost(m_hostAddress, m_port);
@@ -66,10 +67,21 @@ QHostAddress KodiConnection::hostAddress() const
     return m_hostAddress;
 }
 
+void KodiConnection::setHostAddress(const QHostAddress &address)
+{
+    m_hostAddress = address;
+}
+
 int KodiConnection::port() const
 {
     return m_port;
 }
+
+void KodiConnection::setPort(int port)
+{
+    m_port = port;
+}
+
 
 bool KodiConnection::connected()
 {
@@ -92,9 +104,9 @@ void KodiConnection::onDisconnected()
 
 void KodiConnection::onError(QAbstractSocket::SocketError socketError)
 {
-    if (connected()) {
-        qCWarning(dcKodi) << "socket error:" << socketError << m_socket->errorString();
-    }
+    qCWarning(dcKodi) << "socket error:" << socketError << m_socket->errorString() << "this" << this;
+    m_connected = false;
+    emit connectionStatusChanged();
 }
 
 void KodiConnection::readData()

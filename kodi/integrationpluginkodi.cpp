@@ -57,76 +57,53 @@ void IntegrationPluginKodi::init()
     m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
     m_httpServiceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_http._tcp");
 
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginKodi::onPluginTimer);
+    connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
+        QUuid uuid = QUuid(entry.txt("uuid"));
+        foreach (Thing *thing, myThings()) {
+            if (thing->paramValue(kodiThingUuidParamTypeId).toUuid() == uuid) {
+                qCDebug(dcKodi()) << "Kodi" << thing->name() << "appeared on ZeroConf";
+                Kodi *kodi = m_kodis.value(thing);
+                kodi->setHostAddress(entry.hostAddress());
+                kodi->setPort(entry.port());
+                if (!kodi->connected()) {
+                    kodi->connectKodi();
+                }
+            }
+        }
+    });
 }
 
 void IntegrationPluginKodi::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qCDebug(dcKodi) << "Setup Kodi" << thing->paramValue(kodiThingIpParamTypeId).toString();
+    qCDebug(dcKodi) << "Setthing up Kodi" << thing->paramValue(kodiThingUuidParamTypeId).toString();
 
-    QUuid kodiUuid = thing->paramValue(kodiThingUuidParamTypeId).toUuid();
+    KodiHostInfo hostInfo = resolve(thing);
 
-    // The IP string is optional, we'll try to discover it in any case via zeroconf, however, if it's
-    // set in the params, we'll always fall back to that in case we can't find it on zeroconf.
-
-    // The recommended way is to not store an IP in the settings as with DHCP lease times (or IPv6 privacy
-    // extension address randomization) an IP might expire eventually and it'll stop working.
-
-    // So actually the params should *only* store the UUID, but we'll support manually entering IP, port and http port
-    // for setups that can't use ZeroConf for whatever reason.
-
-    QString ipString = thing->paramValue(kodiThingIpParamTypeId).toString();
-    int port = thing->paramValue(kodiThingPortParamTypeId).toInt();
-    int httpPort = thing->paramValue(kodiThingHttpPortParamTypeId).toInt();
-
-    if (!kodiUuid.isNull()) {
-        foreach (const ZeroConfServiceEntry &entry, m_serviceBrowser->serviceEntries()) {
-            if (entry.hostAddress().protocol() == QAbstractSocket::IPv6Protocol && entry.hostAddress().toString().startsWith("fe80")) {
-                // We don't support link-local ipv6 addresses yet. skip those entries
-                continue;
-            }
-            QString uuid;
-            foreach (const QString &txt, entry.txt()) {
-                if (txt.startsWith("uuid")) {
-                    uuid = txt.split("=").last();
-                    break;
-                }
-            }
-
-            if (QUuid(uuid) == kodiUuid) {
-                ipString = entry.hostAddress().toString();
-                port = entry.port();
-                break;
-            }
-        }
-        foreach (const ZeroConfServiceEntry avahiEntry, m_httpServiceBrowser->serviceEntries()) {
-            QString uuid;
-            foreach (const QString &txt, avahiEntry.txt()) {
-                if (txt.startsWith("uuid")) {
-                    uuid = txt.split("=").last();
-                    break;
-                }
-            }
-            if (QUuid(uuid) == kodiUuid) {
-                httpPort = avahiEntry.port();
-                break;
-            }
+    if (info->isInitialSetup()) {
+        if (hostInfo.address.isNull()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to find Kodi in the network."));
+            return;
         }
     }
 
-    if (ipString.isEmpty()) {
-        // Ok, we could not find an ip on zeroconf... Let's try again in a second while setupInfo hasn't timed out.
-        qCDebug(dcKodi()) << "Device not found via ZeroConf... Waiting for a second for it to appear...";
-        QTimer::singleShot(1000, info, [this, info](){
-            setupThing(info);
+    if (m_kodis.contains(thing)) {
+        delete m_kodis.take(thing);
+    }
+
+    qCDebug(dcKodi()).nospace().noquote() << "Connecting to kodi on " << hostInfo.address.toString() << ":" << hostInfo.rpcPort << " (HTTP Port " << hostInfo.httpPort << ")";
+    Kodi *kodi= new Kodi(hostInfo.address, hostInfo.rpcPort, hostInfo.httpPort, thing);
+    m_kodis.insert(thing, kodi);
+
+    if (info->isInitialSetup()) {
+        connect(kodi, &Kodi::connectionStatusChanged, info, [info](bool connected){
+            if (connected) {
+                info->finish(Thing::ThingErrorNoError);
+            }
         });
-        return;
+    } else {
+        info->finish(Thing::ThingErrorNoError);
     }
-
-    qCDebug(dcKodi()).nospace().noquote() << "Connecting to kodi on " << ipString << ":" << port << " (HTTP Port " << httpPort << ")";
-    Kodi *kodi= new Kodi(QHostAddress(ipString), port, httpPort, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &IntegrationPluginKodi::onConnectionChanged);
     connect(kodi, &Kodi::stateChanged, this, &IntegrationPluginKodi::onStateChanged);
@@ -143,7 +120,7 @@ void IntegrationPluginKodi::setupThing(ThingSetupInfo *info)
         thing->setStateValue(kodiArtistStateTypeId, artist);
         thing->setStateValue(kodiCollectionStateTypeId, collection);
 
-        Kodi* kodi = m_kodis.key(thing);
+        Kodi* kodi = m_kodis.value(thing);
 
         QNetworkRequest request;
         QHostAddress hostAddr(kodi->hostAddress().toString());
@@ -153,10 +130,10 @@ void IntegrationPluginKodi::setupThing(ThingSetupInfo *info)
         } else {
             addr = "[" + hostAddr.toString() + "]";
         }
-        QString port = thing->paramValue(kodiThingHttpPortParamTypeId).toString();
 
-        request.setUrl(QUrl(QString("http://%1:%2/jsonrpc").arg(addr).arg(port)));
-        qCDebug(dcKodi) << "Prepping file dl" << "http://" + addr + ":" + thing->paramValue(kodiThingPortParamTypeId).toString() + "/jsonrpc";
+        uint httpPort = kodi->httpPort();
+        request.setUrl(QUrl(QString("http://%1:%2/jsonrpc").arg(addr).arg(httpPort)));
+        qCDebug(dcKodi) << "Prepping file dl" << request.url().toString();
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         QVariantMap map;
         map.insert("jsonrpc", "2.0");
@@ -167,10 +144,10 @@ void IntegrationPluginKodi::setupThing(ThingSetupInfo *info)
         map.insert("params", params);
         QJsonDocument jsonDoc = QJsonDocument::fromVariant(map);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
-        connect(reply, &QNetworkReply::finished, thing, [thing, reply, addr, port](){
+        connect(reply, &QNetworkReply::finished, thing, [thing, reply, addr, httpPort](){
             reply->deleteLater();
             QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-            QString fileUrl = "http://" + addr + ":" + port + "/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString();
+            QString fileUrl = QString("http://%1:%2/%3").arg(addr).arg(httpPort).arg(jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString());
             qCDebug(dcKodi()) << "DL result:" << jsonDoc.toJson();
             qCDebug(dcKodi()) << "Resolved url:" << fileUrl;
             thing->setStateValue(kodiArtworkStateTypeId, fileUrl);
@@ -190,37 +167,51 @@ void IntegrationPluginKodi::setupThing(ThingSetupInfo *info)
             thing->setStateValue(kodiRepeatStateTypeId, "None");
         }
     });
-    m_kodis.insert(kodi, thing);
-    m_asyncSetups.insert(kodi, info);
-    connect(info, &QObject::destroyed, this, [this, kodi](){ m_asyncSetups.remove(kodi); });
 
-    kodi->connectKodi();
+    if (!kodi->hostAddress().isNull()) {
+        kodi->connectKodi();
+    }
+}
+
+void IntegrationPluginKodi::postSetupThing(Thing */*thing*/)
+{
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, [this](){
+            foreach (Thing *thing, myThings()){
+                Kodi *kodi = m_kodis.value(thing);
+                if (!kodi->connected()) {
+                    KodiHostInfo hostInfo = resolve(thing);
+                    kodi->setHostAddress(hostInfo.address);
+                    kodi->setPort(hostInfo.rpcPort);
+                    kodi->setHttpPort(hostInfo.httpPort);
+                    kodi->connectKodi();
+                    continue;
+                }
+            }
+        });
+    }
 }
 
 void IntegrationPluginKodi::thingRemoved(Thing *thing)
 {
-    Kodi *kodi = m_kodis.key(thing);
-    m_kodis.remove(kodi);
-    qCDebug(dcKodi) << "Delete " << thing->name();
-    kodi->deleteLater();
+    m_kodis.remove(thing);
+
+    if (myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+    }
 }
 
 void IntegrationPluginKodi::discoverThings(ThingDiscoveryInfo *info)
 {
     QTimer::singleShot(5000, info, [this, info](){
 
-        QHash<QString, ThingDescriptor> descriptors;
+        QHash<QUuid, ThingDescriptor> descriptors;
 
         foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
 
-            QString uuid;
-            foreach (const QString &txt, avahiEntry.txt()) {
-                if (txt.startsWith("uuid")) {
-                    uuid = txt.split("=").last();
-                    break;
-                }
-            }
-
+            QUuid uuid = avahiEntry.txt("uuid");
             if (descriptors.contains(uuid)) {
                 // Might appear multiple times, IPv4 and IPv6
                 continue;
@@ -230,8 +221,6 @@ void IntegrationPluginKodi::discoverThings(ThingDiscoveryInfo *info)
             ThingDescriptor descriptor(kodiThingClassId, avahiEntry.name(), avahiEntry.hostName() + " (" + avahiEntry.hostAddress().toString() + ")");
             ParamList params;
             params << Param(kodiThingUuidParamTypeId, uuid);
-//            params << Param(kodiThingIpParamTypeId, avahiEntry.hostAddress().toString());
-            params << Param(kodiThingPortParamTypeId, avahiEntry.port());
             descriptor.setParams(params);
 
             Things existing = myThings().filterByParam(kodiThingUuidParamTypeId, uuid);
@@ -240,26 +229,6 @@ void IntegrationPluginKodi::discoverThings(ThingDiscoveryInfo *info)
             }
 
             descriptors.insert(uuid, descriptor);
-        }
-
-        foreach (const ZeroConfServiceEntry avahiEntry, m_httpServiceBrowser->serviceEntries()) {
-            qCDebug(dcKodi) << "Zeroconf http entry:" << avahiEntry;
-            QString uuid;
-            foreach (const QString &txt, avahiEntry.txt()) {
-                if (txt.startsWith("uuid")) {
-                    uuid = txt.split("=").last();
-                    break;
-                }
-            }
-            if (!descriptors.contains(uuid)) {
-                continue;
-            }
-            qCDebug(dcKodi()) << "Updating http parameter:" << avahiEntry.port();
-            ThingDescriptor descriptor = descriptors.value(uuid);
-            ParamList params = descriptor.params();
-            params << Param(kodiThingHttpPortParamTypeId, avahiEntry.port());
-            descriptor.setParams(params);
-            descriptors[uuid] = descriptor;
         }
 
         foreach (const ThingDescriptor &d, descriptors.values()) {
@@ -274,7 +243,7 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
 {
     Action action = info->action();
     Thing *thing = info->thing();
-    Kodi *kodi = m_kodis.key(thing);
+    Kodi *kodi = m_kodis.value(thing);
 
     // check connection state
     if (!kodi->connected()) {
@@ -351,7 +320,7 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginKodi::browseThing(BrowseResult *result)
 {
-    Kodi *kodi = m_kodis.key(result->thing());
+    Kodi *kodi = m_kodis.value(result->thing());
     if (!kodi) {
         result->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
@@ -362,7 +331,7 @@ void IntegrationPluginKodi::browseThing(BrowseResult *result)
 
 void IntegrationPluginKodi::browserItem(BrowserItemResult *result)
 {
-    Kodi *kodi = m_kodis.key(result->thing());
+    Kodi *kodi = m_kodis.value(result->thing());
     if (!kodi) {
         result->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
@@ -373,7 +342,7 @@ void IntegrationPluginKodi::browserItem(BrowserItemResult *result)
 
 void IntegrationPluginKodi::executeBrowserItem(BrowserActionInfo *info)
 {
-    Kodi *kodi = m_kodis.key(info->thing());
+    Kodi *kodi = m_kodis.value(info->thing());
     if (!kodi) {
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
@@ -389,7 +358,7 @@ void IntegrationPluginKodi::executeBrowserItem(BrowserActionInfo *info)
 
 void IntegrationPluginKodi::executeBrowserItemAction(BrowserItemActionInfo *info)
 {
-    Kodi *kodi = m_kodis.key(info->thing());
+    Kodi *kodi = m_kodis.value(info->thing());
     if (!kodi) {
         return info->finish(Thing::ThingErrorHardwareNotAvailable);
     }
@@ -402,48 +371,83 @@ void IntegrationPluginKodi::executeBrowserItemAction(BrowserItemActionInfo *info
     connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserItemActions.remove(id); });
 }
 
-void IntegrationPluginKodi::onPluginTimer()
+IntegrationPluginKodi::KodiHostInfo IntegrationPluginKodi::resolve(Thing *thing)
 {
-    foreach (Kodi *kodi, m_kodis.keys()) {
-        if (!kodi->connected()) {
-            kodi->connectKodi();
+    QUuid uuid = thing->paramValue(kodiThingUuidParamTypeId).toUuid();
+
+    KodiHostInfo ret;
+
+    foreach (const ZeroConfServiceEntry &entry, m_serviceBrowser->serviceEntries()) {
+        //Disabling IPv6 for now... it seems to be to unreliable
+        if (entry.hostAddress().protocol() == QAbstractSocket::IPv6Protocol) {
             continue;
         }
+
+        QUuid entryUuid = entry.txt("uuid");
+        if (entryUuid != uuid) {
+            continue;
+        }
+
+        ret.address = entry.hostAddress();
+        ret.rpcPort = entry.port();
+
+        foreach (const ZeroConfServiceEntry &httpEntry, m_httpServiceBrowser->serviceEntries()) {
+            if (QUuid(httpEntry.txt("uuid")) == uuid) {
+                ret.httpPort = httpEntry.port();
+                break;
+            }
+        }
+        break;
     }
+
+    if (ret.address.isNull()) {
+        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            ret.address = pluginStorage()->value("address").toString();
+            ret.rpcPort = pluginStorage()->value("rpcPort").toUInt();
+            ret.httpPort = pluginStorage()->value("httpPort").toUInt();
+            pluginStorage()->endGroup();
+            qCDebug(dcKodi()) << "Kodi not found on ZeroConf. Using cached info:" << ret.address.toString() << ret.rpcPort << ret.httpPort;
+        } else {
+            qCDebug(dcKodi()) << "Kodi not found on ZeroConf and no cached info availble";
+        }
+    } else {
+        qCDebug(dcKodi()) << "Kodie address resolved:" << ret.address.toString();
+    }
+    return ret;
 }
 
 void IntegrationPluginKodi::onConnectionChanged(bool connected)
 {
+    qCDebug(dcKodi()) << "Connection status changed:" << connected;
     Kodi *kodi = static_cast<Kodi *>(sender());
-    Thing *thing = m_kodis.value(kodi);
+    Thing *thing = m_kodis.key(kodi);
 
-    // Finish setup
-    ThingSetupInfo *info = m_asyncSetups.value(kodi);
-    if (info) {
-        if (connected) {
-            info->finish(Thing::ThingErrorNoError);
+    thing->setStateValue(kodiConnectedStateTypeId, connected);
+
+
+    if (connected) {
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->setValue("address", kodi->hostAddress().toString());
+        pluginStorage()->setValue("rpcPort", kodi->port());
+        pluginStorage()->setValue("httpPort", kodi->httpPort());
+        pluginStorage()->endGroup();
+
+        QString imageString;
+        QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
+        if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
+            imageString = notificationUrl.toString();
         } else {
-            //: Error setting up thing
-            m_asyncSetups.take(kodi)->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("This installation of Kodi is too old. Please upgrade your Kodi system."));
+            imageString = "info";
         }
+        kodi->showNotification("nymea", "Connected", 2000, imageString);
     }
-
-    QString imageString;
-    QUrl notificationUrl = thing->setting(kodiSettingsNotificationCustomIconUrlParamTypeId).toUrl();
-    if (!notificationUrl.isEmpty() && notificationUrl.isValid()) {
-        imageString = notificationUrl.toString();
-    } else {
-        imageString = "info";
-    }
-
-    kodi->showNotification("nymea", QT_TR_NOOP("Connected"), 2000, imageString);
-    thing->setStateValue(kodiConnectedStateTypeId, kodi->connected());
 }
 
 void IntegrationPluginKodi::onStateChanged()
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
-    Thing *thing = m_kodis.value(kodi);
+    Thing *thing = m_kodis.key(kodi);
 
     // set thing state values
     thing->setStateValue(kodiVolumeStateTypeId, kodi->volume());
@@ -477,7 +481,7 @@ void IntegrationPluginKodi::onBrowserItemActionExecuted(int actionId, bool succe
 void IntegrationPluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
-    Thing *thing = m_kodis.value(kodi);
+    Thing *thing = m_kodis.key(kodi);
     thing->setStateValue(kodiPlaybackStatusStateTypeId, playbackStatus);
     // legacy events
     if (playbackStatus == "Playing") {

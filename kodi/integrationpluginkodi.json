@@ -17,27 +17,6 @@
                     "browsable": true,
                     "paramTypes": [
                         {
-                            "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",
-                            "name": "ip",
-                            "displayName": "IP Address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
-                            "defaultValue": ""
-                        },
-                        {
-                            "id": "660fb4d7-9479-4c9d-a900-ce221d2b8ae4",
-                            "name": "port",
-                            "displayName": "Port",
-                            "type" : "int"
-                        },
-                        {
-                            "id": "27ea7e46-80f0-49ea-9352-b57c78905c67",
-                            "name": "httpPort",
-                            "displayName": "HTTP port",
-                            "type" : "int",
-                            "defaultValue": 8080
-                        },
-                        {
                             "id": "692eb6e0-7f4e-4f43-92da-8347372287ce",
                             "name": "uuid",
                             "displayName": "UUID",

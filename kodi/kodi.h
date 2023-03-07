@@ -52,7 +52,13 @@ public:
     ~Kodi();
 
     QHostAddress hostAddress() const;
-    int port() const;
+    void setHostAddress(const QHostAddress &address);
+
+    uint port() const;
+    void setPort(uint port);
+
+    uint httpPort() const;
+    void setHttpPort(uint httpPort);
 
     bool connected() const;
 
