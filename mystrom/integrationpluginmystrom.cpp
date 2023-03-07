@@ -148,7 +148,7 @@ void IntegrationPluginMyStrom::setupThing(ThingSetupInfo *info)
         }
         info->finish(Thing::ThingErrorNoError);
 
-        info->thing()->setStateValue("connected", true);
+        info->thing()->setStateValue(switchConnectedStateTypeId, true);
 
         pluginStorage()->beginGroup(info->thing()->id().toString());
         pluginStorage()->setValue("cachedAddress", infoUrl.host());
@@ -171,6 +171,7 @@ void IntegrationPluginMyStrom::postSetupThing(Thing *thing)
                     if (reply->error() != QNetworkReply::NoError) {
                         qCWarning(dcMyStrom()) << "Error fetching report from myStrom device:" << reply->errorString();
                         thing->setStateValue(switchConnectedStateTypeId, false);
+                        thing->setStateValue(switchCurrentPowerStateTypeId, 0);
                         return;
                     }
                     QByteArray data = reply->readAll();
