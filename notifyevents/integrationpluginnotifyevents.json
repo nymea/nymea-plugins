@@ -1,0 +1,70 @@
+{
+    "displayName": "Notify.Events",
+    "name": "notifyEvents",
+    "id": "9f3eb18a-eb59-433f-9d03-cc974756fd21",
+    "vendors": [
+        {
+            "displayName": "Notify.Events",
+            "name": "notifyEvents",
+            "id": "6089baa5-e61a-41f0-abe1-a283c6dce316",
+            "thingClasses": [
+                {
+                    "id": "e9276f0b-4194-4c4f-b0c1-b696fa15e6ff",
+                    "name": "notifyEvents",
+                    "displayName": "Notify.Events",
+                    "createMethods": ["user"],
+                    "interfaces": ["notifications"],
+                    "paramTypes": [
+                        {
+                            "id": "643a76de-d5ad-43f3-a40d-7c215eea845b",
+                            "name": "token",
+                            "displayName": "token",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "aa3ec7aa-4490-49e0-91aa-0b0891beb316",
+                            "name": "notify",
+                            "displayName": "Send notification",
+                            "paramTypes": [
+                                {
+                                    "id": "98135099-2236-4456-99ce-81b106381430",
+                                    "name": "title",
+                                    "displayName": "Title",
+                                    "type": "QString",
+                                    "inputType": "TextLine",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "394c75d3-9a9a-4da3-8729-e93be0a86813",
+                                    "name": "body",
+                                    "displayName": "Body",
+                                    "type": "QString",
+                                    "inputType": "TextArea",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "2b08b93a-95b7-418e-b9df-e446c3de65ae",
+                                    "name": "level",
+                                    "displayName": "Level",
+                                    "type": "QString",
+                                    "allowedValues": ["verbose", "info", "notice", "warning", "error", "success"],
+                                    "defaultValue": "info"
+                                },
+                                {
+                                    "id": "5e0568bf-f9f4-4289-a69f-52153c655b25",
+                                    "name": "priority",
+                                    "displayName": "Priority",
+                                    "type": "QString",
+                                    "allowedValues": ["lowest", "low", "normal", "high", "highest"],
+                                    "defaultValue": "normal"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

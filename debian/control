@@ -396,6 +396,15 @@ Description: nymea integration plugin for myStrom devices
  This package will add support for myStrom devices to nymea.
 
 
+Package: nymea-plugin-nanoleaf
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for nanoleaf
+ This package contains the nymea integration plugin for nanoleaf devices.
+
+
 Package: nymea-plugin-neatobotvac
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -417,15 +426,6 @@ Description: nymea integration plugin for netatmo
  This package contains the nymea integration plugin for the netatmo weather station.
 
 
-Package: nymea-plugin-nanoleaf
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-Conflicts: nymea-plugins-translations (< 1.0.1)
-Description: nymea integration plugin for nanoleaf
- This package contains the nymea integration plugin for nanoleaf devices.
-
-
 Package: nymea-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -434,6 +434,14 @@ Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for networkdetector
  This package contains the nymea integration plugin for detecting and monitoring
  network devices via basic networking mechanisms (ARP, ICMP..).
+
+
+Package: nymea-plugin-notifyevents
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for Notify.Events
+ This package contains the nymea integration plugin for Notify.Events.
 
 
 Package: nymea-plugin-nuki
