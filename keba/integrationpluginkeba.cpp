@@ -333,6 +333,16 @@ void IntegrationPluginKeba::setupKeba(ThingSetupInfo *info, const QHostAddress &
     KeContact *keba = new KeContact(address, m_kebaDataLayer, this);
     connect(keba, &KeContact::reachableChanged, thing, [=](bool reachable){
         thing->setStateValue("connected", reachable);
+        if (!reachable) {
+            thing->setStateValue("voltagePhaseA", 0);
+            thing->setStateValue("voltagePhaseB", 0);
+            thing->setStateValue("voltagePhaseC", 0);
+            thing->setStateValue("currentPhaseA", 0);
+            thing->setStateValue("currentPhaseB", 0);
+            thing->setStateValue("currentPhaseC", 0);
+            thing->setStateValue("currentPower", 0);
+            thing->setStateValue("powerFactor", 0);
+        }
     });
 
     connect(keba, &KeContact::commandExecuted, this, &IntegrationPluginKeba::onCommandExecuted);
