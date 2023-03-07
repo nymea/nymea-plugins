@@ -69,6 +69,7 @@ public:
 
 private:
     QNetworkReply *request(Thing *thing, const QString &path, const QUrlQuery &query = QUrlQuery());
+    void markAsDisconnected(Thing *thing);
 
 private:
     PluginTimer *m_pollTimer = nullptr;
