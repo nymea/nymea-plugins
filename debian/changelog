@@ -1,3 +1,31 @@
+nymea-plugins (1.7.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Netatmo: Add min/max values for co2 sensors
+  * Add support for Shelly Plus 2PM
+  * EVBox: Rework plugin to allow addressing multiple boxes on same bus
+
+  [ Simon Stürz ]
+  * Fronius: Set energy live states to 0 if not connected
+  * go-eCharger: Set energy live states to 0 if not connected
+  * Keba: Set energy live states to 0 if not connected
+  * mystrom: Set current power to 0 if not connected
+  * powerfox: Set current power to 0 if not connected
+  * solarlog: Set energy states to 0 if not connected
+
+  [ Michael Zanetti ]
+  * AQI: Add min/max values to pressure state
+  * Netatmo: Add min/max values to pressure state
+  * SensorTag: Add min/max to pressure state
+  * New plugin: Notify.Events
+  * Kodi: Rework setup
+  * Update python plugin dependencies to include dependabot alerts
+  * Shelly: Workaround bad counter values
+  * PushNotifications: Add more options for sending push notifications
+  * Shelly plus plug s
+
+ -- jenkins <developer@nymea.io>  Tue, 07 Mar 2023 19:21:45 +0100
+
 nymea-plugins (1.6.3) jammy; urgency=medium
 
 
