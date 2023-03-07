@@ -59,6 +59,27 @@
                                     "defaultValue": ""
                                 },
                                 {
+                                    "id": "a961c428-c824-410a-b4e6-527a13c4c4ed",
+                                    "name": "notificationId",
+                                    "displayName": "Notification ID",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "0f3c3661-e0c0-46df-a6da-aaf3a0e8157c",
+                                    "name": "sound",
+                                    "displayName": "Play sound",
+                                    "type": "bool",
+                                    "defaultValue": true
+                                },
+                                {
+                                    "id": "92ffd4ff-4bb7-4261-a904-1ae3890704e0",
+                                    "name": "remove",
+                                    "displayName": "Remove",
+                                    "type": "bool",
+                                    "defaultValue": false
+                                },
+                                {
                                     "id": "ca36a33f-a7f2-4f59-8767-3522ecaaf8fb",
                                     "name": "data",
                                     "displayName": "Data",
