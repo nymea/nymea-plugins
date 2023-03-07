@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2023, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -170,7 +170,14 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             if (!available) {
                 // Update all child things, they will be set to available once the connection starts working again
                 foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
-                    childThing->setStateValue("connected", false);
+                    // Reset live data states in order to show missing information by 0 line and not by keeping the last known value
+                    if (childThing->thingClassId() == inverterThingClassId) {
+                        markInverterAsDisconnected(childThing);
+                    } else if (childThing->thingClassId() == meterThingClassId) {
+                        markMeterAsDisconnected(childThing);
+                    } else if (childThing->thingClassId() == storageThingClassId) {
+                        markStorageAsDisconnected(childThing);
+                    }
                 }
             }
         });
@@ -435,7 +442,7 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
+            qCWarning(dcFronius()) << "PowerFlow: Failed to parse JSON data" << data << ":" << error.errorString();
             return;
         }
 
@@ -482,7 +489,7 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                 // Thing does not seem to be reachable
-                inverterThing->setStateValue("connected", false);
+                markInverterAsDisconnected(inverterThing);
                 return;
             }
 
@@ -492,7 +499,7 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(dcFronius()) << "Inverter: Failed to parse JSON data" << data << ":" << error.errorString();
-                inverterThing->setStateValue("connected", false);
+                markInverterAsDisconnected(inverterThing);
                 return;
             }
 
@@ -546,7 +553,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                 // Thing does not seem to be reachable
-                meterThing->setStateValue("connected", false);
+                markMeterAsDisconnected(meterThing);
                 return;
             }
 
@@ -556,7 +563,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
-                meterThing->setStateValue("connected", false);
+                markMeterAsDisconnected(meterThing);
                 return;
             }
 
@@ -637,7 +644,7 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                 // Thing does not seem to be reachable
-                storageThing->setStateValue("connected", false);
+                markStorageAsDisconnected(storageThing);
                 return;
             }
 
@@ -646,8 +653,8 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Meter: Failed to parse JSON data" << data << ":" << error.errorString();
-                storageThing->setStateValue("connected", false);
+                qCWarning(dcFronius()) << "Storage: Failed to parse JSON data" << data << ":" << error.errorString();
+                markStorageAsDisconnected(storageThing);
                 return;
             }
 
@@ -677,4 +684,36 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
             storageThing->setStateValue("connected", true);
         });
     }
+}
+
+void IntegrationPluginFronius::markInverterAsDisconnected(Thing *thing)
+{
+    thing->setStateValue("connected", false);
+    thing->setStateValue("currentPower", 0);
+    // Note: do not reset the energy counters since they are always counting up until reset on the device
+}
+
+void IntegrationPluginFronius::markMeterAsDisconnected(Thing *thing)
+{
+    thing->setStateValue("connected", false);
+    thing->setStateValue("currentPower", 0);
+    thing->setStateValue("voltagePhaseA", 0);
+    thing->setStateValue("voltagePhaseB", 0);
+    thing->setStateValue("voltagePhaseC", 0);
+    thing->setStateValue("currentPhaseA", 0);
+    thing->setStateValue("currentPhaseB", 0);
+    thing->setStateValue("currentPhaseC", 0);
+    thing->setStateValue("currentPowerPhaseA", 0);
+    thing->setStateValue("currentPowerPhaseB", 0);
+    thing->setStateValue("currentPowerPhaseC", 0);
+    thing->setStateValue("frequency", 0);
+    // Note: do not reset the energy counters since they are always counting up until reset on the device
+}
+
+void IntegrationPluginFronius::markStorageAsDisconnected(Thing *thing)
+{
+    thing->setStateValue("connected", false);
+    thing->setStateValue("currentPower", 0);
+    thing->setStateValue("chargingState", "idle");
+    // Note: do not reset the energy counters since they are always counting up until reset on the device
 }
