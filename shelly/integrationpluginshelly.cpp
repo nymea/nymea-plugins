@@ -843,13 +843,16 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
         return;
     }
 
+    qCDebug(dcShelly) << "CoIoT multicast message for" << thing->name() << ":" << qUtf8Printable(jsonDoc.toJson());
+    QVariantMap map = jsonDoc.toVariant().toMap();
+
     thing->setStateValue("connected", true);
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
         child->setStateValue("connected", true);
     }
+    // Remember when we recieved the last update
+    thing->setProperty("lastCoIoTMessage", QDateTime::currentDateTime());
 
-    qCDebug(dcShelly) << "CoIoT multicast message for" << thing->name() << ":" << qUtf8Printable(jsonDoc.toJson());
-    QVariantMap map = jsonDoc.toVariant().toMap();
 
     // Some states are calculated from multiple values in the list and we'll need to keep them temporarily
     int red = 0, green = 0, blue = 0, white = 0;
@@ -1215,9 +1218,10 @@ void IntegrationPluginShelly::updateStatus()
 
 void IntegrationPluginShelly::fetchStatusGen1(Thing *thing)
 {
+    QHostAddress address = getIP(thing);
     QUrl url;
     url.setScheme("http");
-    url.setHost(getIP(thing).toString());
+    url.setHost(address.toString());
     url.setPath("/status");
     url.setUserName(thing->paramValue(usernameParamTypeMap.value(thing->thingClassId())).toString());
     url.setPassword(thing->paramValue(passwordParamTypeMap.value(thing->thingClassId())).toString());
@@ -1261,6 +1265,53 @@ void IntegrationPluginShelly::fetchStatusGen1(Thing *thing)
         thing->setStateValue("currentVersion", updateMap.value("old_version").toString());
         thing->setStateValue("availableVersion", updateMap.value("new_version").toString());
         thing->setStateValue("updateStatus", updateStatusMap.value(updateMap.value("status").toString()));
+
+
+        // Sometimes, some shellies just stop to send CoIoT messages until they are rebooted...
+        // If communication to the shelly per se works fine, but we didn't receive anything in more than a minute,
+        // let's reconfigure coap and reboot the shelly
+        if (thing->property("lastCoIoTMessage").toDateTime().addSecs(10 * 60) < QDateTime::currentDateTime()) {
+            qCInfo(dcShelly()) << "Shelly" << thing->name() << "didn't send us a CoIoT message in a minute. Reconfiguring CoIoT and rebooting it.";
+            QUrlQuery query;
+            QHostAddress address = getIP(thing);
+            query.addQueryItem("coiot_enable", "true");
+            if (thing->paramValue("coapMode").toString() == "unicast") {
+                QHostAddress ourAddress;
+                foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
+                    foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
+                        if (address.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
+                            ourAddress = addressEntry.ip();
+                            break;
+                        }
+                    }
+                }
+                if (!ourAddress.isNull()) {
+                    query.addQueryItem("coiot_peer", ourAddress.toString() + ":5683");
+                } else {
+                    qCWarning(dcShelly) << "Unable to determine a matching interface for CoIoT unicast. Falling back to multicast.";
+                    query.addQueryItem("coiot_peer", "mcast");
+                }
+            } else {
+                query.addQueryItem("coiot_peer", "mcast");
+            }
+            QNetworkRequest setCoIoTRequest = createHttpRequest(thing, "/settings", query);
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(setCoIoTRequest);
+            connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, thing, [this, thing, reply](){
+                if (reply->error() != QNetworkReply::NoError) {
+                    qCWarning(dcShelly()) << "Failed to reconfigure coap on shelly" << thing->name();
+                }
+
+                QNetworkRequest rebootRequest = createHttpRequest(thing, "/reboot");
+                QNetworkReply *reply = hardwareManager()->networkManager()->get(rebootRequest);
+                connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
+                connect(reply, &QNetworkReply::finished, thing, [reply](){
+                    if (reply->error() != QNetworkReply::NoError) {
+                        qCWarning(dcShelly()) << "Failed to send reboot request to shelly.";
+                    }
+                });
+            });
+        }
     });
 }
 
@@ -1790,6 +1841,21 @@ void IntegrationPluginShelly::handleInputEvent(Thing *thing, const QString &butt
     } else {
         qCDebug(dcShelly()) << "Invalid button code from shelly" << thing->name() << inputEventString;
     }
+}
+
+QNetworkRequest IntegrationPluginShelly::createHttpRequest(Thing *thing, const QString &path, const QUrlQuery &urlQuery)
+{
+    QUrl url;
+    url.setScheme("http");
+    url.setHost(getIP(thing).toString());
+    url.setPort(80);
+    url.setPath(path);
+    if (!thing->paramValue("username").toString().isEmpty()) {
+        url.setUserName(thing->paramValue("username").toString());
+        url.setPassword(thing->paramValue("password").toString());
+    }
+    url.setQuery(urlQuery);
+    return QNetworkRequest(url);
 }
 
 QVariantMap IntegrationPluginShelly::createRpcRequest(const QString &method)
