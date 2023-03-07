@@ -69,6 +69,8 @@
                             "displayNameEvent": "Barometric pressure changed",
                             "type": "double",
                             "unit": "MilliBar",
+                            "minValue": 0,
+                            "maxValue": 2000,
                             "defaultValue": 0
                         },
                         {
