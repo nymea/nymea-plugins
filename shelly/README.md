@@ -17,6 +17,7 @@ The currently supported devices are:
 * Shelly Button 1
 * Shelly EM
 * Shelly 3EM
+* Shelly Pro 3EM
 * Shelly H+T
 * Shelly i3
 * Shelly Motion
