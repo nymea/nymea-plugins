@@ -432,7 +432,7 @@ void IntegrationPluginTado::onZoneStateReceived(const QString &homeId, const QSt
     thing->setStateValue(zoneTargetTemperatureStateTypeId, state.settingTemperature);
     thing->setStateValue(zoneTemperatureStateTypeId, state.temperature);
     thing->setStateValue(zoneHumidityStateTypeId, state.humidity);
-    thing->setStateValue(zoneWindowOpenDetectedStateTypeId, state.windowOpen);
+    thing->setStateValue(zoneWindowOpenDetectedStateTypeId, state.windowOpenDetected);
     thing->setStateValue(zoneTadoModeStateTypeId, state.tadoMode);
 }
 
