@@ -83,10 +83,12 @@ void IntegrationPluginEVBox::discoverThings(ThingDiscoveryInfo *info)
                 return;
             }
 
-            ThingDescriptor thingDescriptor(info->thingClassId(), "EVBox Elvi", serial);
+            ThingDescriptor thingDescriptor(info->thingClassId(), thingClass(info->thingClassId()).displayName(), serial);
+            ParamTypeId serialPortParamTypeId = thingClass(info->thingClassId()).paramTypes().findByName("serialPort").id();
+            ParamTypeId serialNumberParamTypeId = thingClass(info->thingClassId()).paramTypes().findByName("serialNumber").id();
             ParamList params{
-                {evboxThingSerialPortParamTypeId, portInfo.portName()},
-                {evboxThingSerialNumberParamTypeId, serial}
+                {serialPortParamTypeId, portInfo.portName()},
+                {serialNumberParamTypeId, serial}
             };
             thingDescriptor.setParams(params);
             Thing *existingThing = myThings().findByParams(params);
@@ -117,8 +119,8 @@ void IntegrationPluginEVBox::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
-    QString serialNumber = thing->paramValue(evboxThingSerialNumberParamTypeId).toString();
+    QString portName = thing->paramValue("serialPort").toString();
+    QString serialNumber = thing->paramValue("serialNumber").toString();
 
     // Opening the port, sharing with others if already opened.
     EVBoxPort *port = m_ports.value(portName);
@@ -154,7 +156,7 @@ void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
     // And connect the signals to the thing for when the setup went well
     connect(port, &EVBoxPort::closed, thing, [thing, portName](){
         qCInfo(dcEVBox()) << "Port" << portName << "closed. Marking thing as offline:" << thing->name();
-        thing->setStateValue(evboxConnectedStateTypeId, false);
+        thing->setStateValue("connected", false);
     });
     connect(port, &EVBoxPort::opened, thing, [portName](){
         qCInfo(dcEVBox()) << "Port" << portName << "opened.";
@@ -164,7 +166,7 @@ void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
         if (serial != serialNumber) {
             return;
         }
-        thing->setStateValue(evboxConnectedStateTypeId, true);
+        thing->setStateValue("connected", true);
         finishPendingAction(thing);
         m_waitingForResponses[thing] = false;
     });
@@ -173,31 +175,37 @@ void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
         if (serial != serialNumber) {
             return;
         }
-        thing->setStateValue(evboxConnectedStateTypeId, true);
+        thing->setStateValue("connected", true);
         finishPendingAction(thing);
         m_waitingForResponses[thing] = false;
 
-        double currentPower = (chargingCurrentL1 + chargingCurrentL2 + chargingCurrentL3) * 23;
-        thing->setStateValue(evboxCurrentPowerStateTypeId, currentPower);
-        thing->setStateMinMaxValues(evboxMaxChargingCurrentStateTypeId, minChargingCurrent / 10, maxChargingCurrent / 10);
-        thing->setStateValue(evboxTotalEnergyConsumedStateTypeId, totalEnergyConsumed / 1000.0);
-        thing->setStateValue(evboxChargingStateTypeId, currentPower > 0);
+        thing->setStateMinMaxValues("maxChargingCurrent", minChargingCurrent / 10, maxChargingCurrent / 10);
 
-        int phaseCount = 0;
-        if (chargingCurrentL1 > 0) {
-            phaseCount++;
+        if (thing->thingClassId() == elviMidThingClassId) {
+            double currentPower = (chargingCurrentL1 + chargingCurrentL2 + chargingCurrentL3) * 23;
+            thing->setStateValue("currentPower", currentPower);
+            thing->setStateValue("totalEnergyConsumed", totalEnergyConsumed / 1000.0);
+            thing->setStateValue("charging", currentPower > 0);
+            int phaseCount = 0;
+            if (chargingCurrentL1 > 0) {
+                phaseCount++;
+            }
+            if (chargingCurrentL2 > 0) {
+                phaseCount++;
+            }
+            if (chargingCurrentL3 > 0) {
+                phaseCount++;
+            }
+            // If all phases are on 0, we aren't charging and don't know how many phases are available...
+            // Only updating the count if we actually do know that at least one is charging.
+            if (phaseCount > 0) {
+                thing->setStateValue("phaseCount", phaseCount);
+            }
+        } else {
+            thing->setStateValue("charging", thing->stateValue("maxChargingCurrent").toUInt() > 0 && thing->stateValue("power").toBool());
+            thing->setStateValue("phaseCount", thing->setting("phaseCount").toUInt());
         }
-        if (chargingCurrentL2 > 0) {
-            phaseCount++;
-        }
-        if (chargingCurrentL3 > 0) {
-            phaseCount++;
-        }
-        // If all phases are on 0, we aren't charging and don't know how many phases are available...
-        // Only updating the count if we actually do know that at least one is charging.
-        if (phaseCount > 0) {
-            thing->setStateValue(evboxPhaseCountStateTypeId, phaseCount);
-        }
+
     });
 }
 
@@ -207,19 +215,19 @@ void IntegrationPluginEVBox::postSetupThing(Thing */*thing*/)
         m_timer = hardwareManager()->pluginTimerManager()->registerTimer(5);
         connect(m_timer, &PluginTimer::timeout, this, [this](){
             foreach (Thing *t, myThings()) {
-                QString portName = t->paramValue(evboxThingSerialPortParamTypeId).toString();
-                QString serial = t->paramValue(evboxThingSerialNumberParamTypeId).toString();
+                QString portName = t->paramValue("serialPort").toString();
+                QString serial = t->paramValue("serialNumber").toString();
 
                 if (m_waitingForResponses.value(t)) {
                     qCInfo(dcEVBox()) << "Wallbox" << t->name() << "did not respond to last command. Marking offline.";
-                    t->setStateValue(evboxConnectedStateTypeId, false);
+                    t->setStateValue("connected", false);
                 }
 
                 EVBoxPort *port = m_ports.value(portName);
                 if (port->isOpen()) {
                     quint16 maxChargingCurrent = 0;
-                    if (t->stateValue(evboxPowerStateTypeId).toBool()) {
-                        maxChargingCurrent = t->stateValue(evboxMaxChargingCurrentStateTypeId).toUInt();
+                    if (t->stateValue("power").toBool()) {
+                        maxChargingCurrent = t->stateValue("maxChargingCurrent").toUInt();
                     }
                     port->sendCommand(EVBoxPort::Command68, 60, maxChargingCurrent, serial);
                     m_waitingForResponses[t] = true;
@@ -231,8 +239,9 @@ void IntegrationPluginEVBox::postSetupThing(Thing */*thing*/)
 
 void IntegrationPluginEVBox::thingRemoved(Thing *thing)
 {
-    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
-    if (myThings().filterByParam(evboxThingSerialPortParamTypeId, portName).isEmpty()) {
+    QString portName = thing->paramValue("serialPort").toString();
+    ParamTypeId serialPortParamTypeId = thing->thingClass().paramTypes().findByName("serialPort").id();
+    if (myThings().filterByParam(serialPortParamTypeId, portName).isEmpty()) {
         qCInfo(dcEVBox()).nospace() << "No more EVBox devices using port " << portName << ". Destroying port.";
         delete m_ports.take(portName);
     }
@@ -247,17 +256,18 @@ void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
 {
     Thing *thing = info->thing();
 
-    QString portName = thing->paramValue(evboxThingSerialPortParamTypeId).toString();
-    QString serial = thing->paramValue(evboxThingSerialNumberParamTypeId).toString();
+    QString portName = thing->paramValue("serialPort").toString();
+    QString serial = thing->paramValue("serialNumber").toString();
     EVBoxPort *port = m_ports.value(portName);
 
     qCDebug(dcEVBox()) << "Executing action" << info->action().actionTypeId().toString();
-    if (info->action().actionTypeId() == evboxPowerActionTypeId) {
-        bool power = info->action().paramValue(evboxPowerActionPowerParamTypeId).toBool();
-        quint16 maxChargingCurrent = thing->stateValue(evboxMaxChargingCurrentStateTypeId).toUInt();
+    ActionType actionType = thing->thingClass().actionTypes().findById(info->action().actionTypeId());
+    if (actionType.name() == "power") {
+        bool power = info->action().paramValue(actionType.id()).toBool();
+        quint16 maxChargingCurrent = thing->stateValue("maxChargingCurrent").toUInt();
         port->sendCommand(EVBoxPort::Command68, 60, power ? maxChargingCurrent : 0, serial);
-    } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
-        int maxChargingCurrent = info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toInt();
+    } else if (actionType.name() == "maxChargingCurrent") {
+        int maxChargingCurrent = info->action().paramValue(actionType.id()).toInt();
         port->sendCommand(EVBoxPort::Command68, 60, maxChargingCurrent, serial);
     }
 
@@ -273,10 +283,11 @@ void IntegrationPluginEVBox::finishPendingAction(Thing *thing)
     if (!m_pendingActions.value(thing).isEmpty()) {
         ThingActionInfo *info = m_pendingActions.value(thing).first();
         qCDebug(dcEVBox()) << "Finishing action:" << info->action().actionTypeId().toString();
-        if (info->action().actionTypeId() == evboxPowerActionTypeId) {
-            thing->setStateValue(evboxPowerStateTypeId, info->action().paramValue(evboxPowerActionPowerParamTypeId));
-        } else if (info->action().actionTypeId() == evboxMaxChargingCurrentActionTypeId) {
-            thing->setStateValue(evboxMaxChargingCurrentStateTypeId, info->action().paramValue(evboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId));
+        ActionType actionType = thing->thingClass().actionTypes().findById(info->action().actionTypeId());
+        if (actionType.name() == "power") {
+            thing->setStateValue("power", info->action().paramValue(actionType.id()));
+        } else if (actionType.name() == "maxChargingCurrent") {
+            thing->setStateValue("maxChargingCurrent", info->action().paramValue(actionType.id()));
         }
         info->finish(Thing::ThingErrorNoError);
     }
