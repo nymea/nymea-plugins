@@ -3196,6 +3196,7 @@
                             "displayNameEvent": "Position changed",
                             "displayNameAction": "Set position",
                             "type": "int",
+                            "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
