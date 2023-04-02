@@ -158,10 +158,11 @@ void IntegrationPluginBosswerk::setupThing(ThingSetupInfo *info)
     timer = hardwareManager()->pluginTimerManager()->registerTimer(5);
     m_timers.insert(thing, timer);
 
-    connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [timer, thing](bool reachable) {
+    connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [this, timer, thing](bool reachable) {
         thing->setStateValue(mix00ConnectedStateTypeId, reachable);
         if (reachable) {
             timer->start();
+            pollDevice(thing);
         } else {
             timer->stop();
             thing->setStateValue(mix00CurrentPowerStateTypeId, 0);
@@ -169,7 +170,9 @@ void IntegrationPluginBosswerk::setupThing(ThingSetupInfo *info)
     });
 
     connect(timer, &PluginTimer::timeout, thing, [this, thing](){
-        pollDevice(thing);
+        if (m_deviceMonitors.value(thing)->reachable()) {
+            pollDevice(thing);
+        }
     });
 
     pollDevice(thing);
