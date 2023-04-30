@@ -73,6 +73,7 @@ private slots:
     void lightStateChanged();
     void remoteStateChanged();
     void onRemoteButtonEvent(int buttonCode);
+    void onRemoteRotaryEvent(int rotationCode);
 
     // Motion sensor
     void onMotionSensorReachableChanged(bool reachable);

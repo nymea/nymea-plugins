@@ -55,10 +55,12 @@ private:
     int m_battery;
     QString m_lastUpdate;
     int m_lastButtonCode = -1;
+    int m_lastRotationCode = 0;
 
 signals:
     void stateChanged();
     void buttonPressed(int buttonCode);
+    void rotated(int rotationCode);
 
 };
 

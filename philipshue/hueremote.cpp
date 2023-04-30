@@ -61,20 +61,24 @@ void HueRemote::updateStates(const QVariantMap &statesMap, const QVariantMap &co
 
     QString lastUpdate = statesMap.value("lastupdated").toString();
     int buttonCode = statesMap.value("buttonevent").toInt();
+    int rotationCode = statesMap.value("expectedrotation").toInt();
 
-    // If we never polled, just store lastUpdate/buttonCode and not emit a falsely button pressed event
+    // If we never polled, just store lastUpdate/buttonCode/rotationCode and not emit a falsely button pressed event
     if (m_lastUpdate.isEmpty() || m_lastButtonCode == -1) {
         m_lastUpdate = lastUpdate;
         m_lastButtonCode = buttonCode;
+        m_lastRotationCode = rotationCode;
     }
 
-    if (m_lastUpdate != lastUpdate || m_lastButtonCode != buttonCode) {
+    if (m_lastUpdate != lastUpdate || m_lastButtonCode != buttonCode || m_lastRotationCode != rotationCode) {
         m_lastUpdate = lastUpdate;
         m_lastButtonCode = buttonCode;
+        m_lastRotationCode = rotationCode;
 
         qCDebug(dcPhilipsHue) << "button pressed" << buttonCode;
 
         emit buttonPressed(buttonCode);
+        emit rotated(rotationCode);
     }
 }
 
