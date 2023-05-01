@@ -688,13 +688,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "65748463-dd3f-430d-871c-dd7ee4db0b1c",
-                            "name": "type",
-                            "displayName": "type",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "e2365a3c-cdf3-4b1e-b908-e7642e467f20",
                             "name": "uuid",
                             "displayName": "uuid",
@@ -702,10 +695,31 @@
                             "readOnly": true
                         },
                         {
-                            "id": "9263bef9-4dd9-4658-b798-cd39fcb70fee",
-                            "name": "sensorId",
-                            "displayName": "sensor id",
+                            "id": "dead7cf0-3ecc-4332-8fc6-42d4e71f508c",
+                            "name": "idRotary",
+                            "displayName": "Rotary dial id",
                             "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "267bcb24-b5c1-421d-bc6a-9b8fc7b43696",
+                            "name": "uuidRotary",
+                            "displayName": "Rotary dial uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5269c70c-49e6-4090-aa57-3c89ee328b1e",
+                            "name": "idSwitch",
+                            "displayName": "Switch id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "ae7ce90a-9bfb-45e4-90e4-8e491b374249",
+                            "name": "uuidSwitch",
+                            "displayName": "Switch uuid",
+                            "type" : "QString",
                             "readOnly": true
                         }
                     ],

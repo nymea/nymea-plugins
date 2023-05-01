@@ -519,18 +519,21 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == tapDialThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue Tap Dial" << thing->params() << thing->thingClassId();
 
-        HueRemote *hueTapDial = new HueRemote(bridge, this);
+        HueTapDial *hueTapDial = new HueTapDial(bridge, this);
 
-        hueTapDial->setId(thing->paramValue(tapDialThingSensorIdParamTypeId).toInt());
         hueTapDial->setModelId(thing->paramValue(tapDialThingModelIdParamTypeId).toString());
-        hueTapDial->setType(thing->paramValue(tapDialThingTypeParamTypeId).toString());
         hueTapDial->setUuid(thing->paramValue(tapDialThingUuidParamTypeId).toString());
+        hueTapDial->setRotaryId(thing->paramValue(tapDialThingIdRotaryParamTypeId).toInt());
+        hueTapDial->setRotaryUuid(thing->paramValue(tapDialThingUuidRotaryParamTypeId).toString());
+        hueTapDial->setSwitchId(thing->paramValue(tapDialThingIdSwitchParamTypeId).toInt());
+        hueTapDial->setSwitchUuid(thing->paramValue(tapDialThingUuidSwitchParamTypeId).toString());
 
-        connect(hueTapDial, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
-        connect(hueTapDial, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
-        connect(hueTapDial, &HueRemote::rotated, this, &IntegrationPluginPhilipsHue::onRemoteRotaryEvent);
+        connect(hueTapDial, &HueTapDial::reachableChanged, this, &IntegrationPluginPhilipsHue::onTapDialReachableChanged);
+        connect(hueTapDial, &HueTapDial::batteryLevelChanged, this, &IntegrationPluginPhilipsHue::onTapDialBatteryLevelChanged);
+        connect(hueTapDial, &HueTapDial::buttonPressed, this, &IntegrationPluginPhilipsHue::onTapDialButtonEvent);
+        connect(hueTapDial, &HueTapDial::rotated, this, &IntegrationPluginPhilipsHue::onTapDialRotaryEvent);
 
-        m_remotes.insert(hueTapDial, thing);
+        m_tapDials.insert(hueTapDial, thing);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -707,10 +710,16 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId || thing->thingClassId() == tapDialThingClassId || thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId || thing->thingClassId() == wallSwitchThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == dimmerSwitch2ThingClassId || thing->thingClassId() == tapThingClassId || thing->thingClassId() == fohThingClassId || thing->thingClassId() == smartButtonThingClassId || thing->thingClassId() == wallSwitchThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
+    }
+
+    if (thing->thingClassId() == tapDialThingClassId) {
+        HueTapDial *tapDial = m_tapDials.key(thing);
+        m_tapDials.remove(tapDial);
+        tapDial->deleteLater();
     }
 
     if (thing->thingClassId() == outdoorSensorThingClassId || thing->thingClassId() == motionSensorThingClassId) {
@@ -1340,49 +1349,6 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
         // * codes ending in 0 (e.g. 1000) indicate start of long press
         // * codes ending in 3 (e.g. 1003) indicate end of long press
         // * codes ending in 1 (e.g. 1001) are sent during the long press
-    } else if (thing->thingClassId() == tapDialThingClassId) {
-        switch (buttonCode) {
-        case 1002:
-            param = Param(tapDialPressedEventButtonNameParamTypeId, "•");
-            id = tapDialPressedEventTypeId;
-            break;
-        case 1001:
-            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "•");
-            id = tapDialLongPressedEventTypeId;
-            break;
-        case 2002:
-            param = Param(tapDialPressedEventButtonNameParamTypeId, "••");
-            id = tapDialPressedEventTypeId;
-            break;
-        case 2001:
-            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "••");
-            id = tapDialLongPressedEventTypeId;
-            break;
-        case 3002:
-            param = Param(tapDialPressedEventButtonNameParamTypeId, "•••");
-            id = tapDialPressedEventTypeId;
-            break;
-        case 3001:
-            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "•••");
-            id = tapDialLongPressedEventTypeId;
-            break;
-        case 4002:
-            param = Param(tapDialPressedEventButtonNameParamTypeId, "••••");
-            id = tapDialPressedEventTypeId;
-            break;
-        case 4001:
-            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "••••");
-            id = tapDialLongPressedEventTypeId;
-            break;
-        default:
-            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Tap Dial:" << buttonCode << "Thing name:" << thing->name();
-            return;
-        }
-        // codes ending in 2 (e.g. 1002) are short presses;
-        // for long presses the Dimmer Switch V2 sends 3 codes: 
-        // * codes ending in 0 (e.g. 1000) indicate start of long press
-        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
-        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
     } else if (thing->thingClassId() == tapThingClassId) {
         switch (buttonCode) {
         case 34:
@@ -1457,12 +1423,72 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
     emitEvent(Event(id, m_remotes.value(remote)->id(), ParamList() << param));
 }
 
-void IntegrationPluginPhilipsHue::onRemoteRotaryEvent(int rotationCode)
+void IntegrationPluginPhilipsHue::onTapDialButtonEvent(int buttonCode)
 {
-    HueRemote *remote = static_cast<HueRemote *>(sender());
-    Thing *thing = m_remotes.value(remote);
+    HueTapDial *tapDial = static_cast<HueTapDial *>(sender());
+    Thing *thing = m_tapDials.value(tapDial);
     if (!thing) {
         qCWarning(dcPhilipsHue()) << "Received a button press event for a thing we don't know!";
+        return;
+    }
+
+    EventTypeId id;
+    Param param;
+
+    if (thing->thingClassId() == tapDialThingClassId) {
+        switch (buttonCode) {
+        case 1002:
+            param = Param(tapDialPressedEventButtonNameParamTypeId, "•");
+            id = tapDialPressedEventTypeId;
+            break;
+        case 1001:
+            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "•");
+            id = tapDialLongPressedEventTypeId;
+            break;
+        case 2002:
+            param = Param(tapDialPressedEventButtonNameParamTypeId, "••");
+            id = tapDialPressedEventTypeId;
+            break;
+        case 2001:
+            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "••");
+            id = tapDialLongPressedEventTypeId;
+            break;
+        case 3002:
+            param = Param(tapDialPressedEventButtonNameParamTypeId, "•••");
+            id = tapDialPressedEventTypeId;
+            break;
+        case 3001:
+            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "•••");
+            id = tapDialLongPressedEventTypeId;
+            break;
+        case 4002:
+            param = Param(tapDialPressedEventButtonNameParamTypeId, "••••");
+            id = tapDialPressedEventTypeId;
+            break;
+        case 4001:
+            param = Param(tapDialLongPressedEventButtonNameParamTypeId, "••••");
+            id = tapDialLongPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Tap Dial:" << buttonCode << "Thing name:" << thing->name();
+            return;
+        }
+        // codes ending in 2 (e.g. 1002) are short presses;
+        // for long presses the Dimmer Switch V2 sends 3 codes: 
+        // * codes ending in 0 (e.g. 1000) indicate start of long press
+        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
+        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
+    }
+    emitEvent(Event(id, m_tapDials.value(tapDial)->id(), ParamList() << param));
+}
+
+
+void IntegrationPluginPhilipsHue::onTapDialRotaryEvent(int rotationCode)
+{
+    HueTapDial *tapDial = static_cast<HueTapDial *>(sender());
+    Thing *thing = m_tapDials.value(tapDial);
+    if (!thing) {
+        qCWarning(dcPhilipsHue()) << "Received a rotary event for a thing we don't know!";
         return;
     }
 
@@ -1491,7 +1517,22 @@ void IntegrationPluginPhilipsHue::onRemoteRotaryEvent(int rotationCode)
             return;
         }
     }
-    emitEvent(Event(id, m_remotes.value(remote)->id()));
+    emitEvent(Event(id, m_tapDials.value(tapDial)->id()));
+}
+
+void IntegrationPluginPhilipsHue::onTapDialReachableChanged(bool reachable)
+{
+    HueTapDial *tapDial = static_cast<HueTapDial *>(sender());
+    Thing *tapDialDevice = m_tapDials.value(tapDial);
+    tapDialDevice->setStateValue(tapDialConnectedStateTypeId, reachable);
+}
+
+void IntegrationPluginPhilipsHue::onTapDialBatteryLevelChanged(int batteryLevel)
+{
+    HueTapDial *tapDial = static_cast<HueTapDial *>(sender());
+    Thing *tapDialDevice = m_tapDials.value(tapDial);
+    tapDialDevice->setStateValue(tapDialBatteryLevelStateTypeId, batteryLevel);
+    tapDialDevice->setStateValue(tapDialBatteryCriticalStateTypeId, (batteryLevel < 5));
 }
 
 void IntegrationPluginPhilipsHue::onMotionSensorReachableChanged(bool reachable)
@@ -1784,8 +1825,10 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
     // Create sensors if not already added
     QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
     QHash<QString, HueMotionSensor *> motionSensors;
+    QHash<QString, HueTapDial *> tapDials;
     QList<HueRemote*> remotesToRemove = m_remotes.keys();
     QList<HueMotionSensor*> sensorsToRemove = m_motionSensors.keys();
+    QList<HueTapDial*> tapDialsToRemove = m_tapDials.keys();
     foreach (const QString &sensorId, sensorsMap.keys()) {
 
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
@@ -1797,6 +1840,12 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             //            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
             if (remote->uuid() == uuid) {
                 remotesToRemove.removeAll(remote);
+                break;
+            }
+        }
+        foreach (HueTapDial* tapDial, tapDialsToRemove) {
+            if (tapDial->uuid() == uuid.split("-").first()) {
+                tapDialsToRemove.removeAll(tapDial);
                 break;
             }
         }
@@ -1836,26 +1885,49 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
 
             // Tap Dial
         } else if (model == "RDM002") {
+            // Get the base uuid from this sensor
+            QString baseUuid = HueDevice::getBaseUuid(uuid);
+            qCDebug(dcPhilipsHue) << "Base uuid:" << baseUuid;
+
+            // Rotary dial
             if (sensorMap.value("type").toString() == "ZLLRelativeRotary") {
-                ThingDescriptor descriptor(tapDialThingClassId, sensorMap.value("name").toString(), "Philips Hue Tap Dial", thing->id());
-                ParamList params;
-                params.append(Param(tapDialThingModelIdParamTypeId, model));
-                params.append(Param(tapDialThingTypeParamTypeId, sensorMap.value("type").toString()));
-                params.append(Param(tapDialThingUuidParamTypeId, uuid));
-                params.append(Param(tapDialThingSensorIdParamTypeId, sensorId));
-                descriptor.setParams(params);
-                emit autoThingsAppeared({descriptor});
-                qCDebug(dcPhilipsHue) << "Found new tap dial" << sensorMap.value("name").toString() << model;
-            } else if (sensorMap.value("type").toString() == "ZLLSwitch") {
-                ThingDescriptor descriptor(tapDialThingClassId, sensorMap.value("name").toString(), "Philips Hue Tap Dial", thing->id());
-                ParamList params;
-                params.append(Param(tapDialThingModelIdParamTypeId, model));
-                params.append(Param(tapDialThingTypeParamTypeId, sensorMap.value("type").toString()));
-                params.append(Param(tapDialThingUuidParamTypeId, uuid));
-                params.append(Param(tapDialThingSensorIdParamTypeId, sensorId));
-                descriptor.setParams(params);
-                emit autoThingsAppeared({descriptor});
-                qCDebug(dcPhilipsHue) << "Found new tap dial" << sensorMap.value("name").toString() << model;
+                qCDebug(dcPhilipsHue()) << "Found rotary dial from tap dial:" << baseUuid << sensorMap;
+                // Check if we have tap dial for this rotary dial
+                if (tapDials.contains(baseUuid)) {
+                    HueTapDial *tapDial = tapDials.value(baseUuid);
+                    tapDial->setRotaryUuid(uuid);
+                    tapDial->setRotaryId(sensorId.toInt());
+                } else {
+                    // Create a tap dial
+                    HueTapDial *tapDial = nullptr;
+                    tapDial = new HueTapDial(bridge, this);
+
+                    tapDial->setModelId(model);
+                    tapDial->setUuid(baseUuid);
+                    tapDial->setRotaryUuid(uuid);
+                    tapDial->setRotaryId(sensorId.toInt());
+                    tapDials.insert(baseUuid, tapDial);
+                }
+            }
+            // Buttons
+            if (sensorMap.value("type").toString() == "ZLLSwitch") {
+                qCDebug(dcPhilipsHue()) << "Found switch from tap dial:" << baseUuid << sensorMap;
+                // Check if we have tap dial for this switch
+                if (tapDials.contains(baseUuid)) {
+                    HueTapDial *tapDial = tapDials.value(baseUuid);
+                    tapDial->setSwitchUuid(uuid);
+                    tapDial->setSwitchId(sensorId.toInt());
+                } else {
+                    // Create a tap dial
+                    HueTapDial *tapDial = nullptr;
+                    tapDial = new HueTapDial(bridge, this);
+
+                    tapDial->setModelId(model);
+                    tapDial->setUuid(baseUuid);
+                    tapDial->setSwitchUuid(uuid);
+                    tapDial->setSwitchId(sensorId.toInt());
+                    tapDials.insert(baseUuid, tapDial);
+                }
             }
 
             // Smart Button
@@ -2023,11 +2095,41 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         motionSensor->deleteLater();
     }
 
+    // Create tap dials if there are any new devices found
+    foreach (HueTapDial *tapDial, tapDials.values()) {
+        QString baseUuid = tapDials.key(tapDial);
+        if (tapDial->isValid()) {
+            ThingDescriptor descriptor(tapDialThingClassId, tr("Philips Hue Tap Dial"), baseUuid, thing->id());
+            ParamList params;
+            params.append(Param(tapDialThingModelIdParamTypeId, tapDial->modelId()));
+            params.append(Param(tapDialThingUuidParamTypeId, tapDial->uuid()));
+            params.append(Param(tapDialThingIdRotaryParamTypeId, tapDial->rotaryId()));
+            params.append(Param(tapDialThingUuidRotaryParamTypeId, tapDial->rotaryUuid()));
+            params.append(Param(tapDialThingIdSwitchParamTypeId, tapDial->switchId()));
+            params.append(Param(tapDialThingUuidSwitchParamTypeId, tapDial->switchUuid()));
+            descriptor.setParams(params);
+            qCDebug(dcPhilipsHue()) << "Found new tap dial" << baseUuid << tapDialThingClassId;
+            emit autoThingsAppeared({descriptor});
+        }
+
+        // Clean up
+        tapDials.remove(baseUuid);
+        tapDial->deleteLater();
+    }
+
     foreach (HueRemote* remote, remotesToRemove) {
         Thing *remoteThing = m_remotes.value(remote);
         if (remoteThing->parentId() == thing->id()) {
             qCDebug(dcPhilipsHue()) << "Hue remote" << remote->uuid() << "disappeared from bridge";
             emit autoThingDisappeared(remoteThing->id());
+        }
+    }
+
+    foreach (HueTapDial* tapDial, tapDialsToRemove) {
+        Thing *tapDialThing = m_tapDials.value(tapDial);
+        if (tapDialThing->parentId() == thing->id()) {
+            qCDebug(dcPhilipsHue()) << "Hue tap dial disappeared from bridge";
+            emit autoThingDisappeared(tapDialThing->id());
         }
     }
 
@@ -2191,6 +2293,13 @@ void IntegrationPluginPhilipsHue::processSensorsRefreshResponse(Thing *thing, co
             }
         }
 
+        // Tap dials
+        foreach (HueTapDial *tapDial, m_tapDials.keys()) {
+            if (tapDial->hasSensor(sensorId.toInt()) && m_tapDials.value(tapDial)->parentId() == thing->id()) {
+                tapDial->updateStates(sensorMap);
+            }
+        }
+
         // Motion sensors
         foreach (HueMotionSensor *motionSensor, m_motionSensors.keys()) {
             if (motionSensor->hasSensor(sensorId.toInt()) && m_motionSensors.value(motionSensor)->parentId() == thing->id()) {
@@ -2270,6 +2379,13 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, bool reac
                     } else if (m_remotes.value(remote)->thingClassId() == wallSwitchThingClassId) {
                         m_remotes.value(remote)->setStateValue(wallSwitchConnectedStateTypeId, false);
                     }
+                }
+            }
+
+            foreach (HueTapDial *tapDial, m_tapDials.keys()) {
+                if (m_tapDials.value(tapDial)->parentId() == thing->id()) {
+                    tapDial->setReachable(false);
+                    m_tapDials.value(tapDial)->setStateValue(tapDialConnectedStateTypeId, false);
                 }
             }
 
@@ -2373,6 +2489,15 @@ bool IntegrationPluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
         // Hue wall switch module
         if (thing->thingClassId() == wallSwitchThingClassId) {
             if (thing->paramValue(wallSwitchThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
+        // Tap Dial consists out of 2 devices
+        if (thing->thingClassId() == tapDialThingClassId) {
+            if (thing->paramValue(tapDialThingUuidRotaryParamTypeId).toString() == uuid) {
+                return true;
+            } else if (thing->paramValue(tapDialThingUuidSwitchParamTypeId).toString() == uuid) {
                 return true;
             }
         }
