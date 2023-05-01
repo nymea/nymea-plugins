@@ -1473,11 +1473,6 @@ void IntegrationPluginPhilipsHue::onTapDialButtonEvent(int buttonCode)
             qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Tap Dial:" << buttonCode << "Thing name:" << thing->name();
             return;
         }
-        // codes ending in 2 (e.g. 1002) are short presses;
-        // for long presses the Dimmer Switch V2 sends 3 codes: 
-        // * codes ending in 0 (e.g. 1000) indicate start of long press
-        // * codes ending in 3 (e.g. 1003) indicate end of long press --> not yet supported by this plugin, but e.g. LongPressEnded action could be added
-        // * codes ending in 1 (e.g. 1001) are sent during the long press --> probably for backwards compatibility with earlier version, and therefore not added to this plugin
     }
     emitEvent(Event(id, m_tapDials.value(tapDial)->id(), ParamList() << param));
 }

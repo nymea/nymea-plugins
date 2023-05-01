@@ -65,7 +65,7 @@ int HueTapDial::switchId() const
 
 void HueTapDial::setSwitchId(int sensorId)
 {
-    m_SwitchId = sensorId;
+    m_switchId = sensorId;
 }
 
 QString HueTapDial::switchUuid() const
@@ -78,7 +78,7 @@ void HueTapDial::setSwitchUuid(const QString &switchUuid)
     m_switchUuid = switchUuid;
 }
 
-double HueTapDial::level() const
+int HueTapDial::level() const
 {
     return m_level;
 }
@@ -96,7 +96,6 @@ void HueTapDial::updateStates(const QVariantMap &sensorMap)
     QVariantMap configMap = sensorMap.value("config").toMap();
     if (configMap.contains("reachable")) {
         setReachable(configMap.value("reachable", false).toBool());
-        // emit reachableChanged????
     }
 
     if (configMap.contains("battery")) {
