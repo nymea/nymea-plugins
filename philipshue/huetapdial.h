@@ -84,7 +84,8 @@ private:
     QString m_switchUuid;
 
     // States
-    QString m_lastUpdate;
+    QString m_lastUpdateButton;
+    QString m_lastUpdateRotation;
     double m_level = 0;
     int m_batteryLevel = 0;
     int m_lastButtonCode = -1;

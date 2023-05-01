@@ -111,16 +111,16 @@ void HueTapDial::updateStates(const QVariantMap &sensorMap)
 
     // If rotated
     if (sensorMap.value("uniqueid").toString() == m_rotaryUuid) {
-        QString lastUpdate = stateMap.value("lastupdated").toString();
+        QString lastUpdateRotation = stateMap.value("lastupdated").toString();
         int rotationCode = stateMap.value("expectedrotation").toInt();
 
         // If we never polled, just store lastUpdate/rotationCode and not emit a false rotated event
-        if (m_lastUpdate.isEmpty() || m_lastRotationCode == 0) {
-            m_lastUpdate = lastUpdate;
+        if (m_lastUpdateRotation.isEmpty() || m_lastRotationCode == 0) {
+            m_lastUpdateRotation = lastUpdateRotation;
             m_lastRotationCode = rotationCode;
         }
-        if (m_lastUpdate != lastUpdate || m_lastRotationCode != rotationCode) {
-            m_lastUpdate = lastUpdate;
+        if (m_lastUpdateRotation != lastUpdateRotation || m_lastRotationCode != rotationCode) {
+            m_lastUpdateRotation = lastUpdateRotation;
             m_lastRotationCode = rotationCode;
             qCDebug(dcPhilipsHue) << "rotated" << rotationCode;
             emit rotated(rotationCode);
@@ -129,16 +129,16 @@ void HueTapDial::updateStates(const QVariantMap &sensorMap)
 
     // If button press
     if (sensorMap.value("uniqueid").toString() == m_switchUuid) {
-        QString lastUpdate = stateMap.value("lastupdated").toString();
+        QString lastUpdateButton = stateMap.value("lastupdated").toString();
         int buttonCode = stateMap.value("buttonevent").toInt();
 
         // If we never polled, just store lastUpdate/buttonCode and not emit a false button pressed event
-        if (m_lastUpdate.isEmpty() || m_lastButtonCode == -1) {
-            m_lastUpdate = lastUpdate;
+        if (m_lastUpdateButton.isEmpty() || m_lastButtonCode == -1) {
+            m_lastUpdateButton = lastUpdateButton;
             m_lastButtonCode = buttonCode;
         }
-        if (m_lastUpdate != lastUpdate || m_lastButtonCode != buttonCode) {
-            m_lastUpdate = lastUpdate;
+        if (m_lastUpdateButton != lastUpdateButton || m_lastButtonCode != buttonCode) {
+            m_lastUpdateButton = lastUpdateButton;
             m_lastButtonCode = buttonCode;
             qCDebug(dcPhilipsHue) << "button pressed" << buttonCode;
             emit buttonPressed(buttonCode);
