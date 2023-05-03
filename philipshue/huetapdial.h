@@ -65,16 +65,6 @@ public:
     bool hasSensor(int sensorId);
     bool hasSensor(const QString &sensorUuid);
 
-    // virtual StateTypeId connectedStateTypeId() const = 0;
-    // virtual StateTypeId levelStateTypeId() const = 0;
-    // virtual StateTypeId batteryLevelStateTypeId() const = 0;
-    // virtual StateTypeId batteryCriticalStateTypeId() const = 0;
-
-    // StateTypeId connectedStateTypeId() const override { return tapDialConnectedStateTypeId; }
-    // StateTypeId levelStateTypeId() const override { return tapDialLevelStateTypeId; }
-    // StateTypeId batteryLevelStateTypeId() const override { return tapDialBatteryLevelStateTypeId; }
-    // StateTypeId batteryCriticalStateTypeId() const override { return tapDialBatteryCriticalStateTypeId; }
-
 private:
     // Params
     int m_rotaryId;
