@@ -55,7 +55,7 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
         return;
     }
 
-    qCDebug(dcFronius()) << "Starting network discovery...";
+    qCInfo(dcFronius()) << "Starting network discovery...";
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [=](){
@@ -448,18 +448,29 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
 
         // Parse the data and update the states of our device
         QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-        //qCDebug(dcFronius()) << "Power flow data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
-
-        // Find the inverter for this connection and set the total power
+        qCDebug(dcFronius()) << "Power flow data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
         Things availableInverters = myThings().filterByParentId(parentThing->id()).filterByThingClassId(inverterThingClassId);
-        if (availableInverters.count() == 1) {
-            Thing *inverterThing = availableInverters.first();
-            double pvPower = dataMap.value("Site").toMap().value("P_PV").toDouble();
-            inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - pvPower);
+        if (availableInverters.count() > 0) {
+            if (availableInverters.count() == 1) {
+                // Note: this is the actual power if there is a storage (the inverter object returns the energy before DC convertion fpor the storage
+                Thing *inverterThing = availableInverters.first();
+                double pvPower = dataMap.value("Site").toMap().value("P_PV").toDouble();
+                inverterThing->setStateValue(inverterCurrentPowerStateTypeId, - pvPower);
+            } else {
+                // Let's set the individual PV values
+                foreach (Thing *inverterThing, availableInverters) {
+                    QVariantMap inverterMap = dataMap.value("Inverters").toMap().value(QString::number(inverterThing->paramValue(inverterThingIdParamTypeId).toInt())).toMap();
+                    if (!inverterMap.isEmpty()) {
+                        double inverterPower = inverterMap.value("P").toDouble();
+                        inverterThing->setStateValue(inverterCurrentPowerStateTypeId, -inverterPower);
+                    }
+                }
+            }
         }
 
         // Find the storage for this connection and update the current power
         Things availableStorages = myThings().filterByParentId(parentThing->id()).filterByThingClassId(storageThingClassId);
+        // TODO: check what to set if there are more than one battery connected
         if (availableStorages.count() == 1) {
             Thing *storageThing = availableStorages.first();
             // Note: negative (charge), positiv (discharge)
