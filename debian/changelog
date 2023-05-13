@@ -1,3 +1,36 @@
+nymea-plugins (1.9.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * WIP: New Plugin: nymea owlets
+  * go-e: Add possibility to control charging phases
+  * Shelly: Reconfigure CoAP on gen 1 shellies if they don't send any
+    data
+  * Notify.Events: Fix a typo in meta.json
+  * New Plugin: Easee
+  * EQ-3, Tado: Update thermostats windowOpenDetected states
+  * Shelly: Fix creation of children for the Plus 2PM
+  * Meross: Fix polling for totalEnergy
+  * EVBox: Split thing class into one with and one without meter
+  * Shelly: Add support for the Shelly Pro 3EM
+  * Update extendedclosable interfaces
+  * Bosswerk: Don't poll the device when it's unreachable
+  * Sunposition: Add new rpi build for simplejson
+  * Shelly: Rework Gen 2 device handling
+
+  [ Simon Stürz ]
+  * go-eCharger: Fix API V2 energy value parsing
+
+  [ Jenkins ]
+  * Philips Hue: Add support for Hue Tap Dial
+
+  [ Michael Zanetti ]
+  * Tado: Suppress a warning when thermostat is off
+
+  [ Simon Stürz ]
+  * Fronius: Fix PV power if there are multiple inverters
+
+ -- jenkins <developer@nymea.io>  Sat, 13 May 2023 15:13:47 +0200
+
 nymea-plugins (1.7.0) jammy; urgency=medium
 
   [ Michael Zanetti ]
