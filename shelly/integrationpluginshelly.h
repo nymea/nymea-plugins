@@ -78,6 +78,7 @@ private:
     void setupShellyChild(ThingSetupInfo *info);
 
     QHostAddress getIP(Thing *thing) const;
+    bool isGen2(const QString &shellyId) const;
 
     void handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount);
 
