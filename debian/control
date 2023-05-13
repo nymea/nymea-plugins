@@ -492,6 +492,18 @@ Description: nymea integration plugin for osdomotics
  This package contains the nymea integration plugin for osdomotics.
 
 
+Package: nymea-plugin-owlet
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         avrdude,
+         nymea-plugins-translations,
+Description: nymea.io plugin for nymea:owlet
+  nymea:owlet is a firmware for microcontrollers (Arduino/ESP8266/ESP32) which
+  exposes pins of the microcontroller to nymea and allows using them for
+  whatever purpose like moodlights, control relays, inputs etc.  
+
+
 Package: nymea-plugin-philipshue
 Architecture: any
 Depends: ${shlibs:Depends},
