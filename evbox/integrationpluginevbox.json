@@ -10,11 +10,12 @@
             "thingClasses": [
                 {
                     "id": "d73a14e3-10af-47bc-9bc7-a5ff6e52f72c",
-                    "name": "evbox",
-                    "displayName": "Elvi",
+                    "name": "elviMid",
+                    "displayName": "Elvi + MID meter",
                     "createMethods": ["discovery"],
+                    "discoveryType": "weak",
                     "setupMethod": "justadd",
-                    "interfaces": [ "evcharger", "connectable" ],
+                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "bce7c412-c19a-4e60-a11f-fe8308408abf",
@@ -86,6 +87,88 @@
                         },
                         {
                             "id": "1120abe3-1878-4301-a701-014b24fd1e41",
+                            "name": "phaseCount",
+                            "displayName": "Used phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
+                        }
+                    ]
+                },
+                {
+                    "id": "81df1344-3861-4554-972c-6cd4b2ec97a7",
+                    "name": "elvi",
+                    "displayName": "Elvi",
+                    "createMethods": ["discovery"],
+                    "discoveryType": "weak",
+                    "setupMethod": "justadd",
+                    "interfaces": [ "evcharger", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "159fec55-e73d-4a9d-bbde-b2b44fe7f363",
+                            "name":"serialPort",
+                            "displayName": "Serial port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "987ddd33-cbcd-4716-bdaa-6824a5295d22",
+                            "name":"serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "3b44ed38-5cfe-4f61-8ad4-a4fe282944ac",
+                            "name": "phaseCount",
+                            "displayName": "Connected phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 3
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e763b450-e180-4afb-9fcf-c75ad2f3d7c7",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "d9875cbf-3736-484c-bf07-08a1d7f9cc89",
+                            "name": "power",
+                            "displayName": "Charging enabled",
+                            "displayNameAction": "Enable/disable charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "186d792a-5bab-4144-837a-cbf5027de4fb",
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "uint",
+                            "writable": true,
+                            "unit": "Ampere",
+                            "minValue": "6",
+                            "maxValue": "32",
+                            "defaultValue": 6
+                        },
+                        {
+                            "id": "91093627-ddae-4ba2-83f1-0241ea01aa01",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "46781438-2a31-48d3-a140-11593888b268",
                             "name": "phaseCount",
                             "displayName": "Used phases",
                             "type": "uint",
