@@ -11,7 +11,7 @@
                 {
                     "id": "f810b66a-7177-4397-9771-4229abaabbb6",
                     "name": "shelly1",
-                    "displayName": "Shelly 1/Plus 1",
+                    "displayName": "Shelly 1",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
@@ -116,9 +116,97 @@
                     ]
                 },
                 {
+                    "id": "83766db4-a553-4df7-aeff-35fb18c01f3a",
+                    "name": "shellyPlus1",
+                    "displayName": "Shelly Plus 1",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "enterpin",
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "41cf8c80-b641-46fd-a329-2b81ecf9d445",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "231365ce-45d6-4087-8ed6-1de3b0ef0485",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "30c5bbb2-7b02-445b-af16-8a082321383b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "f2b1f70c-dab0-474d-81bd-816ff3c63f47",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "2c312a9e-ae76-4042-8030-89c8c86320e9",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "3fed15bd-500b-4cce-9b21-a931f411b587",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d236c735-012c-44c7-919e-809cae89de55",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "212aaf17-faf1-4495-8475-0718b9b39628",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "fa3a8bd6-182f-443f-ae41-d2c4aee6339d",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "30e74e9f-57f4-4bbc-b0df-f2c4f28b2f06",
                     "name": "shelly1pm",
-                    "displayName": "Shelly 1PM/Plus 1PM",
+                    "displayName": "Shelly 1PM",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "smartmeterconsumer", "wirelessconnectable", "update" ],
                     "paramTypes": [
@@ -236,6 +324,105 @@
                         },
                         {
                             "id": "edc735dd-8c6b-4f76-b05b-32c934b4fe3b",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
+                    "id": "4c497fe1-c399-463a-9a73-0c5f4ebac100",
+                    "name": "shellyPlus1pm",
+                    "displayName": "Shelly Plus 1PM",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "enterpin",
+                    "interfaces": [ "gateway", "smartmeterconsumer", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "0d97dbf6-0545-4953-ad71-4888df37df70",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bc425ba1-7776-4004-ba67-b256db7c511d",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "1b0ecbb2-5ed6-439e-81fb-5788ed8679e2",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "bffa3472-a09f-4e85-9d31-0b966e415cd2",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "c9515efd-f16a-4a29-97e1-516d1d5a6a93",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "e3859bc0-f96d-4fa1-958b-0e087a39a0e6",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0dda20f7-e13e-494d-8351-c4401ded6c1e",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "76e87d1f-bc65-4f63-b692-106861827633",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "40e63755-7220-4c7c-9c6a-fe5d7e230a35",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "b18211d8-528b-4bff-93c2-ce6a8b55759e",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "0cabc075-9abc-49be-a50d-e8a8d7637d03",
                             "name": "performUpdate",
                             "displayName": "Update firmware"
                         }
@@ -495,7 +682,7 @@
                 {
                     "id": "465efb0d-da68-4177-a040-940c7f451e29",
                     "name": "shelly25",
-                    "displayName": "Shelly 2.5/Shelly Plus 2PM",
+                    "displayName": "Shelly 2.5",
                     "createMethods": ["discovery"],
                     "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
@@ -618,9 +805,115 @@
                     ]
                 },
                 {
+                    "id": "86b037f5-c7f8-4778-b6d1-2b11c4ba1027",
+                    "name": "shellyPlus25",
+                    "displayName": "Shelly Plus 2PM",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
+                    "setupMethod": "enterpin",
+                    "paramTypes": [
+                        {
+                            "id": "0cd68080-5da5-44c6-a1c2-12af086a16de",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "0b45bc3d-f598-484b-8de4-03bc67b90664",
+                            "name": "rollerMode",
+                            "displayName": "Roller shutter mode",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8f4fe4d4-7036-4a1a-9960-091a4a7f6f02",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "01158eee-3605-45c2-8b6d-2c0a69321c5b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "395a188b-c2e2-40d1-a5f2-9ed4a9ff558f",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "c1f5d20a-3b06-4405-afca-20dfd41e3a34",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "32134deb-8e37-4d65-ae10-aad0cb44ff7b",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "bf969a1f-aa8a-40aa-8e50-af37b8b0ffe6",
+                            "name": "channel1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Channel 1 turned on or off",
+                            "displayNameAction": "Turn channel 1 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "43b41b49-def1-469b-b993-788647dc8839",
+                            "name": "channel2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Channel 2 turned on or off",
+                            "displayNameAction": "Turn channel 2 on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7714490b-117d-4d25-a695-9e151997f128",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "9d5e04b8-cac4-49ce-9e32-efc3a06beb4b",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "2c470ea4-6ef2-4aa2-b2f3-b6d8750ac577",
                     "name": "shellyPlusPlug",
-                    "displayName": "Shelly Plus Plug S",
+                    "displayName": "Shelly Plus Plug S/US/UK/IT",
                     "createMethods": ["discovery"],
                     "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable", "update" ],
                     "paramTypes": [
