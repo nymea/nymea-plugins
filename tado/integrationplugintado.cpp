@@ -429,7 +429,7 @@ void IntegrationPluginTado::onZoneStateReceived(const QString &homeId, const QSt
 
     thing->setStateValue(zonePowerStateTypeId, (state.heatingPowerPercentage > 0));
     thing->setStateValue(zoneConnectedStateTypeId, state.connected);
-    thing->setStateValue(zoneTargetTemperatureStateTypeId, state.settingTemperature);
+    thing->setStateValue(zoneTargetTemperatureStateTypeId, qMax(5.0, state.settingTemperature));
     thing->setStateValue(zoneTemperatureStateTypeId, state.temperature);
     thing->setStateValue(zoneHumidityStateTypeId, state.humidity);
     thing->setStateValue(zoneWindowOpenDetectedStateTypeId, state.windowOpenDetected);
