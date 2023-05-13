@@ -66,7 +66,7 @@ void IntegrationPluginEQ3::discoverThings(ThingDiscoveryInfo *info)
 
         connect(info, &QObject::destroyed, cubeDiscovery, &MaxCubeDiscovery::deleteLater);
 
-        connect(cubeDiscovery, &MaxCubeDiscovery::cubesDetected, info, [this, info, cubeDiscovery](const QList<MaxCubeDiscovery::CubeInfo> &cubeList){
+        connect(cubeDiscovery, &MaxCubeDiscovery::cubesDetected, info, [this, info](const QList<MaxCubeDiscovery::CubeInfo> &cubeList){
 
             foreach (const MaxCubeDiscovery::CubeInfo &cube, cubeList) {
                 ThingDescriptor descriptor(cubeThingClassId, "Max! Cube LAN Gateway", cube.serialNumber);
@@ -200,9 +200,9 @@ void IntegrationPluginEQ3::setupThing(ThingSetupInfo *info)
             thing->setStateValue(eqivaBluetoothTargetTemperatureStateTypeId, eqivaDevice->targetTemperature());
         });
         // Window open state
-        thing->setStateValue(eqivaBluetoothWindowOpenStateTypeId, eqivaDevice->windowOpen());
+        thing->setStateValue(eqivaBluetoothWindowOpenDetectedStateTypeId, eqivaDevice->windowOpen());
         connect(eqivaDevice, &EqivaBluetooth::windowOpenChanged, thing, [thing, eqivaDevice](){
-            thing->setStateValue(eqivaBluetoothWindowOpenStateTypeId, eqivaDevice->windowOpen());
+            thing->setStateValue(eqivaBluetoothWindowOpenDetectedStateTypeId, eqivaDevice->windowOpen());
         });
         // Valve open state
         thing->setStateValue(eqivaBluetoothValveOpenStateTypeId, eqivaDevice->valveOpen());
