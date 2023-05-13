@@ -1219,33 +1219,33 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
         QVariantList measurementList = statusMap.value("nrg").toList();
 
         if (measurementList.count() >= 1)
-            voltagePhaseA = measurementList.at(0).toUInt();
+            voltagePhaseA = measurementList.at(0).toDouble();
 
         if (measurementList.count() >= 2)
-            voltagePhaseB = measurementList.at(1).toUInt();
+            voltagePhaseB = measurementList.at(1).toDouble();
 
         if (measurementList.count() >= 3)
-            voltagePhaseC = measurementList.at(2).toUInt();
+            voltagePhaseC = measurementList.at(2).toDouble();
 
         if (measurementList.count() >= 5)
-            amperePhaseA = measurementList.at(4).toUInt();
+            amperePhaseA = measurementList.at(4).toDouble();
 
         if (measurementList.count() >= 6)
-            amperePhaseB = measurementList.at(5).toUInt();
+            amperePhaseB = measurementList.at(5).toDouble();
 
         if (measurementList.count() >= 7)
-            amperePhaseC = measurementList.at(6).toUInt();
+            amperePhaseC = measurementList.at(6).toDouble();
 
         if (measurementList.count() >= 8)
-            powerPhaseA = measurementList.at(7).toUInt();
+            powerPhaseA = measurementList.at(7).toDouble();
         if (measurementList.count() >= 9)
-            powerPhaseB = measurementList.at(8).toUInt() ;
+            powerPhaseB = measurementList.at(8).toDouble() ;
 
         if (measurementList.count() >= 10)
-            powerPhaseC = measurementList.at(9).toUInt();
+            powerPhaseC = measurementList.at(9).toDouble();
 
         if (measurementList.count() >= 12)
-            currentPower = measurementList.at(11).toUInt();
+            currentPower = measurementList.at(11).toDouble();
 
         // Update all states
         thing->setStateValue(goeHomeVoltagePhaseAStateTypeId, voltagePhaseA);
