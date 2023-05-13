@@ -1,0 +1,13 @@
+{
+    "title": "Easeex",
+    "tagline": "Integrates Easee wallboxes with nymea.",
+    "icon": "easee.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
