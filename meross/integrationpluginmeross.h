@@ -60,6 +60,7 @@ public:
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
 
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
 
     void executeAction(ThingActionInfo *info) override;
@@ -75,7 +76,8 @@ private:
 
     QHash<Thing*, QByteArray> m_keys;
     QHash<Thing*, NetworkDeviceMonitor*> m_deviceMonitors;
-    QHash<Thing*, PluginTimer*> m_timers;
+    PluginTimer* m_timer5s = nullptr;
+    PluginTimer* m_timer60s = nullptr;
 };
 
 #endif // INTEGRATIONPLUGINMEROSS_H
