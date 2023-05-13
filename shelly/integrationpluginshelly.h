@@ -37,6 +37,8 @@
 
 #include <coap/coap.h>
 #include <QHostAddress>
+#include <QNetworkRequest>
+#include <QUrlQuery>
 
 class ZeroConfServiceBrowser;
 class PluginTimer;
@@ -79,6 +81,7 @@ private:
 
     void handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount);
 
+    QNetworkRequest createHttpRequest(Thing *thing, const QString &path, const QUrlQuery &urlQuery = QUrlQuery());
     QVariantMap createRpcRequest(const QString &method);
 
 private:
