@@ -1631,6 +1631,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     info->finish(Thing::ThingErrorNoError);
                 });
 
+                qCDebug(dcShelly()) << "***** Child count:" << myThings().filterByParentId(info->thing()->id()).count();
                 if (myThings().filterByParentId(info->thing()->id()).count() == 0) {
                     ThingDescriptors children;
                     ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
