@@ -1613,7 +1613,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             }
 
             if (info->thing()->thingClassId() == shellyPlus25ThingClassId) {
-                // Make sure the shelly 2.5 is in the mode we expect it to be (roller/cover or relay/switch)
+                // Make sure the shelly plus 2PM is in the mode we expect it to be (roller/cover or relay/switch)
                 bool rollerMode = info->thing()->paramValue("rollerMode").toBool();
                 QVariantMap params;
                 if(rollerMode) {
@@ -1622,40 +1622,41 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     params.insert("name", "switch");
                 }
                 ShellyRpcReply *reply2 = client->sendRequest("Shelly.SetProfile", params);
-                connect(reply2, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+                connect(reply2, &ShellyRpcReply::finished, info, [this, info, rollerMode](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
                     if (status != ShellyRpcReply::StatusSuccess) {
                         qCWarning(dcShelly) << "Error during shelly setup";
                         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to configure shelly device."));
                         return;
                     }
                     info->finish(Thing::ThingErrorNoError);
+
+                    qCDebug(dcShelly()) << "***** Child count:" << myThings().filterByParentId(info->thing()->id()).count();
+                    if (myThings().filterByParentId(info->thing()->id()).count() == 0) {
+                        ThingDescriptors children;
+                        ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
+                        switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
+                        children.append(switchChild);
+                        ThingDescriptor switch2Child(shellySwitchThingClassId, info->thing()->name() + " switch 2", QString(), info->thing()->id());
+                        switch2Child.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 2));
+                        children.append(switch2Child);
+
+                        if (rollerMode == true) {
+                            ThingDescriptor rollerShutterChild(shellyRollerThingClassId, info->thing()->name() + " connected shutter", QString(), info->thing()->id());
+                            rollerShutterChild.setParams(ParamList() << Param(shellyRollerThingChannelParamTypeId, 1));
+                            children.append(rollerShutterChild);
+                        // Create 2 measurement channels for Shelly Plus 2PM (unless in roller mode)
+                        }  else {
+                            ThingDescriptor channelChild(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
+                            channelChild.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 1));
+                            children.append(channelChild);
+                            ThingDescriptor channel2Child(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 2", QString(), info->thing()->id());
+                            channel2Child.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 2));
+                            children.append(channel2Child);
+                        }
+                        emit autoThingsAppeared(children);
+                    }
                 });
 
-                qCDebug(dcShelly()) << "***** Child count:" << myThings().filterByParentId(info->thing()->id()).count();
-                if (myThings().filterByParentId(info->thing()->id()).count() == 0) {
-                    ThingDescriptors children;
-                    ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
-                    switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
-                    children.append(switchChild);
-                    ThingDescriptor switch2Child(shellySwitchThingClassId, info->thing()->name() + " switch 2", QString(), info->thing()->id());
-                    switch2Child.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 2));
-                    children.append(switch2Child);
-
-                    if (rollerMode == true) {
-                        ThingDescriptor rollerShutterChild(shellyRollerThingClassId, info->thing()->name() + " connected shutter", QString(), info->thing()->id());
-                        rollerShutterChild.setParams(ParamList() << Param(shellyRollerThingChannelParamTypeId, 1));
-                        children.append(rollerShutterChild);
-                    // Create 2 measurement channels for Shelly Plus 2PM (unless in roller mode)
-                    }  else {
-                        ThingDescriptor channelChild(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
-                        channelChild.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 1));
-                        children.append(channelChild);
-                        ThingDescriptor channel2Child(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 2", QString(), info->thing()->id());
-                        channel2Child.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 2));
-                        children.append(channel2Child);
-                    }
-                    emit autoThingsAppeared(children);
-                }
 
                 return;
             }
