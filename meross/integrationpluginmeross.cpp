@@ -158,33 +158,9 @@ void IntegrationPluginMeross::setupThing(ThingSetupInfo *info)
     if (monitor) {
         hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
     }
-    PluginTimer *timer = m_timers.take(thing);
-    if (timer) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(timer);
-    }
 
     monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(MacAddress(thing->paramValue(plugThingMacAddressParamTypeId).toString()));
     m_deviceMonitors.insert(thing, monitor);
-
-    timer = hardwareManager()->pluginTimerManager()->registerTimer(5);
-    m_timers.insert(thing, timer);
-
-    connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [timer, thing](bool reachable) {
-        thing->setStateValue("connected", reachable);
-        if (reachable) {
-            timer->start();
-        } else {
-            timer->stop();
-        }
-    });
-
-    connect(timer, &PluginTimer::currentTickChanged, this, [this, thing](qlonglong tick){
-        if (tick % 5 == 0) {
-            pollDevice5s(thing);
-        } else if (tick == 0) {
-            pollDevice60s(thing);
-        }
-    });
 
     pollDevice5s(thing);
     pollDevice60s(thing);
@@ -192,10 +168,40 @@ void IntegrationPluginMeross::setupThing(ThingSetupInfo *info)
     info->finish(Thing::ThingErrorNoError);
 }
 
+void IntegrationPluginMeross::postSetupThing(Thing */*thing*/)
+{
+    if (!m_timer5s) {
+        m_timer5s = hardwareManager()->pluginTimerManager()->registerTimer(5);
+        connect(m_timer5s, &PluginTimer::timeout, this, [=](){
+            foreach (Thing *thing, myThings()) {
+                if (m_deviceMonitors.value(thing)->reachable()) {
+                    pollDevice5s(thing);
+                }
+            }
+        });
+    }
+    if (!m_timer60s) {
+        m_timer5s = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_timer5s, &PluginTimer::timeout, this, [=](){
+            foreach (Thing *thing, myThings()) {
+                if (m_deviceMonitors.value(thing)->reachable()) {
+                    pollDevice60s(thing);
+                }
+            }
+        });
+    }
+}
+
 void IntegrationPluginMeross::thingRemoved(Thing *thing)
 {
     hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_deviceMonitors.take(thing));
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_timers.take(thing));
+
+    if (myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer5s);
+        m_timer5s = nullptr;
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer60s);
+        m_timer60s = nullptr;
+    }
 }
 
 void IntegrationPluginMeross::executeAction(ThingActionInfo *info)
