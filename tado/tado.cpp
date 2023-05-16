@@ -356,6 +356,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             return;
         }
 
+
         setConnectionStatus(true);
         setAuthenticationStatus(true);
 
@@ -365,10 +366,11 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
+        qCDebug(dcTado()) << "Zone status received:" << qUtf8Printable(data.toJson(QJsonDocument::Indented));
         ZoneState state;
         QVariantMap map = data.toVariant().toMap();
         state.tadoMode = map["tadoMode"].toString();
-        state.windowOpen = map["openWindow"].toBool();
+        state.windowOpenDetected = map["openWindowDetected"].toBool();
 
         QVariantMap settingsMap = map["setting"].toMap();
         state.settingType = settingsMap["type"].toString();

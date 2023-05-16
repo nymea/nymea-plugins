@@ -117,9 +117,8 @@
                         },
                         {
                             "id": "c7a04e26-bb22-406e-b117-262bdb8b9c0e",
-                            "name": "windowOpen",
-                            "displayName": "Window open",
-                            "displayNameEvent": "Window open changed",
+                            "name": "windowOpenDetected",
+                            "displayName": "Window open detected",
                             "type": "bool",
                             "defaultValue": false
                         },

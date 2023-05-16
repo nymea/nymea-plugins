@@ -31,12 +31,15 @@
 #ifndef INTEGRATIONPLUGINTADO_H
 #define INTEGRATIONPLUGINTADO_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/oauth2.h"
 #include "tado.h"
+#include "extern-plugininfo.h"
+
+#include <plugintimer.h>
+#include <integrations/integrationplugin.h>
+#include <network/oauth2.h>
 
 #include <QHash>
+
 #include <QTimer>
 
 class IntegrationPluginTado : public IntegrationPlugin
