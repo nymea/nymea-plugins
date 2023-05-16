@@ -7,6 +7,7 @@ This integration allows nymea to control EVBox wallboxes supporting the Protocol
 Generally, all EVBox wallboxes supporting the Protocol Max v4 are supported. We've tested it with
 
 * Elvi 
+* Elvi + MID meter
 
 ## Requirements
 
