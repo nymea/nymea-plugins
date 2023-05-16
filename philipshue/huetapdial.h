@@ -28,53 +28,65 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "hueremote.h"
+#ifndef HUETAPDIAL_H
+#define HUETAPDIAL_H
+
+#include <QObject>
+#include <QTimer>
+
 #include "extern-plugininfo.h"
+#include "huedevice.h"
 
-HueRemote::HueRemote(HueBridge *bridge, QObject *parent) :
-    HueDevice(bridge, parent)
+class HueTapDial : public HueDevice
 {
-}
+    Q_OBJECT
+public:
+    explicit HueTapDial(HueBridge *bridge, QObject *parent = nullptr);
+    //virtual ~HueTapDial() = default;
 
-int HueRemote::battery() const
-{
-    return m_battery;
-}
+    int rotaryId() const;
+    void setRotaryId(int sensorId);
 
-void HueRemote::setBattery(const int &battery)
-{
-    m_battery = battery;
-}
+    QString rotaryUuid() const;
+    void setRotaryUuid(const QString &rotaryUuid);
 
-void HueRemote::updateStates(const QVariantMap &statesMap, const QVariantMap &configMap)
-{
-    if (configMap.contains("reachable")) {
-        setReachable(configMap.value("reachable", false).toBool());
-    } else {
-        // Hue Tap doesn't have a reachable property as it's a ultra low power thing. Let's mark it reachable by default as we only
-        // get this response if the bridge is reachable.
-        setReachable(true);
-    }
-    setBattery(configMap.value("battery", 0).toInt());
+    int switchId() const;
+    void setSwitchId(int sensorId);
 
-    emit stateChanged();
+    QString switchUuid() const;
+    void setSwitchUuid(const QString &switchUuid);
 
-    QString lastUpdate = statesMap.value("lastupdated").toString();
-    int buttonCode = statesMap.value("buttonevent").toInt();
+    int level() const;
+    int batteryLevel() const;
 
-    // If we never polled, just store lastUpdate/buttonCode/rotationCode and not emit a falsely button pressed event
-    if (m_lastUpdate.isEmpty() || m_lastButtonCode == -1) {
-        m_lastUpdate = lastUpdate;
-        m_lastButtonCode = buttonCode;
-    }
+    void updateStates(const QVariantMap &sensorMap);
 
-    if (m_lastUpdate != lastUpdate || m_lastButtonCode != buttonCode) {
-        m_lastUpdate = lastUpdate;
-        m_lastButtonCode = buttonCode;
+    bool isValid();
+    bool hasSensor(int sensorId);
+    bool hasSensor(const QString &sensorUuid);
 
-        qCDebug(dcPhilipsHue) << "button pressed" << buttonCode;
+private:
+    // Params
+    int m_rotaryId;
+    QString m_rotaryUuid;
 
-        emit buttonPressed(buttonCode);
-    }
-}
+    int m_switchId;
+    QString m_switchUuid;
 
+    // States
+    QString m_lastUpdateButton;
+    QString m_lastUpdateRotation;
+    double m_level = 0;
+    int m_batteryLevel = 0;
+    int m_lastButtonCode = -1;
+    int m_lastRotationCode = 0;
+
+signals:
+    void levelChanged(double level);
+    void batteryLevelChanged(int batteryLevel);
+    void buttonPressed(int buttonCode);
+    void rotated(int rotationCode);
+
+};
+
+#endif // HUETAPDIAL_H

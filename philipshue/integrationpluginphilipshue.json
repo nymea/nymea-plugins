@@ -674,6 +674,168 @@
                     ]
                 },
                 {
+                    "id": "58e579b4-f917-478c-9006-f1f8d4df2ded",
+                    "name": "tapDial",
+                    "displayName": "Hue Tap Dial",
+                    "interfaces": ["longpressmultibutton", "battery", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "de566aaa-2a5f-4e31-bce1-5924014fbd6a",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "e2365a3c-cdf3-4b1e-b908-e7642e467f20",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "dead7cf0-3ecc-4332-8fc6-42d4e71f508c",
+                            "name": "idRotary",
+                            "displayName": "Rotary dial id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "267bcb24-b5c1-421d-bc6a-9b8fc7b43696",
+                            "name": "uuidRotary",
+                            "displayName": "Rotary dial uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5269c70c-49e6-4090-aa57-3c89ee328b1e",
+                            "name": "idSwitch",
+                            "displayName": "Switch id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "ae7ce90a-9bfb-45e4-90e4-8e491b374249",
+                            "name": "uuidSwitch",
+                            "displayName": "Switch uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "045f8a6a-e8de-4780-a4d3-60a986130977",
+                            "name": "stepSize",
+                            "displayName": "Step size",
+                            "type": "uint",
+                            "defaultValue": 5,
+                            "minValue": 1,
+                            "maxValue": 50
+                        },
+                        {
+                            "id": "30342d23-b2c1-4969-85f1-1b0f58eeb8ce",
+                            "name": "largeStepSize",
+                            "displayName": "Large Step size",
+                            "type": "uint",
+                            "defaultValue": 10,
+                            "minValue": 1,
+                            "maxValue": 50
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7c81af92-3643-4211-9d62-407cbc596619",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "9d0d190f-2898-4c9a-a423-ec7187bfcb5e",
+                            "name": "batteryLevel",
+                            "displayName": "battery",
+                            "displayNameEvent": "battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "79efe477-2757-4457-bdfb-a3fbeb198e7a",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "23528402-b98f-49b8-90cf-7b68f251ad59",
+                            "name": "level",
+                            "displayName": "Level",
+                            "displayNameEvent": "Level changed",
+                            "unit": "Percentage",
+                            "type": "uint",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9ff8853f-b1fe-44ac-bcfe-193303397012",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "73863657-b7fa-4c83-827c-6dec46278671",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "••", "•••", "••••"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "4c1bac9f-291e-4bd2-aa2e-c8ecc182c300",
+                            "name": "longPressed",
+                            "displayName": "Button longpress",
+                            "paramTypes": [
+                                {
+                                    "id": "ce015b27-2ffb-4d8b-bb66-63013c4e2f52",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "••", "•••", "••••"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "11edf456-4484-45f3-8638-01162fb47609",
+                            "name": "increase",
+                            "displayName": "Increase"
+                        },
+                        {
+                            "id": "1b951b52-240d-437c-ae8d-c40298993acb",
+                            "name": "decrease",
+                            "displayName": "Decrease"
+                        },
+                        {
+                            "id": "8d8aa384-e408-4365-8381-ac763168788b",
+                            "name": "largeIncrease",
+                            "displayName": "Large Increase"
+                        },
+                        {
+                            "id": "d1415f84-c4cc-478d-89a4-bd7a5c9761e5",
+                            "name": "largeDecrease",
+                            "displayName": "Large Decrease"
+                        }
+                    ]
+                },
+                {
                     "id": "1e34a056-9f37-4741-b249-a5eca7a4ab4e",
                     "name": "smartButton",
                     "displayName": "Hue Smart Button",
