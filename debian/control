@@ -202,6 +202,14 @@ Description: nymea integration plugin for dynatrace
  This package contains the nymea integration plugin for the dynatrace UFO
 
 
+Package: nymea-plugin-easee
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for easee wallboxes
+ This package contains the nymea integration plugin for easee wallboxes
+
+
 Package: nymea-plugin-elgato
 Architecture: any
 Depends: ${shlibs:Depends},
