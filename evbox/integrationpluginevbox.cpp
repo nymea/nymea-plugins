@@ -141,7 +141,7 @@ void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
     // Setup routine: Try to set the max charging current to 6A and see if we get a valid answer
     port->sendCommand(EVBoxPort::Command68, 60, 6, serialNumber);
     connect(port, &EVBoxPort::closed, info, [info](){
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The EVBox is has closed the connection."));
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The EVBox has closed the connection."));
     });
     connect(port, &EVBoxPort::responseReceived, info, [info, serialNumber](EVBoxPort::Command /*command*/, const QString &serial){
         if (serial == serialNumber) {
