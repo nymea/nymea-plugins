@@ -1169,7 +1169,7 @@ void IntegrationPluginShelly::fetchStatusGen1(Thing *thing)
     connect(reply, &QNetworkReply::finished, thing, [this, thing, reply](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcShelly()) << "Unable to update status for" << thing->name() << reply->error() << reply->errorString();
-            if (reply->error() == QNetworkReply::HostNotFoundError && !thing->hasState("batteryLevel")) {
+            if (!thing->hasState("batteryLevel")) {
                 thing->setStateValue("connected", false);
                 foreach (Thing *child, myThings().filterByParentId(thing->id())) {
                     child->setStateValue("connected", false);
