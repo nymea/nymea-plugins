@@ -41,7 +41,6 @@
 #define ETX 0x03
 
 
-
 EVBoxPort::EVBoxPort(const QString &portName, QObject *parent)
     : QObject{parent}
 {
@@ -109,7 +108,10 @@ void EVBoxPort::onReadyRead()
 {
     m_waitTimer.start();
 
-    m_inputBuffer.append(m_serialPort->readAll());
+    QByteArray data = m_serialPort->readAll();
+    qCDebug(dcEVBox()) << "<--" << data;
+
+    m_inputBuffer.append(data);
 
     QByteArray packet;
     QDataStream inputStream(m_inputBuffer);
@@ -124,7 +126,15 @@ void EVBoxPort::onReadyRead()
                 startFound = true;
                 continue;
             } else {
-                qCWarning(dcEVBox()) << "Discarding byte not matching start of frame 0x" + QString::number(byte, 16);
+                qCWarning(dcEVBox()) << "Discarding byte 0x" + QString::number(byte, 16) + " which is not matching start of frame 0x" + QString::number(STX, 16);
+                continue;
+            }
+        } else {
+            // Sometimes the wallbox seems to stumble and restart packet transmission before a previous packet is finished...
+            // If we detect another STX before an ETX, let's discard it
+            if (byte == STX) {
+                qCWarning(dcEVBox()) << "Bogus data from wallbox detected. Discarding input buffers.";
+                m_inputBuffer.clear();
                 continue;
             }
         }
@@ -139,6 +149,8 @@ void EVBoxPort::onReadyRead()
 
     if (startFound && endFound) {
         m_inputBuffer.remove(0, packet.length() + 2);
+    } else if (!startFound) {
+        qCDebug(dcEVBox()) << "End of data but no start of frame header received.";
     } else {
         qCDebug(dcEVBox()) << "Data is incomplete... Waiting for more...";
         return;
@@ -149,7 +161,7 @@ void EVBoxPort::onReadyRead()
         return;
     }
 
-    qCDebug(dcEVBox()) << "<--" << packet;
+    qCDebug(dcEVBox()) << "Data packet received:" << packet;
 
     processDataPacket(packet);
 
@@ -220,7 +232,7 @@ void EVBoxPort::processDataPacket(const QByteArray &packet)
         return;
     }
 
-    qCDebug(dcEVBox()) << "Data packet received: From:" << from
+    qCDebug(dcEVBox()) << "Parsed data packet: From:" << from
                        << "To:" << to
                        << "Command:" << command
                        << "Serial:" << serial

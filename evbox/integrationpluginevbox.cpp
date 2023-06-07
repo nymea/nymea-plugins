@@ -141,14 +141,14 @@ void IntegrationPluginEVBox::setupThing(ThingSetupInfo *info)
     // Setup routine: Try to set the max charging current to 6A and see if we get a valid answer
     port->sendCommand(EVBoxPort::Command68, 60, 6, serialNumber);
     connect(port, &EVBoxPort::closed, info, [info](){
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The EVBox is not responding."));
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The EVBox has closed the connection."));
     });
     connect(port, &EVBoxPort::responseReceived, info, [info, serialNumber](EVBoxPort::Command /*command*/, const QString &serial){
         if (serial == serialNumber) {
             info->finish(Thing::ThingErrorNoError);
         }
     });
-    QTimer::singleShot(3000, info, [info](){
+    QTimer::singleShot(5000, info, [info](){
         info->finish(Thing::ThingErrorTimeout, QT_TR_NOOP("The EVBox is not responding."));
     });
 
@@ -272,7 +272,7 @@ void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
     }
 
     m_pendingActions[thing].append(info);
-    connect(info, &ThingActionInfo::finished, this, [=](){
+    connect(info, &ThingActionInfo::aborted, this, [=](){
         m_pendingActions[thing].removeAll(info);
     });
 
@@ -281,7 +281,7 @@ void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
 void IntegrationPluginEVBox::finishPendingAction(Thing *thing)
 {
     if (!m_pendingActions.value(thing).isEmpty()) {
-        ThingActionInfo *info = m_pendingActions.value(thing).first();
+        ThingActionInfo *info = m_pendingActions[thing].takeFirst();
         qCDebug(dcEVBox()) << "Finishing action:" << info->action().actionTypeId().toString();
         ActionType actionType = thing->thingClass().actionTypes().findById(info->action().actionTypeId());
         if (actionType.name() == "power") {
