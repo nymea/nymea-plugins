@@ -1,3 +1,12 @@
+nymea-plugins (1.8.1) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Mark devices offline on any polling network error
+  * EVBox: Fix processing erraneous packets that still pass the CRC
+    check and a double action finish() call
+
+ -- jenkins <developer@nymea.io>  Wed, 07 Jun 2023 15:51:28 +0200
+
 nymea-plugins (1.8.0) jammy; urgency=medium
 
   [ Michael Zanetti ]
