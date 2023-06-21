@@ -1358,7 +1358,7 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
     url.setQuery(query);
     QNetworkRequest request(url);
 
-    qCDebug(dcShelly()) << "Connecting to" << url.toString();
+    qCDebug(dcShelly()) << "Connecting to" << url.toString(QUrl::RemovePassword);
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, info, reply, address, rollerMode](){
