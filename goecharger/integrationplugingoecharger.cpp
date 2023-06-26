@@ -49,6 +49,11 @@ IntegrationPluginGoECharger::IntegrationPluginGoECharger()
 
 }
 
+void IntegrationPluginGoECharger::init()
+{
+    connect(this, &IntegrationPlugin::configValueChanged, this, &IntegrationPluginGoECharger::onConfigValueChanged);
+}
+
 void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!hardwareManager()->networkDeviceDiscovery()->available()) {
@@ -142,7 +147,7 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             // The device is reachable again and we have already set it up.
             // Update data and optionally reconfigure the mqtt channel
 
-            QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+            QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing, true));
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, thing, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
@@ -211,8 +216,10 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
     if (thing->thingClassId() == goeHomeThingClassId) {
         // Set up refresh timer if needed and if we are not using mqtt
         if (!thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool() && !m_refreshTimer) {
-            qCDebug(dcGoECharger()) << "Enabling HTTP refresh timer...";
-            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(4);
+
+            uint interval = configValue(goEChargerPluginHttpRefreshIntervalParamTypeId).toUInt();
+            qCDebug(dcGoECharger()) << "Enabling HTTP refresh timer" << interval;
+            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(interval);
             connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
             m_refreshTimer->start();
         }
@@ -437,7 +444,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
 void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing));
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing, true));
     connect(info, &ThingSetupInfo::aborted, reply, &QNetworkReply::abort);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
@@ -513,7 +520,7 @@ void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
     });
 }
 
-QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing)
+QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing, bool fullStatus)
 {
     QHostAddress address = getHostAddress(thing);
     ApiVersion apiVersion = getApiVersion(thing);
@@ -528,6 +535,11 @@ QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing)
         break;
     case ApiVersion2:
         requestUrl.setPath("/api/status");
+        if (!fullStatus) {
+            QUrlQuery query;
+            query.addQueryItem("filter", "alw,car,ast,tma,eto,wh,upd,fwv,amp,adi,fhz,cbl,ama,var,pnp,nrg");
+            requestUrl.setQuery(query);
+        }
         break;
     }
 
@@ -1090,7 +1102,7 @@ void IntegrationPluginGoECharger::reconfigureMqttChannelV1(Thing *thing, const Q
 
 void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &statusMap)
 {
-    qCDebug(dcGoECharger()) << "Update V2:" << qUtf8Printable(QJsonDocument::fromVariant(statusMap).toJson());
+    qCDebug(dcGoECharger()) << "Update V2:" << qUtf8Printable(QJsonDocument::fromVariant(statusMap).toJson(QJsonDocument::Compact));
     if (statusMap.contains("alw"))
         thing->setStateValue(goeHomePowerStateTypeId, (statusMap.value("alw").toUInt() == 0 ? false : true));
 
@@ -1526,6 +1538,19 @@ void IntegrationPluginGoECharger::refreshHttp()
     }
 }
 
+void IntegrationPluginGoECharger::onConfigValueChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    if (paramTypeId == goEChargerPluginHttpRefreshIntervalParamTypeId) {
+        uint interval = value.toUInt();
+        qCDebug(dcGoECharger()) << "Reconfigure HTTP refresh timer" << interval << "seconds";
+        m_refreshTimer->stop();
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(interval);
+        connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
+        m_refreshTimer->start();
+    }
+}
+
 
 void IntegrationPluginGoECharger::onMqttClientV1Connected(MqttChannel *channel)
 {
@@ -1615,3 +1640,4 @@ void IntegrationPluginGoECharger::markAsDisconnected(Thing *thing)
     thing->setStateValue("currentPowerPhaseC", 0);
     thing->setStateValue("frequency", 0);
 }
+
