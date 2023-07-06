@@ -18,13 +18,13 @@ SignalRConnection::SignalRConnection(const QUrl &url, const QByteArray &accessTo
     m_socket = new QWebSocket();
     typedef void (QWebSocket:: *errorSignal)(QAbstractSocket::SocketError);
     connect(m_socket, static_cast<errorSignal>(&QWebSocket::error), this, [](QAbstractSocket::SocketError error){
-        qCWarning(dcEasee) << "Error in websocket:" << error;
+        qCWarning(dcEasee) << "SingalR: Error in websocket:" << error;
     });
     connect(m_socket, &QWebSocket::stateChanged, this, [=](QAbstractSocket::SocketState state){
-        qCDebug(dcEasee) << "Websocket state changed" << state;
+        qCDebug(dcEasee) << "SingalR: Websocket state changed" << state;
 
         if (state == QAbstractSocket::ConnectedState) {
-            qCDebug(dcEasee) << "Websocket connected";
+            qCDebug(dcEasee) << "SingalR: Websocket connected";
 
             QVariantMap handshake;
             handshake.insert("protocol", "json");
@@ -32,7 +32,9 @@ SignalRConnection::SignalRConnection(const QUrl &url, const QByteArray &accessTo
             QByteArray data = encode(handshake);
             qCDebug(dcEasee) << "Sending handshake" << data;
             m_socket->sendTextMessage(data);
+            m_watchdog->start();
         } else if (QAbstractSocket::UnconnectedState) {
+            m_watchdog->stop();
             QTimer::singleShot(5000, this, [=](){
                 connectToHost();
             });
@@ -40,9 +42,11 @@ SignalRConnection::SignalRConnection(const QUrl &url, const QByteArray &accessTo
 
     });
     connect(m_socket, &QWebSocket::binaryMessageReceived, this, [](const QByteArray &message){
-        qCDebug(dcEasee) << "Binary message received" << message;
+        qCDebug(dcEasee) << "SingalR: Binary message received" << message;
     });
     connect(m_socket, &QWebSocket::textMessageReceived, this, [=](const QString &message){
+        qCDebug(dcEasee) << "SingalR: Text message received" << message;
+
         QStringList messages = message.split(QByteArray::fromHex("1E"));
 
         foreach (const QString &msg, messages) {
@@ -54,13 +58,13 @@ SignalRConnection::SignalRConnection(const QUrl &url, const QByteArray &accessTo
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(msg.toUtf8(), &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcEasee()) << "Unable to parse message from SignalR socket" << error.errorString() << msg;
+                qCWarning(dcEasee()) << "SingalR: Unable to parse message from SignalR socket" << error.errorString() << msg;
                 continue;
             }
 
             if (m_waitingForHandshakeReply && jsonDoc.toVariant().toMap().isEmpty()) {
                 m_waitingForHandshakeReply = false;
-                qCDebug(dcEasee()) << "Handshake reply received.";
+                qCDebug(dcEasee()) << "SingalR: Handshake reply received.";
                 emit connectionStateChanged(true);
                 return;
             }
@@ -72,17 +76,27 @@ SignalRConnection::SignalRConnection(const QUrl &url, const QByteArray &accessTo
                 break;
             case 3:
                 // Silencing acks to our requests
-                qCDebug(dcEasee()) << "Message ACK received:" << map;
+                qCDebug(dcEasee()) << "SingalR: Message ACK received:" << map;
+                break;
             case 6:
-                // Silencing pings
+                // Resetting watchdog
+                m_watchdog->start();
                 break;
             default:
-                qCWarning(dcEasee()) << "Unhandled signalr message type" << map;
+                qCWarning(dcEasee()) << "SingalR: Unhandled SingalR message type" << map;
             }
         }
     });
 
     connectToHost();
+
+    m_watchdog = new QTimer(this);
+    m_watchdog->setInterval(30000);
+    connect(m_watchdog, &QTimer::timeout, this, [=](){
+        qCWarning(dcEasee()) << "SingalR: Watchdog triggered! Reconnecting web socket stream...";
+        m_socket->close();
+        connectToHost();
+    });
 }
 
 void SignalRConnection::subscribe(const QString &chargerId)
@@ -92,7 +106,7 @@ void SignalRConnection::subscribe(const QString &chargerId)
     map.insert("invocationId", QUuid::createUuid());
     map.insert("target", "SubscribeWithCurrentState");
     map.insert("arguments", QVariantList{chargerId, true});
-    qCDebug(dcEasee) << "subscribing to" << chargerId;
+    qCDebug(dcEasee) << "SingalR: subscribing to" << chargerId;
     m_socket->sendTextMessage(encode(map));
 }
 
@@ -104,6 +118,8 @@ bool SignalRConnection::connected() const
 void SignalRConnection::updateToken(const QByteArray &accessToken)
 {
     m_accessToken = accessToken;
+    m_socket->close();
+    connectToHost();
 }
 
 QByteArray SignalRConnection::encode(const QVariantMap &message)
@@ -118,19 +134,21 @@ void SignalRConnection::connectToHost()
     negotiationUrl.setPath(negotiationUrl.path() + "/negotiate");
     QNetworkRequest negotiateRequest(negotiationUrl);
     negotiateRequest.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    qCDebug(dcEasee()) << "Negotiating:" << negotiationUrl << negotiateRequest.rawHeader("Authorization");
+    qCDebug(dcEasee()) << "SingalR: Negotiating:" << negotiationUrl << negotiateRequest.rawHeader("Authorization");
     QNetworkReply *negotiantionReply = m_nam->post(negotiateRequest, QByteArray());
     connect(negotiantionReply, &QNetworkReply::finished, this, [=](){
         if (negotiantionReply->error() != QNetworkReply::NoError) {
-            qCWarning(dcEasee()) << "Unable to neotiate SignalR channel:" << negotiantionReply->error();
+            qCWarning(dcEasee()) << "SingalR: Unable to neotiate SignalR channel:" << negotiantionReply->error();
+            QTimer::singleShot(5000, this, [=](){connectToHost();});
             return;
         }
         QByteArray data = negotiantionReply->readAll();
-        qCDebug(dcEasee) << "Negotiation reply" << data;
+        qCDebug(dcEasee) << "SingalR: Negotiation reply" << data;
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcEasee()) << "Unable to parse json from negoatiate endpoint" << error.errorString() << data;
+            qCWarning(dcEasee()) << "SingalR: Unable to parse json from negoatiate endpoint" << error.errorString() << data;
+            QTimer::singleShot(5000, this, [=](){connectToHost();});
             return;
         }
 
@@ -145,7 +163,7 @@ void SignalRConnection::connectToHost()
         wsUrl.setQuery(query);
         QNetworkRequest request(wsUrl);
         request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-        qCDebug(dcEasee()) << "Connecting websocket:" << wsUrl.toString();
+        qCDebug(dcEasee()) << "SingalR: Connecting websocket:" << wsUrl.toString();
         m_waitingForHandshakeReply = true;
 #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
         m_socket->open(request);

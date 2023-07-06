@@ -40,6 +40,9 @@
 #include <QJsonDocument>
 #include <QWebSocket>
 
+QString apiEndpoint = "https://api.easee.com/api";
+QString streamEndpoint = "http://streams.easee.com/hubs/chargers";
+
 IntegrationPluginEasee::IntegrationPluginEasee()
 {
 
@@ -51,7 +54,7 @@ IntegrationPluginEasee::~IntegrationPluginEasee()
 
 void IntegrationPluginEasee::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-    QNetworkRequest request(QUrl(QString("https://api.easee.cloud/api/accounts/login")));
+    QNetworkRequest request(QUrl(QString("%1/%2").arg(apiEndpoint).arg("accounts/login")));
     request.setRawHeader("accept", "application/json");
     request.setRawHeader("content-type", "application/*+json");
     QVariantMap body;
@@ -63,10 +66,12 @@ void IntegrationPluginEasee::confirmPairing(ThingPairingInfo *info, const QStrin
         qCDebug(dcEasee) << "auth reply finished" << reply->error();
 
         if (reply->error() == QNetworkReply::ProtocolInvalidOperationError) {
+            qCWarning(dcEasee) << "Authentication failed. Looks like a wrong password";
             info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Authentication failed. Please try again."));
             return;
         }
         if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcEasee) << "Unable to connect to the Easee server";
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to contact the easee server. Please try again later."));
             return;
         }
@@ -153,9 +158,10 @@ void IntegrationPluginEasee::setupThing(ThingSetupInfo *info)
     }
 
     if (thing->thingClassId() == chargerThingClassId) {
-        refreshCurrentState(thing);
+        // We'll need a cache of the maxChargingCurrent as sometimes need that before a executeAction is finished
+        // initializing it to make sure there's always a value in it.
+        m_desiredMax[info->thing()] = thing->stateValue(chargerMaxChargingCurrentStateTypeId).toUInt();
     }
-
 
     info->finish(Thing::ThingErrorNoError);
 
@@ -181,16 +187,6 @@ void IntegrationPluginEasee::postSetupThing(Thing *thing)
 
                     // Refreshing the products
                     refreshProducts(t);
-
-                    if (!m_signalRConnections.value(t)->connected()) {
-                        // If the SignalR connection fails for whatever reason, let's poll
-                        foreach (Thing *child, myThings().filterByParentId(t->id())) {
-                            refreshCurrentState(child);
-                        }
-                    }
-                } else if (t->thingClassId() == chargerThingClassId) {
-                    // We'll be using the SignalR connection instead for updates.
-                    //refreshCurrentState(t);
                 }
             }
         });
@@ -206,14 +202,15 @@ void IntegrationPluginEasee::postSetupThing(Thing *thing)
         qCDebug(dcEasee()) << "Access token:" << accessToken;
         qCDebug(dcEasee()) << "Token expiry:" << expiry;
 
-        SignalRConnection *signalR = new SignalRConnection(QUrl("http://streams.easee.com/hubs/chargers"), accessToken, hardwareManager()->networkManager(), thing);
+        SignalRConnection *signalR = new SignalRConnection(QUrl(streamEndpoint), accessToken, hardwareManager()->networkManager(), thing);
         m_signalRConnections.insert(thing, signalR);
 
         connect(signalR, &SignalRConnection::connectionStateChanged, thing, [=](bool connected){
             foreach (Thing *charger, myThings().filterByParentId(thing->id())) {
-                charger->setStateValue(chargerConnectedStateTypeId, true);
                 if (connected) {
                     signalR->subscribe(charger->paramValue(chargerThingIdParamTypeId).toString());
+                } else {
+                    charger->setStateValue(chargerConnectedStateTypeId, false);
                 }
             }
         });
@@ -256,12 +253,11 @@ void IntegrationPluginEasee::postSetupThing(Thing *thing)
                         charger->setStateValue(chargerPluggedInStateTypeId, false);
                     } else if (mode == "B" || mode == "C") {
                         charger->setStateValue(chargerPluggedInStateTypeId, true);
-                    } else {
                     }
                     break;
                 }
                 case ObservationPointOutputPhase:
-                    charger->setStateValue(chargerPhaseCountStateTypeId, value.toUInt() > 10 ? 3 : 1);
+                    charger->setStateValue(chargerPhaseCountStateTypeId, value.toUInt() == 30 ? 3 : 1);
                     break;
                 case ObservationPointChargerOpMode:
                     // 2: charging disabled, 3: enabled and charging, 4: enabled but not charging
@@ -269,11 +265,25 @@ void IntegrationPluginEasee::postSetupThing(Thing *thing)
                     charger->setStateValue(chargerPowerStateTypeId, value.toUInt() >= 3);
                     break;
                 case ObservationPointDynamicChargerCurrent:
-                    charger->setStateValue(chargerMaxChargingCurrentStateTypeId, value.toUInt());
+                    // May give us 0 when pausing charging etc, ignoring that.
+                    if (value.toUInt() > 0) {
+                        charger->setStateValue(chargerMaxChargingCurrentStateTypeId, value.toUInt());
+                        // Updating the desired value when it is changed by the wallbox (e.g. through app)
+                        m_desiredMax[charger] = value.toUInt();
+                    }
                     break;
                 case ObservationPointMaxChargerCurrent:
-                    charger->setStateMaxValue(chargerMaxChargingCurrentStateTypeId, value.toUInt());
+                    m_wallboxMax[chargerId] = value.toUInt();
+                    charger->setStateMinMaxValues(chargerMaxChargingCurrentStateTypeId, 6, qMin(m_wallboxMax.value(chargerId), m_cableRating.value(chargerId, 32)));
                     break;
+                case ObservationPointCableRating:
+                    m_cableRating[chargerId] = value.toUInt();
+                    charger->setStateMinMaxValues(chargerMaxChargingCurrentStateTypeId, 6, qMin(m_wallboxMax.value(chargerId, 32), value.toUInt()));
+                    break;
+                case ObservationPointConnectedToCloud:
+                    charger->setStateValue(chargerConnectedStateTypeId, value.toString() == "True" || value.toString() == "1");
+                    break;
+
 
                 default:
                     break;
@@ -293,6 +303,10 @@ void IntegrationPluginEasee::thingRemoved(Thing *thing)
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer);
         m_timer = nullptr;
     }
+
+    if (thing->thingClassId() == chargerThingClassId) {
+        m_desiredMax.take(thing);
+    }
 }
 
 void IntegrationPluginEasee::executeAction(ThingActionInfo *info)
@@ -303,22 +317,34 @@ void IntegrationPluginEasee::executeAction(ThingActionInfo *info)
         QString chargerId = thing->paramValue(chargerThingIdParamTypeId).toString();
         if (info->action().actionTypeId() == chargerPowerActionTypeId) {
             bool power = info->action().paramValue(chargerPowerActionPowerParamTypeId).toBool();
-            QString actionPath = power ? "start_charging" : "stop_charging";
+            QString actionPath = power ? "start_charging" : "pause_charging";
             QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/commands/%2").arg(chargerId).arg(actionPath));
             qCDebug(dcEasee()) << "Setting power:" << request.url().toString();
             QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QByteArray());
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-            connect(reply, &QNetworkReply::finished, info, [reply, info, power](){
+            connect(reply, &QNetworkReply::finished, info, [=](){
                 qCDebug(dcEasee()) << "Reply" << reply->error();
                 if (reply->error() == QNetworkReply::NoError) {
                     info->thing()->setStateValue(chargerPowerStateTypeId, power);
                 }
                 info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+
+                // resume/start charging will for some reason reset the dynamicChargerCurrent... We'll have to re-write ours.
+                if (power) {
+                    uint maxChargingCurrent = m_desiredMax[info->thing()];
+                    QVariantMap data;
+                    data.insert("dynamicChargerCurrent", maxChargingCurrent);
+                    QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/settings").arg(chargerId));
+                    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
+                    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                }
             });
             return;
         }
         if (info->action().actionTypeId() == chargerMaxChargingCurrentActionTypeId) {
             uint maxChargingCurrent = info->action().paramValue(chargerMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+            // We'll need this for resume_charging as that call will for some reason reset it to the max of 32A, so we'll need to immediately write this one again.
+            m_desiredMax[info->thing()] = maxChargingCurrent;
             QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/settings").arg(chargerId));
             QVariantMap data;
             data.insert("dynamicChargerCurrent", maxChargingCurrent);
@@ -326,7 +352,7 @@ void IntegrationPluginEasee::executeAction(ThingActionInfo *info)
             QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [reply, info, maxChargingCurrent](){
-                qCDebug(dcEasee()) << "Reply" << reply->error();
+                qCDebug(dcEasee()) << "Set dynamicaChargerCurrent reply" << reply->error();
                 if (reply->error() == QNetworkReply::NoError) {
                     info->thing()->setStateValue(chargerMaxChargingCurrentStateTypeId, maxChargingCurrent);
                 }
@@ -335,20 +361,54 @@ void IntegrationPluginEasee::executeAction(ThingActionInfo *info)
             return;
         }
         if (info->action().actionTypeId() == chargerDesiredPhaseCountActionTypeId) {
-            uint desiredPhaseCount = info->action().paramValue(chargerMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
-            QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/settings").arg(chargerId));
-            QVariantMap data;
-            data.insert("lockToSinglePhaseCharging", desiredPhaseCount == 1);
-            qCDebug(dcEasee()) << "Setting single phase charging:" << request.url().toString() << QJsonDocument::fromVariant(data).toJson();
-            QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
+            uint desiredPhaseCount = info->action().paramValue(chargerDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toUInt();
+            bool wasOn = thing->stateValue(chargerPowerStateTypeId).toBool();
+            bool oldMaxCurrent = m_desiredMax.value(info->thing());
+            if (desiredPhaseCount == thing->stateValue(chargerPhaseCountStateTypeId)) {
+                qCInfo(dcEasee()) << "effective phases already equals desired ones...";
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+            qCDebug(dcEasee()) << "Pausing charging";
+            QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/commands/pause_charging").arg(chargerId));
+            QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QByteArray());
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-            connect(reply, &QNetworkReply::finished, info, [reply, info, desiredPhaseCount](){
-                qCDebug(dcEasee()) << "Reply" << reply->error();
-                if (reply->error() == QNetworkReply::NoError) {
-                    info->thing()->setStateValue(chargerDesiredPhaseCountStateTypeId, desiredPhaseCount);
-                }
-                info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+            connect(reply, &QNetworkReply::finished, info, [=](){
+
+                QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/settings").arg(chargerId));
+
+                QVariantMap data;
+                data.insert("phaseMode", desiredPhaseCount == 1 ? PhaseModeLockedTo1Phase : PhaseModeLockedTo3Phase);
+                qCDebug(dcEasee()) << "Setting single phase charging:" << request.url().toString() << QJsonDocument::fromVariant(data).toJson();
+                QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
+                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                connect(reply, &QNetworkReply::finished, info, [=](){
+                    qCDebug(dcEasee()) << "Set phaseMode reply" << reply->error();
+                    if (reply->error() == QNetworkReply::NoError) {
+                        info->thing()->setStateValue(chargerDesiredPhaseCountStateTypeId, desiredPhaseCount);
+                    }
+                    info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+
+                    if (wasOn) {
+                        qCDebug(dcEasee()) << "Resuming charging";
+                        QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/commands/resume_charging").arg(chargerId));
+                        QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QByteArray());
+                        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                        connect(reply, &QNetworkReply::finished, info, [=](){
+                            qCDebug(dcEasee()) << "Restoring max charger current";
+                            QNetworkRequest request = createRequest(parentThing, QString("chargers/%1/settings").arg(chargerId));
+                            QVariantMap data;
+                            data.insert("dynamicChargerCurrent", oldMaxCurrent);
+                            qCDebug(dcEasee()) << "Setting max current:" << request.url().toString() << QJsonDocument::fromVariant(data).toJson();
+                            QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact));
+                            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                        });
+
+
+                    }
+                });
             });
+
             return;
         }
 
@@ -361,7 +421,7 @@ QNetworkRequest IntegrationPluginEasee::createRequest(Thing *thing, const QStrin
     pluginStorage()->beginGroup(thing->id().toString());
     QByteArray accessToken = pluginStorage()->value("accessToken").toByteArray();
     pluginStorage()->endGroup();
-    QNetworkRequest request(QUrl(QString("https://api.easee.cloud/api/%1").arg(endpoint)));
+    QNetworkRequest request(QUrl(QString("%1/%2").arg(apiEndpoint).arg(endpoint)));
     request.setRawHeader("Authorization", "Bearer " + accessToken);
     request.setRawHeader("accept", "application/json");
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/*+json");
@@ -379,20 +439,21 @@ QNetworkReply *IntegrationPluginEasee::refreshToken(Thing *thing)
 
 
     // FIXME: Ideally we should use the refresh_token API and not store user/pass in the config, but it seems to not work
-//    QNetworkRequest request(QUrl(QString("https://api.easee.cloud/api/accounts/refresh_token")));
+//    QNetworkRequest request(QUrl(QString("%1/%2").arg(apiEndpoint).arg("accounts/refresh_token")));
 //    request.setRawHeader("accept", "application/json");
 //    request.setRawHeader("content-type", "application/*+json");
 //    QVariantMap body;
 //    body.insert("refreshToken", refreshToken);
 //    body.insert("accessToken", accessToken);
 
-    QNetworkRequest request(QUrl(QString("https://api.easee.cloud/api/accounts/login")));
+    QNetworkRequest request(QUrl(QString("%1/%2").arg(apiEndpoint).arg("accounts/login")));
     request.setRawHeader("accept", "application/json");
     request.setRawHeader("content-type", "application/*+json");
     QVariantMap body;
     body.insert("userName", username);
     body.insert("password", password);
 
+    qCDebug(dcEasee()) << "Fetching:" << request.url().toString();
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -424,7 +485,9 @@ QNetworkReply *IntegrationPluginEasee::refreshToken(Thing *thing)
         pluginStorage()->setValue("refreshToken", refreshToken);
         pluginStorage()->endGroup();
 
-        m_signalRConnections.value(thing)->updateToken(accessToken);
+        if (m_signalRConnections.contains(thing)) {
+            m_signalRConnections.value(thing)->updateToken(accessToken);
+        }
 
     });
 
@@ -506,24 +569,6 @@ void IntegrationPluginEasee::refreshCurrentState(Thing *charger)
         QVariantMap map = jsonDoc.toVariant().toMap();
         qCDebug(dcEasee) << "Charger state reply:" << qUtf8Printable(jsonDoc.toJson());
         charger->setStateValue(chargerConnectedStateTypeId, map.value("isOnline").toBool());
-        charger->setStateValue(chargerSignalStrengthStateTypeId, qMax(0, qMin(100, (map.value("wiFiRSSI").toInt() + 100) * 2)));
-        charger->setStateValue(chargerCurrentPowerStateTypeId, map.value("totalPower").toDouble() * 1000);
-        charger->setStateValue(chargerPhaseCountStateTypeId, map.value("outputPhase").toUInt() > 10 ? 3 : 1);
-        charger->setStateValue(chargerChargingStateTypeId, map.value("chargerOpMode").toUInt() == 3);
-
-        // 1: unplugged, 2: charging disabled, 3: enabled and charging, 4: enabled but not charging
-        uint chargerOpMode = map.value("chargerOpMode").toUInt();
-        charger->setStateValue(chargerPluggedInStateTypeId, chargerOpMode >= 2);
-        charger->setStateValue(chargerChargingStateTypeId, chargerOpMode == 3);
-        charger->setStateValue(chargerPowerStateTypeId, chargerOpMode >= 3);
-
-        charger->setStateValue(chargerMaxChargingCurrentStateTypeId, map.value("dynamicChargerCurrent").toUInt());
-        charger->setStateMaxValue(chargerMaxChargingCurrentStateTypeId, 6); // Fixme: where to get this from?
-        charger->setStateMaxValue(chargerMaxChargingCurrentStateTypeId, 32); // Fixme: where to get this from?
-
-        charger->setStateValue(chargerTotalEnergyConsumedStateTypeId, map.value("lifetimeEnergy").toDouble());
-        charger->setStateValue(chargerSessionEnergyStateTypeId, map.value("sessionEnergy").toDouble());
-
     });
 
 

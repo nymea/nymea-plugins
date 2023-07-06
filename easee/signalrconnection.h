@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QWebSocket>
+#include <QTimer>
 #include <network/networkaccessmanager.h>
 
 class SignalRConnection : public QObject
@@ -32,6 +33,7 @@ private:
     QByteArray m_accessToken;
     NetworkAccessManager *m_nam = nullptr;
     QWebSocket *m_socket = nullptr;
+    QTimer *m_watchdog = nullptr;
 
     bool m_waitingForHandshakeReply = false;
 };
