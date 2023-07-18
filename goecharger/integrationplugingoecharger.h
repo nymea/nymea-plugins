@@ -95,7 +95,7 @@ public:
     Q_ENUM(CableLockMode)
 
     explicit IntegrationPluginGoECharger();
-
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
@@ -114,7 +114,7 @@ private:
 
     // General methods
     void setupGoeHome(ThingSetupInfo *info);
-    QNetworkRequest buildStatusRequest(Thing *thing);
+    QNetworkRequest buildStatusRequest(Thing *thing, bool fullStatus = false);
     QHostAddress getHostAddress(Thing *thing);
     ApiVersion getApiVersion(Thing *thing);
 
@@ -133,6 +133,8 @@ private:
 
 private slots:
     void refreshHttp();
+
+    void onConfigValueChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
     // API V1
     void onMqttClientV1Connected(MqttChannel* channel);

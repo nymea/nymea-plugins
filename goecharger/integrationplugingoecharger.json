@@ -2,6 +2,17 @@
     "name": "GoECharger",
     "displayName": "go-eCharger",
     "id": "a1dfca21-3f41-4a67-bc8c-c8b333411bd9",
+    "paramTypes": [
+        {
+            "id": "7746a28e-c125-40bc-958c-27d8aeeb06a0",
+            "name": "httpRefreshInterval",
+            "displayName": "HTTP refresh interval",
+            "type": "uint",
+            "minValue": 2,
+            "unit": "Seconds",
+            "defaultValue": 5
+        }
+    ],
     "vendors": [
         {
             "name": "goE",
