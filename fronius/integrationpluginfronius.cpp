@@ -257,7 +257,7 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)
 {
     if (connection->busy()) {
-        qCWarning(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
+        qCDebug(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
         return;
     }
 
