@@ -1,3 +1,17 @@
+nymea-plugins (1.8.2) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Don't print password in debug logs
+  * Fronius: Remove a non critical but spamming warning message
+
+  [ Simon Stürz ]
+  * go-eCharger: improve API V2 refreshing to reduce wallbox load
+
+  [ Michael Zanetti ]
+  * Easee: Various fixes after beta testing
+
+ -- jenkins <developer@nymea.io>  Tue, 18 Jul 2023 12:21:46 +0200
+
 nymea-plugins (1.8.1) jammy; urgency=medium
 
   [ Michael Zanetti ]
