@@ -212,9 +212,19 @@ public:
         ObservationPointLTERSRQ = 222,
         ObservationPointEQAvailableCurrentP1 = 230,
         ObservationPointEQAvailableCurrentP2 = 231,
-        ObservationPointEQAvailableCurrentP3 = 232
+        ObservationPointEQAvailableCurrentP3 = 232,
+        ObservationPointConnectedToCloud = 250
     };
     Q_ENUM(ObservationPoint)
+
+
+    enum PhaseMode {
+        PhaseModeIgnore = 0,
+        PhaseModeLockedTo1Phase = 1,
+        PhaseModeAuto = 2,
+        PhaseModeLockedTo3Phase = 3
+    };
+    Q_ENUM(PhaseMode)
 
     explicit IntegrationPluginEasee();
     ~IntegrationPluginEasee();
@@ -237,6 +247,10 @@ private:
     QHash<QString, uint> m_siteIds; // chargerId, siteId
 
     PluginTimer *m_timer = nullptr;
+
+    QHash<QString,uint> m_cableRating;
+    QHash<QString,uint> m_wallboxMax;
+    QHash<Thing*,uint> m_desiredMax;
 };
 
 #endif // INTEGRATIONPLUGINEASEE_H
