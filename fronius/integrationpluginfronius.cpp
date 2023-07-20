@@ -31,6 +31,7 @@
 #include "plugininfo.h"
 #include "plugintimer.h"
 #include "integrationpluginfronius.h"
+#include "froniusdiscovery.h"
 #include "network/networkaccessmanager.h"
 #include "network/networkdevicediscovery.h"
 
@@ -56,18 +57,13 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
     }
 
     qCInfo(dcFronius()) << "Starting network discovery...";
-    NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [=](){
+    FroniusDiscovery *discovery = new FroniusDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), info);
+    connect(discovery, &FroniusDiscovery::discoveryFinished, info, [=](){
         ThingDescriptors descriptors;
-        qCDebug(dcFronius()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
-        foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
+        qCDebug(dcFronius()) << "Discovery finished. Found" << discovery->discoveryResults().count() << "devices";
+        foreach (const NetworkDeviceInfo &networkDeviceInfo, discovery->discoveryResults()) {
             qCDebug(dcFronius()) << networkDeviceInfo;
             if (networkDeviceInfo.macAddress().isNull())
-                continue;
-
-            // Hostname or MAC manufacturer must include Fronius
-            if (!(networkDeviceInfo.macAddressManufacturer().toLower().contains("fronius") || networkDeviceInfo.hostName().toLower().contains("fronius")))
                 continue;
 
             QString title;
