@@ -31,13 +31,11 @@
 #ifndef INTEGRATIONPLUGINFRONIUS_H
 #define INTEGRATIONPLUGINFRONIUS_H
 
-#include "integrations/integrationplugin.h"
-#include "froniussolarconnection.h"
+#include <integrations/integrationplugin.h>
+#include <network/networkaccessmanager.h>
+#include <network/networkdevicediscovery.h>
 
-#include <QHash>
-#include <QNetworkReply>
-#include <QTimer>
-#include <QUuid>
+#include "froniussolarconnection.h"
 
 class PluginTimer;
 
@@ -60,6 +58,7 @@ private:
     PluginTimer *m_connectionRefreshTimer = nullptr;
 
     QHash<FroniusSolarConnection *, Thing *> m_froniusConnections;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
 
     void refreshConnection(FroniusSolarConnection *connection);
 

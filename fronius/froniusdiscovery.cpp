@@ -51,11 +51,11 @@ FroniusDiscovery::FroniusDiscovery(NetworkAccessManager *networkManager, Network
 
 void FroniusDiscovery::startDiscovery()
 {
-    qCInfo(dcFronius()) << "Discovery: Searching for Fronius solar devices in the network...";
+    qCDebug(dcFronius()) << "Discovery: Searching for Fronius solar devices in the network...";
+    m_startDateTime = QDateTime::currentDateTime();
+
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
-
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &FroniusDiscovery::checkNetworkDevice);
-
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         qCDebug(dcFronius()) << "Discovery: Network discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
         m_gracePeriodTimer.start();
@@ -70,7 +70,7 @@ QList<NetworkDeviceInfo> FroniusDiscovery::discoveryResults() const
 
 void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
 {
-    qCDebug(dcFronius()) << "Checking network device:" << networkDeviceInfo;
+    qCDebug(dcFronius()) << "Discovery: Checking network device:" << networkDeviceInfo;
 
     FroniusSolarConnection *connection = new FroniusSolarConnection(m_networkManager, networkDeviceInfo.address(), this);
     m_connections.append(connection);
@@ -80,9 +80,9 @@ void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         QByteArray data = reply->networkReply()->readAll();
         if (reply->networkReply()->error() != QNetworkReply::NoError) {
             if (reply->networkReply()->error() == QNetworkReply::ContentNotFoundError) {
-                qCInfo(dcFronius()) << "The device does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device.";
+                qCInfo(dcFronius()) << "Discovery: The device on" << networkDeviceInfo.address().toString() << "does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device.";
             } else {
-                qCDebug(dcFronius()) << "device" << networkDeviceInfo.address() << "is not reachable.";
+                qCDebug(dcFronius()) << "Discovery: Reply finished with error on" << networkDeviceInfo.address().toString() << reply->networkReply()->errorString();
             }
             cleanupConnection(connection);
             return;
@@ -91,22 +91,22 @@ void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcFronius()) << "Failed to parse JSON data" << data << ":" << error.errorString() << data;
+            qCDebug(dcFronius()) << "Discovery: Failed to parse JSON data from" << networkDeviceInfo.address().toString() << ":" << error.errorString() << data;
             cleanupConnection(connection);
             return;
         }
 
         QVariantMap versionResponseMap = jsonDoc.toVariant().toMap();
         if (!versionResponseMap.contains("CompatibilityRange")) {
-            qCInfo(dcFronius()) << "Unexpected JSON reply. PRobably not a Fronius device.";
+            qCDebug(dcFronius()) << "Discovery: Unexpected JSON reply from" << networkDeviceInfo.address().toString() << "Probably not a Fronius device.";
             cleanupConnection(connection);
             return;
         }
-        qCDebug(dcFronius()) << "Compatibility version" << versionResponseMap.value("CompatibilityRange").toString();
+        qCDebug(dcFronius()) << "Discovery: Compatibility version" << versionResponseMap.value("CompatibilityRange").toString();
 
         // Knwon version with broken JSON API. Still allowing to discover so the user will get a proper error message during setup
         if (versionResponseMap.value("CompatibilityRange").toString() == "1.6-2") {
-            qCWarning(dcFronius()) << "The Fronius data logger has a version which is known to have a broken JSON API firmware.";
+            qCWarning(dcFronius()) << "Discovery: The Fronius data logger has a version which is known to have a broken JSON API firmware.";
         }
 
         m_discoveryResults.append(networkDeviceInfo);
@@ -128,7 +128,7 @@ void FroniusDiscovery::finishDiscovery()
         cleanupConnection(connection);
     }
 
-    qCInfo(dcFronius()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count()
+    qCDebug(dcFronius()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count()
                        << "Fronius devices in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     m_gracePeriodTimer.stop();
 
