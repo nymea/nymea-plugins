@@ -3768,6 +3768,48 @@
                             "displayName": "Calibrate"
                         }
                     ]
+                },
+                {
+                    "id": "dffcc66b-bb93-4de0-9ad4-0b2ca0fa813a",
+                    "name": "shellyAddonTempSensor",
+                    "displayName": "Shelly Addon temperature sensor",
+                    "createMethods": ["auto"],
+                    "interfaces": ["temperaturesensor", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "85845b89-0c78-4f9b-8107-d179604e1ad8",
+                            "name": "addonId",
+                            "displayName": "ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "982846ff-e045-4e4d-8959-b5ea65b83082",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5e9ed1dd-a1f7-4755-ac6f-30013580d363",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b0062fc6-8fa1-4754-904a-c18614114998",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        }
+                    ]
                 }
             ]
         }
