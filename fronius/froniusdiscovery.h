@@ -28,48 +28,43 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINFRONIUS_H
-#define INTEGRATIONPLUGINFRONIUS_H
+#ifndef FRONIUSDISCOVERY_H
+#define FRONIUSDISCOVERY_H
 
-#include <integrations/integrationplugin.h>
-#include <network/networkaccessmanager.h>
+#include <QObject>
+#include <QTimer>
+
 #include <network/networkdevicediscovery.h>
-
 #include "froniussolarconnection.h"
 
-class PluginTimer;
-
-class IntegrationPluginFronius : public IntegrationPlugin
+class FroniusDiscovery : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginfronius.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginFronius(QObject *parent = nullptr);
+    explicit FroniusDiscovery(NetworkAccessManager *networkManager, NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
 
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *thing) override;
-    void postSetupThing(Thing* thing) override;
-    void executeAction(ThingActionInfo *info) override;
-    void thingRemoved(Thing* thing) override;
+    void startDiscovery();
+
+    QList<NetworkDeviceInfo> discoveryResults() const;
+
+signals:
+    void discoveryFinished();
 
 private:
-    PluginTimer *m_connectionRefreshTimer = nullptr;
+    NetworkAccessManager *m_networkManager = nullptr;
+    NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
 
-    QHash<FroniusSolarConnection *, Thing *> m_froniusConnections;
-    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    QTimer m_gracePeriodTimer;
+    QDateTime m_startDateTime;
 
-    void refreshConnection(FroniusSolarConnection *connection);
+    QList<FroniusSolarConnection *> m_connections;
 
-    void updatePowerFlow(FroniusSolarConnection *connection);
-    void updateInverters(FroniusSolarConnection *connection);
-    void updateMeters(FroniusSolarConnection *connection);
-    void updateStorages(FroniusSolarConnection *connection);
+    QList<NetworkDeviceInfo> m_discoveryResults;
 
-    void markInverterAsDisconnected(Thing *thing);
-    void markMeterAsDisconnected(Thing *thing);
-    void markStorageAsDisconnected(Thing *thing);
+    void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
+    void cleanupConnection(FroniusSolarConnection *connection);
+
+    void finishDiscovery();
 };
 
-#endif // INTEGRATIONPLUGINFRONIUS_H
+#endif // FRONIUSDISCOVERY_H

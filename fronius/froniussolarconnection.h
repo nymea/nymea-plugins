@@ -32,7 +32,6 @@
 #define FRONIUSSOLARCONNECTION_H
 
 #include <QObject>
-
 #include <QQueue>
 #include <QHostAddress>
 
@@ -47,6 +46,7 @@ public:
     explicit FroniusSolarConnection(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent = nullptr);
 
     QHostAddress address() const;
+    void setAddress(const QHostAddress &address);
 
     bool available() const;
 

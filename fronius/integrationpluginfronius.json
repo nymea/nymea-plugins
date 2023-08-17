@@ -22,7 +22,7 @@
                             "displayName": "Host address",
                             "type": "QString",
                             "inputType": "IPv4Address",
-                            "defaultValue": "88.117.152.99"
+                            "defaultValue": ""
                         },
                         {
                             "id": "2237972e-385b-4458-b5d3-1d1fb4ae8756",

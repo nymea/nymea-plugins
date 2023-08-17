@@ -46,6 +46,30 @@ QHostAddress FroniusSolarConnection::address() const
     return m_address;
 }
 
+void FroniusSolarConnection::setAddress(const QHostAddress &address)
+{
+    if (m_address == address)
+        return;
+
+    m_address = address;
+
+    // The address has changed, let's clean up any queue and refresh
+
+    // Note: the destructor will take care about the cleanup of any pending replies
+    qDeleteAll(m_requestQueue);
+    m_requestQueue.clear();
+
+    if (m_currentReply) {
+        m_currentReply->deleteLater();
+        m_currentReply = nullptr;
+    }
+
+    if (m_address.isNull()) {
+        m_available = false;
+        emit availableChanged(m_available);
+    }
+}
+
 bool FroniusSolarConnection::available() const
 {
     return m_available;
