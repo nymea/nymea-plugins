@@ -1,0 +1,9 @@
+{
+    "title": "Owlet",
+    "tagline": "Allows using microcontroller pins of various microcontrollers with nymea",
+    "icon": "",
+    "stability": "community",
+    "offline": true,
+    "technologies": ["serial-port", "network"],
+    "categories": ["sensor", "diy", "switch"]
+}
