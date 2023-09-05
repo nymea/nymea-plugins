@@ -10,8 +10,8 @@
             "thingClasses": [
                 {
                     "id": "24364e36-b199-4e35-b468-c44da58c009c",
-                    "name": "ws2812fx",
-                    "displayName": "WS2812FX",
+                    "name": "nymeaLightSerial",
+                    "displayName": "Serial nymea light",
                     "createMethods": ["user", "discovery"],
                     "interfaces": ["colorlight", "connectable"],
                     "paramTypes": [
@@ -21,7 +21,7 @@
                             "displayName": "Serial port",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "ttyAMC0"
+                            "defaultValue": "/dev/ttyAMC0"
                         }
                     ],
                     "stateTypes": [
@@ -63,7 +63,7 @@
                             "displayNameEvent": "color changed",
                             "displayNameAction": "Set color",
                             "type": "QColor",
-                            "defaultValue": "#000000",
+                            "defaultValue": "#FFFFFF",
                             "writable": true
                         },
                         {
@@ -74,7 +74,7 @@
                             "displayNameAction": "Set brigtness",
                             "type": "int",
                             "unit": "Percentage",
-                            "defaultValue": 0,
+                            "defaultValue": 100,
                             "minValue": 0,
                             "maxValue": 100,
                             "writable": true
@@ -87,7 +87,7 @@
                             "displayNameAction": "Set speed",
                             "type": "int",
                             "unit": "Percentage",
-                            "defaultValue": 0,
+                            "defaultValue": 50,
                             "minValue": 0,
                             "maxValue": 100,
                             "writable": true
@@ -100,6 +100,7 @@
                             "displayNameAction": "Set effect mode",
                             "type": "QString",
                             "defaultValue": "Static",
+                            "writable": true,
                             "possibleValues": [
                                 "Static",
                                 "Blink",
@@ -161,8 +162,7 @@
                                 "Custom 1",
                                 "Custom 2",
                                 "Custom 3"
-                            ],
-                            "writable": true
+                            ]
                         }
                     ]
                 }
