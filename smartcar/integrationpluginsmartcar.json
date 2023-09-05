@@ -1,0 +1,142 @@
+{
+    "name": "smartcar",
+    "displayName": "Smartcar",
+    "id": "f33bb38d-640e-4b15-a39e-f0e7b2cc6993",
+    "paramTypes": [
+        {
+            "id": "70e2c7a1-55b4-47fd-83b5-549de30b1391",
+            "name": "testMode",
+            "displayName": "Test Mode",
+            "type": "bool",                            
+            "defaultValue": false                            
+        },
+        {
+            "id": "bb5ee037-5034-4921-b1d8-3936bc515fa6",
+            "name": "customClientId",
+            "displayName": "Client ID",
+            "defaultValue": "",
+            "type": "QString"
+        },
+        {
+            "id": "b60c7f7b-8175-437c-8056-8258cc8a3bd5",
+            "name": "customClientSecret",
+            "displayName": "Client secret",
+            "defaultValue": "",
+            "type": "QString"
+        }
+    ],
+    "apiKeys": ["smartcar"],
+    "vendors": [
+        {
+            "name": "smartcar",
+            "displayName": "Smartcar",
+            "id": "e52d223f-910d-47a0-a0e4-8f0718d453cd",
+            "thingClasses": [
+                {
+                    "name": "smartcarAccount",
+                    "displayName": "Smartcar",
+                    "id": "da78acf9-a64c-4976-8344-26b8e68dcb5f",
+                    "setupMethod": "oauth",
+                    "createMethods": ["user"],
+                    "interfaces": ["account"],
+                    "paramTypes": [
+                    ],                    
+                    "settingsTypes": [
+                        {
+                            "id": "ca4f36ac-b202-4a87-8c17-d59a6e4cf07b",
+                            "name": "socRefreshPeriod",
+                            "displayName": "SOC Refresh Period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 120,
+                            "minValue": 10
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "4b7f54bc-460c-4bfa-a4e5-032d5ff3c984",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "d03ce680-ebf4-45f1-950a-586b3f026119",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        }
+                    ],
+                    "actionTypes":[
+                    ],
+                    "eventTypes":[
+                    ]
+                },
+                {
+                    "name": "vehicle",
+                    "displayName": "Vehicle",
+                    "id": "77ddd9f7-7c16-4bf3-bff0-c3a2208c8c66",                    
+                    "createMethods": ["auto"],
+                    "interfaces": ["battery"],
+                    "paramTypes": [
+                        {
+                            "id": "e78e6157-e884-43d0-9f50-6e433ce25ed4",
+                            "name": "make",
+                            "displayName": "Make",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "33d63299-f3c0-4c07-a423-85233f2e11a0",
+                            "name": "vehicleid",
+                            "displayName": "Vehicle ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "b772b264-5267-41b0-8806-ecc4351bc94a",
+                            "name": "batteryLevel",
+                            "displayName": "State of Charge",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "297aed0b-72ce-4d04-a280-22d00e0389d8",
+                            "name": "batteryCritical",
+                            "displayName": "State of Charge Critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fbf040a8-90aa-4d4f-8885-39f4bfcf0b00",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged In",
+                            "displayNameEvent": "Plugged In state changed",
+                            "type": "bool",
+                            "defaultValue": "false"
+                        },
+                        {
+                            "id": "056ac150-c31b-4c3b-8a8c-4a009e503eb9",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "displayNameEvent": "Charging state changed",
+                            "type": "bool",
+                            "defaultValue": "false"
+                        }
+                    ]                    
+                }
+            ]
+        }
+    ]
+}
