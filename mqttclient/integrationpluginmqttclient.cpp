@@ -56,9 +56,10 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
         }
 
     } else if (thing->thingClassId() == mqttClientThingClassId){
-        client = new MqttClient(thing->paramValue(mqttClientThingClientIdParamTypeId).toString(), this);
+        client = new MqttClient(thing->paramValue(mqttClientThingClientIdParamTypeId).toString(), thing);
         client->setUsername(thing->paramValue(mqttClientThingUsernameParamTypeId).toString());
         client->setPassword(thing->paramValue(mqttClientThingPasswordParamTypeId).toString());
+        client->setKeepAlive(thing->paramValue(mqttClientThingKeepAliveParamTypeId).toUInt());
         QString willTopic = thing->paramValue(mqttClientThingWillTopicParamTypeId).toString();
         if (!willTopic.isEmpty()) {
             client->setWillTopic(willTopic);
@@ -66,6 +67,7 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
             client->setWillQoS(static_cast<Mqtt::QoS>(thing->paramValue(mqttClientThingWillQoSParamTypeId).toInt()));
             client->setWillRetain(thing->paramValue(mqttClientThingWillRetainParamTypeId).toBool());
         }
+        qCDebug(dcMqttclient()) << "Connecting to" << thing->paramValue(mqttClientThingServerAddressParamTypeId).toString() << thing->paramValue(mqttClientThingServerPortParamTypeId).toInt() << "SSL:" << thing->paramValue(mqttClientThingUseSslParamTypeId).toBool() << "user:" << thing->paramValue(mqttClientThingUsernameParamTypeId).toString() << "Client ID:" << thing->paramValue(mqttClientThingClientIdParamTypeId).toString();
         client->connectToHost(thing->paramValue(mqttClientThingServerAddressParamTypeId).toString(),
                               thing->paramValue(mqttClientThingServerPortParamTypeId).toInt(),
                               true,
@@ -77,7 +79,7 @@ void IntegrationPluginMqttClient::setupThing(ThingSetupInfo *info)
         qCWarning(dcMqttclient()) << "An error happened during setup:" << socketError;
         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened connecting to the MQTT broker. Please make sure the login credentials are correct and your user has apprpriate permissions to subscribe to the given topic filter."));
     });
-    connect(client, &MqttClient::connected, this, [this, thing](){
+    connect(client, &MqttClient::connected, thing, [this, thing](){
         subscribe(thing);
     });
     connect(client, &MqttClient::subscribeResult, info, [info](quint16 /*packetId*/, const Mqtt::SubscribeReturnCodes returnCodes){
