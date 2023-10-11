@@ -38,7 +38,10 @@
 
 IntegrationPluginKeba::IntegrationPluginKeba()
 {
-
+    //    KebaProductInfo bmw("BMW-10-EC240522-E1R");
+    //    KebaProductInfo ke("KC-P30-EC240122-E0R");
+    //    KebaProductInfo ge("KC-P30-EC220112-000-DE");
+    //    KebaProductInfo n("KC-P30-EC2404B2-M0A-GE");
 }
 
 void IntegrationPluginKeba::init()
@@ -96,7 +99,7 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
             if (discoveredThingClassId != info->thingClassId())
                 continue;
 
-            ThingDescriptor descriptor(discoveredThingClassId, "Keba " + result.product, "Serial: " + result.serialNumber + " - " + result.networkDeviceInfo.address().toString());
+            ThingDescriptor descriptor(discoveredThingClassId, productInformation.manufacturer() + " " + result.product, "Serial: " + result.serialNumber + " - " + result.networkDeviceInfo.address().toString());
             qCDebug(dcKeba()) << "Discovered:" << descriptor.title() << descriptor.description();
 
             // Check if we already have set up this device
