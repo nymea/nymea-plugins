@@ -90,7 +90,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shelly1pmThingClassId) {
             namePattern = QRegExp("^shelly1pm-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
-            namePattern = QRegExp("^ShellyPlus1PM-[0-9A-Z]+$");
+            namePattern = QRegExp("^ShellyPlus1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shelly1lThingClassId) {
             namePattern = QRegExp("^shelly1l-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlugThingClassId) {
