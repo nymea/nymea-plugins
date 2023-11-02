@@ -86,7 +86,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         if (info->thingClassId() == shelly1ThingClassId) {
             namePattern = QRegExp("^shelly1-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlus1ThingClassId) {
-            namePattern = QRegExp("^ShellyPlus1-[0-9A-Z]+$");
+            namePattern = QRegExp("^ShellyPlus1-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shelly1pmThingClassId) {
             namePattern = QRegExp("^shelly1pm-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
@@ -96,7 +96,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyPlugThingClassId) {
             namePattern = QRegExp("^shellyplug(-s)?-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlusPlugThingClassId) {
-            namePattern = QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$");
+            namePattern = QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
@@ -112,7 +112,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyEm3ThingClassId) {
             namePattern = QRegExp("^shellyem3-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPro3EMThingClassId) {
-            namePattern = QRegExp("^ShellyPro3EM-[0-9A-Z]+$");
+            namePattern = QRegExp("^ShellyPro3EM-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shellyHTThingClassId) {
             namePattern = QRegExp("shellyht-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyI3ThingClassId) {
