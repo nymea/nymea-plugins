@@ -75,6 +75,7 @@ PLUGIN_DIRS = \
     telegram            \
     tempo               \ 
     texasinstruments    \
+    tmate               \
     tplink              \
     tuya                \
     udpcommander        \

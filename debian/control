@@ -581,6 +581,15 @@ Description: nymea integration plugin for Tempo time tracking
  This package contains the nymea integration plugin for Tempo time tracking.
 
 
+Package: nymea-plugin-tmate
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         tmate,
+Description: nymea integration plugin for tmate
+ This package contains the nymea integration plugin for tmate terminal access.
+
+
 Package: nymea-plugin-tplink
 Architecture: any
 Depends: ${shlibs:Depends},

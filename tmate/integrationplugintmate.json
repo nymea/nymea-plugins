@@ -1,0 +1,131 @@
+{
+    "id": "d06ab0d1-dbfe-48af-b196-523cc37a1e5e",
+    "name": "Tmate",
+    "displayName": "Tmate",
+    "vendors": [
+        {
+            "id": "b948d5e2-bfc6-4e28-a2ba-e40e46f4c213",
+            "name": "tmate",
+            "displayName": "Tmate",
+            "thingClasses": [
+                {
+                    "id": "3f06ad52-9514-41b1-9bf9-031241d34634",
+                    "name": "tmate",
+                    "displayName": "Tmate",
+                    "createMethods": ["user"],
+                    "setupMethod": "justadd",
+                    "interfaces": [],
+                    "paramTypes": [
+                        {
+                            "id": "01f0c818-55e1-4842-a9b9-cc58bbfe76c6",
+                            "name": "apiKey",
+                            "displayName": "API key (optional)",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e587e3dc-0beb-441f-8f07-b23c25580b10",
+                            "name": "sessionName",
+                            "displayName": "Session name (requires API key usage)",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "7009c176-e1aa-49bc-818c-63f7a9027306",
+                            "name": "active",
+                            "displayName": "Active",
+                            "displayNameAction": "Set active",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "beac3113-04f1-4d70-875b-44ca8b307866",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "suggestLogging": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "ef780fb1-b31a-4333-944b-a02bf3297fea",
+                            "name": "sshRo",
+                            "displayName": "SSH RO",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "e8ff1b90-7701-454c-a557-4b91dc8c649b",
+                            "name": "ssh",
+                            "displayName": "SSH",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "98248bc0-ddda-4ae6-8558-4d7155a39c33",
+                            "name": "webRo",
+                            "displayName": "Web RO",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "9c284ede-eea8-4a9b-a326-e59a6bc7bb7c",
+                            "name": "web",
+                            "displayName": "Web",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "786e7be7-917a-4062-83ff-aade80686ec5",
+                            "name": "clients",
+                            "displayName": "Clients",
+                            "type": "uint",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "0508a1e2-4ed2-42ee-ab70-ed7cdd1e261c",
+                            "name": "clientConnected",
+                            "displayName": "Client connected",
+                            "suggestLogging": true,
+                            "paramTypes": [
+                                {
+                                    "id": "a334c6e7-dffc-4720-aa21-815636be1bc1",
+                                    "name": "clientAddress",
+                                    "displayName": "Client address",
+                                    "type": "QString"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "2871e481-1b67-4d77-b1ce-e0965784aa89",
+                            "name": "clientDisconnected",
+                            "displayName": "Client disconnected",
+                            "suggestLogging": true,
+                            "paramTypes": [
+                                {
+                                    "id": "0ad4ed71-4b9a-44ab-83b1-5c62482e1625",
+                                    "name": "clientAddress",
+                                    "displayName": "Client address",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
