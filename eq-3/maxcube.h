@@ -122,7 +122,7 @@ signals:
 private slots:
     void connectionStateChanged(const QAbstractSocket::SocketState &socketState);
     void error(QAbstractSocket::SocketError error);
-    void readData();
+    void onReadyRead();
     void processCubeData(const QByteArray &data);
 
     void processCommandQueue();
