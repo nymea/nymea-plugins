@@ -1,3 +1,11 @@
+nymea-plugins (1.8.4) jammy; urgency=medium
+
+  [ Jenkins ]
+  * Shelly: Fix discovery for 1 Plus PM
+  * Shelly: Set discovery insensitive to upper / lower case
+
+ -- jenkins <developer@nymea.io>  Mon, 13 Nov 2023 21:25:38 +0100
+
 nymea-plugins (1.8.3) jammy; urgency=medium
 
   [ Michael Zanetti ]
