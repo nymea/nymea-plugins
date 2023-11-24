@@ -79,15 +79,15 @@ void IntegrationPluginFlowercare::discoverThings(ThingDiscoveryInfo *info)
 
         qCDebug(dcFlowerCare()) << "Discovery finished";
 
-        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-            qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.name();
-            if (deviceInfo.name().contains("Flower care")) {
-                ThingDescriptor descriptor(flowerCareThingClassId, deviceInfo.name(), deviceInfo.address().toString());
+        foreach (const auto &deviceInfo, reply->discoveredDevices()) {
+            qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.first.name();
+            if (deviceInfo.first.name().contains("Flower care")) {
+                ThingDescriptor descriptor(flowerCareThingClassId, deviceInfo.first.name(), deviceInfo.first.address().toString());
                 ParamList params;
-                params << Param(flowerCareThingMacParamTypeId, deviceInfo.address().toString());
+                params << Param(flowerCareThingMacParamTypeId, deviceInfo.first.address().toString());
                 descriptor.setParams(params);
                 foreach (Thing *existingThing, myThings()) {
-                    if (existingThing->paramValue(flowerCareThingMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                    if (existingThing->paramValue(flowerCareThingMacParamTypeId).toString() == deviceInfo.first.address().toString()) {
                         descriptor.setThingId(existingThing->id());
                         break;
                     }

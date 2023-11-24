@@ -535,12 +535,18 @@
                     "displayName": "Eqiva Bluetooth Smart Radiator Thermostat",
                     "interfaces": ["thermostat", "wirelessconnectable", "battery"],
                     "createMethods": ["discovery"],
-                    "setupMethod": "JustAdd",
+                    "setupMethod": "EnterPin",
                     "paramTypes": [
                         {
                             "id": "56a77560-e1a3-44fa-8136-57fe5a8d1cbe",
                             "name": "macAddress",
                             "displayName": "MAC Address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "37915a7a-65a4-48ed-8d86-d83500b38f3e",
+                            "name": "adapter",
+                            "displayName": "Adapter",
                             "type": "QString"
                         }
                     ],

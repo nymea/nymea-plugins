@@ -549,17 +549,18 @@ void EqivaBluetoothDiscovery::deviceDiscoveryDone()
     BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
     reply->deleteLater();
 
+    QList<EqivaBluetoothDiscovery::DiscoveryResult> results;
+
     if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
         qCWarning(dcEQ3()) << "Bluetooth discovery error:" << reply->error();
+        emit finished(results);
         return;
     }
 
-    QStringList results;
-
-    foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-        qCDebug(dcEQ3()) << "Discovered Bluetooth device" << deviceInfo.name() << deviceInfo.address().toString();
-        if (deviceInfo.name().contains("CC-RT-BLE")) {
-            results.append(deviceInfo.address().toString());
+    foreach (const auto &deviceInfo, reply->discoveredDevices()) {
+        qCDebug(dcEQ3()) << "Discovered Bluetooth device" << deviceInfo.first.name() << deviceInfo.first.address().toString();
+        if (deviceInfo.first.name().contains("CC-RT-BLE")) {
+            results.append({deviceInfo.first, deviceInfo.second});
         }
     }
 

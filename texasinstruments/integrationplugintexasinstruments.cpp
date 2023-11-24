@@ -66,21 +66,21 @@ void IntegrationPluginTexasInstruments::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
+        foreach (const auto &deviceInfo, reply->discoveredDevices()) {
 
-            if (deviceInfo.name().contains("SensorTag")) {
+            if (deviceInfo.first.name().contains("SensorTag")) {
 
-                ThingDescriptor descriptor(sensorTagThingClassId, "Sensor Tag", deviceInfo.address().toString());
+                ThingDescriptor descriptor(sensorTagThingClassId, "Sensor Tag", deviceInfo.first.address().toString());
 
-                Things existingThing = myThings().filterByParam(sensorTagThingMacParamTypeId, deviceInfo.address().toString());
+                Things existingThing = myThings().filterByParam(sensorTagThingMacParamTypeId, deviceInfo.first.address().toString());
                 if (!existingThing.isEmpty()) {
                     descriptor.setThingId(existingThing.first()->id());
                 }
 
                 ParamList params;
-                params.append(Param(sensorTagThingMacParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(sensorTagThingMacParamTypeId, deviceInfo.first.address().toString()));
                 foreach (Thing *existingThing, myThings()) {
-                    if (existingThing->paramValue(sensorTagThingMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                    if (existingThing->paramValue(sensorTagThingMacParamTypeId).toString() == deviceInfo.first.address().toString()) {
                         descriptor.setThingId(existingThing->id());
                         break;
                     }
