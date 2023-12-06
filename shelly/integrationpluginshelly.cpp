@@ -123,8 +123,10 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("shellytrv-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyFloodThingClassId) {
             namePattern = QRegExp("^shellyflood-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyFloodThingClassId) {
+        } else if (info->thingClassId() == shellySmokeThingClassId) {
             namePattern = QRegExp("^shellysmoke-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyPlusSmokeThingClassId) {
+            namePattern = QRegExp("^shellyplussmoke-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shellyGasThingClassId) {
             namePattern = QRegExp("^shellygas-[0-9A-Z]+$");
         }
@@ -707,6 +709,14 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [info, reply](){
             info->finish(reply->error() == QNetworkReply::NoError ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+        });
+        return;
+    }
+
+    if (action.actionTypeId() == shellyPlusSmokeMuteActionTypeId) {
+        ShellyRpcReply *reply = m_rpcClients.value(thing)->sendRequest("Smoke.Mute");
+        connect(reply, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+            info->finish(status == ShellyRpcReply::StatusSuccess ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
         });
         return;
     }
@@ -1309,6 +1319,14 @@ void IntegrationPluginShelly::fetchStatusGen2(Thing *thing)
             child->setStateValue("connected", true);
             child->setStateValue("signalStrength", signalStrength);
         }
+
+        // The Shelly Plus Smoke doesn't seem to send notifications, need to fill in data from polling
+        if (thing->thingClassId() == shellyPlusSmokeThingClassId) {
+            thing->setStateValue(shellyPlusSmokeBatteryLevelStateTypeId, response.value("devicepower:0").toMap().value("battery").toMap().value("percent").toInt());
+            thing->setStateValue(shellyPlusSmokeBatteryCriticalStateTypeId, thing->stateValue(shellyPlusSmokeBatteryLevelStateTypeId).toInt() < 10);
+            thing->setStateValue(shellyPlusSmokeFireDetectedStateTypeId, response.value("smoke:0").toMap().value("alarm").toBool());
+            thing->setStateValue(shellyPlusSmokeMuteStateTypeId, response.value("smoke:0").toMap().value("mute").toBool());
+        }
     });
 
     ShellyRpcReply *infoReply = client->sendRequest("Shelly.GetDeviceInfo");
@@ -1742,6 +1760,11 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorNoError);
                 return;
             }
+
+            if (info->thing()->thingClassId() == shellyPlusSmokeThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
         });
     });
 
@@ -1872,12 +1895,17 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
 
             if (id.startsWith("temperature")) {
                 Thing *addonTempSensor = myThings().filterByParentId(thing->id()).findByParams({{shellyAddonTempSensorThingAddonIdParamTypeId, id}});
+                QVariantMap temperatureMap = notification.value(id).toMap();
                 if (addonTempSensor) {
-                    QVariantMap temperatureMap = notification.value(id).toMap();
                     addonTempSensor->setStateValue(shellyAddonTempSensorTemperatureStateTypeId, temperatureMap.value("tC").toDouble());
                 }
-
             }
+
+            if (id.startsWith("smoke:0")) {
+                QVariantMap map = notification.value("smoke:0").toMap();
+                thing->setStateValue(shellyPlusSmokeFireDetectedStateTypeId, map.value("alarm").toBool());
+            }
+
         }
     });
 

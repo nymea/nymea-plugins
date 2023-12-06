@@ -23,6 +23,8 @@ The currently supported devices are:
 * Shelly Motion
 * Shelly Vintage
 * Shelly TRV
+* Shelly Smoke
+* Shelly Plus Smoke
 
 ## Requirements
 The Shelly device needs to be connected to the same WiFi as nymea is in. New Shelly devices will open a WiFi named with

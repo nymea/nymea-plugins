@@ -2457,6 +2457,105 @@
                     ]
                 },
                 {
+                    "id": "8013cb36-2375-4d52-b042-4b61a290be3b",
+                    "name": "shellyPlusSmoke",
+                    "displayName": "Shelly Plus Smoke",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "enterpin",
+                    "interfaces": ["firesensor", "wirelessconnectable", "battery", "update"],
+                    "paramTypes": [
+                        {
+                            "id": "f06b28da-821f-4d6f-a9a4-16c0faa0e745",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "12cf10d4-c74f-49e3-ac5a-3647ffb0cc64",
+                            "name": "fireDetected",
+                            "displayName": "Fire detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "724cd341-95b3-4bc6-b9c9-d8e85c0f8b7a",
+                            "name": "mute",
+                            "displayName": "Muted",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "8e5095d7-ab1c-42ba-934d-8e6c290f6b49",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "bc08e45b-8976-45da-9f26-80a0cdf92a3d",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "201dc87b-7fd3-4252-9bc8-e3cc3ac88f77",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "735eca96-b388-49f5-8e38-41361a4b85ad",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7626bcf4-5a16-400a-bc00-6deb64b699c1",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "ce6114c9-d422-4e32-bfc3-4f3435915da5",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "39a37cb7-9485-4895-842f-348770c9cdc3",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ], "actionTypes": [
+                        {
+                            "id": "ac36efdb-1929-4e13-befd-b981439eaeab",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        }
+                    ]
+                },
+                {
                     "id": "f032e312-0911-450e-9456-67c27f31bebd",
                     "name": "shellyGas",
                     "displayName": "Shelly Gas",
