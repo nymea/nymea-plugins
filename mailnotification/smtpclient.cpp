@@ -351,7 +351,7 @@ void SmtpClient::processServerResponse(int responseCode, const QString &response
         break;
     case StateBody:
         if (responseCode == 354) {
-            send(m_messageData + "\r\n.\r\n");
+            send(m_messageData);
             setState(StateQuit);
         } else {
             handleUnexpectedSmtpCode(responseCode, response);
