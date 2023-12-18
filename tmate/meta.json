@@ -1,0 +1,13 @@
+{
+    "title": "Tmate",
+    "tagline": "Shell access to the machine running nymea from anywhere via tmate.",
+    "icon": "logo.png",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "tool"
+    ]
+}
