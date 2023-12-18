@@ -39,7 +39,7 @@ MaxCube::MaxCube(QObject *parent, QString serialNumber, QHostAddress hostAdress,
 
     connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(connectionStateChanged(QAbstractSocket::SocketState)));
 
-    connect(this,SIGNAL(readyRead()),this,SLOT(readData()));
+    connect(this,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
     connect(this,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
 
     connect(this,SIGNAL(cubeDataAvailable(QByteArray)),this,SLOT(processCubeData(QByteArray)));
@@ -721,7 +721,7 @@ void MaxCube::error(QAbstractSocket::SocketError error)
     emit cubeConnectionStatusChanged(false);
 }
 
-void MaxCube::readData()
+void MaxCube::onReadyRead()
 {
     QByteArray message;
     while(canReadLine()){
