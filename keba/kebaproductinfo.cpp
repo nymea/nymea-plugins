@@ -34,6 +34,13 @@
 KebaProductInfo::KebaProductInfo(const QString &productString) :
     m_productString(productString)
 {
+    // Examples
+
+    // BMW-10-EC240522-E1R
+    // KC-P30-EC240122-E0R
+    // KC-P30-EC220112-000-DE
+    // KC-P30-EC2404B2-M0A-GE
+
     qCDebug(dcKeba()) << "Parsing product information from" << productString.count() << productString;
     if (m_productString.count() < 19) {
         qCWarning(dcKeba()) << "Invalid product information string size for" << productString << ". Cannot parse.";
@@ -41,13 +48,33 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         return;
     }
 
+    QStringList subStrings = productString.split('-');
+    if (subStrings.count() < 4) {
+        qCWarning(dcKeba()) << "Invalid product information format" << subStrings << ". Cannot parse" << productString;
+        m_isValid = false;
+        return;
+    }
+
+    // 1. Manufacturer
+    // 2. Model
+    // 3. Desciptor
+    // 4. Meter infos
+
     // Parse the product string according to Keba Product code definitions
-    m_model = m_productString.mid(3, 3);
+    m_manufacturer = subStrings.at(0);
+    if (m_manufacturer == "KC") {
+        m_manufacturer = "KeConnect";
+    }
+    qCDebug(dcKeba()) << "Manufacturer:" << m_manufacturer;
+    m_model = subStrings.at(1);
     qCDebug(dcKeba()) << "Model:" << m_model;
-    m_countryCode = m_productString.at(7);
+
+
+    QString descriptor = subStrings.at(2); // EC240522
+    m_countryCode = descriptor.at(0); // E
     qCDebug(dcKeba()) << "Country:" << m_countryCode;
 
-    QChar connectorValue = m_productString.at(8);
+    QChar connectorValue = descriptor.at(1);
     if (connectorValue.toLower() == QChar('s')) {
         m_connector = ConnectorSocket;
         qCDebug(dcKeba()) << "Connector: Socket";
@@ -59,7 +86,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         return;
     }
 
-    QChar connectorTypeValue = m_productString.at(9);
+    QChar connectorTypeValue = descriptor.at(2);
     if (connectorTypeValue.isDigit() && connectorTypeValue == QChar('1')) {
         m_connectorType = Type1;
     } else if (connectorTypeValue.isDigit() && connectorTypeValue == QChar('2')) {
@@ -73,7 +100,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
 
     qCDebug(dcKeba()) << "Connector type:" << m_connectorType;
 
-    QChar connectorCurrentValue = m_productString.at(10);
+    QChar connectorCurrentValue = descriptor.at(3);
     if (connectorCurrentValue.isDigit() && connectorTypeValue == QChar('1')) {
         m_current = Current13A;
     } else if (connectorCurrentValue.isDigit() && connectorTypeValue == QChar('2')) {
@@ -89,13 +116,18 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
 
     qCDebug(dcKeba()) << "Current:" << m_current;
 
-    QString cableValue = m_productString.mid(11, 2);
+    // KC-P30-EC24 01 22-E0R
+
+    QString cableValue =  descriptor.mid(4, 2)/*m_productString.mid(11, 2)*/;
     if (cableValue == "00") {
         m_cable = NoCable;
         qCDebug(dcKeba()) << "Cable: No cable";
     } else if (cableValue == "01") {
         m_cable = Cable4m;
         qCDebug(dcKeba()) << "Cable: 4 meter";
+    } else if (cableValue == "05") {
+        m_cable = Cable5m;
+        qCDebug(dcKeba()) << "Cable: 5 meter";
     } else if (cableValue == "04") {
         m_cable = Cable6m;
         qCDebug(dcKeba()) << "Cable: 6 meter";
@@ -107,7 +139,8 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         return;
     }
 
-    QChar seriesValue = m_productString.at(13);
+    // KC-P30-EC2401 2 2-E0R
+    QChar seriesValue = descriptor.at(6);
     if (seriesValue == QChar('0')) {
         m_series = SeriesE;
         qCDebug(dcKeba()) << "Series: E";
@@ -140,7 +173,8 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         return;
     }
 
-    QChar phaseCountValue = m_productString.at(14);
+
+    QChar phaseCountValue = descriptor.at(7);
     if (phaseCountValue == QChar('1')) {
         m_phaseCount = 1;
     } else if (phaseCountValue == QChar('2')) {
@@ -152,7 +186,10 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
 
     qCDebug(dcKeba()) << "Phases:" << m_phaseCount;
 
-    QChar meterValue = m_productString.at(16);
+    // Meter infos
+    QString meterInfos = subStrings.at(3);
+
+    QChar meterValue = meterInfos.at(0);
     if (meterValue == QChar('0')) {
         m_meter = NoMeter;
         qCDebug(dcKeba()) << "Meter: No meter";
@@ -171,7 +208,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     }
 
 
-    QChar authValue = m_productString.at(18);
+    QChar authValue = meterInfos.at(2);
     if (authValue == QChar('0')) {
         m_authorization = NoAuthorization;
         qCDebug(dcKeba()) << "Authorization: No authorization";
@@ -182,8 +219,8 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         m_authorization = Key;
         qCDebug(dcKeba()) << "Authorization: Key";
     } else {
-        m_isValid = false;
-        return;
+        // Note: we don't require this info, so we don't mark it as invalid.
+        qCDebug(dcKeba()) << "Authorization: Unknown" << authValue;
     }
 
     m_germanEdition = m_productString.toUpper().endsWith("DE");
@@ -198,6 +235,11 @@ bool KebaProductInfo::isValid() const
 QString KebaProductInfo::productString() const
 {
     return m_productString;
+}
+
+QString KebaProductInfo::manufacturer() const
+{
+    return m_manufacturer;
 }
 
 QString KebaProductInfo::model() const

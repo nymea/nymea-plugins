@@ -63,6 +63,7 @@ public:
         NoCable = 0,
         Cable4m = 1,
         Cable6m = 4,
+        Cable5m = 5,
         Cable5p5m = 7
     };
     Q_ENUM(Cable)
@@ -102,7 +103,8 @@ public:
     QString productString() const;
 
     // Porperties in the string
-    QString model() const; // KC-P30
+    QString manufacturer() const; // KC (KeConnect), BMW...
+    QString model() const; // P30
     QString countryCode() const; // E
     Connector connector() const; // Socket / Cable
     ConnectorType connectorType() const; // Type 1 / Type 2
@@ -118,6 +120,7 @@ private:
     bool m_isValid = true;
 
     QString m_productString;
+    QString m_manufacturer;
     QString m_model;
     QString m_countryCode;
     Connector m_connector;
