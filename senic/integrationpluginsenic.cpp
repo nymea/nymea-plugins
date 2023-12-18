@@ -65,18 +65,18 @@ void IntegrationPluginSenic::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-            if (deviceInfo.name().contains("Nuimo")) {
-                ThingDescriptor descriptor(nuimoThingClassId, "Nuimo", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
+        foreach (const auto &deviceInfo, reply->discoveredDevices()) {
+            if (deviceInfo.first.name().contains("Nuimo")) {
+                ThingDescriptor descriptor(nuimoThingClassId, "Nuimo", deviceInfo.first.name() + " (" + deviceInfo.first.address().toString() + ")");
                 ParamList params;
 
                 foreach (Thing *existingThing, myThings()) {
-                    if (existingThing->paramValue(nuimoThingMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                    if (existingThing->paramValue(nuimoThingMacParamTypeId).toString() == deviceInfo.first.address().toString()) {
                         descriptor.setThingId(existingThing->id());
                         break;
                     }
                 }
-                params.append(Param(nuimoThingMacParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(nuimoThingMacParamTypeId, deviceInfo.first.address().toString()));
                 descriptor.setParams(params);
                 info->addThingDescriptor(descriptor);
             }

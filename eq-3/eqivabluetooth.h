@@ -133,6 +133,10 @@ class EqivaBluetoothDiscovery: public QObject
 {
     Q_OBJECT
 public:
+    struct DiscoveryResult {
+        QBluetoothDeviceInfo deviceInfo;
+        QBluetoothHostInfo adapter;
+    };
     EqivaBluetoothDiscovery(BluetoothLowEnergyManager *bluetoothManager, QObject *parent = nullptr);
 
     bool startDiscovery();
@@ -141,7 +145,7 @@ private slots:
     void deviceDiscoveryDone();
 
 signals:
-    void finished(const QStringList &results);
+    void finished(const QList<DiscoveryResult> &results);
 
 private:
     BluetoothLowEnergyManager *m_bluetoothManager = nullptr;

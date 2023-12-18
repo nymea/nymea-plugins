@@ -426,16 +426,16 @@ void IntegrationPluginElgato::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-            if (deviceInfo.name().contains("Avea")) {
-                if (!verifyExistingDevices(deviceInfo)) {
-                    ThingDescriptor descriptor(aveaThingClassId, "Avea", deviceInfo.address().toString());
+        foreach (const auto &deviceInfo, reply->discoveredDevices()) {
+            if (deviceInfo.first.name().contains("Avea")) {
+                if (!verifyExistingDevices(deviceInfo.first)) {
+                    ThingDescriptor descriptor(aveaThingClassId, "Avea", deviceInfo.first.address().toString());
                     ParamList params;
-                    params.append(Param(aveaThingNameParamTypeId, deviceInfo.name()));
-                    params.append(Param(aveaThingMacAddressParamTypeId, deviceInfo.address().toString()));
+                    params.append(Param(aveaThingNameParamTypeId, deviceInfo.first.name()));
+                    params.append(Param(aveaThingMacAddressParamTypeId, deviceInfo.first.address().toString()));
                     descriptor.setParams(params);
                     foreach (Thing *existingThing, myThings()) {
-                        if (existingThing->paramValue(aveaThingMacAddressParamTypeId).toString() == deviceInfo.address().toString()) {
+                        if (existingThing->paramValue(aveaThingMacAddressParamTypeId).toString() == deviceInfo.first.address().toString()) {
                             descriptor.setThingId(existingThing->id());
                             break;
                         }

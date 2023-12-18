@@ -100,20 +100,19 @@ void IntegrationPluginEQ3::discoverThings(ThingDiscoveryInfo *info)
         connect(info, &QObject::destroyed, eqivaBluetoothDiscovery, &EqivaBluetoothDiscovery::deleteLater);
 
         // Discovery result handler
-        connect(eqivaBluetoothDiscovery, &EqivaBluetoothDiscovery::finished, info, [this, info](const QStringList results){
+        connect(eqivaBluetoothDiscovery, &EqivaBluetoothDiscovery::finished, info, [this, info](const QList<EqivaBluetoothDiscovery::DiscoveryResult> results){
             qCDebug(dcEQ3()) << "Discovery finished";
 
-            foreach (const QString &result, results) {
-                qCDebug(dcEQ3()) << "Discovered EQ-3 device" << result;
-                ThingDescriptor descriptor(eqivaBluetoothThingClassId, "Eqiva Bluetooth Thermostat", result);
+            foreach (const EqivaBluetoothDiscovery::DiscoveryResult &result, results) {
+                qCDebug(dcEQ3()) << "Discovered EQ-3 device" << result.deviceInfo.address().toString();
+                ThingDescriptor descriptor(eqivaBluetoothThingClassId, "Eqiva Bluetooth Thermostat", result.deviceInfo.address().toString() + " ( via " + result.adapter.address().toString() + ")");
                 ParamList params;
-                params << Param(eqivaBluetoothThingMacAddressParamTypeId, result);
+                params << Param(eqivaBluetoothThingMacAddressParamTypeId, result.deviceInfo.address().toString());
+                params << Param(eqivaBluetoothThingAdapterParamTypeId, result.adapter.address().toString());
                 descriptor.setParams(params);
-                foreach (Thing* existingThing, myThings()) {
-                    if (existingThing->paramValue(eqivaBluetoothThingMacAddressParamTypeId).toString() == result) {
-                        descriptor.setThingId(existingThing->id());
-                        break;
-                    }
+                Thing *existingThing = myThings().findByParams(params);
+                if (existingThing) {
+                    descriptor.setThingId(existingThing->id());
                 }
                 info->addThingDescriptor(descriptor);
             }
@@ -130,6 +129,36 @@ void IntegrationPluginEQ3::discoverThings(ThingDiscoveryInfo *info)
     }
 
     info->finish(Thing::ThingErrorThingClassNotFound);
+}
+
+void IntegrationPluginEQ3::startPairing(ThingPairingInfo *info)
+{
+    qCDebug(dcEQ3()) << "Start pairing" << info->thingClassId();
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Press and hold the rotary button on the device to obtain the passkey."));
+}
+
+void IntegrationPluginEQ3::confirmPairing(ThingPairingInfo *info, const QString &user, const QString &secret)
+{
+    qCDebug(dcEQ3()) << "confirm" << info->thingName() << secret << user;
+    QBluetoothAddress device(info->params().paramValue(eqivaBluetoothThingMacAddressParamTypeId).toString());
+    QBluetoothAddress localDevice(info->params().paramValue(eqivaBluetoothThingAdapterParamTypeId).toString());
+    BluetoothPairingJob *job = hardwareManager()->bluetoothLowEnergyManager()->pairDevice(device, localDevice);
+    if (job->isFinished() && !job->success()) {
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unable to initiate pairing with Bluetooth device."));
+        return;
+    }
+    connect(job, &BluetoothPairingJob::passKeyRequested, info, [secret, job](){
+        qCDebug(dcEQ3()) << "Pin code requested.";
+        job->passKeyEntered(secret);
+    });
+    connect(job, &BluetoothPairingJob::finished, info, [=](bool success){
+        if (!success) {
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened during Bluetooth pairing. Please try again."));
+        } else {
+            info->finish(Thing::ThingErrorNoError);
+        }
+    });
+
 }
 
 
@@ -231,6 +260,8 @@ void IntegrationPluginEQ3::thingRemoved(Thing *thing)
 
     if (thing->thingClassId() == eqivaBluetoothThingClassId) {
         qCDebug(dcEQ3) << "Removing Eqiva device" << thing->name();
+        hardwareManager()->bluetoothLowEnergyManager()->unpairDevice(QBluetoothAddress(thing->paramValue(eqivaBluetoothThingMacAddressParamTypeId).toString()),
+                                                                     QBluetoothAddress(thing->paramValue(eqivaBluetoothThingAdapterParamTypeId).toString()));
         m_eqivaDevices.take(thing)->deleteLater();
     }
 
