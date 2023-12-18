@@ -1,3 +1,19 @@
+nymea-plugins (1.9.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * MqttClient: Add keep alive timeout parameter
+
+  [ Simon Stürz ]
+  * Keba: Fix parsing product information for BMW
+
+  [ Michael Zanetti ]
+  * New Plugin: Tmate
+  * EQ-3: Fix MaxCube building with latest gcc
+  * EQ-3: Add support for Bluetooth pairing
+  * MailNotification: Fix double mail ending
+
+ -- jenkins <developer@nymea.io>  Mon, 18 Dec 2023 10:06:58 +0100
+
 nymea-plugins (1.8.4) jammy; urgency=medium
 
   [ Jenkins ]
