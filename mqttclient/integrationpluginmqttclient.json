@@ -171,6 +171,16 @@
                             "minValue": 0,
                             "maxValue": 2,
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "85dd719a-06f6-4104-9f7a-c7feabd34fbe",
+                            "name": "keepAlive",
+                            "displayName": "Keep alive",
+                            "unit": "Seconds",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 65535,
+                            "defaultValue": 60
                         }
                     ],
                     "eventTypes": [
