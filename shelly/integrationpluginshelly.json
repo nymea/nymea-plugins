@@ -429,6 +429,105 @@
                     ]
                 },
                 {
+                    "id": "d21a9182-2f5b-47c1-9a27-6dd8ebd50b5f",
+                    "name": "shellyPro1Pm",
+                    "displayName": "Shelly Pro 1PM",
+                    "createMethods": ["discovery"],
+                    "setupMethod": "enterpin",
+                    "interfaces": [ "gateway", "smartmeterconsumer", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "4dcdd707-9049-4ee9-bfe5-3424e1628df5",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9942b350-9033-4491-8a99-538c042a9251",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "4913d3fd-f6b4-4a23-b495-ae83df8473c8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "903a1744-5551-4298-bacd-13066acc16a9",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "93ab8203-cc26-4ae9-a61e-d8f0182221b0",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "1dd09d4c-33e4-4496-8dc9-27b62a4092b0",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "07ca990a-96c7-4213-9af6-d69cb946cc46",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "be8ca18d-7417-4e5b-a2b2-2d1c87a5ed34",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d5fd6531-defb-4dac-9025-62a35a20e2c6",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "faae305a-fa7d-46b9-9ef8-6a7f12455380",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "89504849-9284-466d-b9d5-498e5f193c50",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "20754114-1591-48b5-af2f-8c9966adb7c4",
                     "name": "shelly1l",
                     "displayName": "Shelly 1L",

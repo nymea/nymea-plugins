@@ -91,6 +91,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("^shelly1pm-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
             namePattern = QRegExp("^ShellyPlus1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
+        } else if (info->thingClassId() == shellyPro1PmThingClassId) {
+            namePattern = QRegExp("^ShellyPro1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shelly1lThingClassId) {
             namePattern = QRegExp("^shelly1l-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPlugThingClassId) {
@@ -1638,7 +1640,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             qCDebug(dcShelly) << "Init response:" << response;
             m_rpcClients.insert(info->thing(), client);
 
-            if (info->thing()->thingClassId() == shellyPlus1pmThingClassId || info->thing()->thingClassId() == shellyPlus1ThingClassId) {
+            if (info->thing()->thingClassId() == shellyPlus1pmThingClassId || info->thing()->thingClassId() == shellyPlus1ThingClassId || info->thing()->thingClassId() == shellyPro1PmThingClassId) {
 
                 info->finish(Thing::ThingErrorNoError);
 
@@ -1646,6 +1648,12 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
                     switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                     emit autoThingsAppeared({switchChild});
+
+                    if (info->thing()->thingClassId() == shellyPro1PmThingClassId) {
+                        ThingDescriptor switchChild2(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
+                        switchChild2.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 2));
+                        emit autoThingsAppeared({switchChild2});
+                    }
                 }
                 return;
             }
@@ -1767,7 +1775,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             QString id = key.toString();
             if (id == "switch:0") {
                 QVariantMap switch0 = notification.value("switch:0").toMap();
-                if (switch0.contains("apower") && thing->hasState("currentPower")) { // for shellyplus1pm
+                if (switch0.contains("apower") && thing->hasState("currentPower")) { // for shelly plus|pro 1pm
                     thing->setStateValue("currentPower", switch0.value("apower").toDouble());
                 }
                 Thing *parentThing = myThings().filterByParentId(thing->id()).findByParams({Param(shellyPowerMeterChannelThingChannelParamTypeId, 1)});

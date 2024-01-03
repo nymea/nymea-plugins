@@ -6,6 +6,7 @@ The currently supported devices are:
 * Shelly 1
 * Shelly 1PM
 * Shelly Plus 1PM
+* Shelly Pro 1PM
 * Shelly 1L
 * Shelly 2
 * Shelly 2.5
