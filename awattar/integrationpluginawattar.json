@@ -79,6 +79,15 @@
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "8af49ba8-0aba-4f09-ab11-533dcd19e873",
+                            "name": "rank",
+                            "displayName": "Current rank (lower is better)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
                         }
                     ]
                 },
@@ -153,6 +162,15 @@
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "f3a2a46f-e281-4f60-9d27-345264b67f9a",
+                            "name": "rank",
+                            "displayName": "Current rank (lower is better)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
                         }
                     ]
                 }

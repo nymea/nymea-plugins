@@ -16,6 +16,8 @@ In the following chart you can see an example of the market prices from -12 hour
 * +100 % current price equals highest price in the interval [-12h `<` now `<` + 12h]
 
 ![aWATTar graph](https://raw.githubusercontent.com/guh/nymea-plugins/master/awattar/docs/images/awattar-graph.png "aWATTar graph")
+
+Additionally, the plugin holds a rank for the current slot. 0 Indicates the cheapest slot of the interval [-12h `<` now `<` + 12h].
  
 ## Requirements
 
