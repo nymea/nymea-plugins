@@ -153,24 +153,30 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
     int deviation = 0;
     double maxPrice = -1000;
     double minPrice = 1000;
-    foreach (QVariant element, dataElements) {
+    QList<double> prices;
+    for (int i = 0; i < dataElements.count(); i++) {
+        QVariant element = dataElements.at(i);
         QVariantMap elementMap = element.toMap();
         QDateTime startTime = QDateTime::fromMSecsSinceEpoch(elementMap.value("start_timestamp").toLongLong());
         QDateTime endTime = QDateTime::fromMSecsSinceEpoch(elementMap.value("end_timestamp").toLongLong());
         double price = elementMap.value("marketprice").toDouble();
 
         // check interval [-12h < x < + 12h]
-        if ((startTime >= currentTime.addSecs(-3600 * 12) && endTime <= currentTime ) ||
-                (endTime <= currentTime.addSecs(3600 * 12) && startTime >= currentTime )) {
+        if (startTime >= currentTime.addSecs(-3600 * 12) && endTime <= currentTime.addSecs(3600 * 12)) {
             sum += price;
             count++;
+            prices.append(price);
+            qCDebug(dcAwattar()) << "Adding price" << startTime.toString() << price;
 
             if (price > maxPrice)
                 maxPrice = price;
 
             if (price < minPrice)
                 minPrice = price;
+        } else {
+            qCDebug(dcAwattar()) << "Not adding price" << startTime.toString() << price;
         }
+
 
         if (currentTime  >= startTime && currentTime <= endTime) {
             currentPrice = price;
@@ -188,6 +194,7 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
         }
     }
 
+
     // calculate averagePrice and mean deviation
     averagePrice = sum / count;
 
@@ -201,5 +208,14 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
     thing->setStateValue(m_lowestPriceStateTypeIds.value(thing->thingClassId()), minPrice / 10.0);
     thing->setStateValue(m_highestPriceStateTypeIds.value(thing->thingClassId()), maxPrice / 10.0);
     thing->setStateValue(m_averageDeviationStateTypeIds.value(thing->thingClassId()), deviation);
+
+    qCDebug(dcAwattar()) << "AVG:" << averagePrice << "Min:" << minPrice << "Max:" << maxPrice << "Curr:" << currentPrice;
+    qSort(prices.begin(), prices.end());
+    int rank = prices.indexOf(currentPrice);
+    if (rank < 0) {
+        rank = 100;
+    }
+    thing->setStateValue("rank", rank);
+
 }
 
