@@ -59,7 +59,7 @@ public:
 //    void executeAction(ThingActionInfo *info) override;
 
 private:
-    QNetworkRequest createRequest(const QString &address, const QString &path);
+    QNetworkRequest createRequest(const QString &address, uint port, const QString &path, const QString &prefix = QString());
     QNetworkRequest createRequest(Thing *thing, const QString &path);
 
     void markOffline(Thing *thing);

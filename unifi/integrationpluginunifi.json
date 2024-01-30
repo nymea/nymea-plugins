@@ -21,6 +21,21 @@
                             "name": "ipAddress",
                             "displayName": "IP Address",
                             "type": "QString"
+                        },
+                        {
+                            "id": "f7e65914-0f75-4c1e-bd66-90f7937f3a0d",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "uint",
+                            "defaultValue": 8443
+                        },
+                        {
+                            "id": "4d95c5e7-a60b-4804-8418-6d08174a025f",
+                            "name": "mode",
+                            "displayName": "Controller mode",
+                            "type": "QString",
+                            "allowedValues": ["Unifi Network Application", "UniFi OS"],
+                            "defaultValue": "Application"
                         }
                     ],
                     "stateTypes": [

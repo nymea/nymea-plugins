@@ -34,6 +34,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QJsonDocument>
+#include <QNetworkCookieJar>
 
 #include <hardwaremanager.h>
 #include <network/networkaccessmanager.h>
@@ -190,15 +191,24 @@ void IntegrationPluginUnifi::startPairing(ThingPairingInfo *info)
 void IntegrationPluginUnifi::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
     QString host = info->params().paramValue(controllerThingIpAddressParamTypeId).toString();
-    QNetworkRequest request = createRequest(host, "/api/login");
+    uint port = info->params().paramValue(controllerThingPortParamTypeId).toUInt();
+    QString path;
+    if (info->params().paramValue(controllerThingModeParamTypeId).toString() == "UniFi OS") {
+        path = "/api/auth/login";
+    } else {
+        path = "/api/login";
+    }
+    QNetworkRequest request = createRequest(host, port, path);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QVariantMap login;
     login.insert("username", username);
     login.insert("password", secret);
+    qCDebug(dcUnifi()) << "ConfirmPairing: Sending request:" << request.url().toString() << QJsonDocument::fromVariant(login).toJson();
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(login).toJson());
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, info, reply, username, secret](){
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcUnifi()) << "Network request error:" << reply->error() << reply->errorString();
+            qCWarning(dcUnifi()) << "ConfirmPairing: Network request error:" << reply->error() << reply->errorString();
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
@@ -207,11 +217,12 @@ void IntegrationPluginUnifi::confirmPairing(ThingPairingInfo *info, const QStrin
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcUnifi()) << "Error parsing JSON response from controller:" << error.errorString() << data;
+            qCWarning(dcUnifi()) << "ConfirmPairing: Error parsing JSON response from controller:" << error.errorString() << data;
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
 
+        qCDebug(dcUnifi()) << "ConfirmPairing succeeded";
         pluginStorage()->beginGroup(info->thingId().toString());
         pluginStorage()->setValue("username", username);
         pluginStorage()->setValue("password", secret);
@@ -223,18 +234,37 @@ void IntegrationPluginUnifi::confirmPairing(ThingPairingInfo *info, const QStrin
 void IntegrationPluginUnifi::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == controllerThingClassId) {
-        QNetworkRequest request = createRequest(info->thing(), "/api/login");
+
+        // If the user just completed the pairing process we already have a valid cookie in the networkAccessManager.
+        if (info->isInitialSetup()) {
+            info->finish(Thing::ThingErrorNoError);
+            info->thing()->setStateValue(controllerConnectedStateTypeId, true);
+            return;
+        }
+
+        // After a nymea startup, we'll have to login to obtain a cookie.
+        QString host = info->thing()->params().paramValue(controllerThingIpAddressParamTypeId).toString();
+        uint port = info->thing()->params().paramValue(controllerThingPortParamTypeId).toUInt();
+        QString path;
+        if (info->thing()->paramValue(controllerThingModeParamTypeId).toString() == "UniFi OS") {
+            path = "/api/auth/login";
+        } else {
+            path = "/api/login";
+        }
+        QNetworkRequest request = createRequest(host, port, path);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         QVariantMap login;
         pluginStorage()->beginGroup(info->thing()->id().toString());
         login.insert("username", pluginStorage()->value("username").toString());
         login.insert("password", pluginStorage()->value("password").toString());
         pluginStorage()->endGroup();
+        qCDebug(dcUnifi()) << "SetupThing: Sending request:" << request.url().toString() << QJsonDocument::fromVariant(login).toJson();
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(login).toJson());
 
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcUnifi()) << "Network request error:" << reply->error() << reply->errorString();
+                qCWarning(dcUnifi()) << "SetupThing: Network request error:" << reply->error() << reply->errorString();
                 info->finish(Thing::ThingErrorHardwareFailure);
                 return;
             }
@@ -243,10 +273,12 @@ void IntegrationPluginUnifi::setupThing(ThingSetupInfo *info)
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
             if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcUnifi()) << "Error parsing JSON response from controller:" << error.errorString() << data;
+                qCWarning(dcUnifi()) << "SetupThing: Error parsing JSON response from controller:" << error.errorString() << data;
                 info->finish(Thing::ThingErrorHardwareFailure);
                 return;
             }
+
+            qCDebug(dcUnifi()) << "SetupThing succeded";
 
             info->thing()->setStateValue(controllerConnectedStateTypeId, true);
             info->finish(Thing::ThingErrorNoError);
@@ -266,12 +298,22 @@ void IntegrationPluginUnifi::postSetupThing(Thing *thing)
         m_loginTimer = hardwareManager()->pluginTimerManager()->registerTimer();
         connect(m_loginTimer, &PluginTimer::timeout, this, [this](){
             foreach (Thing *controller, myThings().filterByThingClassId(controllerThingClassId)) {
-                QNetworkRequest request = createRequest(controller, "/api/login");
+                QString host = controller->paramValue(controllerThingIpAddressParamTypeId).toString();
+                uint port = controller->paramValue(controllerThingPortParamTypeId).toUInt();
+                QString path;
+                if (controller->paramValue(controllerThingModeParamTypeId).toString() == "UniFi OS") {
+                    path = "/api/auth/login";
+                } else {
+                    path = "/api/login";
+                }
+                QNetworkRequest request = createRequest(host, port, path);
+                request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
                 QVariantMap login;
                 pluginStorage()->beginGroup(controller->id().toString());
                 login.insert("username", pluginStorage()->value("username"));
                 login.insert("password", pluginStorage()->value("password"));
                 pluginStorage()->endGroup();
+                qCDebug(dcUnifi()) << "Cookie KeepAlive: Sending request:" << request.url().toString();
                 QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(login).toJson());
                 connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             }
@@ -338,13 +380,13 @@ void IntegrationPluginUnifi::thingRemoved(Thing *thing)
     }
 }
 
-QNetworkRequest IntegrationPluginUnifi::createRequest(const QString &address, const QString &path)
+QNetworkRequest IntegrationPluginUnifi::createRequest(const QString &address, uint port, const QString &path, const QString &prefix)
 {
     QUrl url;
     url.setScheme("https");
     url.setHost(address);
-    url.setPort(8443);
-    url.setPath(path);
+    url.setPort(port);
+    url.setPath(prefix + path);
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -357,7 +399,9 @@ QNetworkRequest IntegrationPluginUnifi::createRequest(const QString &address, co
 QNetworkRequest IntegrationPluginUnifi::createRequest(Thing *thing, const QString &path)
 {
     QString ipAddress = thing->paramValue(controllerThingIpAddressParamTypeId).toString();
-    return createRequest(ipAddress, path);
+    uint port = thing->paramValue(controllerThingPortParamTypeId).toUInt();
+    bool prefix = thing->paramValue(controllerThingModeParamTypeId).toString() == "UniFi OS";
+    return createRequest(ipAddress, port, path, prefix ? "/proxy/network" : "");
 }
 
 void IntegrationPluginUnifi::markOffline(Thing *thing)
