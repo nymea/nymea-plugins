@@ -1,3 +1,18 @@
+nymea-plugins (1.9.1) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the PlusSmoke
+  * Unifi: Fix connecting to the unifi controller on Unifi OS hosts
+
+  [ Jenkins ]
+  * Update README.md Unifi Plugin
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Pro 1 PM
+  * Awattar: Add a ranking state for simple use in rules
+
+ -- jenkins <developer@nymea.io>  Tue, 30 Jan 2024 12:02:01 +0100
+
 nymea-plugins (1.9.0) jammy; urgency=medium
 
   [ Michael Zanetti ]
