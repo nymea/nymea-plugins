@@ -1,6 +1,6 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,17 +28,16 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "plugininfo.h"
 #include "integrationplugingoecharger.h"
-#include "network/networkdevicediscovery.h"
+#include "plugininfo.h"
+#include "goediscovery.h"
+
 
 #include <QUrlQuery>
 #include <QHostAddress>
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonParseError>
-
-#include "goediscovery.h"
 
 // API documentation:
 //     V1: https://github.com/goecharger/go-eCharger-API-v1
@@ -52,6 +51,12 @@ IntegrationPluginGoECharger::IntegrationPluginGoECharger()
 void IntegrationPluginGoECharger::init()
 {
     connect(this, &IntegrationPlugin::configValueChanged, this, &IntegrationPluginGoECharger::onConfigValueChanged);
+
+    if (!m_serviceBrowser) {
+        m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &IntegrationPluginGoECharger::onServiceEntryAdded);
+    }
+
 }
 
 void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
@@ -62,7 +67,8 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
         return;
     }
 
-    GoeDiscovery *discovery = new GoeDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), this);
+    GoeDiscovery *discovery = new GoeDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), m_serviceBrowser, this);
+
     connect(discovery, &GoeDiscovery::discoveryFinished, discovery, &GoeDiscovery::deleteLater);
     connect(discovery, &GoeDiscovery::discoveryFinished, info, [=](){
         foreach (const GoeDiscovery::Result &result, discovery->discoveryResults()) {
@@ -79,7 +85,13 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
                 title += " (" + result.manufacturer + ")";
             }
 
-            QString description = "Serial: " + result.serialNumber + ", V: " + result.firmwareVersion + " - " + result.networkDeviceInfo.address().toString();
+            QString description = "Serial: " + result.serialNumber + ", V: " + result.firmwareVersion;
+            if (result.discoveryMethod == GoeDiscovery::DiscoveryMethodNetwork) {
+                description.append(" - " + result.networkDeviceInfo.address().toString());
+            } else {
+                description.append(" - " + result.address.toString());
+            }
+
             qCDebug(dcGoECharger()) << "-->" << title << description;
             ThingDescriptor descriptor(goeHomeThingClassId, title, description);
             ParamList params;
@@ -89,7 +101,7 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
             descriptor.setParams(params);
 
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(goeHomeThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
+            Things existingThings = myThings().filterByParam(goeHomeThingSerialNumberParamTypeId, result.serialNumber);
             if (existingThings.count() == 1) {
                 qCDebug(dcGoECharger()) << "This wallbox already exists in the system!" << result.networkDeviceInfo;
                 descriptor.setThingId(existingThings.first()->id());
@@ -112,103 +124,110 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 
     MacAddress macAddress = MacAddress(thing->paramValue(goeHomeThingMacAddressParamTypeId).toString());
     if (!macAddress.isValid()) {
-        qCWarning(dcGoECharger()) << "The configured mac address is not valid" << thing->params();
-        info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The MAC address is not known. Please reconfigure the thing."));
-        return;
-    }
-
-    // Handle reconfigure
-    if (m_monitors.contains(thing))
-        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
-
-    // Create the monitor
-    NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
-    m_monitors.insert(thing, monitor);
-    QHostAddress address = getHostAddress(thing);
-    if (address.isNull()) {
-        qCWarning(dcGoECharger()) << "Cannot set up go-eCharger. The host address is not known yet. Maybe it will be available in the next run...";
-        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
-        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The host address is not known yet. Trying later again."));
-        return;
-    }
-
-    // Clean up in case the setup gets aborted
-    connect(info, &ThingSetupInfo::aborted, monitor, [=](){
-        if (m_monitors.contains(thing)) {
-            qCDebug(dcGoECharger()) << "Unregister monitor because setup has been aborted.";
+        // ZeroConf
+        QHostAddress address = getHostAddress(thing);
+        if (address.isNull()) {
+            qCWarning(dcGoECharger()) << "Cannot set up go-eCharger. The host address is not known yet. Maybe it will be available in the next run...";
             hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The host address is not known yet. Trying later again."));
+            return;
         }
-    });
 
-    connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [=](bool reachable){
-        qCDebug(dcGoECharger()) << "Network device monitor reachable changed for" << thing->name() << reachable;
-        if (reachable && thing->setupComplete() && !thing->stateValue("connected").toBool()) {
+        setupGoeHome(info);
+        return;
+    } else {
 
-            // The device is reachable again and we have already set it up.
-            // Update data and optionally reconfigure the mqtt channel
+        // Handle reconfigure
+        if (m_monitors.contains(thing))
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
 
-            QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing, true));
-            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-            connect(reply, &QNetworkReply::finished, thing, [=](){
-                if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
-                    return;
-                }
+        // Create the monitor
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
+        m_monitors.insert(thing, monitor);
+        QHostAddress address = getHostAddress(thing);
+        if (address.isNull()) {
+            qCWarning(dcGoECharger()) << "Cannot set up go-eCharger. The host address is not known yet. Maybe it will be available in the next run...";
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The host address is not known yet. Trying later again."));
+            return;
+        }
 
-                QByteArray data = reply->readAll();
-                QJsonParseError error;
-                QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-                if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
-                    return;
-                }
+        // Clean up in case the setup gets aborted
+        connect(info, &ThingSetupInfo::aborted, monitor, [=](){
+            if (m_monitors.contains(thing)) {
+                qCDebug(dcGoECharger()) << "Unregister monitor because setup has been aborted.";
+                hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+            }
+        });
 
-                qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
-                QVariantMap statusMap = jsonDoc.toVariant().toMap();
+        connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [=](bool reachable){
+            qCDebug(dcGoECharger()) << "Network device monitor reachable changed for" << thing->name() << reachable;
+            if (reachable && thing->setupComplete() && !thing->stateValue("connected").toBool()) {
 
-                ApiVersion apiVersion = getApiVersion(thing);
-                switch (apiVersion) {
-                case ApiVersion1:
-                    if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
-                        // Verify mqtt client and set it up
-                        qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
-                        reconfigureMqttChannelV1(thing, statusMap);
-                    } else {
-                        // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
-                        qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
-                        updateV1(thing, statusMap);
+                // The device is reachable again and we have already set it up.
+                // Update data and optionally reconfigure the mqtt channel
+
+                QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing, true));
+                connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+                connect(reply, &QNetworkReply::finished, thing, [=](){
+                    if (reply->error() != QNetworkReply::NoError) {
+                        qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
+                        return;
                     }
-                    break;
-                case ApiVersion2:
-                    if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
-                        // Verify mqtt client and set it up
-                        qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
-                        reconfigureMqttChannelV2(thing);
-                    } else {
-                        // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
-                        qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
-                        updateV2(thing, statusMap);
+
+                    QByteArray data = reply->readAll();
+                    QJsonParseError error;
+                    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+                    if (error.error != QJsonParseError::NoError) {
+                        qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
+                        return;
                     }
-                    break;
+
+                    qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
+                    QVariantMap statusMap = jsonDoc.toVariant().toMap();
+
+                    ApiVersion apiVersion = getApiVersion(thing);
+                    switch (apiVersion) {
+                    case ApiVersion1:
+                        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+                            // Verify mqtt client and set it up
+                            qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
+                            reconfigureMqttChannelV1(thing, statusMap);
+                        } else {
+                            // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
+                            qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
+                            updateV1(thing, statusMap);
+                        }
+                        break;
+                    case ApiVersion2:
+                        if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
+                            // Verify mqtt client and set it up
+                            qCDebug(dcGoECharger()) << "Setup using MQTT connection for" << thing;
+                            reconfigureMqttChannelV2(thing);
+                        } else {
+                            // Since we are not using mqtt, we are done with the setup, the refresh timer will be configured in post setup
+                            qCDebug(dcGoECharger()) << "Setup using HTTP finished successfully";
+                            updateV2(thing, statusMap);
+                        }
+                        break;
+                    }
+                });
+            }
+        });
+
+        // Wait for the monitor to be ready
+        if (monitor->reachable()) {
+            // Thing already reachable...let's finish the setup
+            setupGoeHome(info);
+        } else {
+            qCDebug(dcGoECharger()) << "Wait for the network monitor to get reachable";
+            connect(monitor, &NetworkDeviceMonitor::reachableChanged, info, [=](bool reachable){
+                if (reachable) {
+                    setupGoeHome(info);
                 }
             });
         }
-    });
-
-    // Wait for the monitor to be ready
-    if (monitor->reachable()) {
-        // Thing already reachable...let's finish the setup
-        setupGoeHome(info);
-    } else {
-        qCDebug(dcGoECharger()) << "Wait for the network monitor to get reachable";
-        connect(monitor, &NetworkDeviceMonitor::reachableChanged, info, [=](bool reachable){
-            if (reachable) {
-                setupGoeHome(info);
-            }
-        });
     }
-
-    Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
 }
 
 void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
@@ -288,7 +307,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
         return;
     }
 
-    if (!thing->stateValue("connected").toBool()) {
+    if (!thing->stateValue("connected").toBool() || address.isNull()) {
         qCWarning(dcGoECharger()) << thing << "failed to execute action. The device seems not to be connected.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
@@ -330,7 +349,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -339,7 +359,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Parsing data failed:" << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Parsing data failed:" << qUtf8Printable(data) << error.errorString()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -369,7 +390,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -378,7 +400,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -408,7 +431,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -417,7 +441,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString()
+                                              << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -550,6 +575,15 @@ QHostAddress IntegrationPluginGoECharger::getHostAddress(Thing *thing)
 {
     if (m_monitors.contains(thing))
         return m_monitors.value(thing)->networkDeviceInfo().address();
+
+    foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
+        if (GoeDiscovery::isGoeCharger(serviceEntry)) {
+            QString serial = serviceEntry.txt("serial");
+            if (thing->paramValue(goeHomeThingSerialNumberParamTypeId).toString() == serial) {
+                return serviceEntry.hostAddress();
+            }
+        }
+    }
 
     return QHostAddress();
 }
@@ -1548,6 +1582,14 @@ void IntegrationPluginGoECharger::onConfigValueChanged(const ParamTypeId &paramT
         m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(interval);
         connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginGoECharger::refreshHttp);
         m_refreshTimer->start();
+    }
+}
+
+void IntegrationPluginGoECharger::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
+{
+    if (GoeDiscovery::isGoeCharger(serviceEntry)) {
+        qCDebug(dcGoECharger()) << "Found ZeroConf go-eCharger:" << serviceEntry;
+
     }
 }
 

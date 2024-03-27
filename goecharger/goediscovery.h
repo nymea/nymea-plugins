@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,23 +36,34 @@
 
 #include <network/networkaccessmanager.h>
 #include <network/networkdevicediscovery.h>
+#include <network/networkdevicediscovery.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
 
 class GoeDiscovery : public QObject
 {
     Q_OBJECT
 public:
+    enum DiscoveryMethod {
+        DiscoveryMethodNetwork,
+        DiscoveryMethodZeroConf,
+    };
+    Q_ENUM(DiscoveryMethod)
+
     typedef struct Result {
         QString product = "go-eCharger";
         QString manufacturer = "go-e";
         QString friendlyName;
         QString serialNumber;
         QString firmwareVersion;
-        NetworkDeviceInfo networkDeviceInfo;
+        DiscoveryMethod discoveryMethod;
+        NetworkDeviceInfo networkDeviceInfo; // Network discovery
+        QHostAddress address; // ZeroConf
         bool apiAvailableV1 = false;
         bool apiAvailableV2 = false;
     } Result;
 
-    explicit GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
+    explicit GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDeviceDiscovery *networkDeviceDiscovery, ZeroConfServiceBrowser *serviceBrowser, QObject *parent = nullptr);
     ~GoeDiscovery();
 
     void startDiscovery();
@@ -62,6 +73,9 @@ public:
     static QNetworkRequest buildRequestV1(const QHostAddress &address);
     static QNetworkRequest buildRequestV2(const QHostAddress &address);
 
+    // Zeroconf service helpers
+    static bool isGoeCharger(const ZeroConfServiceEntry &serviceEntry);
+
 signals:
     void discoveryFinished();
 
@@ -70,16 +84,20 @@ private:
     NetworkAccessManager *m_networkAccessManager = nullptr;
     NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
     NetworkDeviceDiscoveryReply *m_discoveryReply = nullptr;
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
     QHash<QHostAddress, GoeDiscovery::Result> m_discoveryResults;
     NetworkDeviceInfos m_discoveredNetworkDeviceInfos;
     NetworkDeviceInfos m_verifiedNetworkDeviceInfos;
+
     QList<QNetworkReply *> m_pendingReplies;
 
 private slots:
     void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
     void checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDeviceInfo);
     void checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDeviceInfo);
+
+    void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
 
     void cleanupPendingReplies();
 

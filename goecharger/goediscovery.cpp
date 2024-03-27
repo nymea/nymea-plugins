@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -34,10 +34,11 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
-GoeDiscovery::GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent) :
-    QObject(parent),
-    m_networkAccessManager(networkAccessManager),
-    m_networkDeviceDiscovery(networkDeviceDiscovery)
+GoeDiscovery::GoeDiscovery(NetworkAccessManager *networkAccessManager, NetworkDeviceDiscovery *networkDeviceDiscovery, ZeroConfServiceBrowser *serviceBrowser, QObject *parent) :
+    QObject{parent},
+    m_networkAccessManager{networkAccessManager},
+    m_networkDeviceDiscovery{networkDeviceDiscovery},
+    m_serviceBrowser{serviceBrowser}
 {
 
 }
@@ -57,6 +58,14 @@ void GoeDiscovery::startDiscovery()
     m_startDateTime = QDateTime::currentDateTime();
 
     qCInfo(dcGoECharger()) << "Discovery: Start discovering the network...";
+
+    // ZeroConf
+    connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
+    foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
+        onServiceEntryAdded(serviceEntry);
+    }
+
+    // Network discovery
     m_discoveryReply = m_networkDeviceDiscovery->discover();
 
     // Test any network device beeing discovered
@@ -112,6 +121,11 @@ QNetworkRequest GoeDiscovery::buildRequestV2(const QHostAddress &address)
     return QNetworkRequest(requestUrl);
 }
 
+bool GoeDiscovery::isGoeCharger(const ZeroConfServiceEntry &serviceEntry)
+{
+    return serviceEntry.name().toLower().contains("go-echarger");
+}
+
 void GoeDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
 {
     // Make sure we have not checked this host yet
@@ -153,6 +167,12 @@ void GoeDiscovery::checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDevic
         if (responseMap.contains("fwv") && responseMap.contains("sse") && responseMap.contains("nrg") && responseMap.contains("amp")) {
             // Looks like we have found a go-e V1 api endpoint, nice
             qCDebug(dcGoECharger()) << "Discovery: --> Found API V1 on" << networkDeviceInfo.address().toString();
+
+            if (m_discoveryResults.contains(networkDeviceInfo.address()) && m_discoveryResults.value(networkDeviceInfo.address()).discoveryMethod == DiscoveryMethodZeroConf) {
+                qCDebug(dcGoECharger()) << "Discovery: Network discovery found API V1 go-eCharger on" << networkDeviceInfo.address().toString()
+                                        << "but this host has already been discovered using ZeroConf. Prefering ZeroConf over MAC address due to Repeater missbehaviours.";
+                return;
+            }
 
             if (m_discoveryResults.contains(networkDeviceInfo.address())) {
                 // We use the information from API V2 since there are more information available
@@ -209,17 +229,52 @@ void GoeDiscovery::checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDevic
             result.product = responseMap.value("typ").toString();
             result.friendlyName = responseMap.value("fna").toString();
             result.networkDeviceInfo = networkDeviceInfo;
+            result.discoveryMethod = DiscoveryMethodNetwork;
             result.apiAvailableV2 = true;
+
+            if (m_discoveryResults.contains(networkDeviceInfo.address()) && m_discoveryResults.value(networkDeviceInfo.address()).discoveryMethod == DiscoveryMethodZeroConf) {
+                qCDebug(dcGoECharger()) << "Discovery: Network discovery found API V2 go-eCharger on" << networkDeviceInfo.address().toString()
+                                        << "but this host has already been discovered using ZeroConf. Prefering ZeroConf over MAC address due to Repeater missbehaviours.";
+                return;
+            }
 
             if (m_discoveryResults.contains(networkDeviceInfo.address())) {
                 result.apiAvailableV1 = m_discoveryResults.value(networkDeviceInfo.address()).apiAvailableV1;
             }
+
             // Overwrite result from V1 since V2 contains more information
             m_discoveryResults[networkDeviceInfo.address()] = result;
         } else {
             qCDebug(dcGoECharger()) << "Discovery:" << networkDeviceInfo.address().toString() << "API V2 verification returned JSON data but not the right one. Continue...";
         }
     });
+}
+
+void GoeDiscovery::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
+{
+    // Note: we always prefere the zeroconf discovery over the network discovery. Some networks use wifi repeaters,
+    // which spoof the mac address and multipe IP have the same mac address. Using zeroconf and have IP based discovery
+    // solves this issue
+
+    if (isGoeCharger(serviceEntry)) {
+        qCDebug(dcGoECharger()) << "Discovery: Found ZeroConf go-eCharger" << serviceEntry;
+
+        GoeDiscovery::Result result;
+        result.serialNumber = serviceEntry.txt("serial");
+        result.firmwareVersion = serviceEntry.txt("version");
+        result.manufacturer = serviceEntry.txt("manufacturer");
+        result.product = serviceEntry.txt("devicetype");
+        result.friendlyName = serviceEntry.txt("friendly_name");
+        result.discoveryMethod = DiscoveryMethodZeroConf;
+        result.apiAvailableV1 = serviceEntry.txt("protocol").toUInt() == 1;
+        result.apiAvailableV2 = serviceEntry.txt("protocol").toUInt() == 2;
+        result.address = serviceEntry.hostAddress();
+
+        qCDebug(dcGoECharger()) << "Discovery:" << result;
+
+        // Overwrite any already discovered result for this host, we always prefere ZeroConf over Networkdiscovery...
+        m_discoveryResults[result.address] = result;
+    }
 }
 
 void GoeDiscovery::cleanupPendingReplies()
@@ -232,6 +287,9 @@ void GoeDiscovery::cleanupPendingReplies()
 
 void GoeDiscovery::finishDiscovery()
 {
+    disconnect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
+
+
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
     qCInfo(dcGoECharger()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     cleanupPendingReplies();
@@ -246,8 +304,13 @@ QDebug operator<<(QDebug dbg, const GoeDiscovery::Result &result)
     dbg.nospace() << ", SN: " << result.serialNumber;
     dbg.nospace() << ", V1: " << result.apiAvailableV1;
     dbg.nospace() << ", V2: " << result.apiAvailableV2;
-    dbg.nospace() << ", " << result.networkDeviceInfo.address().toString();
-    dbg.nospace() << ", " << result.networkDeviceInfo.macAddress();
+    if (result.discoveryMethod == GoeDiscovery::DiscoveryMethodZeroConf) {
+        dbg.nospace() << ", " << result.discoveryMethod;
+        dbg.nospace() << ", " << result.address.toString();
+    } else {
+        dbg.nospace() << ", " << result.networkDeviceInfo.address().toString();
+        dbg.nospace() << ", " << result.networkDeviceInfo.macAddress();
+    }
     dbg.nospace() << ") ";
     return dbg.maybeSpace();
 }
