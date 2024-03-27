@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -39,6 +39,8 @@
 #include <network/networkaccessmanager.h>
 #include <network/networkdevicemonitor.h>
 #include <integrations/integrationplugin.h>
+
+#include <network/zeroconf/zeroconfservicebrowser.h>
 
 #include "extern-plugininfo.h"
 
@@ -112,6 +114,8 @@ private:
     QHash<Thing *, QNetworkReply *> m_pendingReplies;
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
 
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
+
     // General methods
     void setupGoeHome(ThingSetupInfo *info);
     QNetworkRequest buildStatusRequest(Thing *thing, bool fullStatus = false);
@@ -135,6 +139,9 @@ private slots:
     void refreshHttp();
 
     void onConfigValueChanged(const ParamTypeId &paramTypeId, const QVariant &value);
+
+    // ZeroConf
+    void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
 
     // API V1
     void onMqttClientV1Connected(MqttChannel* channel);
