@@ -352,6 +352,16 @@ Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for lifx
  This package contains the nymea integration plugin for lifx devices
 
+Package: nymea-plugin-logilink
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Logilink power sockets
+ This package contains the nymea integration plugin for Logilink PDU
+ network controlled power sockets.
+
 Package: nymea-plugin-mecelectronics
 Architecture: any
 Depends: ${shlibs:Depends},

@@ -1,0 +1,116 @@
+{
+    "name": "logilink",
+    "displayName": "Logilink",
+    "id": "3e80496e-06b5-11ef-8f86-2be8f966eb8d",
+    "vendors": [
+        {
+            "name": "logilink",
+            "displayName": "Logilink",
+            "id": "4aed2c3a-06b5-11ef-8a6b-ff770ac74f51",
+            "thingClasses": [
+                {
+                    "id": "d8162d6e-06b5-11ef-888f-13a1e6eca98c",
+                    "name": "pdu8p01",
+                    "displayName": "PDU8P01",
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": [ "gateway", "temperaturesensor", "humiditysensor"],
+                    "paramTypes": [
+                        {
+                            "id": "d2e1a63e-06b5-11ef-bf2d-5f0d67f222af",
+                            "name":"ipv4Address",
+                            "displayName": "IPv4 address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.100"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c5c7f1ba-06b5-11ef-ad08-03562210396e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "413af8c0-0796-11ef-bd2b-4fde50f95418",
+                            "name": "totalLoad",
+                            "displayName": "Total load",
+                            "displayNameEvent": "Total load changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "Ampere"
+                        },
+                        {
+                            "id": "c0ce082a-06b5-11ef-b71a-7f0e8b9a48c0",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "1aaaf3ca-0793-11ef-8b3e-f7eff48006c2",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "6ec71e40-0796-11ef-a8f8-a33a504a66bb",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "defaultValue": "Unknown"
+                        }
+                    ]
+                },
+                {
+                    "id": "a320bfb6-06b5-11ef-81e4-834aeaf5fe45",
+                    "name": "socket",
+                    "displayName": "Logilink Socket",
+                    "createMethods": ["auto"],
+                    "interfaces": ["powersocket", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "b329edba-06b5-11ef-b04e-d3622c766dd0",
+                            "name": "number",
+                            "displayName": "Socket number",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b8d9679a-06b5-11ef-9812-fb840afffc88",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "47329958-c33f-478f-b2a0-910abd150da8",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "writable": true,
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
