@@ -375,13 +375,24 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                     QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
                     QString thingName;
                     QString serialNumber;
+                    QString model;
 
                     if (dataMap.contains("Details")) {
                         QVariantMap details = dataMap.value("Details").toMap();
-                        thingName = details.value("Manufacturer", "Fronius").toString() + " " + details.value("Model", "Smart Meter").toString();
+                        model = dataMap.value("Details").toMap().value("Model", "Smart Meter").toString();
+                        thingName = details.value("Manufacturer", "Fronius").toString() + " " + model;
                         serialNumber = details.value("Serial").toString();
                     } else {
                         thingName = connectionThing->name() + " Meter " + meterId;
+                    }
+
+                    // Note: some inverters have a S0 meter connected, which measures the load, not the grid power and also provides only the current power and no additionl information
+                    // Since we assume a meter on the grid root of the household, we don't update the meter here, but in the updatePowerFlow method.
+                    if (model.toLower().contains("s0") && !dataMap.contains("EnergyReal_WAC_Sum_Produced") && !dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
+                        qCDebug(dcFronius()) << "Detected weak meter on inverter (S0). Using the plant overview grid power as meter information for this one.";
+                        m_weakMeterConnections[connection] = true;
+                    } else {
+                        m_weakMeterConnections[connection] = false;
                     }
 
                     ThingDescriptor descriptor(meterThingClassId, thingName, QString(), connectionThing->id());
@@ -529,6 +540,15 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
             }
         }
 
+        Things availableMeters = myThings().filterByParentId(parentThing->id()).filterByThingClassId(meterThingClassId);
+        if (availableMeters.count() == 1 && m_weakMeterConnections.value(connection)) {
+            Thing *meterThing = availableMeters.first();
+            double gridPower = dataMap.value("Site").toMap().value("P_Grid").toDouble();
+            meterThing->setStateValue(meterCurrentPowerStateTypeId, gridPower);
+            qCDebug(dcFronius()) << "Using power flow grid power for the weak S0 meter" << gridPower << "House consumption" << dataMap.value("Site").toMap().value("P_Load").toDouble();
+        }
+
+
     });
 }
 
@@ -601,7 +621,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
 {
     Thing *parentThing = m_froniusConnections.value(connection);
     foreach (Thing *meterThing, myThings().filterByParentId(parentThing->id()).filterByThingClassId(meterThingClassId)) {
-        int meterId = meterThing->paramValue(inverterThingIdParamTypeId).toInt();
+        int meterId = meterThing->paramValue(meterThingIdParamTypeId).toInt();
 
         // Get the inverter realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId);
@@ -622,9 +642,29 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
                 return;
             }
 
+
             // Parse the data and update the states of our device
             QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-            //qCDebug(dcFronius()) << "Meter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+            qCDebug(dcFronius()) << "Meter data" << qUtf8Printable(QJsonDocument::fromVariant(dataMap).toJson(QJsonDocument::Indented));
+
+            meterThing->setStateValue("connected", true);
+
+            // Note: some inverters have a S0 meter connected, which measures the load, not the grid power and also provides only the current power and no additionl information
+            // Since we assume a meter on the grid root of the household, we don't update the meter here, but in the updatePowerFlow method.
+            QString model;
+            if (dataMap.contains("Details")) {
+                model = dataMap.value("Details").toMap().value("Model", "Smart Meter").toString();
+            }
+
+            // Note: maybe we find a better way to detect a weak meter, for now, we only knwo it does not provide any additional informaiton and has a S0 in the name
+            if (model.toLower().contains("s0") && !dataMap.contains("EnergyReal_WAC_Sum_Produced") && !dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
+                qCDebug(dcFronius()) << "Ignoring this meter since there are not enought information available (S0). Using the plant overview grid power as meter information.";
+                m_weakMeterConnections[connection] = true;
+                return;
+            } else {
+                m_weakMeterConnections[connection] = false;
+            }
+
 
             // Power
             if (dataMap.contains("PowerReal_P_Sum")) {
@@ -682,8 +722,6 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
             if (dataMap.contains("Frequency_Phase_Average")) {
                 meterThing->setStateValue(meterFrequencyStateTypeId, dataMap.value("Frequency_Phase_Average").toDouble());
             }
-
-            meterThing->setStateValue("connected", true);
         });
     }
 }
@@ -772,3 +810,4 @@ void IntegrationPluginFronius::markStorageAsDisconnected(Thing *thing)
     thing->setStateValue("chargingState", "idle");
     // Note: do not reset the energy counters since they are always counting up until reset on the device
 }
+
