@@ -2,8 +2,7 @@ Source: nymea-plugins
 Section: utils
 Priority: optional
 Maintainer: Nymea GmbH <developer@nymea.io>
-Build-depends: libboblight-dev,
-               debhelper (>= 0.0.0),
+Build-depends: debhelper (>= 0.0.0),
                libnymea-dev (>= 0.26~),
                libnymea-mqtt-dev,
                libnymea-gpio-dev (>= 1.0.0~),
@@ -78,17 +77,6 @@ Depends: ${shlibs:Depends},
 Conflicts: nymea-plugins-translations (< 1.0.1)
 Description: nymea integration plugin for bluos
  This package contains the nymea integration plugin for bluos based media devices
-
-
-Package: nymea-plugin-boblight
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-Conflicts: nymea-plugins-translations (< 1.0.1)
-Description: nymea integration plugin for boblight
- This package contains the nymea integration plugin for boblight. Boblight allows
- controlling LEDs via home-brew controllers. See https://github.com/arvydas/boblight
- for informations on boblight.
 
 
 Package: nymea-plugin-bose

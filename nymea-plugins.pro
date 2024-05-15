@@ -7,7 +7,6 @@ PLUGIN_DIRS = \
     awattar             \
     bimmerconnected     \
     bluos               \
-    boblight            \
     bose                \
     bosswerk            \
     coinmarketcap       \
