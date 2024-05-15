@@ -1,3 +1,12 @@
+nymea-plugins (1.9.2) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * go-e: Add zeroconf discovery support
+  * Remove boblight plugin
+  * Fronius: Add support for S0 meters
+
+ -- jenkins <developer@nymea.io>  Wed, 15 May 2024 12:33:51 +0200
+
 nymea-plugins (1.9.1) jammy; urgency=medium
 
   [ Michael Zanetti ]
