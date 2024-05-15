@@ -59,6 +59,7 @@ private:
 
     QHash<FroniusSolarConnection *, Thing *> m_froniusConnections;
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    QHash<FroniusSolarConnection *, bool> m_weakMeterConnections;
 
     void refreshConnection(FroniusSolarConnection *connection);
 
