@@ -24,7 +24,11 @@ override_dh_auto_build:
 	make lrelease
 
 override_dh_install: $(PREPROCESS_FILES:.in=) $(PYTHON_REQUIREMENTS:.txt=)
-	dh_install --fail-missing
+	dh_install
+
+# Note that this is the default with compat level 12.
+override_dh_missing:
+	dh_missing --list-missing
 
 override_dh_auto_clean:
 	dh_auto_clean
