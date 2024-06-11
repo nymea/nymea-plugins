@@ -388,7 +388,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
 
                     // Note: some inverters have a S0 meter connected, which measures the load, not the grid power and also provides only the current power and no additionl information
                     // Since we assume a meter on the grid root of the household, we don't update the meter here, but in the updatePowerFlow method.
-                    if (model.toLower().contains("s0") && !dataMap.contains("EnergyReal_WAC_Sum_Produced") && !dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
+                    if (model.toLower().contains("s0")) {
                         qCDebug(dcFronius()) << "Detected weak meter on inverter (S0). Using the plant overview grid power as meter information for this one.";
                         m_weakMeterConnections[connection] = true;
                     } else {
@@ -544,8 +544,8 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
         if (availableMeters.count() == 1 && m_weakMeterConnections.value(connection)) {
             Thing *meterThing = availableMeters.first();
             double gridPower = dataMap.value("Site").toMap().value("P_Grid").toDouble();
-            meterThing->setStateValue(meterCurrentPowerStateTypeId, gridPower);
             qCDebug(dcFronius()) << "Using power flow grid power for the weak S0 meter" << gridPower << "House consumption" << dataMap.value("Site").toMap().value("P_Load").toDouble();
+            meterThing->setStateValue(meterCurrentPowerStateTypeId, gridPower);
         }
 
 
@@ -657,7 +657,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
             }
 
             // Note: maybe we find a better way to detect a weak meter, for now, we only knwo it does not provide any additional informaiton and has a S0 in the name
-            if (model.toLower().contains("s0") && !dataMap.contains("EnergyReal_WAC_Sum_Produced") && !dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
+            if (model.toLower().contains("s0")) {
                 qCDebug(dcFronius()) << "Ignoring this meter since there are not enought information available (S0). Using the plant overview grid power as meter information.";
                 m_weakMeterConnections[connection] = true;
                 return;
