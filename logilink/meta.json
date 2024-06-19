@@ -1,0 +1,14 @@
+{
+    "title": "Logilink",
+    "tagline": "Integrates Logilink with nymea.",
+    "icon": "logilink.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor",
+        "socket"
+    ]
+}
