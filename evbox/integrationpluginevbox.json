@@ -21,13 +21,15 @@
                             "id": "bce7c412-c19a-4e60-a11f-fe8308408abf",
                             "name":"serialPort",
                             "displayName": "Serial port",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         },
                         {
                             "id": "abc607a7-7dc5-48d4-b3d0-1545ddc63592",
                             "name":"serialNumber",
                             "displayName": "Serial number",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -109,13 +111,15 @@
                             "id": "159fec55-e73d-4a9d-bbde-b2b44fe7f363",
                             "name":"serialPort",
                             "displayName": "Serial port",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         },
                         {
                             "id": "987ddd33-cbcd-4716-bdaa-6824a5295d22",
                             "name":"serialNumber",
                             "displayName": "Serial number",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "settingsTypes": [
