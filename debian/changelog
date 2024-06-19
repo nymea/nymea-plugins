@@ -1,3 +1,18 @@
+nymea-plugins (1.10.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * WIP: New Plugin: nymea owlets
+
+  [ Boernsman ]
+  * New plugin: Logilink
+
+  [ Simon Stürz ]
+  * Fronius: Update S0 Meter detection and improve debugging
+  * Update debian packaging
+  * EVBox: Make params read only
+
+ -- jenkins <developer@nymea.io>  Wed, 19 Jun 2024 11:00:26 +0200
+
 nymea-plugins (1.9.2) jammy; urgency=medium
 
   [ Simon Stürz ]
