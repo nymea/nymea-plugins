@@ -212,7 +212,7 @@ void FroniusSolarConnection::sendNextRequest()
 
     m_currentReply = m_requestQueue.dequeue();
 
-//    qCDebug(dcFronius()) << "Connection: Sending request" << m_currentReply->request().url().toString();
+    qCDebug(dcFronius()) << "Connection: Sending request" << m_currentReply->request().url().toString();
     m_currentReply->setNetworkReply(m_networkManager->get(m_currentReply->request()));
 
     connect(m_currentReply, &FroniusNetworkReply::finished, this, [=](){
