@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,43 +36,17 @@
 
 #include <QJsonDocument>
 
-// Example payload for Firebase + GCM
-//{
-//    "android": {
-//        "notification": {
-//            "sound": "default"
-//        },
-//        "priority": "high"
-//    },
-//    "data": {
-//        "body": "text",
-//        "title": "title"
-//    },
-//    "to": "<client token>"
-//}
-
-
-// Example payload for Firebase + APNs
-//{
-//    "apns": {
-//        "headers": {
-//            "apns-priority": "10"
-//        }
-//    },
-//    "notification": {
-//        "body": "text",
-//        "sound": "default",
-//        "title": "title"
-//    },
-//    "to": "<client token>"
-//}
-
-
-IntegrationPluginPushNotifications::IntegrationPluginPushNotifications(QObject* parent): IntegrationPlugin (parent)
+IntegrationPluginPushNotifications::IntegrationPluginPushNotifications(QObject* parent)
+    : IntegrationPlugin{parent}
 {
 }
 
 IntegrationPluginPushNotifications::~IntegrationPluginPushNotifications()
+{
+
+}
+
+void IntegrationPluginPushNotifications::init()
 {
 
 }
@@ -101,10 +75,20 @@ void IntegrationPluginPushNotifications::setupThing(ThingSetupInfo *info)
     }
 
     // In case of Firebase, check if we have the required API key
-    if (pushService.startsWith("FB") && apiKeyStorage()->requestKey("firebase").data("apiKey").isEmpty()) {
-        //: Error setting up thing
-        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Firebase server API key not installed."));
-        return;
+    if (pushService.startsWith("FB")) {
+        ApiKey apiKey = apiKeyStorage()->requestKey("firebase");
+        if (apiKey.data("project_id").isEmpty() || apiKey.data("private_key_id").isEmpty() ||
+            apiKey.data("private_key").isEmpty() || apiKey.data("client_email").isEmpty()) {
+            //: Error setting up thing
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Firebase server API key not installed."));
+            return;
+        }
+    }
+
+    if (!m_google) {
+        qCDebug(dcPushNotifications()) << "Creating google OAuth2 client...";
+        m_google = new GoogleOAuth2(hardwareManager()->networkManager(), apiKeyStorage()->requestKey("firebase"), this);
+        m_google->authorize();
     }
 
     info->finish(Thing::ThingErrorNoError);
@@ -123,24 +107,24 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
     QString body = action.param(pushNotificationsNotifyActionBodyParamTypeId).value().toString();
     QString data = action.paramValue(pushNotificationsNotifyActionDataParamTypeId).toString();
     QString notificationId = action.paramValue(pushNotificationsNotifyActionNotificationIdParamTypeId).toString();
-    bool remove = action.paramValue(pushNotificationsNotifyActionRemoveParamTypeId).toBool();
     bool sound = action.paramValue(pushNotificationsNotifyActionSoundParamTypeId).toBool();
 
     if (pushService != "None" && token.isEmpty()) {
-        return info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Push notifications need to be reconfigured."));
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Push notifications need to be reconfigured."));
+        return;
     }
 
     if (notificationId.isEmpty()) {
         notificationId = QUuid::createUuid().toString();
     }
 
-
-    QVariantMap nymeaData;
     // FIXME: This is quite ugly but there isn't an API that allows to retrieve the server UUID yet
     NymeaSettings settings(NymeaSettings::SettingsRoleGlobal);
     settings.beginGroup("nymead");
     QUuid serverUuid = settings.value("uuid").toUuid();
     settings.endGroup();
+
+    QVariantMap nymeaData;
     nymeaData.insert("serverUuid", serverUuid);
     nymeaData.insert("data", data);
 
@@ -149,57 +133,52 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
 
     if (pushService.startsWith("FB")) {
 
-        ApiKey apiKey = apiKeyStorage()->requestKey("firebase");
-        if (apiKey.data("apiKey").isEmpty()) {
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Firebase server API key not installed."));
+        if (!m_google->authenticated()) {
+            qCWarning(dcPushNotifications()) << "Google OAUth2 client is not authorized. Retry autorizing ...";
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Cannot access notification service. Please try again later."));
+            m_google->authorize();
             return;
         }
 
-        request = QNetworkRequest(QUrl("https://fcm.googleapis.com/fcm/send"));
-        request.setRawHeader("Authorization", "key=" + apiKey.data("apiKey"));
+        ApiKey apiKey = apiKeyStorage()->requestKey("firebase");
+        request = QNetworkRequest(QUrl(QString("https://fcm.googleapis.com/v1/projects/%1/messages:send").arg(QString::fromUtf8(apiKey.data("project_id")))));
+        request.setRawHeader("Authorization", "Bearer " + m_google->accessToken().toUtf8());
         request.setRawHeader("Content-Type", "application/json");
 
-        payload.insert("to", token.toUtf8().trimmed());
+        // https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages
 
+        QVariantMap message;
+        message.insert("token", token.toUtf8().trimmed());
         QVariantMap notification;
         notification.insert("title", title);
         notification.insert("body", body);
-        notification.insert("nymeaData", nymeaData);
-        notification.insert("notificationId", notificationId);
-        notification.insert("remove", remove);
+        message.insert("notification", notification);
 
+        // The data map must be a Map<String, String>
+        QVariantMap dataMap;
+        dataMap.insert("nymeaData", QString::fromUtf8(QJsonDocument::fromVariant(nymeaData).toJson(QJsonDocument::Compact)));
+        dataMap.insert("sound", sound ? "true" : "false");
+        message.insert("data", dataMap);
 
         if (pushService == "FB-GCM") {
-
-            notification.insert("sound", sound);
 
             QVariantMap android;
             android.insert("priority", "high");
 
-            payload.insert("android", android);
-            payload.insert("data", notification);
+            message.insert("android", android);
 
         } else if (pushService == "FB-APNs") {
 
-            if (sound) {
-                notification.insert("sound", "default");
-            }
-
             QVariantMap headers;
-            headers.insert("apns-priority", sound ? "10" : "1");
-            headers.insert("apns-collapse-id", notificationId);
+            headers.insert("apns-priority", "10");
 
             QVariantMap apns;
             apns.insert("headers", headers);
 
-            notification.insert("tag", notificationId);
-
-            payload.insert("notification", notification);
-            payload.insert("apns", apns);
-
-            payload.insert("collapse_key", notificationId);
+            message.insert("apns", apns);
         }
 
+        payload.insert("message", message);
 
     } else if (pushService == "UBPorts") {
         request = QNetworkRequest(QUrl("https://push.ubports.com/notify"));
@@ -234,10 +213,11 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
     qCDebug(dcPushNotifications()) << "Sending notification" << request.url().toString() << qUtf8Printable(QJsonDocument::fromVariant(payload).toJson());
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(payload).toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [reply, pushService, info, this]{
+    connect(reply, &QNetworkReply::finished, info, [reply, pushService, info]{
+
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPushNotifications()) << "Push message sending failed for" << info->thing()->name() << info->thing()->id() << reply->errorString() << reply->error();
-            emit info->finish(Thing::ThingErrorHardwareNotAvailable);
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
@@ -253,28 +233,11 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
         }
 
         QVariantMap replyMap = jsonDoc.toVariant().toMap();
-        //        qDebug(dcPushNotifications) << qUtf8Printable(jsonDoc.toJson());
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (pushService == "FB-GCM" || pushService == "FB-APNs") {
-            if (replyMap.value("success").toInt() != 1) {
+        qDebug(dcPushNotifications) << status << qUtf8Printable(jsonDoc.toJson());
 
-                // While GCM seems rock solid, APNs fails rather often with Internal Server Error.
-                // According to Firebase support this is "expected" and one should retry with a exponential back-off timer.
-                // As we only have 30 secs until the info times out, let's try repeatedly until the info object dies.
-                // In my tests, so far it succeeded every time on the second attempt.
-                // https://stackoverflow.com/questions/63382257/firebase-messaging-fails-sporadically-with-internal-error
-                if (replyMap.value("results").toList().count() > 0 && replyMap.value("results").toList().first().toMap().value("error").toString() == "InternalServerError") {
-                    qCDebug(dcPushNotifications()) << "Sending push message failed. Retrying...";
-                    executeAction(info);
-                    return;
-                }
-
-                // On any other error, bail out...
-                qCWarning(dcPushNotifications()) << "Error sending push notification:" << qUtf8Printable(jsonDoc.toJson());
-                info->finish(Thing::ThingErrorHardwareFailure);
-                return;
-            }
-        } else if (pushService == "UBPorts") {
+        if (pushService == "UBPorts") {
             if (!replyMap.value("ok").toBool()) {
                 qCWarning(dcPushNotifications()) << "Error sending push notification:" << qUtf8Printable(jsonDoc.toJson());
                 info->finish(Thing::ThingErrorHardwareFailure);

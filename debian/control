@@ -18,6 +18,7 @@ Build-depends: debhelper (>= 0.0.0),
                libsodium-dev,
                libudev-dev,
                libhidapi-dev,
+               libssl-dev,
 
 
 Package: nymea-plugin-anel
