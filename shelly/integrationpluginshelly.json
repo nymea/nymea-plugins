@@ -330,6 +330,113 @@
                     ]
                 },
                 {
+                    "id": "390187cb-22f1-449c-9b0b-9a791bce0a26",
+                    "name": "shelly1minig3",
+                    "displayName": "Shelly 1 Mini Gen3",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "5d0f3123-2022-456d-b481-f00e6cc66957",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3820af52-c1a7-4de3-9137-c7a61273ccd9",
+                            "name": "coapMode",
+                            "displayName": "CoIoT peer mode",
+                            "type": "QString",
+                            "allowedValues": ["unicast", "multicast"],
+                            "defaultValue": "unicast"
+                        },
+                        {
+                            "id": "5b1fee68-0ec3-41f9-abed-080bb749aca2",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "b6452dc0-f6bb-4bef-893d-0ddb9e784730",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f6b8ccb6-f2df-4d57-97b3-e86d2b297dc9",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "3773709c-3177-494b-a605-856ab18e65f9",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a41bc698-7941-43e8-898b-09ff6516bd1a",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "cb8ded48-2864-4ef7-92f5-8fb0c437aa31",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "281bbc59-e181-4686-85b6-a4111f055740",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "4ccba65b-2fca-4c9d-b67d-e2f190770442",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "8c95a129-ab06-45f8-a560-9a1d3dff9734",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "ef6a8c53-43ab-4c05-9a4b-1e80907f0a45",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "4c497fe1-c399-463a-9a73-0c5f4ebac100",
                     "name": "shellyPlus1pm",
                     "displayName": "Shelly Plus 1PM",

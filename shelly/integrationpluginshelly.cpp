@@ -89,6 +89,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("^ShellyPlus1-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shelly1pmThingClassId) {
             namePattern = QRegExp("^shelly1pm-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shelly1minig3ThingClassId) {
+            namePattern = QRegExp("^shelly1minig3-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
             namePattern = QRegExp("^ShellyPlus1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
         } else if (info->thingClassId() == shellyPro1PmThingClassId) {
@@ -195,7 +197,7 @@ void IntegrationPluginShelly::confirmPairing(ThingPairingInfo *info, const QStri
         // GetDeviceInfo wouldn't require authentication if enabled, so if the setup is changed to fetch some info from GetDeviceInfo,
         // make sure to not just replace the GetStatus call, or authentication verification won't work any more.
         ShellyRpcReply *reply = client->sendRequest("Shelly.GetStatus");
-        connect(reply, &ShellyRpcReply::finished, info, [info, client, this, password](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+        connect(reply, &ShellyRpcReply::finished, info, [info, this, password](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
             if (status != ShellyRpcReply::StatusSuccess) {
                 qCWarning(dcShelly) << "Error during shelly paring";
                 info->finish(Thing::ThingErrorHardwareFailure);
