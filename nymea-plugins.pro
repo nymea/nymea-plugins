@@ -36,6 +36,7 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
+    logilink            \
     mecelectronics      \
     meross              \
     mailnotification    \
