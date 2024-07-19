@@ -1,3 +1,16 @@
+nymea-plugins (1.9.3) jammy; urgency=medium
+
+  [ Boernsman ]
+  * New plugin: Logilink
+
+  [ Simon Stürz ]
+  * Fronius: Update S0 Meter detection and improve debugging
+  * Update debian packaging
+  * EVBox: Make params read only
+  * PushNotifications: Update firebase cloud messaging to API V1
+
+ -- jenkins <developer@nymea.io>  Fri, 19 Jul 2024 21:05:57 +0200
+
 nymea-plugins (1.9.2) jammy; urgency=medium
 
   [ Simon Stürz ]
