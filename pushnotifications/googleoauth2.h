@@ -28,33 +28,45 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINPUSHNOTIFICATIONS_H
-#define INTEGRATIONPLUGINPUSHNOTIFICATIONS_H
+#ifndef GOOGLEOAUTH2_H
+#define GOOGLEOAUTH2_H
 
-#include "integrations/integrationplugin.h"
+#include <QUrl>
+#include <QObject>
+#include <QTimer>
 
-#include "googleoauth2.h"
-#include "extern-plugininfo.h"
+#include <network/apikeys/apikey.h>
+#include <network/networkaccessmanager.h>
 
-class IntegrationPluginPushNotifications: public IntegrationPlugin
+// https://developers.google.com/identity/protocols/oauth2/service-account
+
+class GoogleOAuth2 : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginpushnotifications.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginPushNotifications(QObject *parent = nullptr);
-    ~IntegrationPluginPushNotifications() override;
-    void init() override;
+    explicit GoogleOAuth2(NetworkAccessManager *networkManager, const ApiKey &apiKey, QObject *parent = nullptr);
 
-    void setupThing(ThingSetupInfo *info) override;
-    void executeAction(ThingActionInfo *info) override;
+    QString accessToken() const;
+    bool authenticated() const;
+
+public slots:
+    void authorize();
+
+signals:
+    void authenticatedChanged(bool authenticated);
+    void accessTokenChanged(QString accessToken);
 
 private:
-    QHash<ThingClassId, ParamTypeId> m_tokenParamTypeIds;
-    QByteArray m_firebaseServerToken;
-    GoogleOAuth2 *m_google = nullptr;
+    NetworkAccessManager *m_networkManager;
+    ApiKey m_apiKey;
+
+    QTimer m_refreshTimer;
+    bool m_authenticated = false;
+    QString m_accessToken;
+
+    void setAuthenticated(bool authenticated);
+
+    QByteArray signData(const QByteArray &data, const QByteArray &key);
 };
 
-#endif
+#endif // GOOGLEOAUTH2_H
