@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -77,7 +77,8 @@ public:
         SeriesXWlan3G,
         SeriesXWlan4G,
         SeriesX3G,
-        SeriesX4G
+        SeriesX4G,
+        SeriesSpecial
     };
     Q_ENUM(Series)
 
