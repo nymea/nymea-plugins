@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -38,10 +38,11 @@
 
 IntegrationPluginKeba::IntegrationPluginKeba()
 {
-    //    KebaProductInfo bmw("BMW-10-EC240522-E1R");
-    //    KebaProductInfo ke("KC-P30-EC240122-E0R");
-    //    KebaProductInfo ge("KC-P30-EC220112-000-DE");
-    //    KebaProductInfo n("KC-P30-EC2404B2-M0A-GE");
+    // KebaProductInfo bmw("BMW-10-EC240522-E1R");
+    // KebaProductInfo ke("KC-P30-EC240122-E0R");
+    // KebaProductInfo ge("KC-P30-EC220112-000-DE");
+    // KebaProductInfo n("KC-P30-EC2404B2-M0A-GE");
+    // KebaProductInfo pv("KC-P30-EC2204U2-E00-PV");
 }
 
 void IntegrationPluginKeba::init()
@@ -146,7 +147,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
     qCDebug(dcKeba()) << "Setting up" << thing->name() << thing->params();
     if (!m_kebaDataLayer){
         qCDebug(dcKeba()) << "Creating new Keba data layer...";
-        m_kebaDataLayer= new KeContactDataLayer(this);
+        m_kebaDataLayer = new KeContactDataLayer(this);
         if (!m_kebaDataLayer->init()) {
             m_kebaDataLayer->deleteLater();
             m_kebaDataLayer = nullptr;
@@ -421,6 +422,7 @@ void IntegrationPluginKeba::setupKeba(ThingSetupInfo *info, const QHostAddress &
             case KebaProductInfo::SeriesXWlan4G:
             case KebaProductInfo::SeriesX3G:
             case KebaProductInfo::SeriesX4G:
+            case KebaProductInfo::SeriesSpecial:
                 qCDebug(dcKeba()) << "The keba" << productInformation.series() << "is capable of communicating using UDP";
                 supported = true;
                 break;

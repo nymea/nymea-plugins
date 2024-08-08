@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -40,6 +40,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     // KC-P30-EC240122-E0R
     // KC-P30-EC220112-000-DE
     // KC-P30-EC2404B2-M0A-GE
+    // KC-P30-EC2204U2-E00-PV
 
     qCDebug(dcKeba()) << "Parsing product information from" << productString.count() << productString;
     if (m_productString.count() < 19) {
@@ -68,7 +69,6 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     qCDebug(dcKeba()) << "Manufacturer:" << m_manufacturer;
     m_model = subStrings.at(1);
     qCDebug(dcKeba()) << "Model:" << m_model;
-
 
     QString descriptor = subStrings.at(2); // EC240522
     m_countryCode = descriptor.at(0); // E
@@ -117,8 +117,7 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     qCDebug(dcKeba()) << "Current:" << m_current;
 
     // KC-P30-EC24 01 22-E0R
-
-    QString cableValue =  descriptor.mid(4, 2)/*m_productString.mid(11, 2)*/;
+    QString cableValue = descriptor.mid(4, 2);
     if (cableValue == "00") {
         m_cable = NoCable;
         qCDebug(dcKeba()) << "Cable: No cable";
@@ -168,12 +167,16 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
     } else if (seriesValue.toLower() == QChar('h')) {
         m_series = SeriesX4G;
         qCDebug(dcKeba()) << "Series: X (4G)";
+    } else if (seriesValue.toLower() == QChar('u')) {
+        m_series = SeriesSpecial;
+        qCDebug(dcKeba()) << "Series: Special" + m_productString.right(2);
     } else {
+        qCWarning(dcKeba()) << "Series: Unknown" << productString << "value:" << seriesValue;
         m_isValid = false;
         return;
     }
 
-
+    // KC-P30-EC24012 2 -E0R
     QChar phaseCountValue = descriptor.at(7);
     if (phaseCountValue == QChar('1')) {
         m_phaseCount = 1;
@@ -206,7 +209,6 @@ KebaProductInfo::KebaProductInfo(const QString &productString) :
         m_isValid = false;
         return;
     }
-
 
     QChar authValue = meterInfos.at(2);
     if (authValue == QChar('0')) {

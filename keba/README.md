@@ -9,6 +9,7 @@ This plugin allows to control Keba KeContact EV-Charging stations.
 	* P30
 		* c-series
 		* x-series
+		* PV Edition 
 	* BMW (certain models)
 	* [Keba Deutschland Edition](https://a.storyblok.com/f/40131/x/fc59dc7bf7/datenblatt_deutschland_edition.pdf) (DE440)
 (by March 2022)
