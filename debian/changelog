@@ -1,3 +1,15 @@
+nymea-plugins (1.10.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * WIP: New Plugin: nymea owlets
+
+  [ Simon Stürz ]
+  * go-e: Update force state to actually force on
+  * PushNotifications: Update firebase cloud messaging to API V1
+  * Keba: Add support for P30 PV Edition
+
+ -- jenkins <developer@nymea.io>  Thu, 08 Aug 2024 11:27:16 +0200
+
 nymea-plugins (1.9.3) jammy; urgency=medium
 
   [ Boernsman ]
