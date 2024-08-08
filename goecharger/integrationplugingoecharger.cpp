@@ -342,7 +342,7 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             // The url query has to be JSON encoded, i.e. <url>/set?fna="mein charger"
             QUrlQuery configuration;
             // 0 neutral (prefere on), 1 off, 2 on force
-            configuration.addQueryItem("frc", (power ? "0": "1"));
+            configuration.addQueryItem("frc", (power ? "2": "1"));
             QNetworkRequest request = buildConfigurationRequestV2(address, configuration);
             QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
             connect(info, &ThingActionInfo::aborted, reply, &QNetworkReply::abort);
