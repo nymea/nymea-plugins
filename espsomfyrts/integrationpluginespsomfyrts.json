@@ -1,0 +1,47 @@
+{
+    "name": "ESPSomfyRTS",
+    "displayName": "ESPSomfy-RTS",
+    "id": "6937979e-1ee9-499e-9116-8e8dc25d87b6",
+    "vendors": [
+        {
+            "name": "ESPSomfyRTS",
+            "displayName": "ESPSomfy-RTS",
+            "id": "ed38d638-7402-4afb-b4c9-71324e1d7a04",
+            "thingClasses": [
+                {
+                    "name": "espSomfyRts",
+                    "displayName": "ESPSomfy-RTS Controller",
+                    "id": "9a477bbe-81f0-46ad-ae62-715c2bba2f1f",
+                    "createMethods": ["Discovery", "User"],
+                    "interfaces": ["gateway"],
+                    "paramTypes": [
+                        {
+                            "id": "0e30e30f-ad96-417e-b739-cac85f75de39",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "84e20ff2-2f48-44e6-b8f4-f9708cf2f187",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "1d919783-00a2-42f3-87a4-54a69040db4f",
+                            "name": "firmwareVersion",
+                            "displayName": "Firmware version",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

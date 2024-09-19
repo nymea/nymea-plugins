@@ -20,6 +20,7 @@ PLUGIN_DIRS = \
     dynatrace           \
     easee               \
     elgato              \
+    espsomfyrts         \
     eq-3                \
     espuino             \
     evbox               \
