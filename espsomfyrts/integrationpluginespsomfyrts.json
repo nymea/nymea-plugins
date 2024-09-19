@@ -1,0 +1,222 @@
+{
+    "name": "ESPSomfyRTS",
+    "displayName": "ESPSomfy-RTS",
+    "id": "6937979e-1ee9-499e-9116-8e8dc25d87b6",
+    "vendors": [
+        {
+            "name": "ESPSomfyRTS",
+            "displayName": "ESPSomfy-RTS",
+            "id": "ed38d638-7402-4afb-b4c9-71324e1d7a04",
+            "thingClasses": [
+                {
+                    "name": "espSomfyRts",
+                    "displayName": "ESPSomfy-RTS",
+                    "id": "9a477bbe-81f0-46ad-ae62-715c2bba2f1f",
+                    "createMethods": ["Discovery", "User"],
+                    "interfaces": ["gateway", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "0e30e30f-ad96-417e-b739-cac85f75de39",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "84e20ff2-2f48-44e6-b8f4-f9708cf2f187",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "5fece91a-6166-4e62-9510-ed97d48bec15",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1d919783-00a2-42f3-87a4-54a69040db4f",
+                            "name": "firmwareVersion",
+                            "displayName": "Firmware version",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": true
+                        }
+                    ]
+                },
+                {
+                    "name": "awning",
+                    "displayName": "Awning",
+                    "id": "1e76805f-ecba-45b3-ae84-bab3be60420e",
+                    "createMethods": ["Auto"],
+                    "interfaces": [ "extendedawning", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "2b69a4ca-61d4-4436-9e95-dcf5a7b88e72",
+                            "name":"shadeId",
+                            "displayName": "ID",
+                            "type": "uint"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "81548389-ab52-4bee-b539-fab59dbc95a8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "f1eaff9d-2e91-4f60-a10b-448bf0b2cd2a",
+                            "name": "name",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "d2fb13d5-b575-46ef-a1c8-1d211fb14673",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "4baecbcd-0407-4892-b679-45460a643322",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "writable": true,
+                            "displayNameAction": "Set percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "8173003e-ed97-44d1-84b4-c37d34b8916b",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "9cbfea42-28f0-4359-8bf0-5e2f22238bb8",
+                            "name": "stop",
+                            "displayName": "My"
+                        },
+                        {
+                            "id": "04189d1e-61b4-413b-8bfd-e6fb522f8b4a",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "name": "venetianBlind",
+                    "displayName": "",
+                    "id": "a8d077c9-b73c-47a3-a3ae-161c785a60c6",
+                    "createMethods": ["Auto"],
+                    "interfaces": [ "venetianblind", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "7e728ef3-03ce-4671-93ce-fdcd51a496f8",
+                            "name":"shadeId",
+                            "displayName": "ID",
+                            "type": "uint"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "ade34009-bb6c-41fc-86dc-fc59c9cbca2f",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "8b7b37ed-d494-4004-870f-59836b007c45",
+                            "name": "name",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "b4039247-eef3-4e9e-b1e7-31ed6c94d253",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "a6cd9038-a6dd-48dc-97a3-3940cc443221",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameAction": "Set percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "writable": true,
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "047c47c3-4cc1-4ccb-a351-09dc5976e3d6",
+                            "name": "angle",
+                            "displayName": "Angle",
+                            "displayNameAction": "Set angle",
+                            "type": "int",
+                            "unit": "Degree",
+                            "writable": true,
+                            "defaultValue": 0,
+                            "minValue": -90,
+                            "maxValue": 90
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e7b8557b-4121-4007-b027-136af7c01a1d",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "a9675717-3df3-4fa4-8fae-409f845cbb08",
+                            "name": "stop",
+                            "displayName": "My"
+                        },
+                        {
+                            "id": "0bf42e90-9ccd-4054-adb8-f29c6d1876e9",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "49c55b11-d61a-4fd8-94ef-7a06e1827f77",
+                            "name": "stepUp",
+                            "displayName": "Step up"
+                        },
+                        {
+                            "id": "dead4739-e0ad-4cea-8c99-9d6f04f519fd",
+                            "name": "stepDown",
+                            "displayName": "Step down"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
