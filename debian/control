@@ -223,6 +223,15 @@ Description: nymea integration plugin for EVBox
  implementing the Protocol Max v4.
 
 
+Package: nymea-plugin-everest
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for EVerest based EV chargers
+ This package will install the nymea integration plugin for
+ EVerest based EV charger
+
+
 Package: nymea-plugin-fastcom
 Architecture: any
 Depends: ${misc:Depends},

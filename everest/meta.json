@@ -1,0 +1,13 @@
+{
+    "title": "EVerest",
+    "tagline": "Control and monitor EVerest based EV chargers",
+    "icon": "everest.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
