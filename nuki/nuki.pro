@@ -4,8 +4,7 @@ TARGET = $$qtLibraryTarget(nymea_integrationpluginnuki)
 
 QT += bluetooth dbus
 
-# apt install libsodium-dev
-LIBS += -lsodium
+PKGCONFIG += libsodium
 
 HEADERS += \
     integrationpluginnuki.h \
