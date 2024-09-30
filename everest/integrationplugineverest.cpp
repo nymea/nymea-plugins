@@ -86,7 +86,7 @@ void IntegrationPluginTruffle::discoverThings(ThingDiscoveryInfo *info)
 
                 descriptor.setParams(params);
 
-                // Let's check if we aleardy have a thing with those parms
+                // Let's check if we aleardy have a thing with those params
                 bool thingExists = true;
                 Thing *existingThing = nullptr;
                 foreach (Thing *thing, myThings()) {
@@ -247,7 +247,7 @@ void IntegrationPluginTruffle::thingRemoved(Thing *thing)
         everestClient->removeThing(thing);
         if (everestClient->things().isEmpty()) {
             qCDebug(dcEverest()) << "Deleting" << everestClient << "since there is no thing left";
-            // No more things releated to this client, we can delete it
+            // No more things related to this client, we can delete it
             m_everstClients.removeAll(everestClient);
             everestClient->deleteLater();
         }

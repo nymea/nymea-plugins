@@ -267,7 +267,7 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         m_thing->setStateValue(everestSessionEnergyStateTypeId,
                                dataMap.value("charged_energy_wh").toDouble() / 1000.0);
 
-        // Interprete state
+        // Interpret state
         QString stateString = dataMap.value("state").toString();
         m_thing->setStateValue(everestStateStateTypeId, stateString);
 
