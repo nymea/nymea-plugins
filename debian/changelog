@@ -1,3 +1,12 @@
+nymea-plugins (1.9.4) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * Keba: Add support for P30 PV Edition
+  * Update debian copyright
+  * New plugin: Add EVerest EV charger plugin
+
+ -- jenkins <developer@nymea.io>  Tue, 01 Oct 2024 16:54:08 +0200
+
 nymea-plugins (1.9.3) jammy; urgency=medium
 
   [ Boernsman ]
