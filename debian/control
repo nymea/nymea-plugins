@@ -1,7 +1,7 @@
 Source: nymea-plugins
 Section: utils
 Priority: optional
-Maintainer: Simon Stürz <simon.stuerz@nymea.io>
+Maintainer: nymea GmbH <contact@nymea.io>
 Standards-Version: 4.6.0
 Build-depends: debhelper (>= 0.0.0),
                libnymea-dev (>= 0.26~),
