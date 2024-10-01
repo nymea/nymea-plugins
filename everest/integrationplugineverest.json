@@ -1,0 +1,164 @@
+{
+    "name": "everest",
+    "displayName": "Everest",
+    "id": "27e4b1c4-bc27-4699-84ef-41af1a9e1cea",
+    "vendors": [
+        {
+            "name": "Chargebyte",
+            "displayName": "Chargebyte GmbH",
+            "id": "07ba8a98-799f-4a6e-a8d9-b45cd38dbcc5",
+            "thingClasses": [
+                {
+                    "name": "everest",
+                    "displayName": "Everest",
+                    "id": "965cbe0d-088c-42a2-965d-ceafbb8b01e9",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "911b6fa3-010c-486e-8251-71a6aa21adb3",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "cb9517ef-1ae2-49c9-9036-0c6e15bb3652",
+                            "name": "mac",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": "00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "73f27e36-6f68-40a9-8805-22e88911736c",
+                            "name": "connector",
+                            "displayName": "Connector name",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "018d1f2f-4ede-4ab0-b76e-369684cd0da5",
+                            "name": "power",
+                            "displayName": "Charging enabled",
+                            "displayNameAction": "Enable or disable charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "d5d71037-a2b1-4abe-be75-883e6fef75c6",
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "uint",
+                            "unit": "Ampere",
+                            "defaultValue": 6,
+                            "minValue": 6,
+                            "maxValue": 32,
+                            "writable": true
+                        },
+                        {
+                            "id": "5b963e54-15f0-459f-8754-d172f2febee2",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "79f44541-7967-4394-bb50-8bf69e4115ca",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9597c21f-d8a6-424d-8e35-bdd69dc57d35",
+                            "name": "phaseCount",
+                            "displayName": "Active phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "2104641b-1004-4637-8eca-108f53dcb402",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8946aee7-caa1-47cc-bef9-37ca4c8b5e49",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0,
+                            "cached": true
+                        },
+                        {
+                            "id": "b7455160-98e4-47ad-a1db-f3fbda009aa2",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "120a4028-b01c-4a31-8d9b-bf34f602a095",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "75a52f23-7d65-4b33-9262-99085beb7ee2",
+                            "name": "state",
+                            "displayName": "State",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "b7c76f2d-520a-4bb1-9bd3-d6ffcbef73b6",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0,
+                            "cached": false
+                        },
+                        {
+                            "id": "2ca678ff-6d6f-49cf-b265-545ed15c12b7",
+                            "name": "fanSpeed",
+                            "displayName": "Fan speed",
+                            "type": "double",
+                            "unit": "Rpm",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

@@ -23,6 +23,7 @@ PLUGIN_DIRS = \
     eq-3                \
     espuino             \
     evbox               \
+    everest             \
     fastcom             \
     flowercare          \
     fronius             \
