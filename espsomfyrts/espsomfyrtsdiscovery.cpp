@@ -103,10 +103,7 @@ void EspSomfyRtsDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDe
             qCDebug(dcESPSomfyRTS()) << "Discovery: --> Found ESPSomfy-RTS device" << result.name << result.firmwareVersion
                                      << "on" << result.networkDeviceInfo.address().toString() ;
         }
-
     });
-
-
 }
 
 void EspSomfyRtsDiscovery::finishDiscovery()

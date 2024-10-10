@@ -30,6 +30,8 @@
 
 #include "integrationpluginespsomfyrts.h"
 
+#include <math.h>
+
 #include <QUrlQuery>
 #include <QHostAddress>
 #include <QDataStream>
@@ -93,13 +95,78 @@ void IntegrationPluginEspSomfyRts::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginEspSomfyRts::setupThing(ThingSetupInfo *info)
 {
-    Q_UNUSED(info)
+    Thing *thing = info->thing();
 
+    if (thing->thingClassId() == espSomfyRtsThingClassId) {
+        if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+            qCWarning(dcESPSomfyRTS()) << "Cannot set up thing because the network discovery is not available.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        MacAddress macAddress(thing->paramValue(espSomfyRtsThingMacAddressParamTypeId).toString());
+        if (!macAddress.isValid()) {
+            qCWarning(dcESPSomfyRTS()) << "Invalid MAC address, cannot set up thing" << thing << thing->params();
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
+
+        EspSomfyRts *somfy = new EspSomfyRts(monitor, thing);
+        m_somfys.insert(thing, somfy);
+
+        connect(somfy, &EspSomfyRts::connectedChanged, thing, [this, thing](bool connected){
+            onEspSomfyConnectedChanged(thing, connected);
+        });
+
+        connect(somfy, &EspSomfyRts::signalStrengthChanged, thing, [thing](uint signalStrength){
+            thing->setStateValue(espSomfyRtsSignalStrengthStateTypeId, signalStrength);
+        });
+
+        connect(somfy, &EspSomfyRts::firmwareVersionChanged, thing, [thing](const QString &firmwareVersion){
+            thing->setStateValue(espSomfyRtsFirmwareVersionStateTypeId, firmwareVersion);
+        });
+
+        connect(somfy, &EspSomfyRts::shadeStateReceived, thing, [this](const QVariantMap &shadeState){
+            int shadeId = shadeState.value("shadeId").toInt();
+            if (m_shadeThings.contains(shadeId)) {
+                processShadeState(m_shadeThings.value(shadeId), shadeState);
+            }
+        });
+
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    } else {
+        qCDebug(dcESPSomfyRTS()) << "Setting up" << thing->thingClass().name() << thing->name();
+        m_shadeThings.insert(thing->paramValue("shadeId").toUInt(), thing);
+        info->finish(Thing::ThingErrorNoError);
+    }
 }
 
 void IntegrationPluginEspSomfyRts::postSetupThing(Thing *thing)
 {
-    Q_UNUSED(thing)
+    if (thing->thingClassId() == espSomfyRtsThingClassId) {
+        EspSomfyRts *somfy = m_somfys.value(thing);
+        onEspSomfyConnectedChanged(thing, somfy->connected());
+
+        if (!m_refreshTimer) {
+            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+            connect(m_refreshTimer, &PluginTimer::timeout, thing, [this, thing](){
+                if (m_somfys.value(thing)->connected()) {
+                    synchronizeShades(thing);
+                }
+            });
+        }
+
+    } else {
+        Thing *parent = myThings().findById(thing->parentId());
+        EspSomfyRts *somfy = m_somfys.value(parent);
+        if (!parent || !somfy)
+            return;
+
+        thing->setStateValue("connected", somfy->connected());
+    }
 }
 
 void IntegrationPluginEspSomfyRts::thingRemoved(Thing *thing)
@@ -112,6 +179,260 @@ void IntegrationPluginEspSomfyRts::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    Q_UNUSED(thing)
-    Q_UNUSED(action)
- }
+    if (thing->thingClassId() == awningThingClassId) {
+
+        if (!thing->stateValue(awningConnectedStateTypeId).toBool()) {
+            qCWarning(dcESPSomfyRTS()) << "Could not execute command because the thing is not connected" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EspSomfyRts *somfy = m_somfys.value(parentThing);
+        if (!parentThing || !somfy) {
+            qCWarning(dcESPSomfyRTS()) << "Could not execute command because the parent thing could not be found for" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        QVariantMap requestMap;
+        requestMap.insert("shadeId", thing->paramValue(awningThingShadeIdParamTypeId).toUInt());
+
+        if (action.actionTypeId() == awningOpenActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandDown));
+        } else if (action.actionTypeId() == awningStopActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandMy));
+        } else if (action.actionTypeId() == awningCloseActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandUp));
+        } else if (action.actionTypeId() == awningPercentageActionTypeId) {
+            requestMap.insert("target", action.paramValue(awningPercentageActionPercentageParamTypeId).toUInt());
+        }
+
+        QNetworkRequest request(somfy->shadeCommandUrl());
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QNetworkReply *reply = hardwareManager()->networkManager()->put(request, QJsonDocument::fromVariant(requestMap).toJson());
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [reply, info](){
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcESPSomfyRTS()) << "Could not execute command on" << info->thing() << "because the network request finished with error" << reply->errorString();
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            qCDebug(dcESPSomfyRTS()) << "Executed command successfully on" << info->thing();
+            info->finish(Thing::ThingErrorNoError);
+        });
+
+        return;
+    }
+
+    if (thing->thingClassId() == venetianBlindThingClassId) {
+
+        if (!thing->stateValue(venetianBlindConnectedStateTypeId).toBool()) {
+            qCWarning(dcESPSomfyRTS()) << "Could not execute command because the thing is not connected" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EspSomfyRts *somfy = m_somfys.value(parentThing);
+        if (!parentThing || !somfy) {
+            qCWarning(dcESPSomfyRTS()) << "Could not execute command because the parent thing could not be found for" << thing;
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        QVariantMap requestMap;
+        requestMap.insert("shadeId", thing->paramValue(venetianBlindThingShadeIdParamTypeId).toUInt());
+
+        QUrl url = somfy->shadeCommandUrl();
+        if (action.actionTypeId() == venetianBlindOpenActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandUp));
+        } else if (action.actionTypeId() == venetianBlindStopActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandMy));
+        } else if (action.actionTypeId() == venetianBlindCloseActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandDown));
+        } else if (action.actionTypeId() == venetianBlindPercentageActionTypeId) {
+            requestMap.insert("target", action.paramValue(venetianBlindPercentageActionPercentageParamTypeId).toUInt());
+        } else if (action.actionTypeId() == venetianBlindAngleActionTypeId) {
+            url = somfy->tiltCommandUrl();
+            State angleState = thing->state(venetianBlindAngleStateTypeId);
+            int minValue = angleState.minValue().toInt();
+            int maxValue = angleState.maxValue().toInt();
+            int angle = action.paramValue(venetianBlindAngleActionAngleParamTypeId).toInt();
+            int percentage = calculatePercentageFromAngle(minValue, maxValue, angle);
+            qCDebug(dcESPSomfyRTS()) << "######" << percentage;
+            requestMap.insert("target", percentage);
+        }
+
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        qCDebug(dcESPSomfyRTS()) << "PUT" << url.toString() << qUtf8Printable(QJsonDocument::fromVariant(requestMap).toJson(QJsonDocument::Compact));
+        QNetworkReply *reply = hardwareManager()->networkManager()->put(request, QJsonDocument::fromVariant(requestMap).toJson(QJsonDocument::Compact));
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [reply, info](){
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcESPSomfyRTS()) << "Could not execute command on" << info->thing() << "because the network request finished with error" << reply->errorString();
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            qCDebug(dcESPSomfyRTS()) << "Executed command successfully on" << info->thing();
+            info->finish(Thing::ThingErrorNoError);
+        });
+    }
+}
+
+int IntegrationPluginEspSomfyRts::calculateAngleFromPercentage(int minAngle, int maxAngle, int percentage)
+{
+    int minValue = qMin(minAngle, maxAngle);
+    int maxValue = qMax(minAngle, maxAngle);
+    int range = maxValue - minValue;
+    int angle = std::round(range * percentage / 100.0) + minAngle;
+    //qCDebug(dcESPSomfyRTS()) << "Calculate angle" << angle << "for percentage" << percentage << "min:" << minValue << "max:" << maxValue << "range:" << range;
+    return angle;
+}
+
+int IntegrationPluginEspSomfyRts::calculatePercentageFromAngle(int minAngle, int maxAngle, int angle)
+{
+    int minValue = qMin(minAngle, maxAngle);
+    int maxValue = qMax(minAngle, maxAngle);
+    int range = maxValue - minValue;
+    int percentage = std::round(angle * 100.0 / range) + 50;
+    //qCDebug(dcESPSomfyRTS()) << "Calculated percentage" << percentage << "for angle" << angle << "min:" << minValue << "max:" << maxValue << "range:" << range;
+    // FIXME: check the percentage of the negative part if asymetric
+    return percentage;
+}
+
+void IntegrationPluginEspSomfyRts::createThingForShade(const QVariantMap &shadeMap, const ThingId &parentThingId)
+{
+    QString shadeName = shadeMap.value("name").toString();
+    uint shadeId = shadeMap.value("shadeId").toUInt();
+    EspSomfyRts::ShadeType shadeType = static_cast<EspSomfyRts::ShadeType>(shadeMap.value("shadeType").toInt());
+
+    qCDebug(dcESPSomfyRTS()) << "Creating thing for" << shadeType << shadeId << shadeName;
+
+    ThingDescriptor desciptor;
+    ThingDescriptors desciptors;
+
+    switch (shadeType) {
+    case EspSomfyRts::ShadeTypeAwning:
+        desciptor = ThingDescriptor(awningThingClassId, shadeName);
+        desciptor.setParams(ParamList() << Param(awningThingShadeIdParamTypeId, shadeId));
+        desciptor.setParentId(parentThingId);
+        desciptors.append(desciptor);
+        break;
+    case EspSomfyRts::ShadeTypeBlind:
+        desciptor = ThingDescriptor(venetianBlindThingClassId, shadeName);
+        desciptor.setParams(ParamList() << Param(venetianBlindThingShadeIdParamTypeId, shadeId));
+        desciptor.setParentId(parentThingId);
+        desciptors.append(desciptor);
+        break;
+    default:
+        break;
+    }
+
+    if (desciptors.isEmpty())
+        return;
+
+    emit autoThingsAppeared(desciptors);
+}
+
+void IntegrationPluginEspSomfyRts::processShadeState(Thing *thing, const QVariantMap &shadeState)
+{
+    if (thing->thingClassId() == awningThingClassId) {
+
+        if (shadeState.contains("position"))
+            thing->setStateValue(awningPercentageStateTypeId, shadeState.value("position").toInt());
+
+        if (shadeState.contains("direction"))
+            thing->setStateValue(awningMovingStateTypeId, shadeState.value("direction").toInt() != EspSomfyRts::MovingDirectionRest);
+        return;
+    }
+
+    if (thing->thingClassId() == venetianBlindThingClassId) {
+        if (shadeState.contains("position"))
+            thing->setStateValue(venetianBlindPercentageStateTypeId, shadeState.value("position").toInt());
+
+        if (shadeState.contains("direction"))
+            thing->setStateValue(venetianBlindMovingStateTypeId, shadeState.value("direction").toInt() != EspSomfyRts::MovingDirectionRest);
+
+        State angleState = thing->state(venetianBlindAngleStateTypeId);
+        int angle = calculateAngleFromPercentage(angleState.minValue().toInt(), angleState.maxValue().toInt(), shadeState.value("tiltPosition").toInt());
+        thing->setStateValue(venetianBlindAngleStateTypeId, angle);
+        return;
+    }
+}
+
+void IntegrationPluginEspSomfyRts::synchronizeShades(Thing *thing)
+{
+    EspSomfyRts *somfy = m_somfys.value(thing);
+    qCDebug(dcESPSomfyRTS()) << "Synchronize shades of" << thing->name() << somfy->address().toString();
+
+    QUrl url = somfy->shadesUrl();
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, thing, [this, reply, thing](){
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qCDebug(dcESPSomfyRTS()) << "Get shades reply finished with error" << reply->errorString();
+            return;
+        }
+
+        QJsonParseError jsonError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &jsonError);
+        if (jsonError.error != QJsonParseError::NoError) {
+            qCWarning(dcESPSomfyRTS()) << "Get shades reply contains invalid JSON data" << jsonError.errorString();
+            return;
+        }
+
+        QList<ThingId> handledThingIds;
+        QVariantList shadesList = jsonDoc.toVariant().toList();
+
+        // Get shades we need to add
+        QList<QVariantMap> shadesToCreateThingFor;
+        foreach (const QVariant &shadeVariant, shadesList) {
+            QVariantMap shadeMap = shadeVariant.toMap();
+
+            // Check if we have a thing for this shade ID
+            uint shadeId = shadeMap.value("shadeId").toUInt();
+            if (!m_shadeThings.contains(shadeId)) {
+                shadesToCreateThingFor.append(shadeMap);
+            } else {
+                // We already have a shade for this map, let's update the states
+                processShadeState(m_shadeThings.value(shadeId), shadeMap);
+                handledThingIds.append(m_shadeThings.value(shadeId)->id());
+            }
+
+            // TODO: check if a shade has changed the type, in that case,
+            // remove the old one and recreate a new one with the matching thing class
+        }
+
+        // Remove things if shade does not exist any more
+        foreach (Thing *existingThing, myThings().filterByParentId(thing->id())) {
+            if (!handledThingIds.contains(existingThing->id())) {
+                qCDebug(dcESPSomfyRTS()) << "Removing thing" << existingThing << "because the shade with ID" << existingThing->paramValue("shadeId").toUInt() << "does not exist any more on the ESP Somfy RTS.";
+                emit autoThingDisappeared(existingThing->id());
+            }
+        }
+
+        // Add things for shades new shades
+        foreach (const QVariantMap &shadeMap, shadesToCreateThingFor) {
+            createThingForShade(shadeMap, thing->id());
+        }
+    });
+}
+
+void IntegrationPluginEspSomfyRts::onEspSomfyConnectedChanged(Thing *thing, bool connected)
+{
+    thing->setStateValue(espSomfyRtsConnectedStateTypeId, connected);
+    foreach(Thing *childThing, myThings().filterByParentId(thing->id())) {
+        childThing->setStateValue("connected", connected);
+    }
+
+    if (connected) {
+        synchronizeShades(thing);
+    }
+}

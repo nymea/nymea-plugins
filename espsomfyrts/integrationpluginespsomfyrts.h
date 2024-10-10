@@ -42,6 +42,8 @@
 
 #include "extern-plugininfo.h"
 
+#include "espsomfyrts.h"
+
 class IntegrationPluginEspSomfyRts: public IntegrationPlugin
 {
     Q_OBJECT
@@ -62,11 +64,20 @@ public:
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
+    QHash<Thing *, EspSomfyRts *> m_somfys;
+    QHash<uint, Thing *> m_shadeThings;
 
+    int calculateAngleFromPercentage(int minAngle, int maxAngle, int percentage);
+    int calculatePercentageFromAngle(int minAngle, int maxAngle, int angle);
+
+    void createThingForShade(const QVariantMap &shadeMap, const ThingId &parentThingId);
+    void processShadeState(Thing *thing, const QVariantMap &shadeState);
+    void synchronizeShades(Thing *thing);
+
+    ThingClassId getThingClassForShadeType(const QVariantMap &shadeMap);
 
 private slots:
-    //nymevoid refreshHttp();
-
+    void onEspSomfyConnectedChanged(Thing *thing, bool connected);
 
 };
 

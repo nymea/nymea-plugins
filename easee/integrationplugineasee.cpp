@@ -192,7 +192,6 @@ void IntegrationPluginEasee::postSetupThing(Thing *thing)
         });
     }
 
-
     if (thing->thingClassId() == accountThingClassId) {
         pluginStorage()->beginGroup(thing->id().toString());
         QByteArray accessToken = pluginStorage()->value("accessToken").toByteArray();
