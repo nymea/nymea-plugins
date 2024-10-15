@@ -32,6 +32,7 @@
 #include "plugininfo.h"
 #include "goediscovery.h"
 
+#include <hardware/electricity.h>
 
 #include <QUrlQuery>
 #include <QHostAddress>
@@ -349,8 +350,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:"
+                                              << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -359,8 +360,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Parsing data failed:" << qUtf8Printable(data) << error.errorString()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Parsing data failed:"
+                                              << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -390,8 +391,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:"
+                                              << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -400,8 +401,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data"
+                                              << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -431,8 +432,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [=](){
                 if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:" << reply->errorString() << reply->readAll()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "HTTP error:"
+                                              << reply->errorString() << reply->readAll() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
                     return;
                 }
@@ -441,8 +442,8 @@ void IntegrationPluginGoECharger::executeAction(ThingActionInfo *info)
                 QJsonParseError error;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
                 if (error.error != QJsonParseError::NoError) {
-                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data" << qUtf8Printable(data) << error.errorString()
-                                              << "Request was:" << request.url().toString();
+                    qCWarning(dcGoECharger()) << "Execute action failed for" << thing->name() << "Failed to parse data"
+                                              << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                     info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
                     return;
                 }
@@ -562,7 +563,7 @@ QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing, bo
         requestUrl.setPath("/api/status");
         if (!fullStatus) {
             QUrlQuery query;
-            query.addQueryItem("filter", "alw,car,ast,tma,eto,wh,upd,fwv,amp,adi,fhz,cbl,ama,var,pnp,nrg");
+            query.addQueryItem("filter", "alw,car,ast,tma,eto,wh,upd,fwv,amp,adi,fhz,cbl,ama,var,pnp,nrg,pha");
             requestUrl.setQuery(query);
         }
         break;
@@ -1257,10 +1258,10 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
     if (statusMap.contains("pnp") && statusMap.value("pnp").toUInt() != 0)
         thing->setStateValue(goeHomePhaseCountStateTypeId, statusMap.value("pnp").toUInt());
 
+    double amperePhaseA = 0; double amperePhaseB = 0; double amperePhaseC = 0;
     if (statusMap.contains("nrg")) {
         // Parse nrg array
         uint voltagePhaseA = 0; uint voltagePhaseB = 0; uint voltagePhaseC = 0;
-        double amperePhaseA = 0; double amperePhaseB = 0; double amperePhaseC = 0;
         double currentPower = 0; double powerPhaseA = 0; double powerPhaseB = 0; double powerPhaseC = 0;
         QVariantList measurementList = statusMap.value("nrg").toList();
 
@@ -1305,7 +1306,38 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
         thing->setStateValue(goeHomeCurrentPowerPhaseCStateTypeId, powerPhaseC);
 
         thing->setStateValue(goeHomeCurrentPowerStateTypeId, currentPower);
+    }
 
+    if (statusMap.contains("pha") && statusMap.value("pha").toList().count() == 6) {
+        QVariantList phasesList = statusMap.value("pha").toList();
+        // We have exact information regarding charging and connected phases
+        Electricity::Phases connectedPhases;
+        connectedPhases.setFlag(Electricity::PhaseA, phasesList.at(0).toBool());
+        connectedPhases.setFlag(Electricity::PhaseB, phasesList.at(1).toBool());
+        connectedPhases.setFlag(Electricity::PhaseC, phasesList.at(2).toBool());
+
+        Electricity::Phases chargingPhases;
+        chargingPhases.setFlag(Electricity::PhaseA, phasesList.at(3).toBool());
+        chargingPhases.setFlag(Electricity::PhaseB, phasesList.at(4).toBool());
+        chargingPhases.setFlag(Electricity::PhaseC, phasesList.at(5).toBool());
+
+        uint connectedPhaseCount = Electricity::getPhaseCount(connectedPhases);
+        if (connectedPhaseCount == 1) {
+            qCDebug(dcGoECharger()) << "There is only one phase connected to this charger: disabling phase switching";
+            thing->setStatePossibleValues(goeHomeDesiredPhaseCountStateTypeId, { 1 });
+            thing->setStateValue(goeHomeDesiredPhaseCountStateTypeId, 1);
+        } else {
+            qCDebug(dcGoECharger()) << "There is more than one phase connected to this charger: enabling phase switching";
+            thing->setStatePossibleValues(goeHomeDesiredPhaseCountStateTypeId, { 1, 3 });
+        }
+
+        uint chargingPhaseCount = Electricity::getPhaseCount(chargingPhases);
+        if (chargingPhaseCount > 0) {
+            thing->setStateValue(goeHomePhaseCountStateTypeId, chargingPhaseCount);
+        } else {
+            thing->setStateValue(goeHomePhaseCountStateTypeId, connectedPhaseCount);
+        }
+    } else {
         // Check how many phases are actually charging, and update the phase count only if something happens on the phases (current or power)
         if (amperePhaseA != 0 || amperePhaseB != 0 || amperePhaseC != 0) {
             uint phaseCount = 0;
