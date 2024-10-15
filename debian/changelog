@@ -1,3 +1,15 @@
+nymea-plugins (1.11.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * WIP: New Plugin: nymea owlets
+
+  [ Simon Stürz ]
+  * go-eCharger: Update phase count handling and disable phase switching
+    …
+  * New plugin: ESP Somfy RTS
+
+ -- jenkins <developer@nymea.io>  Tue, 15 Oct 2024 16:11:00 +0200
+
 nymea-plugins (1.9.4) jammy; urgency=medium
 
   [ Simon Stürz ]
