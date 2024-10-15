@@ -54,6 +54,7 @@ PLUGIN_DIRS = \
     openuv              \ 
     openweathermap      \
     osdomotics          \
+    owlet               \
     philipshue          \
     powerfox            \
     pushbullet          \
