@@ -214,6 +214,15 @@ Description: nymea integration plugin for ESPuino
  This package contains the nymea integration plugin for ESPuino devices.
 
 
+Package: nymea-plugin-espsomfyrts
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for ESP-Somfy-RTS
+ This package contains the nymea integration plugin for the ESP Somfy RTS project.
+
+
 Package: nymea-plugin-evbox
 Architecture: any
 Depends: ${shlibs:Depends},
