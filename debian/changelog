@@ -1,3 +1,14 @@
+nymea-plugins (1.9.5) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * go-eCharger: Update phase count handling and disable phase switching
+    …
+
+  [ Jenkins ]
+  * Shelly: Improve debug logging when offline
+
+ -- jenkins <developer@nymea.io>  Mon, 28 Oct 2024 15:26:41 +0100
+
 nymea-plugins (1.9.4) jammy; urgency=medium
 
   [ Simon Stürz ]
