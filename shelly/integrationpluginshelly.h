@@ -94,6 +94,7 @@ private:
     PluginTimer *m_reconfigureTimer = nullptr;
 
     Coap *m_coap = nullptr;
+    uint m_multicastWarningPrintCount = 0;
 
     QHash<Thing*, ShellyJsonRpcClient*> m_rpcClients;
 };

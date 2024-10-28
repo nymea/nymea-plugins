@@ -768,19 +768,30 @@ void IntegrationPluginShelly::joinMulticastGroup()
 {
     if (m_coap->joinMulticastGroup()) {
         qCInfo(dcShelly()) << "Joined CoIoT multicast group";
+        m_multicastWarningPrintCount = 0;
     } else {
-        qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 5 seconds...";
+        uint mod = m_multicastWarningPrintCount % 120;
+
         // FIXME: It would probably be better to monitor the network interfaces and re-join if necessary
+        if (m_multicastWarningPrintCount < 12) {
+            qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 5 seconds...";
+        }
+
+        if (m_multicastWarningPrintCount >= 12 && mod == 0) {
+            qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 10 minutes...";
+        }
+
         QTimer::singleShot(5000, m_coap, [this](){
             joinMulticastGroup();
         });
+        m_multicastWarningPrintCount++;
     }
 }
 
 void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &source, const CoapPdu &pdu)
 {
     Q_UNUSED(source)
-//    qCDebug(dcShelly()) << "Multicast message received" << source << pdu;
+    //    qCDebug(dcShelly()) << "Multicast message received" << source << pdu;
     if (pdu.reqRspCode() != 0x1e) {
         // Not a shelly CoIoT status message (ReqRsp code "0.30")
         return;
@@ -1491,7 +1502,7 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
                 rollerShutterChild.setParams(ParamList() << Param(shellyRollerThingChannelParamTypeId, 1));
                 autoChilds.append(rollerShutterChild);
 
-            // Create 2 measurement channels for shelly 2.5 (unless in roller mode)
+                // Create 2 measurement channels for shelly 2.5 (unless in roller mode)
             } else if (info->thing()->thingClassId() == shelly25ThingClassId) {
                 ThingDescriptor channelChild(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
                 channelChild.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 1));
@@ -1544,17 +1555,17 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
     });
 
     // For testing and debugging, introspect the coap API. Allows introspecting the coap api on the device
-//    url.clear();
-//    url.setScheme("coap");
-//    url.setHost(address.toString());
-//    url.setPath("/cit/d");
+    //    url.clear();
+    //    url.setScheme("coap");
+    //    url.setHost(address.toString());
+    //    url.setPath("/cit/d");
 
-//    CoapRequest coapRequest(url);
-//    CoapReply *coapReply = m_coap->get(coapRequest);
-//    qCDebug(dcShelly) << "Coap request" << url;
-//    connect(coapReply, &CoapReply::finished, thing, [=](){
-//        qCDebug(dcShelly) << "Coap reply" << coapReply->error() << qUtf8Printable(QJsonDocument::fromJson(coapReply->payload()).toJson());
-//    });
+    //    CoapRequest coapRequest(url);
+    //    CoapReply *coapReply = m_coap->get(coapRequest);
+    //    qCDebug(dcShelly) << "Coap request" << url;
+    //    connect(coapReply, &CoapReply::finished, thing, [=](){
+    //        qCDebug(dcShelly) << "Coap reply" << coapReply->error() << qUtf8Printable(QJsonDocument::fromJson(coapReply->payload()).toJson());
+    //    });
 
 
     // Handle thing settings of gateway devices
@@ -1707,7 +1718,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                             ThingDescriptor rollerShutterChild(shellyRollerThingClassId, info->thing()->name() + " connected shutter", QString(), info->thing()->id());
                             rollerShutterChild.setParams(ParamList() << Param(shellyRollerThingChannelParamTypeId, 1));
                             children.append(rollerShutterChild);
-                        // Create 2 measurement channels for Shelly Plus 2PM (unless in roller mode)
+                            // Create 2 measurement channels for Shelly Plus 2PM (unless in roller mode)
                         }  else {
                             ThingDescriptor channelChild(shellyPowerMeterChannelThingClassId, info->thing()->name() + " channel 1", QString(), info->thing()->id());
                             channelChild.setParams(ParamList() << Param(shellyPowerMeterChannelThingChannelParamTypeId, 1));
@@ -2081,9 +2092,9 @@ QHostAddress IntegrationPluginShelly::getIP(Thing *thing) const
 bool IntegrationPluginShelly::isGen2(const QString &shellyId) const
 {
     return shellyId.contains("Plus", Qt::CaseInsensitive)
-                || shellyId.contains("Pro", Qt::CaseInsensitive)
-                || QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive).exactMatch(shellyId) // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
-                ;
+            || shellyId.contains("Pro", Qt::CaseInsensitive)
+            || QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive).exactMatch(shellyId) // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
+            ;
 }
 
 void IntegrationPluginShelly::handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount)
