@@ -768,12 +768,23 @@ void IntegrationPluginShelly::joinMulticastGroup()
 {
     if (m_coap->joinMulticastGroup()) {
         qCInfo(dcShelly()) << "Joined CoIoT multicast group";
+        m_multicastRetryCnt = 0;
     } else {
-        qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 5 seconds...";
+        uint retryTime = 0;
+
         // FIXME: It would probably be better to monitor the network interfaces and re-join if necessary
-        QTimer::singleShot(5000, m_coap, [this](){
+        if (m_multicastRetryCnt < 12) {
+            qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 5 seconds...";
+            retryTime = 5000;
+        } else {
+            qCWarning(dcShelly()) << "Failed to join CoIoT multicast group. Retrying in 10 minutes...";
+            retryTime = 600000;
+        }
+
+        QTimer::singleShot(retryTime, m_coap, [this](){
             joinMulticastGroup();
         });
+        m_multicastRetryCnt++;
     }
 }
 
