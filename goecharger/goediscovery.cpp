@@ -256,7 +256,7 @@ void GoeDiscovery::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
     // which spoof the mac address and multipe IP have the same mac address. Using zeroconf and have IP based discovery
     // solves this issue
 
-    if (isGoeCharger(serviceEntry)) {
+    if (isGoeCharger(serviceEntry) && serviceEntry.protocol() == QAbstractSocket::IPv4Protocol) {
         qCDebug(dcGoECharger()) << "Discovery: Found ZeroConf go-eCharger" << serviceEntry;
 
         GoeDiscovery::Result result;
