@@ -347,6 +347,17 @@ Conflicts: nymea-plugins-translations (<< 1.0.1)
 Description: nymea integration plugin for lifx
  This package contains the nymea integration plugin for lifx devices
 
+
+Package: nymea-plugin-linuxinput
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for linux input devices
+ This package contains the nymea integration plugin integrating generic linux
+ input devices like keyboards, mouse and joystick devices. 
+
+
 Package: nymea-plugin-logilink
 Architecture: any
 Section: libs
