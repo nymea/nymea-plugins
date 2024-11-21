@@ -2,9 +2,7 @@ include(../plugins.pri)
 
 TARGET = $$qtLibraryTarget(nymea_integrationpluginonewire)
 
-LIBS +=      \
-        -low \
-        -lowcapi \
+PKGCONFIG += owcapi
 
 SOURCES += \
     integrationpluginonewire.cpp \
