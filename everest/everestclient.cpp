@@ -36,6 +36,7 @@ EverestClient::EverestClient(QObject *parent)
 {
     m_client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300,
                               QString(), QByteArray(), Mqtt::QoS0, false, this);
+
     connect(m_client, &MqttClient::disconnected, this, [this](){
         qCDebug(dcEverest()) << "The MQTT client is now disconnected" << this;
         if (!m_address.isNull()) {
@@ -71,6 +72,13 @@ EverestClient::EverestClient(QObject *parent)
     });
 }
 
+EverestClient::~EverestClient()
+{
+    foreach (Everest *everest, m_everests) {
+        removeThing(everest->thing());
+    }
+}
+
 MqttClient *EverestClient::client() const
 {
     return m_client;
@@ -86,7 +94,7 @@ void EverestClient::addThing(Thing *thing)
     if (m_everests.contains(thing)) {
         qCWarning(dcEverest()) << "The" << thing << "has already been added to the everest client. "
                                                     "Please report a bug if you see this message.";
-        // FIXME: maybe cleanup and recreate the client due to reconfigure
+        // TODO: maybe cleanup and recreate the client due to reconfigure
         return;
     }
 
