@@ -14,13 +14,30 @@
                     "displayName": "MI-300/600",
                     "createMethods": ["discovery"],
                     "setupMethod": "userandpassword",
-                    "interfaces": [ "solarinverter", "wirelessconnectable" ],
+                    "interfaces": [ "solarinverter", "wirelessconnectable", "networkdevice" ],
                     "paramTypes": [
+                        {
+                            "id": "80f6972f-a2df-4cbb-beea-672bdcf05e45",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
                         {
                             "id": "6fbe5f08-3539-447d-9281-916abe9d8128",
                             "name":"macAddress",
                             "displayName": "MAC address",
-                            "type": "QString"
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "f772600b-2a85-4459-a8a0-08b4e6adae2b",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
