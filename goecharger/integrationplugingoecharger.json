@@ -24,12 +24,24 @@
                     "displayName": "go-eCharger Home",
                     "id": "3b663d51-fdb5-4944-b409-c07f7933877e",
                     "createMethods": ["Discovery", "User"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
+                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable", "networkdevice"],
                     "paramTypes": [
                         {
                             "id": "0e30e30f-ad96-417e-b739-cac85f75de39",
                             "name":"macAddress",
                             "displayName": "MAC address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "b70db8c3-b380-4c9a-8954-c02126b057b3",
+                            "name":"hostName",
+                            "displayName": "Host name",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "9492e39a-0300-47b9-aeda-8a2b14f9ff2b",
+                            "name":"address",
+                            "displayName": "IP address",
                             "type": "QString"
                         },
                         {

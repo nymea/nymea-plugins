@@ -57,7 +57,6 @@ void IntegrationPluginGoECharger::init()
         m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
         connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &IntegrationPluginGoECharger::onServiceEntryAdded);
     }
-
 }
 
 void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
@@ -86,8 +85,13 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
                 title += " (" + result.manufacturer + ")";
             }
 
+            ParamList params;
+
             QString description = "Serial: " + result.serialNumber + ", V: " + result.firmwareVersion;
             if (result.discoveryMethod == GoeDiscovery::DiscoveryMethodNetwork) {
+                params << Param(goeHomeThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
+                params << Param(goeHomeThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
+                params << Param(goeHomeThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
                 description.append(" - " + result.networkDeviceInfo.address().toString());
             } else {
                 description.append(" - " + result.address.toString());
@@ -95,8 +99,6 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
 
             qCDebug(dcGoECharger()) << "-->" << title << description;
             ThingDescriptor descriptor(goeHomeThingClassId, title, description);
-            ParamList params;
-            params << Param(goeHomeThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
             params << Param(goeHomeThingSerialNumberParamTypeId, result.serialNumber);
             params << Param(goeHomeThingApiVersionParamTypeId, result.apiAvailableV2 ? 2 : 1); // always use v2 if available...
             descriptor.setParams(params);
@@ -123,8 +125,12 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
     qCDebug(dcGoECharger()) << "Setting up" << thing << thing->params();
 
-    MacAddress macAddress = MacAddress(thing->paramValue(goeHomeThingMacAddressParamTypeId).toString());
-    if (!macAddress.isValid()) {
+
+    MacAddress macAddress(thing->paramValue(goeHomeThingMacAddressParamTypeId).toString());
+    QHostAddress address(thing->paramValue(goeHomeThingAddressParamTypeId).toString());
+    QString hostName(thing->paramValue(goeHomeThingHostNameParamTypeId).toString());
+
+    if (!macAddress.isValid() && address.isNull() && hostName.isEmpty()) {
         // ZeroConf
         QHostAddress address = getHostAddress(thing);
         if (address.isNull()) {
@@ -143,8 +149,9 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
 
         // Create the monitor
-        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
         m_monitors.insert(thing, monitor);
+
         QHostAddress address = getHostAddress(thing);
         if (address.isNull()) {
             qCWarning(dcGoECharger()) << "Cannot set up go-eCharger. The host address is not known yet. Maybe it will be available in the next run...";
@@ -222,7 +229,7 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
             setupGoeHome(info);
         } else {
             qCDebug(dcGoECharger()) << "Wait for the network monitor to get reachable";
-            connect(monitor, &NetworkDeviceMonitor::reachableChanged, info, [=](bool reachable){
+            connect(monitor, &NetworkDeviceMonitor::reachableChanged, info, [this, info](bool reachable){
                 if (reachable) {
                     setupGoeHome(info);
                 }
