@@ -34,14 +34,13 @@
 EverestClient::EverestClient(QObject *parent)
     : QObject{parent}
 {
-    m_client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300,
-                              QString(), QByteArray(), Mqtt::QoS0, false, this);
+    m_client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300, QString(), QByteArray(), Mqtt::QoS0, false, this);
 
     connect(m_client, &MqttClient::disconnected, this, [this](){
         qCDebug(dcEverest()) << "The MQTT client is now disconnected" << this;
-        if (!m_address.isNull()) {
+        if (m_monitor->reachable()) {
             // Start the reconnect timer
-            qCDebug(dcEverest()) << "Starting reconnect timer for mqtt connection to" << m_address.toString();
+            qCDebug(dcEverest()) << "Starting reconnect timer for mqtt connection to" << m_monitor->networkDeviceInfo().address().toString();
             m_reconnectTimer.start();
         }
     });
@@ -68,7 +67,7 @@ EverestClient::EverestClient(QObject *parent)
             return;
         }
 
-        m_client->connectToHost(m_address.toString(), m_port);
+        m_client->connectToHost(m_monitor->networkDeviceInfo().address().toString(), m_port);
     });
 }
 
@@ -123,26 +122,6 @@ Everest *EverestClient::getEverest(Thing *thing) const
     return m_everests.value(thing);
 }
 
-QHostAddress EverestClient::address() const
-{
-    return m_address;
-}
-
-void EverestClient::setAddress(const QHostAddress &address)
-{
-    m_address = address;
-}
-
-MacAddress EverestClient::macAddress() const
-{
-    return m_macAddress;
-}
-
-void EverestClient::setMacAddress(const MacAddress &macAddress)
-{
-    m_macAddress = macAddress;
-}
-
 NetworkDeviceMonitor *EverestClient::monitor() const
 {
     return m_monitor;
@@ -168,8 +147,8 @@ void EverestClient::start()
             m_client->connectToHost(m_monitor->networkDeviceInfo().address().toString(), m_port);
         }
     } else {
-        qCDebug(dcEverest()) << "Connecting MQTT client to" << m_address.toString();
-        m_client->connectToHost(m_address.toString(), m_port);
+        qCDebug(dcEverest()) << "Connecting MQTT client to" << m_monitor->networkDeviceInfo().address().toString();
+        m_client->connectToHost(m_monitor->networkDeviceInfo().address().toString(), m_port);
 
         // Note: on connected this will be stopped, otherwise we want the timer running
         m_reconnectTimer.start();
@@ -201,6 +180,8 @@ void EverestClient::onMonitorReachableChanged(bool reachable)
             m_client->disconnectFromHost();
 
         m_client->connectToHost(m_monitor->networkDeviceInfo().address().toString(), m_port);
+    } else {
+        m_reconnectTimer.stop();
     }
 }
 
@@ -208,11 +189,18 @@ QDebug operator<<(QDebug debug, EverestClient *everestClient)
 {
     QDebugStateSaver saver(debug);
     debug.nospace() << "EverestClient(";
-    if (everestClient->monitor()) {
-        debug.nospace() << everestClient->monitor()->networkDeviceInfo().macAddress() << ", ";
+    switch(everestClient->monitor()->monitorMode()) {
+    case NetworkDeviceInfo::MonitorModeMac:
+        debug.nospace() << everestClient->monitor()->networkDeviceInfo().macAddressInfos().constFirst() << ", ";
         debug.nospace() << everestClient->monitor()->networkDeviceInfo().address().toString() << ", ";
-    } else {
-        debug.nospace() << everestClient->address().toString() << ", ";
+        break;
+    case NetworkDeviceInfo::MonitorModeHostName:
+        debug.nospace() << everestClient->monitor()->networkDeviceInfo().hostName() << ", ";
+        debug.nospace() << everestClient->monitor()->networkDeviceInfo().address().toString() << ", ";
+        break;
+    case NetworkDeviceInfo::MonitorModeIp:
+        debug.nospace() << everestClient->monitor()->networkDeviceInfo().address().toString() << ", ";
+        break;
     }
 
     debug.nospace() << "MQTT connected: " << everestClient->client()->isConnected() << ")";

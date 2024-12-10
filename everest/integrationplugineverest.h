@@ -38,7 +38,7 @@
 
 #include <mqttclient.h>
 
-class IntegrationPluginTruffle: public IntegrationPlugin
+class IntegrationPluginEverest: public IntegrationPlugin
 {
     Q_OBJECT
 
@@ -46,7 +46,7 @@ class IntegrationPluginTruffle: public IntegrationPlugin
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginTruffle();
+    explicit IntegrationPluginEverest();
 
     void init() override;
     void startMonitoringAutoThings() override;

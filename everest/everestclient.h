@@ -59,12 +59,6 @@ public:
 
     Everest *getEverest(Thing *thing) const;
 
-    QHostAddress address() const;
-    void setAddress(const QHostAddress &address);
-
-    MacAddress macAddress() const;
-    void setMacAddress(const MacAddress &macAddress);
-
     NetworkDeviceMonitor *monitor() const;
     void setMonitor(NetworkDeviceMonitor *monitor);
 
@@ -83,12 +77,6 @@ private:
     bool m_running = false;
 
     QHash<Thing *, Everest *> m_everests;
-
-    // One of both must be defined, never both
-    QHostAddress m_address;
-    MacAddress m_macAddress;
-
-    // Available for mac based connections
     NetworkDeviceMonitor *m_monitor = nullptr;
 };
 
