@@ -14,13 +14,31 @@
                     "displayName": "Smart plug",
                     "createMethods": ["discovery"],
                     "setupMethod": "userandpassword",
-                    "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable" ],
+                    "interfaces": [ "powersocket", "smartmeterconsumer", "wirelessconnectable", "networkdevice"],
                     "paramTypes": [
                         {
                             "id": "1e273e10-3ea0-4337-a221-3b8e26c6e7dc",
                             "name":"macAddress",
                             "displayName": "MAC address",
-                            "type": "QString"
+                            "type": "QString",
+                            "inputType": "MacAddress",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e9a8097d-409b-4d2c-a4d5-86c5f4016b73",
+                            "name":"hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "7d2f1a1a-f26b-4ae4-820a-cbc381675f8b",
+                            "name":"address",
+                            "displayName": "IP address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
