@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -59,16 +59,44 @@ void IntegrationPluginMeross::discoverThings(ThingDiscoveryInfo *info)
         connect(reply, &NetworkDeviceDiscoveryReply::finished, info, [info, reply, this](){
         foreach (const NetworkDeviceInfo &deviceInfo, reply->networkDeviceInfos()) {
             qCDebug(dcMeross) << "Discovery result" << deviceInfo;
-            if (deviceInfo.hostName().toLower().startsWith("meross_smart_plug") || deviceInfo.macAddressManufacturer().toLower().contains("meross")) {
-                ThingDescriptor descriptor(plugThingClassId, "Meross Smart Plug", deviceInfo.macAddress());
-                descriptor.setParams({Param(plugThingMacAddressParamTypeId, deviceInfo.macAddress())});
+
+            bool macVendorMatches = false;
+            foreach (const MacAddressInfo &macInfo, deviceInfo.macAddressInfos()) {
+                if (macInfo.vendorName().toLower().contains("meross")) {
+                    macVendorMatches = true;
+                    break;
+                }
+            }
+
+            if (deviceInfo.hostName().toLower().startsWith("meross_smart_plug") || macVendorMatches) {
+
+                QString description;
+                switch (deviceInfo.monitorMode()) {
+                case NetworkDeviceInfo::MonitorModeMac:
+                    description = deviceInfo.macAddressInfos().constFirst().macAddress().toString();
+                    break;
+                case NetworkDeviceInfo::MonitorModeHostName:
+                    description = deviceInfo.hostName();
+                    break;
+                case NetworkDeviceInfo::MonitorModeIp:
+                    description = deviceInfo.address().toString();
+                    break;
+                }
+
+                ThingDescriptor descriptor(plugThingClassId, "Meross Smart Plug", description);
+
+                ParamList params;
+                params.append(Param(plugThingMacAddressParamTypeId, deviceInfo.thingParamValueMacAddress()));
+                params.append(Param(plugThingHostNameParamTypeId, deviceInfo.thingParamValueHostName()));
+                params.append(Param(plugThingAddressParamTypeId, deviceInfo.thingParamValueAddress()));
+                descriptor.setParams(params);
 
                 Thing *existingThing = myThings().findByParams(descriptor.params());
                 if (existingThing) {
-                    qCInfo(dcMeross) << "Existing smart plug discovered";
+                    qCInfo(dcMeross) << "Existing smart plug discovered" << existingThing;
                     descriptor.setThingId(existingThing->id());
                 } else {
-                    qCInfo(dcMeross) << "New smart plug discovered";
+                    qCInfo(dcMeross) << "New smart plug discovered" << deviceInfo;
                 }
 
                 info->addThingDescriptor(descriptor);
@@ -154,13 +182,13 @@ void IntegrationPluginMeross::setupThing(ThingSetupInfo *info)
     m_keys.insert(thing, pluginStorage()->value("key").toByteArray());
     pluginStorage()->endGroup();
 
-    NetworkDeviceMonitor *monitor = m_deviceMonitors.take(thing);
+    NetworkDeviceMonitor *monitor = m_monitors.take(thing);
     if (monitor) {
         hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
     }
 
-    monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(MacAddress(thing->paramValue(plugThingMacAddressParamTypeId).toString()));
-    m_deviceMonitors.insert(thing, monitor);
+    monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
+    m_monitors.insert(thing, monitor);
 
     pollDevice5s(thing);
     pollDevice60s(thing);
@@ -174,7 +202,7 @@ void IntegrationPluginMeross::postSetupThing(Thing */*thing*/)
         m_timer5s = hardwareManager()->pluginTimerManager()->registerTimer(5);
         connect(m_timer5s, &PluginTimer::timeout, this, [=](){
             foreach (Thing *thing, myThings()) {
-                if (m_deviceMonitors.value(thing)->reachable()) {
+                if (m_monitors.value(thing)->reachable()) {
                     pollDevice5s(thing);
                 }
             }
@@ -184,7 +212,7 @@ void IntegrationPluginMeross::postSetupThing(Thing */*thing*/)
         m_timer5s = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_timer5s, &PluginTimer::timeout, this, [=](){
             foreach (Thing *thing, myThings()) {
-                if (m_deviceMonitors.value(thing)->reachable()) {
+                if (m_monitors.value(thing)->reachable()) {
                     pollDevice60s(thing);
                 }
             }
@@ -194,7 +222,8 @@ void IntegrationPluginMeross::postSetupThing(Thing */*thing*/)
 
 void IntegrationPluginMeross::thingRemoved(Thing *thing)
 {
-    hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_deviceMonitors.take(thing));
+    if (m_monitors.contains(thing))
+        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
 
     if (myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer5s);
@@ -366,7 +395,7 @@ QNetworkReply* IntegrationPluginMeross::request(Thing *thing, const QString &nam
 
     QUrl url;
     url.setScheme("http");
-    url.setHost(m_deviceMonitors.value(thing)->networkDeviceInfo().address().toString());
+    url.setHost(m_monitors.value(thing)->networkDeviceInfo().address().toString());
     url.setPath("/config");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
