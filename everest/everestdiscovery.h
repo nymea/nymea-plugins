@@ -42,6 +42,7 @@ class EverestDiscovery : public QObject
     Q_OBJECT
 public:
     typedef struct Result {
+        QHostAddress address;
         QStringList connectors;
         NetworkDeviceInfo networkDeviceInfo;
     } Result;
@@ -49,7 +50,6 @@ public:
     explicit EverestDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
 
     void start();
-
     void startLocalhost();
 
     QList<EverestDiscovery::Result> results() const;
@@ -62,12 +62,13 @@ private:
     QDateTime m_startDateTime;
     QList<EverestDiscovery::Result> m_results;
     QList<MqttClient *> m_clients;
+    NetworkDeviceInfos m_networkDeviceInfos;
 
     bool m_localhostDiscovery = false;
 
     QString m_everestApiModuleTopicConnectors = "everest_api/connectors";
 
-    void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
+    void checkHostAddress(const QHostAddress &address);
     void cleanupClient(MqttClient *client);
     void finishDiscovery();
 };

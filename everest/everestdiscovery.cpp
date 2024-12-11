@@ -50,11 +50,11 @@ void EverestDiscovery::start()
 
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
 
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &EverestDiscovery::checkNetworkDevice);
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &EverestDiscovery::checkHostAddress);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-        qCDebug(dcEverest()) << "Discovery: Network discovery finished. Found"
-                             << discoveryReply->networkDeviceInfos().count() << "network devices";
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [discoveryReply, this](){
+        qCDebug(dcEverest()) << "Discovery: Network device discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
+        m_networkDeviceInfos = discoveryReply->networkDeviceInfos();
 
         // Give the last connections added right before the network discovery finished a chance to check the device...
         QTimer::singleShot(3000, this, [this](){
@@ -65,8 +65,7 @@ void EverestDiscovery::start()
 
     // For development, check local host
     NetworkDeviceInfo localHostInfo;
-    localHostInfo.setAddress(QHostAddress::LocalHost);
-    checkNetworkDevice(localHostInfo);
+    checkHostAddress(QHostAddress::LocalHost);
 }
 
 void EverestDiscovery::startLocalhost()
@@ -77,8 +76,7 @@ void EverestDiscovery::startLocalhost()
 
     // For development, check local host
     NetworkDeviceInfo localHostInfo;
-    localHostInfo.setAddress(QHostAddress::LocalHost);
-    checkNetworkDevice(localHostInfo);
+    checkHostAddress(QHostAddress::LocalHost);
 }
 
 QList<EverestDiscovery::Result> EverestDiscovery::results() const
@@ -86,7 +84,7 @@ QList<EverestDiscovery::Result> EverestDiscovery::results() const
     return m_results;
 }
 
-void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
+void EverestDiscovery::checkHostAddress(const QHostAddress &address)
 {
     MqttClient *client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300,
                                         QString(), QByteArray(), Mqtt::QoS0, false, this);
@@ -94,9 +92,9 @@ void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
 
     m_clients.append(client);
 
-    connect(client, &MqttClient::error, this, [this, client, networkDeviceInfo](QAbstractSocket::SocketError socketError){
+    connect(client, &MqttClient::error, this, [this, client, address](QAbstractSocket::SocketError socketError){
         qCDebug(dcEverest()) << "Discovery: MQTT client error occurred on"
-                             << networkDeviceInfo.address().toString() << socketError
+                             << address.toString() << socketError
                              << "...skip connection";
         // We give up on the first error here
         cleanupClient(client);
@@ -110,11 +108,11 @@ void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         cleanupClient(client);
     });
 
-    connect(client, &MqttClient::connected, this, [this, client, networkDeviceInfo](){
+    connect(client, &MqttClient::connected, this, [this, client, address](){
         // We found a mqtt server, let's check if we find everest_api module on it...
-        qCDebug(dcEverest()) << "Discovery: Successfully connected to host" << networkDeviceInfo;
+        qCDebug(dcEverest()) << "Discovery: Successfully connected to host" << address.toString();
 
-        connect(client, &MqttClient::publishReceived, client, [this, client, networkDeviceInfo]
+        connect(client, &MqttClient::publishReceived, client, [this, client, address]
                 (const QString &topic, const QByteArray &payload, bool retained) {
 
                     qCDebug(dcEverest()) << "Discovery: Received publish on" << topic
@@ -131,9 +129,9 @@ void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
                         }
 
                         QStringList connectors = jsonDoc.toVariant().toStringList();
-                        qCInfo(dcEverest()) << "Discovery: Found Everest on" << networkDeviceInfo << connectors;
+                        qCInfo(dcEverest()) << "Discovery: Found Everest on" << address.toString() << connectors;
                         Result result;
-                        result.networkDeviceInfo = networkDeviceInfo;
+                        result.address = address;
                         result.connectors = connectors;
                         m_results.append(result);
 
@@ -159,9 +157,10 @@ void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         // });
     });
 
-    qCDebug(dcEverest()) << "Discovery: Verifying host" << networkDeviceInfo;
-    client->connectToHost(networkDeviceInfo.address().toString(), 1883);
+    qCDebug(dcEverest()) << "Discovery: Verifying host" << address.toString();
+    client->connectToHost(address.toString(), 1883);
 }
+
 
 void EverestDiscovery::cleanupClient(MqttClient *client)
 {
@@ -185,6 +184,10 @@ void EverestDiscovery::finishDiscovery()
     // Cleanup any leftovers...we don't care any more
     foreach (MqttClient *client, m_clients)
         cleanupClient(client);
+
+    // Update results with final network device infos
+    for (int i = 0; i < m_results.count(); i++)
+        m_results[i].networkDeviceInfo = m_networkDeviceInfos.get(m_results.at(i).address);
 
     qCInfo(dcEverest()) << "Discovery: Finished the discovery process. Found"
                         << m_results.count() << "Everest instances in"
