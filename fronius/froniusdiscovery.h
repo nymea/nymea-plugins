@@ -59,9 +59,11 @@ private:
 
     QList<FroniusSolarConnection *> m_connections;
 
+    NetworkDeviceInfos m_networkDeviceInfos;
+    QList<QHostAddress> m_discoveredAddresses;
     QList<NetworkDeviceInfo> m_discoveryResults;
 
-    void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
+    void checkHostAddress(const QHostAddress &address);
     void cleanupConnection(FroniusSolarConnection *connection);
 
     void finishDiscovery();
