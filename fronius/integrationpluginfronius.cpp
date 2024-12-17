@@ -296,12 +296,12 @@ void IntegrationPluginFronius::executeAction(ThingActionInfo *info)
 void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connection)
 {
     if (connection->busy()) {
-        qCDebug(dcFronius()) << "Connection busy. Skipping refresh cycle for host" << connection->address().toString();
+        qCDebug(dcFronius()) << "The connection is busy. Skipping refresh cycle for host" << connection->address().toString();
         return;
     }
 
     if (connection->address().isNull()) {
-        qCDebug(dcFronius()) << "Connection has no IP configured yet. Skipping refresh cycle until known";
+        qCDebug(dcFronius()) << "The connection has no IP configured yet. Skipping refresh cycle until known";
         return;
     }
 
@@ -358,9 +358,8 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId.toInt());
                 connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError)
                         return;
-                    }
 
                     QByteArray data = realtimeDataReply->networkReply()->readAll();
 
@@ -414,9 +413,8 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId.toInt());
                 connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError)
                         return;
-                    }
 
                     QByteArray data = realtimeDataReply->networkReply()->readAll();
 
@@ -488,9 +486,8 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
     // to make sure the sum is correct. Battery seems to be feeded DC to DC before the AC power convertion
     FroniusNetworkReply *powerFlowReply = connection->getPowerFlowRealtimeData();
     connect(powerFlowReply, &FroniusNetworkReply::finished, this, [=]() {
-        if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError) {
+        if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError)
             return;
-        }
 
         QByteArray data = powerFlowReply->networkReply()->readAll();
 
@@ -547,8 +544,6 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
             qCDebug(dcFronius()) << "Using power flow grid power for the weak S0 meter" << gridPower << "House consumption" << dataMap.value("Site").toMap().value("P_Load").toDouble();
             meterThing->setStateValue(meterCurrentPowerStateTypeId, gridPower);
         }
-
-
     });
 }
 
@@ -563,10 +558,19 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
         FroniusNetworkReply *realtimeDataReply = connection->getInverterRealtimeData(inverterId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
-                // Thing does not seem to be reachable
-                markInverterAsDisconnected(inverterThing);
+                m_thingRequestErrorCounter[inverterThing] = m_thingRequestErrorCounter.value(inverterThing, 0) + 1;
+                if (m_thingRequestErrorCounter.value(inverterThing) >= m_thingRequestErrorCountLimit) {
+                    if (inverterThing->stateValue("connected").toBool()) {
+                        qCWarning(dcFronius()) << "The inverter" << inverterThing << "received" << m_thingRequestErrorCountLimit << "errors. Mark thing as offline";
+                    }
+                    // Thing does not seem to be reachable
+                    markInverterAsDisconnected(inverterThing);
+                }
                 return;
             }
+
+            // Reset the error counter on a successfull refresh
+            m_thingRequestErrorCounter[inverterThing] = 0;
 
             QByteArray data = realtimeDataReply->networkReply()->readAll();
 
@@ -627,10 +631,19 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
         FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
-                // Thing does not seem to be reachable
-                markMeterAsDisconnected(meterThing);
+                m_thingRequestErrorCounter[meterThing] = m_thingRequestErrorCounter.value(meterThing, 0) + 1;
+                if (m_thingRequestErrorCounter.value(meterThing) >= m_thingRequestErrorCountLimit) {
+                    if (meterThing->stateValue("connected").toBool()) {
+                        qCWarning(dcFronius()) << "The meter" << meterThing << "received" << m_thingRequestErrorCountLimit << "errors. Mark thing as offline";
+                    }
+                    // Thing does not seem to be reachable
+                    markMeterAsDisconnected(meterThing);
+                }
                 return;
             }
+
+            // Reset the error counter on a successfull refresh
+            m_thingRequestErrorCounter[meterThing] = 0;
 
             QByteArray data = realtimeDataReply->networkReply()->readAll();
 
@@ -664,7 +677,6 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
             } else {
                 m_weakMeterConnections[connection] = false;
             }
-
 
             // Power
             if (dataMap.contains("PowerReal_P_Sum")) {
@@ -735,6 +747,21 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
         // Get the storage realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
+            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+                m_thingRequestErrorCounter[storageThing] = m_thingRequestErrorCounter.value(storageThing, 0) + 1;
+                if (m_thingRequestErrorCounter.value(storageThing) >= m_thingRequestErrorCountLimit) {
+                    if (storageThing->stateValue("connected").toBool()) {
+                        qCWarning(dcFronius()) << "The storage" << storageThing << "received" << m_thingRequestErrorCountLimit << "errors. Mark thing as offline";
+                    }
+                    // Thing does not seem to be reachable
+                    markStorageAsDisconnected(storageThing);
+                }
+                return;
+            }
+
+            // Reset the error counter on a successfull refresh
+            m_thingRequestErrorCounter[storageThing] = 0;
+
             if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
                 // Thing does not seem to be reachable
                 markStorageAsDisconnected(storageThing);
