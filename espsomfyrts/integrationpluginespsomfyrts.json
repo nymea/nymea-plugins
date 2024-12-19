@@ -13,13 +13,32 @@
                     "displayName": "ESPSomfy-RTS",
                     "id": "9a477bbe-81f0-46ad-ae62-715c2bba2f1f",
                     "createMethods": ["Discovery", "User"],
-                    "interfaces": ["gateway", "wirelessconnectable" ],
+                    "interfaces": ["gateway", "wirelessconnectable", "networkdevice"],
                     "paramTypes": [
+                        {
+                            "id": "3e473059-dc06-4da6-93e5-b27db497a887",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6426dbbd-978f-4e69-bc07-2d35fd8be88b",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
                         {
                             "id": "0e30e30f-ad96-417e-b739-cac85f75de39",
                             "name":"macAddress",
                             "displayName": "MAC address",
-                            "type": "QString"
+                            "type": "QString",
+                            "inputType": "MacAddress",
+                            "readOnly": true,
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
