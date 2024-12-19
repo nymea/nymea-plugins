@@ -1,0 +1,13 @@
+{
+    "title": "ESPSOmfy-RTS",
+    "tagline": "Connect to ESP Somfy RTS device and control your shades",
+    "icon": "espsomfy-rts.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "appliance"
+    ]
+}
