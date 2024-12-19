@@ -95,6 +95,7 @@ public:
 
     explicit EspSomfyRts(NetworkDeviceMonitor *monitor, QObject *parent = nullptr);
 
+    NetworkDeviceMonitor *monitor() const;
     QHostAddress address() const;
 
     bool connected() const;
