@@ -47,7 +47,9 @@ IntegrationPluginKodi::IntegrationPluginKodi()
 
 IntegrationPluginKodi::~IntegrationPluginKodi()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+    if (m_pluginTimer)
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+
     delete m_serviceBrowser;
     delete m_httpServiceBrowser;
 }
