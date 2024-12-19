@@ -61,6 +61,9 @@ private:
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
     QHash<FroniusSolarConnection *, bool> m_weakMeterConnections;
 
+    QHash<Thing *, uint> m_thingRequestErrorCounter;
+    uint m_thingRequestErrorCountLimit = 3;
+
     void refreshConnection(FroniusSolarConnection *connection);
 
     void updatePowerFlow(FroniusSolarConnection *connection);

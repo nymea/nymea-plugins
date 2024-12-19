@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QQueue>
 #include <QHostAddress>
+#include <QNetworkAccessManager>
 
 #include <network/networkaccessmanager.h>
 
@@ -69,9 +70,26 @@ private:
 
     bool m_available = false;
 
+    // Fallback solution for dead nam requests, this happens on some platforms
+    // Note: we enable for now the custom network access manager
+    // Some fronius inverters keep the connection alive and get stuck somehow.
+    // In order to workaround this issue, we have to recreate the nam after each request.
+    // Stuff like disableing pipelining, queueing requests did not fix the issue, only
+    // destroying and re-creating the nam helped here. Current guess: the persistant TCP connection
+    // keeps some resources blocked. The issue is actually on the fronius webserver side, and just on some
+    // rare hardware so far.
+    QNetworkAccessManager *m_customNetworkManager = nullptr;
+    bool m_useCustomNetworkManager = true; // Force for now
+    uint m_errorOperationCanceledCount = 0;
+    uint m_errorOperationCanceledCountLimit = 3;
+    uint m_errorCount = 0;
+    uint m_errorCountLimit = 5;
+
     // Request queue to prevent overloading the device with requests
     FroniusNetworkReply *m_currentReply = nullptr;
     QQueue<FroniusNetworkReply *> m_requestQueue;
+
+    QNetworkRequest buildRequest(const QUrl &url);
 
     void sendNextRequest();
 
