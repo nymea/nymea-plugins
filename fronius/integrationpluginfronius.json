@@ -13,7 +13,7 @@
                     "name": "connection",
                     "displayName": "Fronius Solar",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["gateway"],
+                    "interfaces": ["gateway", "networkdevice"],
                     "providedInterfaces": ["energymeter", "solarinverter", "energystorage"],
                     "paramTypes": [
                         {
@@ -25,8 +25,15 @@
                             "defaultValue": ""
                         },
                         {
+                            "id": "05d05a5f-7da1-4198-b281-5199dc660acc",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
                             "id": "2237972e-385b-4458-b5d3-1d1fb4ae8756",
-                            "name": "mac",
+                            "name": "macAddress",
                             "displayName": "Mac address",
                             "type": "QString",
                             "readOnly": true,
