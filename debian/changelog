@@ -1,3 +1,27 @@
+nymea-plugins (1.11.0) jammy; urgency=medium
+
+  [ Michael Zanetti ]
+  * WIP: New Plugin: nymea owlets
+
+  [ Simon Stürz ]
+  * New plugin: ESP Somfy RTS
+  * go-E: Disable unsupported IPv6 discovery
+  * EVerest: Autosetup connectors on localhost
+  * Kodi: Fix unregister nonexisting plugin timer
+  * NetworkDetector: Update to networkdevice interface
+  * EVerest: Update to networkdevice interface
+  * Bosswerk: Update to networkdevice interface
+  * Fronius: Update to networkdevice interface
+  * go-eCharger: Update to networkdevice interface
+  * Keba: Update to networkdevice interface
+  * Meross: Update to networkdevice interface
+  * WakeOnLan: Update to new network device discovery
+  * Fronius: Improve connection handling and fix dead connection failing
+    …
+  * ESP Somfy RTS: Update to networkdevice interface
+
+ -- jenkins <developer@nymea.io>  Thu, 19 Dec 2024 20:43:15 +0100
+
 nymea-plugins (1.9.5) jammy; urgency=medium
 
   [ Simon Stürz ]
