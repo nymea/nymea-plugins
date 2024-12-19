@@ -77,6 +77,11 @@ Everest::~Everest()
     deinitialize();
 }
 
+Thing *Everest::thing() const
+{
+    return m_thing;
+}
+
 QString Everest::connector() const
 {
     return m_connector;
@@ -192,11 +197,13 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         */
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
+        uint maxCurrent = dataMap.value("max_current_A_import").toUInt();
+        uint minCurrent = dataMap.value("min_current_A_import").toUInt();
 
-        m_thing->setStateMaxValue(everestMaxChargingCurrentStateTypeId,
-                                  dataMap.value("max_current_A_import").toUInt());
-        m_thing->setStateMinValue(everestMaxChargingCurrentStateTypeId,
-                                  dataMap.value("min_current_A_import").toUInt());
+        m_thing->setStateMaxValue(everestMaxChargingCurrentStateTypeId, maxCurrent);
+        m_thing->setStateMinValue(everestMaxChargingCurrentStateTypeId, minCurrent == 0 ? 6 : minCurrent);
+
+        // FIXME: once we have a method for phase switching, we can re-enable the featre here
 
         // bool phaseSwitchingAvailable = dataMap.value("supports_changing_phases_during_charging", false).toBool();
         // if (!phaseSwitchingAvailable) {

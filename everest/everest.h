@@ -61,6 +61,8 @@ public:
     explicit Everest(MqttClient *client, Thing *thing, QObject *parent = nullptr);
     ~Everest();
 
+    Thing *thing() const;
+
     QString connector() const;
 
     void initialize();

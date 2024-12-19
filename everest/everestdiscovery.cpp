@@ -69,6 +69,18 @@ void EverestDiscovery::start()
     checkNetworkDevice(localHostInfo);
 }
 
+void EverestDiscovery::startLocalhost()
+{
+    qCInfo(dcEverest()) << "Discovery: Start discovering EVerest on localhost ...";
+    m_startDateTime = QDateTime::currentDateTime();
+    m_localhostDiscovery = true;
+
+    // For development, check local host
+    NetworkDeviceInfo localHostInfo;
+    localHostInfo.setAddress(QHostAddress::LocalHost);
+    checkNetworkDevice(localHostInfo);
+}
+
 QList<EverestDiscovery::Result> EverestDiscovery::results() const
 {
     return m_results;
@@ -88,6 +100,10 @@ void EverestDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
                              << "...skip connection";
         // We give up on the first error here
         cleanupClient(client);
+
+        if (m_localhostDiscovery) {
+            finishDiscovery();
+        }
     });
 
     connect(client, &MqttClient::disconnected, this, [this, client](){
@@ -156,6 +172,10 @@ void EverestDiscovery::cleanupClient(MqttClient *client)
 
     client->disconnectFromHost();
     client->deleteLater();
+
+    if (m_localhostDiscovery) {
+        finishDiscovery();
+    }
 }
 
 void EverestDiscovery::finishDiscovery()

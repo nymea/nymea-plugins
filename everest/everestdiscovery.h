@@ -50,6 +50,8 @@ public:
 
     void start();
 
+    void startLocalhost();
+
     QList<EverestDiscovery::Result> results() const;
 
 signals:
@@ -60,6 +62,8 @@ private:
     QDateTime m_startDateTime;
     QList<EverestDiscovery::Result> m_results;
     QList<MqttClient *> m_clients;
+
+    bool m_localhostDiscovery = false;
 
     QString m_everestApiModuleTopicConnectors = "everest_api/connectors";
 
