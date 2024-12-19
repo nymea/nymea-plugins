@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,6 +33,7 @@
 #include "plugininfo.h"
 
 #include <plugintimer.h>
+#include <types/param.h>
 #include <network/networkdevicediscovery.h>
 #include <network/networkaccessmanager.h>
 #include <network/networkdevicediscoveryreply.h>
@@ -50,10 +51,13 @@ IntegrationPluginBosswerk::IntegrationPluginBosswerk()
 
 IntegrationPluginBosswerk::~IntegrationPluginBosswerk()
 {
+
 }
 
 void IntegrationPluginBosswerk::discoverThings(ThingDiscoveryInfo *info)
-{    
+{
+    m_discoveryCache.clear();
+
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
 
     // This device doesn't give much information without login credentials. In order to identify it we'll
@@ -62,29 +66,45 @@ void IntegrationPluginBosswerk::discoverThings(ThingDiscoveryInfo *info)
     // If this proves to not be reliable enough, one more option would be to connect to TCP port 8899 which is open
     // and responds to a proprietary binary protocol which would need to be reverse engineered first.
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, info, [=](const NetworkDeviceInfo &networkDeviceInfo){
-        qCDebug(dcBosswerk()) << "Probing device" << networkDeviceInfo.address();
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, info, [this, info](const QHostAddress &address){
+        qCDebug(dcBosswerk()) << "Probing device" << address.toString();
 
-        QUrl url("http://" + networkDeviceInfo.address().toString() + "/status.html");
+        QUrl url("http://" + address.toString() + "/status.html");
         QNetworkRequest request(url);
 
         QNetworkReply *probeReply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
         connect(probeReply, &QNetworkReply::finished, probeReply, &QNetworkReply::deleteLater);
-        connect(probeReply, &QNetworkReply::finished, info, [=](){
+        connect(probeReply, &QNetworkReply::finished, info, [probeReply, address, this](){
             QByteArray data = probeReply->readAll();
-            qCDebug(dcBosswerk()) << "Probe reply from" << networkDeviceInfo.address() << ":" << probeReply->rawHeaderPairs() << data;
+            qCDebug(dcBosswerk()) << "Probe reply from" << address.toString() << ":" << probeReply->rawHeaderPairs() << data;
             if (probeReply->header(QNetworkRequest::ServerHeader) == "HTTPD" && data == "<HTML><HEAD><TITLE>401 Unauthorized</TITLE></HEAD>\n<BODY BGCOLOR=\"#cc9999\"><H4>401 Unauthorized</H4>\nAuthorization required.\n</BODY></HTML>\n") {
-                qCDebug(dcBosswerk()) << "Found bosswerk MI-300/600:" << networkDeviceInfo.address();
-
-                ThingDescriptor descriptor(mix00ThingClassId, "MI-300/600", networkDeviceInfo.hostName());
-                descriptor.setParams({Param(mix00ThingMacAddressParamTypeId, networkDeviceInfo.macAddress())});
-                Thing *existingThing = myThings().findByParams({Param(mix00ThingMacAddressParamTypeId, networkDeviceInfo.macAddress())});
-                if (existingThing) {
-                    descriptor.setThingId(existingThing->id());
-                }
-                info->addThingDescriptor(descriptor);
+                qCDebug(dcBosswerk()) << "Found bosswerk MI-300/600:" << address.toString();
+                // We get the discovery info once the network device discovery is finished.
+                m_discoveryCache.append(address);
             }
         });
+    });
+
+
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, info, [this, info, discoveryReply](){
+        foreach (const QHostAddress &address, m_discoveryCache) {
+
+            NetworkDeviceInfo networkDeviceInfo = discoveryReply->networkDeviceInfos().get(address);
+
+            ThingDescriptor descriptor(mix00ThingClassId, "MI-300/600", networkDeviceInfo.hostName());
+
+            ParamList params;
+            params.append(Param(mix00ThingMacAddressParamTypeId, networkDeviceInfo.thingParamValueMacAddress()));
+            params.append(Param(mix00ThingHostNameParamTypeId, networkDeviceInfo.thingParamValueHostName()));
+            params.append(Param(mix00ThingAddressParamTypeId, networkDeviceInfo.thingParamValueAddress()));
+
+            Thing *existingThing = myThings().findByParams(params);
+            if (existingThing)
+                descriptor.setThingId(existingThing->id());
+
+            info->addThingDescriptor(descriptor);
+        }
+        m_discoveryCache.clear();
     });
 
     QTimer *timeout = new QTimer(info);
@@ -101,17 +121,23 @@ void IntegrationPluginBosswerk::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginBosswerk::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-    MacAddress mac(info->params().paramValue(mix00ThingMacAddressParamTypeId).toString());
+    MacAddress macAddress(info->params().paramValue(mix00ThingMacAddressParamTypeId).toString());
+    QString hostName(info->params().paramValue(mix00ThingHostNameParamTypeId).toString());
+    QHostAddress address(info->params().paramValue(mix00ThingAddressParamTypeId).toString());
 
-    QHash<MacAddress, NetworkDeviceInfo> cache = hardwareManager()->networkDeviceDiscovery()->cache();
-
-    if (!cache.contains(mac)) {
-        qCWarning(dcBosswerk()) << "MAC" << mac << "not found in network device cache.";
+    NetworkDeviceInfos cache = hardwareManager()->networkDeviceDiscovery()->cache();
+    NetworkDeviceInfo networkDeviceInfo;
+    if (!macAddress.isNull()) {
+        networkDeviceInfo = cache.at(cache.indexFromMacAddress(macAddress).first());
+    } else if (!hostName.isEmpty()) {
+        networkDeviceInfo = cache.at(cache.indexFromHostName(hostName));
+    } else if (!address.isNull()) {
+        networkDeviceInfo = cache.get(address);
+    } else {
+        qCWarning(dcBosswerk()) << info->params() << "not found in network device cache.";
         info->finish(Thing::ThingErrorItemNotFound, QT_TR_NOOP("An error happened in the network communication."));
         return;
     }
-
-    NetworkDeviceInfo networkDeviceInfo = cache.value(mac);
 
     QUrl url("http://" + username + ":" + secret + "@" + networkDeviceInfo.address().toString() + "/status.html");
     QNetworkRequest request(url);
@@ -147,12 +173,13 @@ void IntegrationPluginBosswerk::setupThing(ThingSetupInfo *info)
     if (monitor) {
         hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(monitor);
     }
+
     PluginTimer *timer = m_timers.take(thing);
     if (timer) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(timer);
     }
 
-    monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(MacAddress(thing->paramValue(mix00ThingMacAddressParamTypeId).toString()));
+    monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
     m_deviceMonitors.insert(thing, monitor);
 
     timer = hardwareManager()->pluginTimerManager()->registerTimer(5);
@@ -208,7 +235,7 @@ void IntegrationPluginBosswerk::pollDevice(Thing *thing)
         }
         QByteArray data = statusReply->readAll();
 
-//        qCDebug(dcBosswerk) << "Status:" << qUtf8Printable(data);
+        //        qCDebug(dcBosswerk) << "Status:" << qUtf8Printable(data);
         foreach (const QString &line, QString(data).split("\n")) {
             if (line.startsWith("var ")) {
                 qCDebug(dcBosswerk()) << "Data line:" << line;
