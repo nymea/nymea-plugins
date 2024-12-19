@@ -1,3 +1,15 @@
+nymea-plugins (1.10.0) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * New plugin: ESP Somfy RTS
+  * go-E: Disable unsupported IPv6 discovery
+  * EVerest: Autosetup connectors on localhost
+  * Kodi: Fix unregister nonexisting plugin timer
+  * Fronius: Improve connection handling and fix dead connection failing
+    …
+
+ -- jenkins <developer@nymea.io>  Thu, 19 Dec 2024 13:49:37 +0100
+
 nymea-plugins (1.9.5) jammy; urgency=medium
 
   [ Simon Stürz ]
