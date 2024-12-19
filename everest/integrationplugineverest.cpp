@@ -34,17 +34,17 @@
 
 #include <network/networkdevicediscovery.h>
 
-IntegrationPluginTruffle::IntegrationPluginTruffle()
+IntegrationPluginEverest::IntegrationPluginEverest()
 {
 
 }
 
-void IntegrationPluginTruffle::init()
+void IntegrationPluginEverest::init()
 {
 
 }
 
-void IntegrationPluginTruffle::startMonitoringAutoThings()
+void IntegrationPluginEverest::startMonitoringAutoThings()
 {
     // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
     // Since this integration plugin is most luikly running on an EV charger running EVerest, the local instance should
@@ -108,7 +108,7 @@ void IntegrationPluginTruffle::startMonitoringAutoThings()
     discovery->startLocalhost();
 }
 
-void IntegrationPluginTruffle::discoverThings(ThingDiscoveryInfo *info)
+void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
 {
     qCDebug(dcEverest()) << "Start discovering Everest systems in the local network";
     if (!hardwareManager()->networkDeviceDiscovery()->available()) {
@@ -127,22 +127,36 @@ void IntegrationPluginTruffle::discoverThings(ThingDiscoveryInfo *info)
             foreach(const QString &connectorName, result.connectors) {
 
                 QString title = QString("Everest (%1)").arg(connectorName);
-                QString description = result.networkDeviceInfo.address().toString() +
-                                      " " + result.networkDeviceInfo.macAddress();
-                ThingDescriptor descriptor(everestThingClassId, title, description);
+                QString description;
+                MacAddressInfo macInfo;
 
+                switch (result.networkDeviceInfo.monitorMode()) {
+                case NetworkDeviceInfo::MonitorModeMac:
+                    macInfo = result.networkDeviceInfo.macAddressInfos().constFirst();
+                    description = result.networkDeviceInfo.address().toString();
+                    if (!macInfo.vendorName().isEmpty())
+                        description += " - " + result.networkDeviceInfo.macAddressInfos().constFirst().vendorName();
+
+                    break;
+                case NetworkDeviceInfo::MonitorModeHostName:
+                    description = result.networkDeviceInfo.address().toString();
+                    break;
+                case NetworkDeviceInfo::MonitorModeIp:
+                    description = "Interface: " +  result.networkDeviceInfo.networkInterface().name();
+                    break;
+                }
+
+                ThingDescriptor descriptor(everestThingClassId, title, description);
                 qCInfo(dcEverest()) << "Discovered -->" << title << description;
 
+                // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
+                // depending on the possibilities within this network. It is not recommended to fill in all information available.
+                // Only the information available depending on the monitor mode are relevant for the monitor.
                 ParamList params;
                 params.append(Param(everestThingConnectorParamTypeId, connectorName));
-
-                if (!MacAddress(result.networkDeviceInfo.macAddress()).isNull())
-                    params.append(Param(everestThingMacParamTypeId, result.networkDeviceInfo.macAddress()));
-
-                if (!result.networkDeviceInfo.address().isNull())
-                    params.append(Param(everestThingAddressParamTypeId,
-                                        result.networkDeviceInfo.address().toString()));
-
+                params.append(Param(everestThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
+                params.append(Param(everestThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
+                params.append(Param(everestThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
                 descriptor.setParams(params);
 
                 // Let's check if we aleardy have a thing with those params
@@ -179,77 +193,42 @@ void IntegrationPluginTruffle::discoverThings(ThingDiscoveryInfo *info)
     discovery->start();
 }
 
-void IntegrationPluginTruffle::setupThing(ThingSetupInfo *info)
+void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
     QHostAddress address(thing->paramValue(everestThingAddressParamTypeId).toString());
-    MacAddress macAddress(thing->paramValue(everestThingMacParamTypeId).toString());
+    MacAddress macAddress(thing->paramValue(everestThingMacAddressParamTypeId).toString());
+    QString hostName(thing->paramValue(everestThingHostNameParamTypeId).toString());
     QString connector(thing->paramValue(everestThingConnectorParamTypeId).toString());
 
-    if (!macAddress.isNull()) {
+    EverestClient *everstClient = nullptr;
 
-        qCInfo(dcEverest()) << "Setting up everest for" << macAddress.toString() << connector;
-
-        EverestClient *everstClient = nullptr;
-
-        foreach (EverestClient *ec, m_everstClients) {
-            if (ec->macAddress() == macAddress) {
-                // We have already a client for this host
-                qCDebug(dcEverest()) << "Using existing" << ec;
-                everstClient = ec;
-            }
+    foreach (EverestClient *ec, m_everstClients) {
+        if (ec->monitor()->macAddress() == macAddress &&
+            ec->monitor()->hostName() == hostName &&
+            ec->monitor()->address() == address) {
+            // We have already a client for this host
+            qCDebug(dcEverest()) << "Using existing" << ec;
+            everstClient = ec;
         }
-
-        if (!everstClient) {
-            qCDebug(dcEverest()) << "Creating new mac address based everst client";
-            everstClient = new EverestClient(this);
-            everstClient->setMacAddress(macAddress);
-            everstClient->setMonitor(hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress));
-            m_everstClients.append(everstClient);
-            everstClient->start();
-        }
-
-        everstClient->addThing(thing);
-        m_thingClients.insert(thing, everstClient);
-        info->finish(Thing::ThingErrorNoError);
-        return;
-
-    } else {
-
-        qCInfo(dcEverest()) << "Setting up IP based everest for" << address.toString() << connector;
-
-        EverestClient *everstClient = nullptr;
-
-        foreach (EverestClient *ec, m_everstClients) {
-
-            if (ec->address().isNull())
-                continue;
-
-            if (ec->address() == address) {
-                // We have already a client for this host
-                qCDebug(dcEverest()) << "Using existing" << ec;
-                everstClient = ec;
-                break;
-            }
-        }
-
-        if (!everstClient) {
-            qCDebug(dcEverest()) << "Creating new IP based everst client";
-            everstClient = new EverestClient(this);
-            everstClient->setAddress(address);
-            m_everstClients.append(everstClient);
-            everstClient->start();
-        }
-
-        everstClient->addThing(thing);
-        m_thingClients.insert(thing, everstClient);
-        info->finish(Thing::ThingErrorNoError);
-        return;
     }
+
+    if (!everstClient) {
+        everstClient = new EverestClient(this);
+        everstClient->setMonitor(hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing));
+        m_everstClients.append(everstClient);
+        qCDebug(dcEverest()) << "Created new" << everstClient;
+        everstClient->start();
+    }
+
+    everstClient->addThing(thing);
+    m_thingClients.insert(thing, everstClient);
+    info->finish(Thing::ThingErrorNoError);
+    return;
 }
 
-void IntegrationPluginTruffle::executeAction(ThingActionInfo *info)
+void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
 {
     qCDebug(dcEverest()) << "Executing action for thing" << info->thing()
     << info->action().actionTypeId().toString() << info->action().params();
@@ -298,7 +277,7 @@ void IntegrationPluginTruffle::executeAction(ThingActionInfo *info)
     info->finish(Thing::ThingErrorNoError);
 }
 
-void IntegrationPluginTruffle::thingRemoved(Thing *thing)
+void IntegrationPluginEverest::thingRemoved(Thing *thing)
 {
     qCDebug(dcEverest()) << "Remove thing" << thing;
     if (thing->thingClassId() == everestThingClassId) {
@@ -308,8 +287,16 @@ void IntegrationPluginTruffle::thingRemoved(Thing *thing)
             qCDebug(dcEverest()) << "Deleting" << everestClient << "since there is no thing left";
             // No more things related to this client, we can delete it
             m_everstClients.removeAll(everestClient);
+
+            // Unregister monitor
+            if (everestClient->monitor())
+                hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(everestClient->monitor());
+
+
             everestClient->deleteLater();
         }
+
+
     }
 }
 
