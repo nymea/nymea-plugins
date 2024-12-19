@@ -578,7 +578,7 @@ QHostAddress IntegrationPluginGoECharger::getHostAddress(Thing *thing)
         return m_monitors.value(thing)->networkDeviceInfo().address();
 
     foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
-        if (GoeDiscovery::isGoeCharger(serviceEntry)) {
+        if (GoeDiscovery::isGoeCharger(serviceEntry) && serviceEntry.protocol() == QAbstractSocket::IPv4Protocol) {
             QString serial = serviceEntry.txt("serial");
             if (thing->paramValue(goeHomeThingSerialNumberParamTypeId).toString() == serial) {
                 return serviceEntry.hostAddress();
@@ -1619,9 +1619,8 @@ void IntegrationPluginGoECharger::onConfigValueChanged(const ParamTypeId &paramT
 
 void IntegrationPluginGoECharger::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
 {
-    if (GoeDiscovery::isGoeCharger(serviceEntry)) {
+    if (GoeDiscovery::isGoeCharger(serviceEntry) && serviceEntry.protocol() == QAbstractSocket::IPv4Protocol) {
         qCDebug(dcGoECharger()) << "Found ZeroConf go-eCharger:" << serviceEntry;
-
     }
 }
 
