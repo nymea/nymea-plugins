@@ -49,6 +49,7 @@ class EverestClient : public QObject
     Q_OBJECT
 public:
     explicit EverestClient(QObject *parent = nullptr);
+    ~EverestClient();
 
     MqttClient *client() const;
 

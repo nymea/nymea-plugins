@@ -46,7 +46,66 @@ void IntegrationPluginTruffle::init()
 
 void IntegrationPluginTruffle::startMonitoringAutoThings()
 {
-    // TODO: auto setup everest instance running on localhost
+    // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
+    // Since this integration plugin is most luikly running on an EV charger running EVerest, the local instance should
+    // be set up automatically. Additional instances in the network can still be added by running a normal network discovery
+
+    EverestDiscovery *discovery = new EverestDiscovery(nullptr, this);
+    connect(discovery, &EverestDiscovery::finished, discovery, &EverestDiscovery::deleteLater);
+    connect(discovery, &EverestDiscovery::finished, this, [this, discovery](){
+
+        ThingDescriptors descriptors;
+
+        foreach (const EverestDiscovery::Result &result, discovery->results()) {
+
+            // Create one EV charger foreach available connector on that host
+            foreach(const QString &connectorName, result.connectors) {
+
+                QString title = QString("EVerest");
+                QString description = connectorName;
+                ThingDescriptor descriptor(everestThingClassId, title, description);
+
+                qCInfo(dcEverest()) << "Discovered -->" << title << description;
+
+                ParamList params;
+                params.append(Param(everestThingConnectorParamTypeId, connectorName));
+                params.append(Param(everestThingAddressParamTypeId, result.networkDeviceInfo.address().toString()));
+                descriptor.setParams(params);
+
+                // Let's check if we aleardy have a thing with those params
+                bool thingExists = true;
+                Thing *existingThing = nullptr;
+                foreach (Thing *thing, myThings()) {
+                    foreach(const Param &param, params) {
+                        if (param.value() != thing->paramValue(param.paramTypeId())) {
+                            thingExists = false;
+                            break;
+                        }
+                    }
+
+                    // The params are equal, we already have set up this thing
+                    if (thingExists) {
+                        existingThing = thing;
+                    }
+                }
+
+                // Add only connectors we don't have set up yet
+                if (existingThing) {
+                    qCDebug(dcEverest()) << "Discovered EVerest connector on localhost but we already set up this connector" << existingThing->name() << existingThing->params();
+                } else {
+                    qCDebug(dcEverest()) << "Adding new EVerest connector on localhost" << title << params;
+                    descriptors.append(descriptor);
+                }
+            }
+        }
+
+        if (!descriptors.isEmpty()) {
+            qCDebug(dcEverest()) << "Adding" << descriptors.count() << "new EVerest instances.";
+            emit autoThingsAppeared(descriptors);
+        }
+    });
+
+    discovery->startLocalhost();
 }
 
 void IntegrationPluginTruffle::discoverThings(ThingDiscoveryInfo *info)
