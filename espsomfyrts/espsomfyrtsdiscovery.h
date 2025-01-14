@@ -46,6 +46,7 @@ public:
     typedef struct Result {
         QString name;
         QString firmwareVersion;
+        QHostAddress address;
         NetworkDeviceInfo networkDeviceInfo;
     } Result;
 
@@ -63,9 +64,10 @@ private:
     QTimer m_gracePeriodTimer;
     QDateTime m_startDateTime;
 
+    NetworkDeviceInfos m_networkDeviceInfos;
     QList<EspSomfyRtsDiscovery::Result> m_results;
 
-    void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
+    void checkNetworkDevice(const QHostAddress &address);
 
     void finishDiscovery();
 };
