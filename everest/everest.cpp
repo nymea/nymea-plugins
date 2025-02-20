@@ -172,6 +172,10 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
 
     qCDebug(dcEverestTraffic()) << "Received publish on" << topic << qUtf8Printable(payload);
 
+    // During boot the API module publishes empty payloads
+    if (payload.isEmpty())
+        return;
+
     QJsonParseError jsonError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &jsonError);
     if (jsonError.error) {
@@ -224,7 +228,11 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         */
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         m_thing->setStateValue(everestPhaseCountStateTypeId, dataMap.value("nr_of_phases_available").toUInt());
-        m_thing->setStateValue(everestMaxChargingCurrentStateTypeId, dataMap.value("max_current").toUInt());
+        double maxCurrent = dataMap.value("max_current").toDouble();
+        if (maxCurrent >= 6) {
+            // FIXME: make it a double again once supported from the interface
+            m_thing->setStateValue(everestMaxChargingCurrentStateTypeId, qRound(maxCurrent));
+        }
 
     } else if (topic.endsWith("powermeter")) {
         /*
