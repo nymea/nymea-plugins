@@ -559,6 +559,23 @@ Description: nymea integration plugin for Solar-Log
  This package contains the nymea integration plugin for Solar-Log devices.
 
 
+Package: nymea-plugin-smartcar
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+         python3-setuptools,
+         python3-pip,
+Description: nymea.io plugin for smartcar
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Smartcar (see https://smartcar.com/).
+
+
 Package: nymea-plugin-tasmota
 Architecture: any
 Depends: ${shlibs:Depends},
