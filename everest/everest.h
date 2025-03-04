@@ -69,9 +69,12 @@ public:
     void deinitialize();
 
     void enableCharging(bool enable);
+
+    // Use only without phase switching
     void setMaxChargingCurrent(double current);
 
-signals:
+    // Use also for setting the charging current if phase switching is available
+    void setMaxChargingCurrentAndPhaseCount(uint phasesCount, double current);
 
 private slots:
     void onConnected();
