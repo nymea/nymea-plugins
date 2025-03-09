@@ -285,10 +285,19 @@ void IntegrationPluginTruffle::executeAction(ThingActionInfo *info)
             thing->setStateValue(everestPowerStateTypeId, power);
             info->finish(Thing::ThingErrorNoError);
         } else if (info->action().actionTypeId() == everestMaxChargingCurrentActionTypeId) {
+            // Note: once we support phase switching, we cannot use the
+            uint phaseCount = thing->stateValue(everestDesiredPhaseCountStateTypeId).toUInt();
             double current = info->action().paramValue(everestMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
-            qCDebug(dcEverest()) << "Setting max charging current to" << current << thing;
-            everest->setMaxChargingCurrent(current);
+            qCDebug(dcEverest()).nospace() << "Setting max charging current to " << current << "A (Phases: " << phaseCount << ") " << thing;
+            everest->setMaxChargingCurrentAndPhaseCount(phaseCount, current);
             thing->setStateValue(everestMaxChargingCurrentStateTypeId, current);
+            info->finish(Thing::ThingErrorNoError);
+        } else if (info->action().actionTypeId() == everestDesiredPhaseCountActionTypeId) {
+            uint phaseCount = info->action().paramValue(everestDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toUInt();
+            double current = thing->stateValue(everestMaxChargingCurrentStateTypeId).toDouble();
+            qCDebug(dcEverest()).nospace() << "Setting desired phase count to " << phaseCount << " (" << current << "A) " << thing;
+            everest->setMaxChargingCurrentAndPhaseCount(phaseCount, current);
+            thing->setStateValue(everestDesiredPhaseCountStateTypeId, phaseCount);
             info->finish(Thing::ThingErrorNoError);
         }
 
