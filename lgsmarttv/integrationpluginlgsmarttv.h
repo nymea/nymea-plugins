@@ -33,6 +33,7 @@
 
 #include "tvdevice.h"
 #include "plugintimer.h"
+#include "webosconnection.h"
 #include "integrations/integrationplugin.h"
 #include "network/upnp/upnpdevicedescriptor.h"
 
@@ -60,10 +61,15 @@ public:
 
     void executeAction(ThingActionInfo *info) override;
 
+    void browseThing(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Thing *> m_tvList;
     QHash<QString, QString> m_tvKeys;
+
+    QHash<WebosConnection *, Thing *> m_webosTvs;
 
     // update requests
     QHash<QNetworkReply *, Thing *> m_volumeInfoRequests;
@@ -72,6 +78,8 @@ private:
     void pairTvDevice(Thing *thing);
     void unpairTvDevice(Thing *thing);
     void refreshTv(Thing *thing);
+
+    void loadAppList(Thing *thing);
 
 private slots:
     void onPluginTimer();

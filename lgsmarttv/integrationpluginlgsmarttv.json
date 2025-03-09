@@ -14,41 +14,51 @@
                     "displayName": "LG Smart Tv",
                     "createMethods": [ "discovery" ],
                     "setupMethod": "displayPin",
-                    "interfaces": ["connectable"],
+                    "browsable": true,
+                    "interfaces": ["mediacontroller", "navigationpad", "volumecontroller", "connectable"],
                     "paramTypes": [
                         {
                             "id": "797a1915-cb85-400a-9c1a-db09c73b54d5",
                             "name": "name",
-                            "displayName": "name",
+                            "displayName": "Name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "0deec372-b955-49d2-9906-fc1a603dd637",
                             "name": "model",
-                            "displayName": "model",
+                            "displayName": "Model",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "0af152bb-8844-44d8-afee-d08bb0e28558",
                             "name": "uuid",
-                            "displayName": "uuid",
+                            "displayName": "UUID",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "9710c07c-0725-4099-bf73-2513efbc0872",
                             "name": "hostAddress",
-                            "displayName": "host address",
+                            "displayName": "Host address",
                             "type": "QString",
-                            "inputType": "IPv4Address"
+                            "inputType": "IPv4Address",
+                            "defaultValue": "127.0.0.1"
                         },
                         {
                             "id": "442abce0-16f9-4628-9534-e98e7f1c0a51",
                             "name": "port",
-                            "displayName": "port",
-                            "type": "int"
+                            "displayName": "Port",
+                            "type": "uint",
+                            "defaultValue": 8080
+                        },
+                        {
+                            "id": "2904dc2d-d734-4893-ab69-222cd7a5d147",
+                            "name": "eventHandlerPort",
+                            "displayName": "Event handler port",
+                            "type": "uint",
+                            "defaultValue": 9000
                         }
                     ],
                     "stateTypes": [
@@ -69,21 +79,24 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "07d39a6e-7eab-42d0-851d-9f3bcd3bbb57",
-                            "name": "tvVolumeLevel",
-                            "displayName": "volume",
-                            "displayNameEvent": "Volume changed",
-                            "type": "int",
-                            "unit": "Percentage",
-                            "defaultValue": 0
+                            "id": "e1ead9b0-2db5-41bd-aedb-b78a99235dde",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         },
                         {
-                            "id": "a6ac9061-3de7-403a-a646-790ca5d73764",
-                            "name": "tvMute",
-                            "displayNameEvent": "mute changed",
-                            "displayName": "mute",
-                            "type": "bool",
-                            "defaultValue": false
+                            "id": "597f9e07-108e-4345-80ab-1842bcb40666",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "name": "volumeLevel",
+                            "type": "int",
+                            "defaultValue": 10
                         },
                         {
                             "id": "84c86670-77c7-4fc6-9e23-abca066e76aa",
@@ -137,73 +150,87 @@
                     "actionTypes": [
                         {
                             "id": "ac5d7dcd-dfe8-4a94-9ab9-21b3f804b39e",
-                            "name": "commandVolumeUp",
-                            "displayName": "volume up"
+                            "name": "increaseVolume",
+                            "displayName": "Volume +"
                         },
                         {
                             "id": "62b17bec-f461-4ffa-93d1-67a9430d55e1",
-                            "name": "commandVolumeDown",
-                            "displayName": "volume down"
-                        },
-                        {
-                            "id": "1aa9d7f0-0f66-4b90-bb72-f6b7b2118221",
-                            "name": "commandMute",
-                            "displayName": "mute"
-                        },
-                        {
-                            "id": "b7e31999-ba67-443d-8e5c-ec104af987bd",
-                            "name": "commandUnmute",
-                            "displayName": "unmute"
+                            "name": "decreaseVolume",
+                            "displayName": "Volume -"
                         },
                         {
                             "id": "acd1f6a0-2cfa-4665-9607-cf94245ec5a3",
                             "name": "commandChannelUp",
-                            "displayName": "channel up"
+                            "displayName": "Channel up"
                         },
                         {
                             "id": "6ea66772-0e6d-40b1-978c-a01fb53871dd",
                             "name": "commandChannelDown",
-                            "displayName": "channel down"
+                            "displayName": "Channel down"
                         },
                         {
                             "id": "cbe41134-ff11-4916-815b-3ac289c64090",
                             "name": "commandPowerOff",
-                            "displayName": "power off"
+                            "displayName": "Power off"
                         },
                         {
-                            "id": "57c483b4-4ddf-4470-828c-8d8767e7a923",
-                            "name": "commandArrowUp",
-                            "displayName": "arrow up"
+                            "id": "193f80bf-3c9a-47a4-b54e-7cecf0bf0f45",
+                            "name": "navigate",
+                            "displayName": "Navigate",
+                            "paramTypes": [
+                                {
+                                    "id": "93861dac-0c24-4a3b-903d-d1be44eae611",
+                                    "name": "to",
+                                    "displayName": "to",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "up",
+                                        "down",
+                                        "left",
+                                        "right",
+                                        "enter",
+                                        "back",
+                                        "menu",
+                                        "info",
+                                        "home"
+                                    ]
+                                }
+                            ]
                         },
                         {
-                            "id": "614cf1af-5cf7-4bb2-885c-4414078d8899",
-                            "name": "commandArrowDown",
-                            "displayName": "arrow down"
+                            "id": "2c1e07e1-198a-45f4-9c58-2c5e31290262",
+                            "name": "skipBack",
+                            "displayName": "skip back"
                         },
                         {
-                            "id": "916394dd-7833-4875-8d7a-49d7d24ceeb2",
-                            "name": "commandArrowLeft",
-                            "displayName": "arrow left"
+                            "id": "db984804-acad-4905-bc89-9ebcdf64478e",
+                            "name": "fastRewind",
+                            "displayName": "rewind"
                         },
                         {
-                            "id": "01e3df1e-638b-4e14-ba85-660267766062",
-                            "name": "commandArrowRight",
-                            "displayName": "arrow right"
+                            "id": "590c0f43-be86-4692-9b89-13730e71bed4",
+                            "name": "stop",
+                            "displayName": "stop"
                         },
                         {
-                            "id": "257dfa59-0d38-4e18-a3fc-213809fdb12f",
-                            "name": "commandOk",
-                            "displayName": "OK"
+                            "id": "17f5c9d4-e060-4daa-a039-3cd7eb6ef8bf",
+                            "name": "play",
+                            "displayName": "play"
                         },
                         {
-                            "id": "ce4184b3-6b8e-4fc3-a4cb-7b8ec72f2ce9",
-                            "name": "commandBack",
-                            "displayName": "back"
+                            "id": "6360fe9e-00c6-4d32-bcfc-69b5b5d85f8b",
+                            "name": "pause",
+                            "displayName": "pause"
                         },
                         {
-                            "id": "33f941c1-f5fc-4449-b6e3-93eafca493e0",
-                            "name": "commandHome",
-                            "displayName": "home"
+                            "id": "48c7afb6-8252-4c11-aff9-e4e4954b2d30",
+                            "name": "fastForward",
+                            "displayName": "fastForward"
+                        },
+                        {
+                            "id": "353ad30a-25b7-4ae9-b47b-057bf101f8d1",
+                            "name": "skipNext",
+                            "displayName": "skipNext"
                         },
                         {
                             "id": "9a6e5111-95d3-49ac-8056-249e704b1509",
@@ -216,11 +243,6 @@
                             "displayName": "exit"
                         },
                         {
-                            "id": "9c1290d5-3135-4124-a576-fc7522cffdcf",
-                            "name": "commandInfo",
-                            "displayName": "info"
-                        },
-                        {
                             "id": "47d65cac-fe75-4c36-9dee-9862c1c1130e",
                             "name": "commandMyApps",
                             "displayName": "my apps"
@@ -229,6 +251,99 @@
                             "id": "9aa3a97e-505d-4906-9764-14b6dc4e31e8",
                             "name": "commandProgramList",
                             "displayName": "program list"
+                        }
+                    ]
+                },
+                {
+                    "id": "5203755d-1560-4d43-bc19-5375d37be8be",
+                    "name": "webosTv",
+                    "displayName": "LG WebOS Smart Tv",
+                    "createMethods": [ "Discovery" ],
+                    "setupMethod": "PushButton",
+                    "interfaces": [ "volumecontroller", "mediacontroller", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "adebba0c-ac7b-4b6a-8668-307f44dbe5bf",
+                            "name": "hostAddress",
+                            "displayName": "host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address"
+                        },
+                        {
+                            "id": "e367fa30-13c9-4380-b25c-489ac8bc98bb",
+                            "name": "apiKey",
+                            "displayName": "API key",
+                            "type": "QString",
+                            "inputType": "Password"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a0304262-1054-4a18-ac9a-4462910c4133",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8e49fe17-617d-4d2e-bf36-0a05e5687887",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "40551b26-a7b2-4d02-ab22-fa6a9c731c4f",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "name": "volume",
+                            "type": "int",
+                            "defaultValue": 10,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "ff814f79-5c79-4346-94fa-4da1a6f95c82",
+                            "displayName": "Volume +",
+                            "name": "increaseVolume"
+                        },
+                        {
+                            "id": "360326c4-c6c3-4304-b539-aca08f711c8a",
+                            "displayName": "Volume -",
+                            "name": "decreaseVolume"
+                        },
+                        {
+                            "id": "35cdb587-956a-4310-8e4c-85fdc240943e",
+                            "displayName": "Skip back",
+                            "name": "skipBack"
+                        },
+                        {
+                            "id": "04bb9eca-2ac5-4a49-a10b-1f10d612e394",
+                            "displayName": "Stop",
+                            "name": "stop"
+                        },
+                        {
+                            "id": "5ded6518-c5f6-4043-9a4b-bf838c2029e4",
+                            "displayName": "Play",
+                            "name": "play"
+                        },
+                        {
+                            "id": "9e6b2085-cef8-4c23-ae1a-c48cb359bccb",
+                            "displayName": "Pause",
+                            "name": "pause"
+                        },
+                        {
+                            "id": "3a922eee-832f-4e8c-b13b-00fb788ac8be",
+                            "displayName": "SkipNext",
+                            "name": "skipNext"
                         }
                     ]
                 }
