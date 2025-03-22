@@ -14,7 +14,7 @@
                     "id": "11295990-7002-432e-b90c-cd4010548a32",
                     "setupMethod": "JustAdd",
                     "createMethods": ["User"],
-                    "interfaces": ["energystorage", "connectable"],
+                    "interfaces": ["v2xeenergymeter", "connectable"],
                     "paramTypes": [
                     {
                         "id": "fc899f7b-f452-44dc-b72e-ee7bb8034ff0",
@@ -60,14 +60,14 @@
                     },
                     {
                         "id": "6e8d3fcd-c235-4793-95b5-321ca6e012a3",
-                        "name": "price",
+                        "name": "forecastprice",
                         "displayName": "Feedin Price",
-                        "displayNameEvent": "AveragePrice_changed",
+                        "displayNameEvent": "forecastPrice_changed",
                         "type": "double",
                         "minValue": 0,
-                        "maxValue": 100,
-                        "defaultValue": 100,
-                        "unit": "EuroCentPerKiloWattHour",
+                        "maxValue": 1000,
+                        "defaultValue": 0,
+                        "unit": "KiloWattHour",
                         "suggestLogging": true
                     },
                     {
@@ -78,7 +78,7 @@
                         "type": "double",
                         "minValue": 0,
                         "maxValue": 1000,
-                         "unit":"EuroCentPerKiloWattHour",
+                        "unit":"KiloWattHour",
                         "defaultValue": 0,
                         "suggestLogging": true
                     },
@@ -90,7 +90,7 @@
                         "type": "double",
                         "minValue": 0,
                         "maxValue": 1000,
-                         "unit":"EuroCentPerKiloWattHour",
+                         "unit":"KiloWattHour",
                         "defaultValue": 0,
                         "suggestLogging": true
                     },
@@ -102,67 +102,9 @@
                         "type": "double",
                         "minValue": 0,
                         "maxValue": 1000,
-                         "unit":"EuroCentPerKiloWattHour",
+                         "unit":"KiloWattHour",
                         "defaultValue": 0,
                         "suggestLogging": true
-                    },
-                    {
-                        "id": "690d562e-a75d-4da9-940f-e1908544dbae",
-                        "name": "chargingState",
-                        "displayName": "Charging state",
-                        "displayNameEvent": "Charging state changed",
-                        "type": "QString",
-                        "possibleValues": ["idle", "charging", "discharging"],
-                        "defaultValue": "idle"
-                    },
-                    {
-                        "id": "d5ce4925-49e5-49b6-88d8-6e3889080be2",
-                        "name": "currentPower",
-                        "displayName": "Current power",
-                        "displayNameEvent": "Current power changed",
-                        "type": "double",
-                        "unit": "Watt",
-                        "defaultValue": 0,
-                        "cached": false,
-                        "suggestLogging": true
-                    },
-                    {
-                        "id": "420d2e55-afeb-4a83-b67a-e3c0a86ecc02",
-                        "name": "capacity",
-                        "displayName": "Capacity",
-                        "displayNameEvent": "Capacity changed",
-                        "type": "double",
-                        "unit": "KiloWattHour",
-                        "defaultValue": 0
-                    },
-                    {
-                        "id": "df196e56-f33a-4883-a9b4-345dab2bac95",
-                        "name": "batteryLevel",
-                        "displayName": "Battery level",
-                        "displayNameEvent": "Battery level changed",
-                        "type": "int",
-                        "unit": "Percentage",
-                        "defaultValue": "0",
-                        "minValue": 0,
-                        "maxValue": 100
-                    },
-                    {
-                        "id": "6225b633-b159-4794-9e54-84912049fd32",
-                        "name": "cellTemperature",
-                        "displayName": "Cell temperature",
-                        "displayNameEvent": "Cell temperature changed",
-                        "type": "double",
-                        "unit": "DegreeCelsius",
-                        "defaultValue": "0",
-                        "cached": false
-                    },
-                    {
-                        "id": "20410ff8-b9aa-4b63-a091-c3636278718e",
-                        "name": "batteryCritical",
-                        "displayName": "Battery level critical",
-                        "displayNameEvent": "Battery level critical changed",
-                        "type": "bool",
-                        "defaultValue": false
                     }
 
                 ]
