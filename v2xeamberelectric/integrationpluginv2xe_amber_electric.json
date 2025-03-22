@@ -1,0 +1,176 @@
+{
+    "name": "Amber_Electric_plgn",
+    "displayName": "Amber_Electric_plgn",
+    "id": "0233c848-6f6f-4907-a51c-81391e4f5356",
+    "vendors": [
+        {
+            "name": "Amber_Electric",
+            "displayName": "Amber_Electric",
+            "id": "ec1985b9-5891-435d-9264-e8e18d392978",
+            "thingClasses": [
+                {
+                    "name": "V2Xe_Amber_Electric",
+                    "displayName": "V2Xe_Amber_Electric",
+                    "id": "11295990-7002-432e-b90c-cd4010548a32",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": ["energystorage", "connectable"],
+                    "paramTypes": [
+                    {
+                        "id": "fc899f7b-f452-44dc-b72e-ee7bb8034ff0",
+                        "name": "auth_token",
+                        "displayName": "auth_token",
+                        "type" : "QString",
+                        "defaultValue": ""
+                    },
+                    {
+                        "id": "c50eac84-714e-4b9c-89d5-0b939b6c18d6",
+                        "name": "crnt_site",
+                        "displayName": "current_site",
+                        "type" : "QString",
+                        "defaultValue": ""
+                    }
+                    ],
+                    "stateTypes": [
+                    {
+                        "id": "faf2a6c0-1897-4b9b-903a-e12b281efe24",
+                        "name": "connected",
+                        "displayName": "Reachable",
+                        "displayNameEvent": "Reachable changed",
+                        "type": "bool",
+                        "defaultValue": false,
+                        "cached": false
+                    },
+                    {
+                        "id": "42c8a6f8-4f97-4871-8bfb-ac7e6ffffa74",
+                        "name": "Sites",
+                        "displayName": "Sites",
+                        "displayNameEvent": "Sites_list_updated",
+                        "type": "QString",
+                        "writable": false,
+                        "defaultValue": ""
+                    },
+                    {
+                        "id": "27c3f8e0-0803-4eb8-ba4f-ce78fb0997a9",
+                        "name": "Type",
+                        "displayName": "type",
+                        "displayNameEvent": "type_evnet",
+                        "type": "QString",
+                        "defaultValue": "Amber"
+                    },
+                    {
+                        "id": "6e8d3fcd-c235-4793-95b5-321ca6e012a3",
+                        "name": "price",
+                        "displayName": "Feedin Price",
+                        "displayNameEvent": "AveragePrice_changed",
+                        "type": "double",
+                        "minValue": 0,
+                        "maxValue": 100,
+                        "defaultValue": 100,
+                        "unit": "EuroCentPerKiloWattHour",
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "a25d3b55-9b93-4465-90e3-5d36adb8fb23",
+                        "name": "currentprice",
+                        "displayName": "Current Price",
+                        "displayNameEvent": "currentPrice_changed",
+                        "type": "double",
+                        "minValue": 0,
+                        "maxValue": 1000,
+                         "unit":"EuroCentPerKiloWattHour",
+                        "defaultValue": 0,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "cd1e22b2-2154-453a-bbdf-59156893258a",
+                        "name": "currentfeedin",
+                        "displayName": "Current Feedin",
+                        "displayNameEvent": "currentfeedinPrice changed",
+                        "type": "double",
+                        "minValue": 0,
+                        "maxValue": 1000,
+                         "unit":"EuroCentPerKiloWattHour",
+                        "defaultValue": 0,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "52188fdf-4a4d-4ca8-b02e-cea5ed8c1615",
+                        "name": "futurefeedin",
+                        "displayName": "Future Feedin",
+                        "displayNameEvent": "futurefeedinPrice changed",
+                        "type": "double",
+                        "minValue": 0,
+                        "maxValue": 1000,
+                         "unit":"EuroCentPerKiloWattHour",
+                        "defaultValue": 0,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "690d562e-a75d-4da9-940f-e1908544dbae",
+                        "name": "chargingState",
+                        "displayName": "Charging state",
+                        "displayNameEvent": "Charging state changed",
+                        "type": "QString",
+                        "possibleValues": ["idle", "charging", "discharging"],
+                        "defaultValue": "idle"
+                    },
+                    {
+                        "id": "d5ce4925-49e5-49b6-88d8-6e3889080be2",
+                        "name": "currentPower",
+                        "displayName": "Current power",
+                        "displayNameEvent": "Current power changed",
+                        "type": "double",
+                        "unit": "Watt",
+                        "defaultValue": 0,
+                        "cached": false,
+                        "suggestLogging": true
+                    },
+                    {
+                        "id": "420d2e55-afeb-4a83-b67a-e3c0a86ecc02",
+                        "name": "capacity",
+                        "displayName": "Capacity",
+                        "displayNameEvent": "Capacity changed",
+                        "type": "double",
+                        "unit": "KiloWattHour",
+                        "defaultValue": 0
+                    },
+                    {
+                        "id": "df196e56-f33a-4883-a9b4-345dab2bac95",
+                        "name": "batteryLevel",
+                        "displayName": "Battery level",
+                        "displayNameEvent": "Battery level changed",
+                        "type": "int",
+                        "unit": "Percentage",
+                        "defaultValue": "0",
+                        "minValue": 0,
+                        "maxValue": 100
+                    },
+                    {
+                        "id": "6225b633-b159-4794-9e54-84912049fd32",
+                        "name": "cellTemperature",
+                        "displayName": "Cell temperature",
+                        "displayNameEvent": "Cell temperature changed",
+                        "type": "double",
+                        "unit": "DegreeCelsius",
+                        "defaultValue": "0",
+                        "cached": false
+                    },
+                    {
+                        "id": "20410ff8-b9aa-4b63-a091-c3636278718e",
+                        "name": "batteryCritical",
+                        "displayName": "Battery level critical",
+                        "displayNameEvent": "Battery level critical changed",
+                        "type": "bool",
+                        "defaultValue": false
+                    }
+
+                ]
+              }
+           ]
+        }
+    ]
+}
+
+
+
