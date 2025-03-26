@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -43,67 +43,74 @@ IntegrationPluginTado::IntegrationPluginTado()
 
 }
 
-void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
+void IntegrationPluginTado::init()
 {
-    qCDebug(dcTado()) << "Start pairing process, checking the internet connection ...";
-    NetworkAccessManager *network = hardwareManager()->networkManager();
-    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://my.tado.com/api/v2")));
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [reply, info] {
 
-        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
-            qCWarning(dcTado()) << "Tado server is not reachable, likely because of a missing internet connection.";
-            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Tado server is not reachable."));
-        } else {
-            qCDebug(dcTado()) << "Internet connection available";
-            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Tado account."));
-        }
-    });
 }
 
-void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
+void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 {
-    qCDebug(dcTado()) << "Confirm pairing" << username << "Network manager available" << hardwareManager()->networkManager()->available();
-    Tado *tado = new Tado(hardwareManager()->networkManager(), username, this);
+    qCDebug(dcTado()) << "Start pairing process ...";
+
+    Tado *tado = new Tado(hardwareManager()->networkManager(), this);
     m_unfinishedTadoAccounts.insert(info->thingId(), tado);
 
     connect(info, &ThingPairingInfo::aborted, this, [info, tado, this]() {
-        qCWarning(dcTado()) << "Thing pairing has been aborted, going to clean-up";
+        qCWarning(dcTado()) << "Thing pairing has been aborted, cleaning up...";
         m_unfinishedTadoAccounts.remove(info->thingId());
         tado->deleteLater();
     });
 
+    connect(tado, &Tado::getLoginUrlFinished, info, [info, tado, this] (bool success) {
+        if (!success) {
+            info->finish(Thing::ThingErrorAuthenticationFailure);
+            return;
+        }
+
+        connect(info, &ThingPairingInfo::aborted, tado, [info, this]() {
+            qCWarning(dcTado()) << "ThingPairingInfo aborted, cleaning up pending setup connection.";
+            m_unfinishedTadoAccounts.take(info->thingId())->deleteLater();
+        });
+
+
+
+        qCDebug(dcTado()) << "Tado server is reachable. Starting the OAuth pairing process using" << tado->loginUrl();
+        info->setOAuthUrl(QUrl(tado->loginUrl()));
+        info->finish(Thing::ThingErrorNoError);
+    });
+
+    tado->getLoginUrl();
+}
+
+void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
+{
+    Q_UNUSED(username)
+
+    qCDebug(dcTado()) << "Confirm pairing" << password;
+    Tado *tado = m_unfinishedTadoAccounts.value(info->thingId());
+
     connect(tado, &Tado::connectionError, info, [info] (QNetworkReply::NetworkError error){
-
-        if (error == QNetworkReply::NetworkError::ProtocolInvalidOperationError) {
-            qCWarning(dcTado()) << "Confirm pairing failed, wrong username or password";
-            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Wrong username or password."));
-        } else if (error != QNetworkReply::NetworkError::NoError){
+        if (error != QNetworkReply::NetworkError::NoError){
             qCWarning(dcTado()) << "Confirm pairing failed" << error;
-            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Connection error"));
-        }
-        // info->finish(success) will be called after the token has been received
-    });
-
-    connect(tado, &Tado::apiCredentialsReceived, info, [info, password, tado] (bool success) {
-        if (success) {
-            tado->getToken(password);
-        } else {
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials not found, the plug-in version might be outdated."));
+            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("A connection error occurred."));
         }
     });
 
-    connect(tado, &Tado::tokenReceived, info, [this, info, username, password](Tado::Token token) {
-        Q_UNUSED(token)
+    connect(tado, &Tado::startAuthenticationFinished, info, [info, tado, this](bool success) {
+        if (!success) {
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Failed to authenticate with tado server."));
+            return;
+        }
 
+        qCDebug(dcTado()) << "Authentication finished successfully.";
         pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("username", username);
-        pluginStorage()->setValue("password", password);
+        pluginStorage()->setValue("refreshToken", tado->refreshToken());
         pluginStorage()->endGroup();
 
         info->finish(Thing::ThingErrorNoError);
     });
-    tado->getApiCredentials();
+
+    tado->startAuthentication();
 }
 
 void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
@@ -112,8 +119,9 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == tadoAccountThingClassId) {
 
-        qCDebug(dcTado) << "Setup Tado account" << thing->name() << thing->params();
-        Tado *tado;
+        qCDebug(dcTado) << "Setting up Tado account" << thing->name() << thing->params();
+
+        Tado *tado = nullptr;
 
         if (m_tadoAccounts.contains(thing->id())) {
             qCDebug(dcTado()) << "Setup after reconfigure, cleaning up";
@@ -125,51 +133,65 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             tado = m_unfinishedTadoAccounts.take(thing->id());
             m_tadoAccounts.insert(thing->id(), tado);
             info->finish(Thing::ThingErrorNoError);
-        } else {
+
             pluginStorage()->beginGroup(thing->id().toString());
-            QString username = pluginStorage()->value("username").toString();
-            QString password = pluginStorage()->value("password").toString();
+            pluginStorage()->setValue("refreshToken", tado->refreshToken());
+            pluginStorage()->endGroup();
+        } else {
+
+            // Load refresh token
+            pluginStorage()->beginGroup(thing->id().toString());
+            QString refreshToken = pluginStorage()->value("refreshToken").toString();
+            qCDebug(dcTado()) << "Loaded refresh token" << refreshToken;
             pluginStorage()->endGroup();
 
-            tado = new Tado(hardwareManager()->networkManager(), username, this);
+            if (refreshToken.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Could not authenticate on the server. Please reconfigure the connection."));
+                return;
+            }
+
+            tado = new Tado(hardwareManager()->networkManager(), this);
             m_tadoAccounts.insert(thing->id(), tado);
-            connect(info, &ThingSetupInfo::aborted, [info, this] {
+            tado->setRefreshToken(refreshToken);
+        }
+
+        // Delete any leftover username password from deprecated password grant flow,
+        // storing passwords in plaintext does not correspond to good manners
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->remove("username");
+        pluginStorage()->remove("password");
+        pluginStorage()->endGroup();
+
+        connect(info, &ThingSetupInfo::aborted, this, [info, this] {
+            if (m_tadoAccounts.contains(info->thing()->id())) {
+                m_tadoAccounts.take(info->thing()->id())->deleteLater();
+            }
+        });
+
+        connect(tado, &Tado::refreshTokenReceived, this, [thing, this](const QString &refreshToken){
+            pluginStorage()->beginGroup(thing->id().toString());
+            pluginStorage()->setValue("refreshToken", refreshToken);
+            pluginStorage()->endGroup();
+        });
+
+        connect(tado, &Tado::accessTokenReceived, info, [info]() {
+            qCDebug(dcTado()) << "Token received, account setup successfull";
+            info->finish(Thing::ThingErrorNoError);
+        });
+
+        connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error) {
+            if (error != QNetworkReply::NetworkError::NoError){
                 if (m_tadoAccounts.contains(info->thing()->id())) {
                     Tado *tado = m_tadoAccounts.take(info->thing()->id());
                     tado->deleteLater();
                 }
-            });
 
-            connect(tado, &Tado::apiCredentialsReceived, info, [password, tado] {
-                tado->getToken(password);
-            });
+                qCWarning(dcTado()) << "Connection error during setup:" << error;
+                info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Connection error"));
+            }
+        });
 
-            connect(tado, &Tado::tokenReceived, info, [ info](Tado::Token token) {
-                Q_UNUSED(token)
-
-                qCDebug(dcTado()) << "Token received, account setup successfull";
-                info->finish(Thing::ThingErrorNoError);
-            });
-
-            connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error) {
-
-                if (error != QNetworkReply::NetworkError::NoError){
-
-                    if (m_tadoAccounts.contains(info->thing()->id())) {
-                        Tado *tado = m_tadoAccounts.take(info->thing()->id());
-                        tado->deleteLater();
-                    }
-                    if (error == QNetworkReply::NetworkError::ProtocolInvalidOperationError) {
-                        qCWarning(dcTado()) << "Confirm pairing failed, wrong username or password";
-                        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Wrong username or password."));
-                    } else {
-                        qCWarning(dcTado()) << "Confirm pairing failed" << error;
-                        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Connection error"));
-                    }
-                }
-            });
-            tado->getApiCredentials();
-        }
+        connect(tado, &Tado::usernameChanged, this, &IntegrationPluginTado::onUsernameChanged);
         connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
         connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
         connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
@@ -177,6 +199,9 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
         connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
         connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
         connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
+
+        tado->getAccessToken();
+
         return;
 
     } else if (thing->thingClassId() == zoneThingClassId) {
@@ -205,6 +230,9 @@ void IntegrationPluginTado::thingRemoved(Thing *thing)
         tado->deleteLater();
     }
 
+    // Clean up storage
+    pluginStorage()->remove(thing->id().toString());
+
     if (myThings().isEmpty() && m_pluginTimer) {
         m_pluginTimer->deleteLater();
         m_pluginTimer = nullptr;
@@ -220,7 +248,7 @@ void IntegrationPluginTado::postSetupThing(Thing *thing)
 
     if (thing->thingClassId() == tadoAccountThingClassId) {
         Tado *tado = m_tadoAccounts.value(thing->id());
-        thing->setStateValue(tadoAccountUserDisplayNameStateTypeId, tado->username());
+        //thing->setStateValue(tadoAccountUserDisplayNameStateTypeId, tado->username());
         thing->setStateValue(tadoAccountLoggedInStateTypeId, true);
         thing->setStateValue(tadoAccountConnectedStateTypeId, true);
         tado->getHomes();
@@ -260,7 +288,7 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
                 }
             }
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
 
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
@@ -271,7 +299,7 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
                 requestId = tado->setOverlay(homeId, zoneId, true, temperature);
             }
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == zonePowerActionTypeId) {
             bool power = action.param(zonePowerActionPowerParamTypeId).value().toBool();
             thing->setStateValue(zonePowerStateTypeId, power); // the actual power set response might be slow
@@ -283,7 +311,7 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
                 requestId = tado->setOverlay(homeId, zoneId, true, temperature);
             }
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
         } else {
             qCWarning(dcTado()) << "Execute action, unhandled actionTypeId" << action.actionTypeId();
             info->finish(Thing::ThingErrorActionTypeNotFound);
@@ -299,12 +327,9 @@ void IntegrationPluginTado::onPluginTimer()
     Q_FOREACH(Tado *tado, m_tadoAccounts){
         ThingId accountThingId = m_tadoAccounts.key(tado);
         if (!tado->authenticated()) {
-            pluginStorage()->beginGroup(accountThingId.toString());
-            QString password = pluginStorage()->value("password").toString();
-            pluginStorage()->endGroup();
-            tado->getToken(password);
+            tado->getAccessToken();
         } else {
-            Q_FOREACH(Thing *thing, myThings().filterByParentId(accountThingId)) {
+            foreach (Thing *thing, myThings().filterByParentId(accountThingId)) {
                 if (thing->thingClassId() == zoneThingClassId) {
                     QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
                     QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
@@ -326,7 +351,7 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
         thing->setStateValue(tadoAccountConnectedStateTypeId, connected);
 
         if (!connected) {
-            Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
                 if (child->thingClassId() == zoneThingClassId) {
                     child->setStateValue(zoneConnectedStateTypeId, connected);
                 }
@@ -347,12 +372,22 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
         }
         thing->setStateValue(tadoAccountLoggedInStateTypeId, authenticated);
         if (!authenticated) {
-            Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
                 if (child->thingClassId() == zoneThingClassId) {
                     child->setStateValue(zoneConnectedStateTypeId, authenticated);
                 }
             }
         }
+    }
+}
+
+void IntegrationPluginTado::onUsernameChanged(const QString &username)
+{
+    Tado *tado = static_cast<Tado*>(sender());
+
+    if (m_tadoAccounts.values().contains(tado)){
+        Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
+        thing->setStateValue(tadoAccountUserDisplayNameStateTypeId, username);
     }
 }
 
