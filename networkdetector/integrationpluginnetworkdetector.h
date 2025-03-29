@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -48,7 +48,6 @@ public:
     explicit IntegrationPluginNetworkDetector();
     ~IntegrationPluginNetworkDetector();
 
-    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
@@ -60,7 +59,7 @@ private:
     QHash<Thing *, PluginTimer *> m_gracePeriodTimers;
     QHash<int, ThingActionInfo *> m_pendingHostLookup;
 
-    void setupMonitorConnections(Thing *thing, NetworkDeviceMonitor *monitor);
+    void updateStates(Thing *thing, NetworkDeviceMonitor *monitor);
 
 private slots:
     void onHostLookupFinished(const QHostInfo &info);

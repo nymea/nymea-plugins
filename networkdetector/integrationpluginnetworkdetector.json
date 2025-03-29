@@ -12,7 +12,7 @@
                     "id": "bd216356-f1ec-4324-9785-6982d2174e17",
                     "name": "networkDevice",
                     "displayName": "Network Device",
-                    "interfaces": [ "presencesensor" ],
+                    "interfaces": [ "presencesensor", "networkdevice" ],
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
                         {
@@ -21,6 +21,18 @@
                             "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "MacAddress"
+                        },
+                        {
+                            "id": "d0674a05-732b-48f6-97fc-7c99af938df3",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "5b37b710-68d5-43f8-b09c-a390dd98c964",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString"
                         }
                     ],
                     "settingsTypes": [
