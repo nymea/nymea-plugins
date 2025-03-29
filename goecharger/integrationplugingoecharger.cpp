@@ -1318,15 +1318,15 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
     if (statusMap.contains("pha") && statusMap.value("pha").toList().count() == 6) {
         QVariantList phasesList = statusMap.value("pha").toList();
         // We have exact information regarding charging and connected phases
-        Electricity::Phases connectedPhases;
-        connectedPhases.setFlag(Electricity::PhaseA, phasesList.at(0).toBool());
-        connectedPhases.setFlag(Electricity::PhaseB, phasesList.at(1).toBool());
-        connectedPhases.setFlag(Electricity::PhaseC, phasesList.at(2).toBool());
-
         Electricity::Phases chargingPhases;
-        chargingPhases.setFlag(Electricity::PhaseA, phasesList.at(3).toBool());
-        chargingPhases.setFlag(Electricity::PhaseB, phasesList.at(4).toBool());
-        chargingPhases.setFlag(Electricity::PhaseC, phasesList.at(5).toBool());
+        chargingPhases.setFlag(Electricity::PhaseA, phasesList.at(0).toBool());
+        chargingPhases.setFlag(Electricity::PhaseB, phasesList.at(1).toBool());
+        chargingPhases.setFlag(Electricity::PhaseC, phasesList.at(2).toBool());
+
+        Electricity::Phases connectedPhases;
+        connectedPhases.setFlag(Electricity::PhaseA, phasesList.at(3).toBool());
+        connectedPhases.setFlag(Electricity::PhaseB, phasesList.at(4).toBool());
+        connectedPhases.setFlag(Electricity::PhaseC, phasesList.at(5).toBool());
 
         uint connectedPhaseCount = Electricity::getPhaseCount(connectedPhases);
         if (connectedPhaseCount == 1) {
