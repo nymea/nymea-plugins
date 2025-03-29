@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,6 +33,8 @@
 
 #include "integrations/integrationplugin.h"
 #include "extern-plugininfo.h"
+
+#include <QHostAddress>
 
 class PluginTimer;
 class NetworkDeviceMonitor;
@@ -68,6 +70,7 @@ private slots:
 private:
     QHash<Thing*, NetworkDeviceMonitor*> m_deviceMonitors;
     QHash<Thing*, PluginTimer*> m_timers;
+    QList<QHostAddress> m_discoveryCache;
 };
 
 #endif // INTEGRATIONPLUGINMEROSS_H
