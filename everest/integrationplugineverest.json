@@ -93,6 +93,18 @@
                             "defaultValue": 1
                         },
                         {
+                            "id": "1dc5fbff-354b-4a68-aae3-95150b257faa",
+                            "name": "desiredPhaseCount",
+                            "displayName": "Desired phase count",
+                            "displayNameAction": "Set desired phase count",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "possibleValues": [1, 3],
+                            "writable": true,
+                            "defaultValue": 3
+                        },
+                        {
                             "id": "2104641b-1004-4637-8eca-108f53dcb402",
                             "name": "connected",
                             "displayName": "Connected",
