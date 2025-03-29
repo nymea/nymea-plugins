@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -39,7 +39,6 @@
 #include <network/oauth2.h>
 
 #include <QHash>
-
 #include <QTimer>
 
 class IntegrationPluginTado : public IntegrationPlugin
@@ -50,8 +49,12 @@ class IntegrationPluginTado : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginTado();
+
+    void init() override;
+
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
     void postSetupThing(Thing *thing) override;
@@ -59,9 +62,9 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<ThingId, Tado*> m_unfinishedTadoAccounts;
+    QHash<ThingId, Tado *> m_unfinishedTadoAccounts;
 
-    QHash<ThingId, Tado*> m_tadoAccounts;
+    QHash<ThingId, Tado *> m_tadoAccounts;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
 
 private slots:
@@ -69,6 +72,7 @@ private slots:
 
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
+    void onUsernameChanged(const QString &username);
     void onRequestExecuted(QUuid requestId, bool success);
     void onHomesReceived(QList<Tado::Home> homes);
     void onZonesReceived(const QString &homeId, QList<Tado::Zone> zones);

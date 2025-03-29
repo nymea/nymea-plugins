@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,24 +36,27 @@
 #include <QJsonArray>
 #include <QUrlQuery>
 
-Tado::Tado(NetworkAccessManager *networkManager, const QString &username, QObject *parent) :
+Tado::Tado(NetworkAccessManager *networkManager, QObject *parent) :
     QObject(parent),
-    m_networkManager(networkManager),
-    m_username(username)
+    m_networkManager(networkManager)
 {
-    m_refreshTimer = new QTimer(this);
-    m_refreshTimer->setSingleShot(true);
-    connect(m_refreshTimer, &QTimer::timeout, this, &Tado::onRefreshTimer);
-}
+    m_baseControlUrl = "https://my.tado.com/api/v2";
+    m_baseAuthorizationUrl = "https://login.tado.com/oauth2";
 
-void Tado::setUsername(const QString &username)
-{
-    m_username = username;
-}
+    m_clientId = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
 
-QString Tado::username()
-{
-    return m_username;
+    m_refreshTimer.setSingleShot(true);
+    connect(&m_refreshTimer, &QTimer::timeout, this, [this](){
+        qCDebug(dcTado()) << "Refresh token...";
+        getAccessToken();
+    });
+
+    m_pollAuthenticationTimer.setSingleShot(true);
+    m_pollAuthenticationTimer.setInterval(2000);
+    connect(&m_pollAuthenticationTimer, &QTimer::timeout, this, [this](){
+        qCDebug(dcTado()) << "Checking authentication status...";
+        requestAuthenticationToken();
+    });
 }
 
 bool Tado::apiAvailable()
@@ -71,138 +74,160 @@ bool Tado::connected()
     return m_connectionStatus;
 }
 
-void Tado::getApiCredentials(const QString &url)
+
+QString Tado::loginUrl() const
 {
-    QNetworkRequest request;
-    request.setUrl(url);
-    QNetworkReply *reply = m_networkManager->get(request);
-    qCDebug(dcTado()) << "Sending request" << request.url();
+    return m_loginUrl;
+}
+
+QString Tado::username() const
+{
+    return m_username;
+}
+
+QString Tado::refreshToken() const
+{
+    return m_refreshToken;
+}
+
+void Tado::setRefreshToken(const QString &refreshToken)
+{
+    m_refreshToken = refreshToken;
+}
+
+void Tado::startAuthentication()
+{
+    qCDebug(dcTado()) << "Start authentication process...";
+    m_pollAuthenticationCount = 0;
+    requestAuthenticationToken();
+}
+
+void Tado::getLoginUrl()
+{
+    QNetworkRequest request = QNetworkRequest(QUrl(m_baseAuthorizationUrl + "/device_authorize"));
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    QUrlQuery query;
+    query.addQueryItem("client_id", m_clientId);
+    query.addQueryItem("scope", "offline_access");
+
+    QByteArray payload = query.toString(QUrl::FullyEncoded).toUtf8();
+
+    qCDebug(dcTado()) << "Get login url request" << request.url() << payload;
+
+    QNetworkReply *reply = m_networkManager->post(request, payload);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
-            emit apiCredentialsReceived(false);
-            return;
-        }
-        QRegExp filter;
-        filter.setPatternSyntax(QRegExp::Wildcard);
-        filter.setPattern("*tgaRestApiV2Endpoint:*");
+            emit getLoginUrlFinished(false);
 
-        QStringList list = QString(reply->readAll()).split('\n');
-        int index = list.indexOf(filter);
-        if (index == -1) {
-            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the API url";
-            emit apiCredentialsReceived(false);
+            emit connectionError(reply->error());
+
+            if (reply->error() == QNetworkReply::HostNotFoundError)
+                setConnectionStatus(false);
+
+            if (status == 401 || status == 400)
+                setAuthenticationStatus(false);
+
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        m_baseControlUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"));;
-        qCDebug(dcTado()) << "Received control url" << m_baseControlUrl;
-        filter.setPattern("*apiEndpoint*");
-        index = list.indexOf(filter);
-        if (index == -1) {
-            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the authorization url";
-            emit apiCredentialsReceived(false);
-            return;
-        }
-        m_baseAuthorizationUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"))+"/token";
-        qCDebug(dcTado()) << "Received auth url" << m_baseAuthorizationUrl;
-        filter.setPattern("*clientId*");
-        index = list.indexOf(filter);
-        if (index == -1) {
-            emit apiCredentialsReceived(false);
-            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client Id";
-            return;
-        }
-        m_clientId = list.value(index).split(": ").last().remove(QRegExp("[,']"));
-        qCDebug(dcTado()) << "Received client id" << m_clientId.mid(0, 4)+"*****";
-        filter.setPattern("*clientSecret*");
-        index = list.indexOf(filter);
-        if (index == -1) {
-            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client secret";
-            emit apiCredentialsReceived(false);
-            return;
-        }
-        m_clientSecret = list.value(index).split(": ").last().remove(QRegExp("[,']"));
-        qCDebug(dcTado()) << "Received client secret" << m_clientSecret.mid(0, 4)+"*****";
+
         m_apiAvailable = true;
-        emit apiCredentialsReceived(true);
+        setConnectionStatus(true);
+
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument responseJsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcTado()) << "Get Token: Received invalid JSON object:" << data;
+            emit getLoginUrlFinished(false);
+            return;
+        }
+
+        qCDebug(dcTado()) << "Get login url response" << qUtf8Printable(responseJsonDoc.toJson());
+        QVariantMap responseMap = responseJsonDoc.toVariant().toMap();
+        m_deviceCode = responseMap.value("device_code").toString();
+        m_loginUrl = responseMap.value("verification_uri_complete").toString();
+        uint pollInterval = responseMap.value("interval").toUInt();
+
+        qCDebug(dcTado()) << "Login url:" << m_loginUrl;
+        qCDebug(dcTado()) << "Device code:" << m_deviceCode;
+        qCDebug(dcTado()) << "Poll interval:" << pollInterval;
+        m_pollAuthenticationTimer.setInterval(pollInterval * 1000);
+
+        emit getLoginUrlFinished(true);
     });
 }
 
-void Tado::getToken(const QString &password)
+
+void Tado::getAccessToken()
 {
-    if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials first";
-        return;
-    }
-
-    QNetworkRequest request;
-    request.setUrl(QUrl(m_baseAuthorizationUrl));
+    QNetworkRequest request = QNetworkRequest(QUrl(m_baseAuthorizationUrl + "/token"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QUrlQuery query;
-    query.setQueryItems({{"client_id", m_clientId},
-                     {"client_secret", m_clientSecret},
-                     {"grant_type", "password"},
-                     {"scope", "home.user"},
-                     {"username", m_username},
-                     {"password", password}});
 
-    QNetworkReply *reply = m_networkManager->post(request, query.toString(QUrl::FullyEncoded).toUtf8());
-//    qCDebug(dcTado()) << "Sending request" << request.url() << query.toString(QUrl::FullyEncoded).toUtf8();
+    QUrlQuery query;
+    query.addQueryItem("grant_type", "refresh_token");
+    query.addQueryItem("refresh_token", m_refreshToken);
+    query.addQueryItem("client_id", m_clientId);
+
+    QByteArray payload = query.toString(QUrl::FullyEncoded).toUtf8();
+
+    qCDebug(dcTado()) << "Get access token request" << request.url() << payload;
+
+    QNetworkReply *reply = m_networkManager->post(request, payload);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
 
+        QByteArray data = reply->readAll();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+
             emit connectionError(reply->error());
-            if (reply->error() == QNetworkReply::HostNotFoundError) {
+
+            if (reply->error() == QNetworkReply::HostNotFoundError)
                 setConnectionStatus(false);
-            }
-            if (status == 401 || status == 400) {
+
+            if (status == 401 || status == 400)
                 setAuthenticationStatus(false);
-            }
-            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString() << qUtf8Printable(data);
             return;
         }
+
+        m_apiAvailable = true;
         setConnectionStatus(true);
 
         QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        QJsonDocument responseJsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Received invalid JSON object:" << data;
+            qDebug(dcTado()) << "Get access token received invalid JSON object:" << data;
+            emit getLoginUrlFinished(false);
             return;
         }
-        if (data.isObject()) {
-            Token token;
-            QVariantMap obj = data.toVariant().toMap();
-            if (obj.contains("access_token")) {
-                token.accesToken = obj["access_token"].toString();
-                m_accessToken = token.accesToken;
-            } else {
-                qCWarning(dcTado()) << "Received response doesnt contain an access token";
-            }
 
-            token.tokenType = obj["token_type"].toString();
-            token.refreshToken = obj["refresh_token"].toString();
-            m_refreshToken = token.refreshToken;
-            if (obj.contains("expires_in")) {
-                token.expires = obj["expires_in"].toInt();
-                m_refreshTimer->start((token.expires - 10)*1000);
-            } else {
-                qCWarning(dcTado()) << "Received response doesn't contain an expire time";
-            }
-            token.scope = obj["scope"].toString();
-            token.jti = obj["jti"].toString();
-            setAuthenticationStatus(true);
-            emit tokenReceived(token);
-        } else {
-            qCWarning(dcTado()) << "Received response isn't an object" << data.toJson();
-            setAuthenticationStatus(false);
+        qCDebug(dcTado()) << "Get access token response" << qUtf8Printable(responseJsonDoc.toJson());
+        QVariantMap responseMap = responseJsonDoc.toVariant().toMap();
+
+        m_accessToken = responseMap.value("access_token").toString();
+        emit accessTokenReceived();
+
+        QString refreshToken = responseMap.value("refresh_token").toString();
+        if (m_refreshToken != refreshToken) {
+            m_refreshToken = refreshToken;
+            emit refreshTokenReceived(m_refreshToken);
         }
+
+
+        setAuthenticationStatus(true);
+
+        // Refresh 10 sekonds before expiration
+        m_refreshTimer.setInterval((responseMap.value("expires_in").toUInt() - 10) * 1000);
+        m_refreshTimer.start();
     });
 }
 
@@ -246,11 +271,21 @@ void Tado::getHomes()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
+            qDebug(dcTado()) << "Get Homes: Recieved invalid JSON object";
             return;
         }
+
+        qCDebug(dcTado()) << "Get homes response" << qUtf8Printable(data.toJson());
+
+        QVariantMap responseMap = data.toVariant().toMap();
+        QString username = responseMap.value("username").toString();
+        if (m_username != username) {
+            m_username = username;
+            emit usernameChanged(m_username);
+        }
+
         QList<Home> homes;
-        QVariantList homeList = data.toVariant().toMap().value("homes").toList();
+        QVariantList homeList = responseMap.value("homes").toList();
         foreach (QVariant variant, homeList) {
             QVariantMap obj = variant.toMap();
             Home home;
@@ -258,6 +293,7 @@ void Tado::getHomes()
             home.name = obj["name"].toString();
             homes.append(home);
         }
+
         emit homesReceived(homes);
     });
 }
@@ -275,7 +311,7 @@ void Tado::getZones(const QString &homeId)
     }
 
     QNetworkRequest request;
-    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones"));
+    request.setUrl(QUrl(m_baseControlUrl + "/homes/" + homeId + "/zones"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
@@ -332,7 +368,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     }
 
     QNetworkRequest request;
-    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/state"));
+    request.setUrl(QUrl(m_baseControlUrl + "/homes/" + homeId + "/zones/" + zoneId + "/state"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
@@ -413,7 +449,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
 
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
-    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
+    request.setUrl(QUrl(m_baseControlUrl + "/homes/" + homeId + "/zones/" + zoneId + "/overlay"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json;charset=utf-8");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
 
@@ -424,14 +460,14 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
     else
         powerString = "OFF";
 
-    body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
+    body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\"" + powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
+
     //qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             emit connectionError(reply->error());
@@ -439,6 +475,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
+
             if (status == 401 || status == 400) { //Unauthorized
                 setAuthenticationStatus(false);
             } else if (status == 422) { //Unprocessable Entity
@@ -448,6 +485,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
             }
             return;
         }
+
         setAuthenticationStatus(true);
         setConnectionStatus(true);
         emit requestExecuted(requestId, true);
@@ -488,21 +526,22 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
-    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
+    request.setUrl(QUrl(m_baseControlUrl + "/homes/" + homeId + "/zones/" + zoneId + "/overlay"));
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->deleteResource(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        // Check HTTP status code
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
+
             emit requestExecuted(requestId ,false);
             emit connectionError(reply->error());
+
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
+
             if (status == 401 || status == 400) { //Unauthorized
                 setAuthenticationStatus(false);
             } else if (status == 422) { //Unprocessable Entity
@@ -510,9 +549,10 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
             } else {
                 qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             }
-            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+
             return;
         }
+
         setAuthenticationStatus(true);
         setConnectionStatus(true);
         emit requestExecuted(requestId, true);
@@ -523,6 +563,7 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
             qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
+
         QVariantMap map = data.toVariant().toMap();
 
         Overlay overlay;
@@ -539,6 +580,66 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
     return requestId;
 }
 
+void Tado::requestAuthenticationToken()
+{
+    QNetworkRequest request = QNetworkRequest(QUrl(m_baseAuthorizationUrl + "/token"));
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    QUrlQuery query;
+    query.addQueryItem("client_id", m_clientId);
+    query.addQueryItem("device_code", m_deviceCode);
+    query.addQueryItem("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
+
+    QByteArray payload = query.toString(QUrl::FullyEncoded).toUtf8();
+    qCDebug(dcTado()) << "Request authentication token" << request.url() << payload;
+
+    QNetworkReply *reply = m_networkManager->post(request, payload);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCDebug(dcTado()) << "Request error:" << status << "Retrying:" << m_pollAuthenticationCount << "/" << m_pollAuthenticationLimit;
+
+            if (m_pollAuthenticationCount >= m_pollAuthenticationLimit) {
+                qCWarning(dcTado()) << "Authentication request failed" << m_pollAuthenticationCount << "times. Giving up.";
+                emit startAuthenticationFinished(false);
+                setAuthenticationStatus(false);
+                return;
+            }
+
+            // We poll until the user finished the login or until we reached the limit
+            m_pollAuthenticationTimer.start();
+            m_pollAuthenticationCount++;
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument responseJsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcTado()) << "Authentication received invalid JSON object:" << data;
+            emit startAuthenticationFinished(false);
+            setAuthenticationStatus(false);
+            return;
+        }
+
+        qCDebug(dcTado()) << "Authentication finished successfully:" << qUtf8Printable(responseJsonDoc.toJson());
+        QVariantMap responseMap = responseJsonDoc.toVariant().toMap();
+
+        m_accessToken = responseMap.value("access_token").toString();
+        QString refreshToken = responseMap.value("refresh_token").toString();
+
+        if (m_refreshToken != refreshToken) {
+            m_refreshToken = refreshToken;
+            emit refreshTokenReceived(m_refreshToken);
+        }
+
+        emit startAuthenticationFinished(true);
+        setAuthenticationStatus(true);
+    });
+}
+
 void Tado::setAuthenticationStatus(bool status)
 {
     if (m_authenticationStatus != status) {
@@ -546,9 +647,9 @@ void Tado::setAuthenticationStatus(bool status)
         emit authenticationStatusChanged(status);
     }
 
-    if (!status) {
-        m_refreshTimer->stop();
-    }
+    if (!status)
+        m_refreshTimer.stop();
+
 }
 
 void Tado::setConnectionStatus(bool status)
@@ -557,63 +658,4 @@ void Tado::setConnectionStatus(bool status)
         m_connectionStatus = status;
         emit connectionChanged(status);
     }
-}
-
-void Tado::onRefreshTimer()
-{
-    if(m_refreshToken.isEmpty()) {
-        qCWarning(dcTado()) << "Not sending request, get the access token first";
-        return;
-    }
-
-    QNetworkRequest request;
-    request.setUrl(QUrl(m_baseAuthorizationUrl));
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QUrlQuery query;
-    query.setQueryItems({{"client_id", m_clientId},
-                    {"client_secret", m_clientSecret},
-                    {"grant_type", "refresh_token"},
-                    {"refresh_token", m_refreshToken},
-                    {"scope", "home.user"}});
-
-    QNetworkReply *reply = m_networkManager->post(request, query.toString(QUrl::FullyEncoded).toUtf8());
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
-
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            emit connectionError(reply->error());
-            if (reply->error() == QNetworkReply::HostNotFoundError) {
-                setConnectionStatus(false);
-            }
-            if (status == 400 || status == 401) {
-                setAuthenticationStatus(false);
-            }
-            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
-            return;
-        }
-        setConnectionStatus(true);
-        setAuthenticationStatus(true);
-
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
-            return;
-        }
-        Token token;
-        QVariantMap obj = data.toVariant().toMap();
-        token.accesToken = obj["access_token"].toString();
-        m_accessToken = token.accesToken;
-        token.tokenType = obj["token_type"].toString();
-        token.refreshToken = obj["refresh_token"].toString();
-        m_refreshToken = token.refreshToken;
-        token.expires = obj["expires_in"].toInt();
-        m_refreshTimer->start((token.expires - 10)*1000);
-        token.scope = obj["scope"].toString();
-        token.jti = obj["jti"].toString();
-        emit tokenReceived(token);
-    });
 }
