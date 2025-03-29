@@ -62,8 +62,6 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
         qCInfo(dcFronius()) << "Discovery finished. Found" << discovery->discoveryResults().count() << "devices";
         foreach (const NetworkDeviceInfo &networkDeviceInfo, discovery->discoveryResults()) {
             qCInfo(dcFronius()) << "Discovered Fronius on" << networkDeviceInfo;
-            if (networkDeviceInfo.macAddress().isNull())
-                continue;
 
             QString title;
             if (networkDeviceInfo.hostName().isEmpty()) {
@@ -73,24 +71,29 @@ void IntegrationPluginFronius::discoverThings(ThingDiscoveryInfo *info)
             }
 
             QString description;
-            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                description = networkDeviceInfo.macAddress();
-            } else {
-                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+            if (networkDeviceInfo.macAddressInfos().count() == 1) {
+                MacAddressInfo macInfo = networkDeviceInfo.macAddressInfos().constFirst();
+                if (macInfo.vendorName().isEmpty()) {
+                    description = macInfo.macAddress().toString();
+                } else {
+                    description = macInfo.macAddress().toString() + " (" + macInfo.vendorName() + ")";
+                }
             }
 
             ThingDescriptor descriptor(connectionThingClassId, title, description);
+            ParamList params;
+            params.append(Param(connectionThingMacAddressParamTypeId, networkDeviceInfo.thingParamValueMacAddress()));
+            params.append(Param(connectionThingHostNameParamTypeId, networkDeviceInfo.thingParamValueHostName()));
+            params.append(Param(connectionThingAddressParamTypeId, networkDeviceInfo.thingParamValueAddress()));
+            descriptor.setParams(params);
 
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(connectionThingMacParamTypeId, networkDeviceInfo.macAddress());
-            if (existingThings.count() == 1) {
-                qCDebug(dcFronius()) << "This thing already exists in the system." << existingThings.first() << networkDeviceInfo;
-                descriptor.setThingId(existingThings.first()->id());
+            Thing *existingThing = myThings().findByParams(params);
+            if (existingThing) {
+                qCDebug(dcFronius()) << "This thing already exists in the system." << existingThing;
+                descriptor.setThingId(existingThing->id());
             }
 
-            ParamList params;
-            params << Param(connectionThingMacParamTypeId, networkDeviceInfo.macAddress());
-            descriptor.setParams(params);
             info->addThingDescriptor(descriptor);
         }
         info->finish(Thing::ThingErrorNoError);
@@ -113,41 +116,29 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             connection->deleteLater();
         }
 
-        if (m_monitors.contains(thing)) {
+        if (m_monitors.contains(thing))
             hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
-        }
 
-        // Set up depending on the available params, mac can only be filled in by discovery (ro param),
-        // the ip could be used as static manual config for VPN networks or WAN IP's
-        QHostAddress address(thing->paramValue(connectionThingAddressParamTypeId).toString());
-        MacAddress mac(thing->paramValue(connectionThingMacParamTypeId).toString());
-
-        // Create the connection
-        FroniusSolarConnection *connection = nullptr;
-
-        if (mac.isValid() && !mac.isNull()) {
-            qCInfo(dcFronius()) << "Setting up network device monitor for Fronius connection using MAC address" << mac.toString();
-            NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(mac);
-            m_monitors.insert(thing, monitor);
-
-            connection = new FroniusSolarConnection(hardwareManager()->networkManager(), monitor->networkDeviceInfo().address(), thing);
-            connect(monitor, &NetworkDeviceMonitor::networkDeviceInfoChanged, this, [=](const NetworkDeviceInfo &networkDeviceInfo){
-                qCDebug(dcFronius()) << "Network device info changed for" << thing << networkDeviceInfo;
-                if (networkDeviceInfo.isValid()) {
-                    connection->setAddress(networkDeviceInfo.address());
-                    refreshConnection(connection);
-                } else {
-                    connection->setAddress(QHostAddress());
-                }
-            });
-        } else if (!address.isNull()) {
-            qCInfo(dcFronius()) << "Setting up Fronius connection based on IP address" << address.toString() << "without monitoring. Any IP changed will not be recognized and the device will be disconnected.";
-            connection = new FroniusSolarConnection(hardwareManager()->networkManager(), address, thing);
-        } else {
-            qCWarning(dcFronius()) << "Unable to set up thing" << thing << ", neither IP nor MAC is valid." << thing->params();
-            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Please reconfigure the device."));
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
+        if (!monitor) {
+            qCWarning(dcFronius()) << "Unable to register monitor with the given params" << thing->params();
+            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Unable to set up the connection with this configuration, please reconfigure the connection."));
             return;
         }
+
+        qCInfo(dcFronius()) << "Set up Fronius connection " << monitor;
+        m_monitors.insert(thing, monitor);
+
+        FroniusSolarConnection *connection = new FroniusSolarConnection(hardwareManager()->networkManager(), monitor->networkDeviceInfo().address(), thing);
+        connect(monitor, &NetworkDeviceMonitor::networkDeviceInfoChanged, this, [=](const NetworkDeviceInfo &networkDeviceInfo){
+            qCDebug(dcFronius()) << "Network device info changed for" << thing << networkDeviceInfo;
+            if (networkDeviceInfo.isValid()) {
+                connection->setAddress(networkDeviceInfo.address());
+                refreshConnection(connection);
+            } else {
+                connection->setAddress(QHostAddress());
+            }
+        });
 
         connect(connection, &FroniusSolarConnection::availableChanged, this, [=](bool available){
             qCDebug(dcFronius()) << thing << "Available changed" << available;
@@ -167,7 +158,6 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
                 }
             }
         });
-
 
         if (info->isInitialSetup()) {
             // Verify the version
