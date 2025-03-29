@@ -50,6 +50,12 @@ void IntegrationPluginKeba::init()
     m_macAddressParamTypeIds.insert(kebaThingClassId, kebaThingMacAddressParamTypeId);
     m_macAddressParamTypeIds.insert(kebaSimpleThingClassId, kebaSimpleThingMacAddressParamTypeId);
 
+    m_hostNameParamTypeIds.insert(kebaThingClassId, kebaThingHostNameParamTypeId);
+    m_hostNameParamTypeIds.insert(kebaSimpleThingClassId, kebaSimpleThingHostNameParamTypeId);
+
+    m_addressParamTypeIds.insert(kebaThingClassId, kebaThingAddressParamTypeId);
+    m_addressParamTypeIds.insert(kebaSimpleThingClassId, kebaSimpleThingAddressParamTypeId);
+
     m_modelParamTypeIds.insert(kebaThingClassId, kebaThingModelParamTypeId);
     m_modelParamTypeIds.insert(kebaSimpleThingClassId, kebaSimpleThingModelParamTypeId);
 
@@ -104,14 +110,16 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
             qCDebug(dcKeba()) << "Discovered:" << descriptor.title() << descriptor.description();
 
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(m_macAddressParamTypeIds.value(discoveredThingClassId), result.networkDeviceInfo.macAddress());
+            Things existingThings = myThings().filterByParam(m_serialNumberParamTypeIds.value(discoveredThingClassId), result.serialNumber);
             if (existingThings.count() == 1) {
                 qCDebug(dcKeba()) << "This keba already exists in the system!" << result.networkDeviceInfo;
                 descriptor.setThingId(existingThings.first()->id());
             }
 
             ParamList params;
-            params << Param(m_macAddressParamTypeIds.value(discoveredThingClassId), result.networkDeviceInfo.macAddress());
+            params << Param(m_macAddressParamTypeIds.value(discoveredThingClassId), result.networkDeviceInfo.thingParamValueMacAddress());
+            params << Param(m_hostNameParamTypeIds.value(discoveredThingClassId), result.networkDeviceInfo.thingParamValueHostName());
+            params << Param(m_addressParamTypeIds.value(discoveredThingClassId), result.networkDeviceInfo.thingParamValueAddress());
             params << Param(m_modelParamTypeIds.value(discoveredThingClassId), result.product);
             params << Param(m_serialNumberParamTypeIds.value(discoveredThingClassId), result.serialNumber);
             descriptor.setParams(params);
@@ -156,16 +164,16 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         }
     }
 
+
+    // Create a monitor so we always get the correct IP in the network and see if the device is reachable without polling on our own
+    NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
     // Make sure we have a valid mac address, otherwise no monitor and not auto searching is possible
-    MacAddress macAddress = MacAddress(thing->paramValue(m_macAddressParamTypeIds.value(thing->thingClassId())).toString());
-    if (macAddress.isNull()) {
-        qCWarning(dcKeba()) << "Failed to set up keba because the MAC address is not valid:" << thing->paramValue(m_macAddressParamTypeIds.value(thing->thingClassId())).toString() << macAddress.toString();
-        info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The MAC address is not vaild. Please reconfigure the device to fix this."));
+    if (!monitor) {
+        qCWarning(dcKeba()) << "Can not set up connection monitor with the given parameters:" << thing->params();
+        info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Unable to set up the connection with this configuration. Please reconfigure the connection."));
         return;
     }
 
-    // Create a monitor so we always get the correct IP in the network and see if the device is reachable without polling on our own
-    NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
     connect(monitor, &NetworkDeviceMonitor::reachableChanged, thing, [=](bool reachable){
         // Only if the setup has been finished
         KeContact *keba = m_kebaDevices.value(thing->id());

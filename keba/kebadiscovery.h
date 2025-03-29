@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -47,6 +47,7 @@ public:
         QString product;
         QString serialNumber;
         QString firmwareVersion;
+        QHostAddress address;
         NetworkDeviceInfo networkDeviceInfo;
     } KebaDiscoveryResult;
 
@@ -60,22 +61,19 @@ public:
 signals:
     void discoveryFinished();
 
+private slots:
+    void sendReportRequest(const QHostAddress &address);
+
 private:
     KeContactDataLayer *m_kebaDataLayer = nullptr;
     NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
     QTimer m_responseTimer;
 
     NetworkDeviceInfos m_networkDeviceInfos;
-    NetworkDeviceInfos m_verifiedNetworkDeviceInfos;
+    QList<QHostAddress> m_verifiedAddresses;
     QList<KebaDiscoveryResult> m_results;
 
-    bool alreadyDiscovered(const QHostAddress &address);
-
     void cleanup();
-
-private slots:
-    void sendReportRequest(const NetworkDeviceInfo &networkDeviceInfo);
-
 };
 
 #endif // KEBADISCOVERY_H
