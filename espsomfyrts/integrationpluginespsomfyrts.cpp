@@ -66,24 +66,25 @@ void IntegrationPluginEspSomfyRts::discoverThings(ThingDiscoveryInfo *info)
         qCInfo(dcESPSomfyRTS()) << "Discovery finished. Found" << discovery->results().count() << "devices";
         foreach (const EspSomfyRtsDiscovery::Result &result, discovery->results()) {
             qCInfo(dcESPSomfyRTS()) << "Discovered device on" << result.networkDeviceInfo;
-            if (result.networkDeviceInfo.macAddress().isNull())
-                continue;
 
             QString title = "ESP Somfy RTS (" + result.name + ")";
-            QString description = result.networkDeviceInfo.address().toString() + " (" + result.networkDeviceInfo.macAddress() + ")";
+            QString description = result.networkDeviceInfo.address().toString();
 
             ThingDescriptor descriptor(espSomfyRtsThingClassId, title, description);
 
+            ParamList params;
+            params << Param(espSomfyRtsThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
+            params << Param(espSomfyRtsThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
+            params << Param(espSomfyRtsThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
+            descriptor.setParams(params);
+
             // Check if we already have set up this device
-            Things existingThings = myThings().filterByParam(espSomfyRtsThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
-            if (existingThings.count() == 1) {
-                qCDebug(dcESPSomfyRTS()) << "This thing already exists in the system." << existingThings.first() << result.networkDeviceInfo;
-                descriptor.setThingId(existingThings.first()->id());
+            Thing *existingThing = myThings().findByParams(params);
+            if (existingThing) {
+                qCDebug(dcESPSomfyRTS()) << "This thing already exists in the system:" << result.networkDeviceInfo;
+                descriptor.setThingId(existingThing->id());
             }
 
-            ParamList params;
-            params << Param(espSomfyRtsThingMacAddressParamTypeId, result.networkDeviceInfo.macAddress());
-            descriptor.setParams(params);
             info->addThingDescriptor(descriptor);
         }
 
@@ -104,14 +105,12 @@ void IntegrationPluginEspSomfyRts::setupThing(ThingSetupInfo *info)
             return;
         }
 
-        MacAddress macAddress(thing->paramValue(espSomfyRtsThingMacAddressParamTypeId).toString());
-        if (!macAddress.isValid()) {
-            qCWarning(dcESPSomfyRTS()) << "Invalid MAC address, cannot set up thing" << thing << thing->params();
-            info->finish(Thing::ThingErrorHardwareNotAvailable);
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
+        if (!monitor) {
+            qCWarning(dcESPSomfyRTS()) << "Could not register monitor with the given parameters" << thing << thing->params();
+            info->finish(Thing::ThingErrorInvalidParameter);
             return;
         }
-
-        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(macAddress);
 
         EspSomfyRts *somfy = new EspSomfyRts(monitor, thing);
         m_somfys.insert(thing, somfy);
@@ -171,7 +170,10 @@ void IntegrationPluginEspSomfyRts::postSetupThing(Thing *thing)
 
 void IntegrationPluginEspSomfyRts::thingRemoved(Thing *thing)
 {
-    Q_UNUSED(thing)
+    if (thing->thingClassId() == espSomfyRtsThingClassId) {
+        EspSomfyRts *somfy = m_somfys.take(thing);
+        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(somfy->monitor());
+    }
 }
 
 void IntegrationPluginEspSomfyRts::executeAction(ThingActionInfo *info)

@@ -53,9 +53,10 @@ void EspSomfyRtsDiscovery::startDiscovery()
     m_startDateTime = QDateTime::currentDateTime();
 
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &EspSomfyRtsDiscovery::checkNetworkDevice);
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &EspSomfyRtsDiscovery::checkNetworkDevice);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         qCDebug(dcESPSomfyRTS()) << "Discovery: Network discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
+        m_networkDeviceInfos = discoveryReply->networkDeviceInfos();
         m_gracePeriodTimer.start();
         discoveryReply->deleteLater();
     });
@@ -66,18 +67,18 @@ QList<EspSomfyRtsDiscovery::Result> EspSomfyRtsDiscovery::results() const
     return m_results;
 }
 
-void EspSomfyRtsDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
+void EspSomfyRtsDiscovery::checkNetworkDevice(const QHostAddress &address)
 {
-    qCDebug(dcESPSomfyRTS()) << "Discovery: Verifying" << networkDeviceInfo;
+    qCDebug(dcESPSomfyRTS()) << "Discovery: Verifying" << address;
     QUrl url;
     url.setScheme("http");
-    url.setHost(networkDeviceInfo.address().toString());
+    url.setHost(address.toString());
     url.setPort(8081);
     url.setPath("/discovery");
 
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, networkDeviceInfo](){
+    connect(reply, &QNetworkReply::finished, this, [this, reply, address](){
         if (reply->error() != QNetworkReply::NoError) {
             qCDebug(dcESPSomfyRTS()) << "Discovery: Reply finished with error" << reply->errorString() << "Continue...";
             return;
@@ -95,7 +96,7 @@ void EspSomfyRtsDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDe
         if (responseMap.contains("model") && responseMap.value("model").toString().toLower().contains("espsomfyrts")) {
 
             Result result;
-            result.networkDeviceInfo = networkDeviceInfo;
+            result.address = address;
             result.name = responseMap.value("serverId").toString();
             result.firmwareVersion = responseMap.value("version").toString();
             m_results.append(result);
@@ -109,6 +110,11 @@ void EspSomfyRtsDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDe
 void EspSomfyRtsDiscovery::finishDiscovery()
 {
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
+
+    // Fill in all network device infos we have
+    for (int i = 0; i < m_results.count(); i++)
+        m_results[i].networkDeviceInfo = m_networkDeviceInfos.get(m_results.at(i).address);
+
     qCDebug(dcESPSomfyRTS()) << "Discovery: Finished the discovery process. Found" << m_results.count()
                          << "ESPSomfy-RTS devices in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     m_gracePeriodTimer.stop();
