@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -32,24 +32,24 @@
 #include "plugininfo.h"
 #include "shellyjsonrpcclient.h"
 
+#include <QColor>
 #include <QUrlQuery>
-#include <QNetworkReply>
 #include <QHostAddress>
 #include <QJsonDocument>
-#include <QColor>
+#include <QNetworkReply>
 #include <QNetworkInterface>
+#include <QRegularExpression>
 
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
-#include "network/mqtt/mqttprovider.h"
-#include "network/mqtt/mqttchannel.h"
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
+#include <network/mqtt/mqttprovider.h>
+#include <network/mqtt/mqttchannel.h>
+#include <plugintimer.h>
 
-#include "plugintimer.h"
+#include <qmath.h>
 
-#include "qmath.h"
-
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "platform/platformzeroconfcontroller.h"
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <platform/platformzeroconfcontroller.h>
 
 #include <coap/coap.h>
 
@@ -63,10 +63,12 @@ static QHash<QString, QString> updateStatusMap = {
 
 IntegrationPluginShelly::IntegrationPluginShelly()
 {
+
 }
 
 IntegrationPluginShelly::~IntegrationPluginShelly()
 {
+
 }
 
 void IntegrationPluginShelly::init()
@@ -81,60 +83,63 @@ void IntegrationPluginShelly::init()
 void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
 {
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
-        qCDebug(dcShelly()) << "Have entry" << entry;
-        QRegExp namePattern;
-        if (info->thingClassId() == shelly1ThingClassId) {
-            namePattern = QRegExp("^shelly1-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPlus1ThingClassId) {
-            namePattern = QRegExp("^ShellyPlus1-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shelly1pmThingClassId) {
-            namePattern = QRegExp("^shelly1pm-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
-            namePattern = QRegExp("^ShellyPlus1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shellyPro1PmThingClassId) {
-            namePattern = QRegExp("^ShellyPro1PM-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shelly1lThingClassId) {
-            namePattern = QRegExp("^shelly1l-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPlugThingClassId) {
-            namePattern = QRegExp("^shellyplug(-s)?-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPlusPlugThingClassId) {
-            namePattern = QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
-            namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyDimmerThingClassId) {
-            namePattern = QRegExp("^(shellydimmer(2)?|ShellyVintage)-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shelly2ThingClassId) {
-            namePattern = QRegExp("^shellyswitch-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shelly25ThingClassId) {
-            namePattern = QRegExp("^(shellyswitch25|ShellyPlus2PM)-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shellyButton1ThingClassId) {
-            namePattern = QRegExp("^shellybutton1-[0-9-A-Z]+$");
-        } else if (info->thingClassId() == shellyEmThingClassId) {
-            namePattern = QRegExp("^shellyem-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyEm3ThingClassId) {
-            namePattern = QRegExp("^shellyem3-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPro3EMThingClassId) {
-            namePattern = QRegExp("^ShellyPro3EM-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shellyHTThingClassId) {
-            namePattern = QRegExp("shellyht-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyI3ThingClassId) {
-            namePattern = QRegExp("shellyix3-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyMotionThingClassId) {
-            namePattern = QRegExp("shellymotionsensor-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyTrvThingClassId) {
-            namePattern = QRegExp("shellytrv-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyFloodThingClassId) {
-            namePattern = QRegExp("^shellyflood-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellySmokeThingClassId) {
-            namePattern = QRegExp("^shellysmoke-[0-9A-Z]+$");
-        } else if (info->thingClassId() == shellyPlusSmokeThingClassId) {
-            namePattern = QRegExp("^shellyplussmoke-[0-9A-Z]+$", Qt::CaseInsensitive);
-        } else if (info->thingClassId() == shellyGasThingClassId) {
-            namePattern = QRegExp("^shellygas-[0-9A-Z]+$");
-        }
-        if (!entry.name().contains(namePattern)) {
+        if (entry.protocol() != QAbstractSocket::IPv4Protocol)
             continue;
+
+        qCDebug(dcShelly()) << "Have entry" << entry;
+        QRegularExpression namePattern;
+        if (info->thingClassId() == shelly1ThingClassId) {
+            namePattern = QRegularExpression("^shelly1(mini)?(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyPlus1ThingClassId) {
+            namePattern = QRegularExpression("^ShellyPlus1-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shelly1pmThingClassId) {
+            namePattern = QRegularExpression("^shelly1pm(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyPlus1pmThingClassId) {
+            namePattern = QRegularExpression("^ShellyPlus1PM-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyPro1PmThingClassId) {
+            namePattern = QRegularExpression("^ShellyPro1PM-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shelly1lThingClassId) {
+            namePattern = QRegularExpression("^shelly1l-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyPlugThingClassId) {
+            namePattern = QRegularExpression("^shellyplug(-s)?(sg3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyPlusPlugThingClassId) {
+            namePattern = QRegularExpression("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
+            namePattern = QRegularExpression("^shellyrgbw2-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyDimmerThingClassId) {
+            namePattern = QRegularExpression("^(shellydimmer(2)?(g3)?|ShellyVintage)-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shelly2ThingClassId) {
+            namePattern = QRegularExpression("^shellyswitch-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shelly25ThingClassId) {
+            namePattern = QRegularExpression("^(shellyswitch25|ShellyPlus2PM)-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyButton1ThingClassId) {
+            namePattern = QRegularExpression("^shellybutton1-[0-9-A-Z]+$");
+        } else if (info->thingClassId() == shellyEmThingClassId) {
+            namePattern = QRegularExpression("^shellyem(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyEm3ThingClassId) {
+            namePattern = QRegularExpression("^shellyem3-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyPro3EMThingClassId) {
+            namePattern = QRegularExpression("^ShellyPro3EM-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyHTThingClassId) {
+            namePattern = QRegularExpression("shellyht(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyI3ThingClassId) {
+            namePattern = QRegularExpression("shellyix3-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyMotionThingClassId) {
+            namePattern = QRegularExpression("shellymotionsensor-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyTrvThingClassId) {
+            namePattern = QRegularExpression("shellytrv-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyFloodThingClassId) {
+            namePattern = QRegularExpression("^shellyflood-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellySmokeThingClassId) {
+            namePattern = QRegularExpression("^shellysmoke-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyPlusSmokeThingClassId) {
+            namePattern = QRegularExpression("^shellyplussmoke-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+        } else if (info->thingClassId() == shellyGasThingClassId) {
+            namePattern = QRegularExpression("^shellygas-[0-9A-Z]+$");
         }
+
+        if (!entry.name().contains(namePattern))
+            continue;
 
         ThingDescriptor descriptor(info->thingClassId(), entry.name(), entry.hostAddress().toString());
         ParamList params;
@@ -176,7 +181,7 @@ void IntegrationPluginShelly::confirmPairing(ThingPairingInfo *info, const QStri
     QString shellyId = info->params().paramValue(thingClass.paramTypes().findByName("id").id()).toString();
     ZeroConfServiceEntry zeroConfEntry;
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
-        if (entry.name() == shellyId) {
+        if (entry.name() == shellyId && entry.protocol() == QAbstractSocket::IPv4Protocol) {
             zeroConfEntry = entry;
         }
     }
@@ -195,7 +200,8 @@ void IntegrationPluginShelly::confirmPairing(ThingPairingInfo *info, const QStri
         // GetDeviceInfo wouldn't require authentication if enabled, so if the setup is changed to fetch some info from GetDeviceInfo,
         // make sure to not just replace the GetStatus call, or authentication verification won't work any more.
         ShellyRpcReply *reply = client->sendRequest("Shelly.GetStatus");
-        connect(reply, &ShellyRpcReply::finished, info, [info, client, this, password](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
+        connect(reply, &ShellyRpcReply::finished, info, [info, this, password](ShellyRpcReply::Status status, const QVariantMap &response){
+            Q_UNUSED(response)
             if (status != ShellyRpcReply::StatusSuccess) {
                 qCWarning(dcShelly) << "Error during shelly paring";
                 info->finish(Thing::ThingErrorHardwareFailure);
@@ -218,9 +224,11 @@ void IntegrationPluginShelly::setupThing(ThingSetupInfo *info)
     if (!thing->thingClass().paramTypes().findByName("id").id().isNull()) {
 
         QString shellyId = info->thing()->paramValue("id").toString();
-        if (isGen2(shellyId)) {
-            setupGen2(info);
+        if (isGen2Plus(shellyId)) {
+            qCDebug(dcShelly()) << "Setting up" << shellyId << "Gen2+";
+            setupGen2Plus(info);
         } else {
+            qCDebug(dcShelly()) << "Setting up" << shellyId << "Gen1";
             setupGen1(info);
         }
 
@@ -238,8 +246,8 @@ void IntegrationPluginShelly::postSetupThing(Thing *thing)
     }
 
     if (thing->parentId().isNull()) {
-        if (isGen2(thing->paramValue("id").toString())) {
-            fetchStatusGen2(thing);
+        if (isGen2Plus(thing->paramValue("id").toString())) {
+            fetchStatusGen2Plus(thing);
         } else {
             fetchStatusGen1(thing);
         }
@@ -247,8 +255,8 @@ void IntegrationPluginShelly::postSetupThing(Thing *thing)
 
     // Check if a Addon is connected
     if (thing->thingClassId() == shellyPlus1ThingClassId
-            || thing->thingClassId() == shellyPlus1pmThingClassId
-            || thing->thingClassId() == shellyPlus25ThingClassId) {
+        || thing->thingClassId() == shellyPlus1pmThingClassId
+        || thing->thingClassId() == shellyPlus25ThingClassId) {
 
         // Narf... seems they forgot to register the SensorAddon namespace on the RPC interface
         ShellyJsonRpcClient *client = m_rpcClients.value(thing);
@@ -324,7 +332,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
 
     ActionType actionType = thing->thingClass().actionTypes().findById(action.actionTypeId());
     if (actionType.name() == "reboot") {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             ShellyRpcReply *reply = m_rpcClients.value(thing)->sendRequest("Shelly.Reboot");
             connect(reply, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
                 info->finish(status == ShellyRpcReply::StatusSuccess ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -344,7 +352,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (actionType.name() == "performUpdate") {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             ShellyRpcReply *reply = m_rpcClients.value(thing)->sendRequest("Shelly.Update");
             connect(reply, &ShellyRpcReply::finished, info, [info](ShellyRpcReply::Status status, const QVariantMap &/*response*/){
                 info->finish(status == ShellyRpcReply::StatusSuccess ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
@@ -535,7 +543,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (action.actionTypeId() == shellyRollerOpenActionTypeId) {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             int channelNbr = info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1;
             params.insert("id", channelNbr);
@@ -558,7 +566,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (action.actionTypeId() == shellyRollerCloseActionTypeId) {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             int channelNbr = info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1;
             params.insert("id", channelNbr);
@@ -581,7 +589,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (action.actionTypeId() == shellyRollerStopActionTypeId) {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             int channelNbr = info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1;
             params.insert("id", channelNbr);
@@ -604,7 +612,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (action.actionTypeId() == shellyRollerCalibrateActionTypeId) {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             int channelNbr = info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1;
             params.insert("id", channelNbr);
@@ -624,7 +632,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
     }
 
     if (action.actionTypeId() == shellyRollerPercentageActionTypeId) {
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             int channelNbr = info->thing()->paramValue(shellyRollerThingChannelParamTypeId).toInt() - 1;
             int positionTarget = info->action().paramValue(shellyRollerPercentageActionPercentageParamTypeId).toInt();
@@ -738,7 +746,7 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         ParamTypeId powerParamTypeId = actionType.id();
         bool on = action.param(powerParamTypeId).value().toBool();
 
-        if (isGen2(shellyId)) {
+        if (isGen2Plus(shellyId)) {
             QVariantMap params;
             params.insert("id", relay - 1);
             params.insert("on", on);
@@ -1139,11 +1147,11 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
     if (thing->thingClassId() == shellyEm3ThingClassId) {
         thing->setStateValue(shellyEm3CurrentPowerStateTypeId,
                              thing->stateValue(shellyEm3CurrentPowerPhaseAStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3CurrentPowerPhaseBStateTypeId).toDouble() +
-                             thing->stateValue(shellyEm3CurrentPowerPhaseCStateTypeId).toDouble());
+                                 thing->stateValue(shellyEm3CurrentPowerPhaseBStateTypeId).toDouble() +
+                                 thing->stateValue(shellyEm3CurrentPowerPhaseCStateTypeId).toDouble());
         double totalConsumption = thing->stateValue(shellyEm3EnergyConsumedPhaseAStateTypeId).toDouble() +
-                thing->stateValue(shellyEm3EnergyConsumedPhaseBStateTypeId).toDouble() +
-                thing->stateValue(shellyEm3EnergyConsumedPhaseCStateTypeId).toDouble();
+                                  thing->stateValue(shellyEm3EnergyConsumedPhaseBStateTypeId).toDouble() +
+                                  thing->stateValue(shellyEm3EnergyConsumedPhaseCStateTypeId).toDouble();
         if (totalConsumption >= 0) {
             thing->setStateValue(shellyEm3TotalEnergyConsumedStateTypeId, totalConsumption);
         } else {
@@ -1151,8 +1159,8 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
             qCWarning(dcShelly()) << "Detected negative value on shelly total consumption counter. Ignoring value." << qUtf8Printable(jsonDoc.toJson());
         }
         double totalProduction = thing->stateValue(shellyEm3EnergyProducedPhaseAStateTypeId).toDouble() +
-                thing->stateValue(shellyEm3EnergyProducedPhaseBStateTypeId).toDouble() +
-                thing->stateValue(shellyEm3EnergyProducedPhaseCStateTypeId).toDouble();
+                                 thing->stateValue(shellyEm3EnergyProducedPhaseBStateTypeId).toDouble() +
+                                 thing->stateValue(shellyEm3EnergyProducedPhaseCStateTypeId).toDouble();
         if (totalProduction >= 0) {
             thing->setStateValue(shellyEm3TotalEnergyProducedStateTypeId, totalProduction);
         } else {
@@ -1190,7 +1198,7 @@ void IntegrationPluginShelly::onMulticastMessageReceived(const QHostAddress &sou
 
     // Fetching info about signal strength, battery level for sleepy devices as they may be still awake when sending us something.
     if (thing->thingClassId() == shellyFloodThingClassId ||
-            thing->thingClassId() == shellyTrvThingClassId) {
+        thing->thingClassId() == shellyTrvThingClassId) {
         fetchStatusGen1(thing);
     }
 }
@@ -1202,12 +1210,12 @@ void IntegrationPluginShelly::updateStatus()
             continue;
         }
 
-        if (isGen2(thing->paramValue("id").toString())) {
-            fetchStatusGen2(thing);
+        if (isGen2Plus(thing->paramValue("id").toString())) {
+            fetchStatusGen2Plus(thing);
         } else {
             //Skipping sleepy devices, as they won't reply to cyclic requests.
             if (thing->thingClassId() == shellyFloodThingClassId
-                    || thing->thingClassId() == shellyTrvThingClassId) {
+                || thing->thingClassId() == shellyTrvThingClassId) {
                 continue;
             }
 
@@ -1260,12 +1268,10 @@ void IntegrationPluginShelly::fetchStatusGen1(Thing *thing)
             child->setStateValue("signalStrength", signalStrength);
         }
 
-
         QVariantMap updateMap = map.value("update").toMap();
         thing->setStateValue("currentVersion", updateMap.value("old_version").toString());
         thing->setStateValue("availableVersion", updateMap.value("new_version").toString());
         thing->setStateValue("updateStatus", updateStatusMap.value(updateMap.value("status").toString()));
-
 
         // Sometimes, some shellies just stop to send CoIoT messages until they are rebooted...
         // If communication to the shelly per se works fine, but we didn't receive anything in more than a minute,
@@ -1315,7 +1321,7 @@ void IntegrationPluginShelly::fetchStatusGen1(Thing *thing)
     });
 }
 
-void IntegrationPluginShelly::fetchStatusGen2(Thing *thing)
+void IntegrationPluginShelly::fetchStatusGen2Plus(Thing *thing)
 {
     ShellyJsonRpcClient *client = m_rpcClients.value(thing);
     ShellyRpcReply *statusReply = client->sendRequest("Shelly.GetStatus");
@@ -1478,7 +1484,7 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
         if (myThings().filterByParentId(info->thing()->id()).isEmpty()) {
             // Always create the switch thing if we don't have one yet for shellies with input (1, 1pm etc)
             if (info->thing()->thingClassId() == shelly1ThingClassId
-                    || info->thing()->thingClassId() == shelly1pmThingClassId) {
+                || info->thing()->thingClassId() == shelly1pmThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
@@ -1486,9 +1492,9 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
 
             // Create 2 switches for some that have 2
             if (info->thing()->thingClassId() == shelly2ThingClassId
-                    || info->thing()->thingClassId() == shelly25ThingClassId
-                    || (info->thing()->thingClassId() == shellyDimmerThingClassId && info->thing()->paramValue(shellyDimmerThingIdParamTypeId).toString().startsWith("shellydimmer")) // Don't create chids for shelly vintage
-                    || info->thing()->thingClassId() == shelly1lThingClassId) {
+                || info->thing()->thingClassId() == shelly25ThingClassId
+                || (info->thing()->thingClassId() == shellyDimmerThingClassId && info->thing()->paramValue(shellyDimmerThingIdParamTypeId).toString().startsWith("shellydimmer")) // Don't create chids for shelly vintage
+                || info->thing()->thingClassId() == shelly1lThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
@@ -1570,10 +1576,10 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
 
     // Handle thing settings of gateway devices
     if (info->thing()->thingClassId() == shellyPlugThingClassId ||
-            info->thing()->thingClassId() == shellyButton1ThingClassId ||
-            info->thing()->thingClassId() == shellyI3ThingClassId ||
-            info->thing()->thingClassId() == shellyTrvThingClassId ||
-            info->thing()->thingClassId() == shellyGasThingClassId) {
+        info->thing()->thingClassId() == shellyButton1ThingClassId ||
+        info->thing()->thingClassId() == shellyI3ThingClassId ||
+        info->thing()->thingClassId() == shellyTrvThingClassId ||
+        info->thing()->thingClassId() == shellyGasThingClassId) {
         connect(info->thing(), &Thing::settingChanged, this, [this, thing, shellyId](const ParamTypeId &settingTypeId, const QVariant &value) {
 
             pluginStorage()->beginGroup(thing->id().toString());
@@ -1637,7 +1643,7 @@ void IntegrationPluginShelly::setupGen1(ThingSetupInfo *info)
     }
 }
 
-void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
+void IntegrationPluginShelly::setupGen2Plus(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     QHostAddress address = getIP(thing);
@@ -1772,10 +1778,40 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     }
                 });
                 return;
+            }
 
+            if (info->thing()->thingClassId() == shelly1ThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            if (info->thing()->thingClassId() == shelly1pmThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+
+            if (info->thing()->thingClassId() == shellyDimmerThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
             }
 
             if (info->thing()->thingClassId() == shellyPro3EMThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            if (info->thing()->thingClassId() == shellyEmThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            if (info->thing()->thingClassId() == shellyHTThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            if (info->thing()->thingClassId() == shellyPlugThingClassId) {
                 info->finish(Thing::ThingErrorNoError);
                 return;
             }
@@ -1799,7 +1835,7 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
             });
         } else {
             if (thing->setupStatus() == Thing::ThingSetupStatusComplete) {
-                fetchStatusGen2(thing);
+                fetchStatusGen2Plus(thing);
             }
         }
     });
@@ -1924,7 +1960,6 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                 QVariantMap map = notification.value("smoke:0").toMap();
                 thing->setStateValue(shellyPlusSmokeFireDetectedStateTypeId, map.value("alarm").toBool());
             }
-
         }
     });
 
@@ -1964,10 +1999,8 @@ void IntegrationPluginShelly::setupGen2(ThingSetupInfo *info)
                     }
                 });
             }
-
         });
     }
-
 }
 
 void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
@@ -2068,7 +2101,7 @@ QHostAddress IntegrationPluginShelly::getIP(Thing *thing) const
 
     ZeroConfServiceEntry zeroConfEntry;
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
-        if (entry.name() == shellyId) {
+        if (entry.name() == shellyId && entry.protocol() == QAbstractSocket::IPv4Protocol) {
             zeroConfEntry = entry;
         }
     }
@@ -2089,12 +2122,13 @@ QHostAddress IntegrationPluginShelly::getIP(Thing *thing) const
     return address;
 }
 
-bool IntegrationPluginShelly::isGen2(const QString &shellyId) const
+bool IntegrationPluginShelly::isGen2Plus(const QString &shellyId) const
 {
     return shellyId.contains("Plus", Qt::CaseInsensitive)
-            || shellyId.contains("Pro", Qt::CaseInsensitive)
-            || QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive).exactMatch(shellyId) // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
-            ;
+    || shellyId.contains("Pro", Qt::CaseInsensitive)
+        || shellyId.contains("G3", Qt::CaseInsensitive) // Gen3 devices have API 2
+        || QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive).exactMatch(shellyId) // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
+        ;
 }
 
 void IntegrationPluginShelly::handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount)
