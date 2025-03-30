@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,14 +31,14 @@
 #ifndef INTEGRATIONPLUGINSHELLY_H
 #define INTEGRATIONPLUGINSHELLY_H
 
-#include "integrations/integrationplugin.h"
-
-#include "extern-plugininfo.h"
-
+#include <integrations/integrationplugin.h>
 #include <coap/coap.h>
+
 #include <QHostAddress>
 #include <QNetworkRequest>
 #include <QUrlQuery>
+
+#include "extern-plugininfo.h"
 
 class ZeroConfServiceBrowser;
 class PluginTimer;
@@ -57,7 +57,6 @@ public:
     explicit IntegrationPluginShelly();
     ~IntegrationPluginShelly() override;
 
-
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void startPairing(ThingPairingInfo *info) override;
@@ -73,15 +72,15 @@ private slots:
 
     void updateStatus();
     void fetchStatusGen1(Thing *thing);
-    void fetchStatusGen2(Thing *thing);
+    void fetchStatusGen2Plus(Thing *thing);
 
 private:
     void setupGen1(ThingSetupInfo *info);
-    void setupGen2(ThingSetupInfo *info);
+    void setupGen2Plus(ThingSetupInfo *info);
     void setupShellyChild(ThingSetupInfo *info);
 
     QHostAddress getIP(Thing *thing) const;
-    bool isGen2(const QString &shellyId) const;
+    bool isGen2Plus(const QString &shellyId) const;
 
     void handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount);
 
