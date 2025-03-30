@@ -1,3 +1,23 @@
+nymea-plugins (1.11.0) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * NetworkDetector: Update to networkdevice interface
+  * EVerest: Update to networkdevice interface
+  * Bosswerk: Update to networkdevice interface
+  * Fronius: Update to networkdevice interface
+  * go-eCharger: Update to networkdevice interface
+  * Keba: Update to networkdevice interface
+  * Meross: Update to networkdevice interface
+  * WakeOnLan: Update to new network device discovery
+  * ESP Somfy RTS: Update to networkdevice interface
+  * Shelly: Add support for Gen3 hardware and fix #739
+  * go-e: Update phase detection for charging and connected phases
+  * EVerest: Fix invalid data handling from multiport charger
+  * EVerest: Add phase switching
+  * Tado: Update account authentication to device code grant
+
+ -- jenkins <developer@nymea.io>  Sun, 30 Mar 2025 20:36:48 +0200
+
 nymea-plugins (1.10.0) jammy; urgency=medium
 
   [ Simon Stürz ]
