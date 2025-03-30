@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -44,18 +44,18 @@ KebaDiscovery::KebaDiscovery(KeContactDataLayer *kebaDataLayer, NetworkDeviceDis
     m_responseTimer.setInterval(2000);
     m_responseTimer.setSingleShot(true);
     connect(&m_responseTimer, &QTimer::timeout, this, [=](){
+
+        // Fill in all network device infos we have
+        for (int i = 0; i < m_results.count(); i++) {
+            m_results[i].networkDeviceInfo = m_networkDeviceInfos.get(m_results.at(i).address);
+        }
+
         qCInfo(dcKeba()) << "Discovery: Finished successfully. Found" << m_results.count() << "Keba Wallbox";
         emit discoveryFinished();
     });
 
     // Read data from the keba data layer and verify if it is a keba report
     connect (m_kebaDataLayer, &KeContactDataLayer::datagramReceived, this, [=](const QHostAddress &address, const QByteArray &datagram){
-
-        // Just continue if this is a new address we have no result for
-        if (alreadyDiscovered(address)) {
-            qCDebug(dcKeba()) << "Discovery: Skipping datagram from already discovered Keba on" << address.toString();
-            return;
-        }
 
         // Try to convert the received data to a json document
         QJsonParseError error;
@@ -78,15 +78,23 @@ KebaDiscovery::KebaDiscovery(KeContactDataLayer *kebaDataLayer, NetworkDeviceDis
         }
 
         // We have received a report 1 datagram, let's add it to the result
-        NetworkDeviceInfo networkDeviceInfo = m_verifiedNetworkDeviceInfos.get(address);
-        if (networkDeviceInfo.isValid()) {
-            KebaDiscoveryResult result;
-            result.networkDeviceInfo = networkDeviceInfo;
-            result.product = dataMap.value("Product").toString();
-            result.serialNumber = dataMap.value("Serial").toString();
-            result.firmwareVersion = dataMap.value("Firmware").toString();
+        KebaDiscoveryResult result;
+        result.address = address;
+        result.product = dataMap.value("Product").toString();
+        result.serialNumber = dataMap.value("Serial").toString();
+        result.firmwareVersion = dataMap.value("Firmware").toString();
+
+        bool alreadyDiscovered = false;
+        foreach (const KebaDiscoveryResult &r, m_results) {
+            if (r.serialNumber == result.serialNumber) {
+                alreadyDiscovered = true;
+                break;
+            }
+        }
+
+        if (!alreadyDiscovered) {
             m_results.append(result);
-            qCDebug(dcKeba()) << "Discovery: -->" << networkDeviceInfo << networkDeviceInfo.macAddress() << result.product << result.serialNumber << result.firmwareVersion;
+            qCDebug(dcKeba()) << "Discovery: -->" << address.toString() << result.product << result.serialNumber << result.firmwareVersion;
         }
     });
 }
@@ -104,26 +112,16 @@ void KebaDiscovery::startDiscovery()
     qCInfo(dcKeba()) << "Discovery: Start searching for Keba wallboxes in the network...";
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
 
-    // Check any already discovered infos..
-    foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-        sendReportRequest(networkDeviceInfo);
-    }
-
     // Imedialty check any new device gets discovered
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &KebaDiscovery::sendReportRequest);
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &KebaDiscovery::sendReportRequest);
 
     // Check what might be left on finished
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
         qCDebug(dcKeba()) << "Discovery: Network discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
         m_networkDeviceInfos = discoveryReply->networkDeviceInfos();
+
         qCDebug(dcKeba()) << "Discovery: Network discovery finished. Start finishing discovery...";
-        // Send a report request to nework device info not sent already...
-        foreach (const NetworkDeviceInfo &networkDeviceInfo, m_networkDeviceInfos) {
-            if (!m_verifiedNetworkDeviceInfos.contains(networkDeviceInfo)) {
-                sendReportRequest(networkDeviceInfo);
-            }
-        }
         m_responseTimer.start();
     });
 }
@@ -133,27 +131,17 @@ QList<KebaDiscovery::KebaDiscoveryResult> KebaDiscovery::discoveryResults() cons
     return m_results;
 }
 
-bool KebaDiscovery::alreadyDiscovered(const QHostAddress &address)
+void KebaDiscovery::sendReportRequest(const QHostAddress &address)
 {
-    foreach (const KebaDiscoveryResult &result, m_results) {
-        if (result.networkDeviceInfo.address() == address) {
-            return true;
-        }
-    }
-
-    return false;
+    m_verifiedAddresses.append(address);
+    m_kebaDataLayer->write(address, QByteArray("report 1\n"));
 }
 
 void KebaDiscovery::cleanup()
 {
     m_networkDeviceInfos.clear();
-    m_verifiedNetworkDeviceInfos.clear();
+    m_verifiedAddresses.clear();
     m_results.clear();
 }
 
-void KebaDiscovery::sendReportRequest(const NetworkDeviceInfo &networkDeviceInfo)
-{
-    m_verifiedNetworkDeviceInfos.append(networkDeviceInfo);
-    m_kebaDataLayer->write(networkDeviceInfo.address(), QByteArray("report 1\n"));
-}
 

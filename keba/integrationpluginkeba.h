@@ -77,6 +77,8 @@ private:
     KebaDiscovery *m_runningDiscovery = nullptr;
 
     QHash<ThingClassId, ParamTypeId> m_macAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_hostNameParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_addressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_modelParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_serialNumberParamTypeIds;
 

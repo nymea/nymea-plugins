@@ -13,16 +13,32 @@
                     "name": "keba",
                     "displayName": "Keba KeContact",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
+                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable", "networkdevice"],
                     "paramTypes":[
                         {
                             "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
                             "name": "macAddress",
                             "displayName": "MAC address",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "defaultValue":"",
+                            "inputType": "MacAddress",
+                            "defaultValue": "",
                             "readOnly": true
+                        },
+                        {
+                            "id": "0cc79bb7-3162-432c-a7bc-45f9b5542fbd",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "22f70789-33c2-4183-8bca-0d3108b1c80b",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
                         },
                         {
                             "id": "45255155-318b-4204-8ce6-2c106a56286d",
@@ -30,7 +46,7 @@
                             "displayName": "Serial number",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue":"",
+                            "defaultValue": "",
                             "readOnly": true
                         },
                         {
@@ -39,7 +55,7 @@
                             "displayName": "Product name",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue":"",
+                            "defaultValue": "",
                             "readOnly": true
                         }
                     ],
@@ -409,6 +425,22 @@
                             "inputType": "TextLine",
                             "defaultValue":"",
                             "readOnly": true
+                        },
+                        {
+                            "id": "96104d2b-2fd3-4f20-bc8c-7b873d0b0f9e",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "a0c60511-4082-4109-9a9f-383076680c4f",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
                         },
                         {
                             "id": "6f732eb9-1711-4da0-a9a4-abcfa19f5e34",
