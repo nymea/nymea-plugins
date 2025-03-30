@@ -88,14 +88,14 @@ private:
 
     QHash<QHostAddress, GoeDiscovery::Result> m_discoveryResults;
     NetworkDeviceInfos m_discoveredNetworkDeviceInfos;
-    NetworkDeviceInfos m_verifiedNetworkDeviceInfos;
+    QList<QHostAddress> m_verifiedHostAddresses;
 
     QList<QNetworkReply *> m_pendingReplies;
 
 private slots:
-    void checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo);
-    void checkNetworkDeviceApiV1(const NetworkDeviceInfo &networkDeviceInfo);
-    void checkNetworkDeviceApiV2(const NetworkDeviceInfo &networkDeviceInfo);
+    void checkHostAddress(const QHostAddress &address);
+    void checkHostAddressApiV1(const QHostAddress &address);
+    void checkHostAddressApiV2(const QHostAddress &address);
 
     void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
 
