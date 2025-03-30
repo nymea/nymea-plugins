@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2024, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -74,10 +74,10 @@ private:
 
     QNetworkReply *request(Thing *thing, const QString &nameSpace, Method method = GET, const QVariantMap &payload = QVariantMap());
 
-    QHash<Thing*, QByteArray> m_keys;
-    QHash<Thing*, NetworkDeviceMonitor*> m_deviceMonitors;
-    PluginTimer* m_timer5s = nullptr;
-    PluginTimer* m_timer60s = nullptr;
+    QHash<Thing *, QByteArray> m_keys;
+    QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    PluginTimer *m_timer5s = nullptr;
+    PluginTimer *m_timer60s = nullptr;
 };
 
 #endif // INTEGRATIONPLUGINMEROSS_H
