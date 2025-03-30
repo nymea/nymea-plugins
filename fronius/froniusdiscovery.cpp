@@ -46,7 +46,6 @@ FroniusDiscovery::FroniusDiscovery(NetworkAccessManager *networkManager, Network
         qCDebug(dcFronius()) << "Discovery: Grace period timer triggered.";
         finishDiscovery();
     });
-
 }
 
 void FroniusDiscovery::startDiscovery()
@@ -55,10 +54,14 @@ void FroniusDiscovery::startDiscovery()
     m_startDateTime = QDateTime::currentDateTime();
 
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::networkDeviceInfoAdded, this, &FroniusDiscovery::checkNetworkDevice);
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &FroniusDiscovery::checkHostAddress);
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [this, discoveryReply](){
+
+        m_networkDeviceInfos = discoveryReply->networkDeviceInfos();
+
         qCDebug(dcFronius()) << "Discovery: Network discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
         m_gracePeriodTimer.start();
+
         discoveryReply->deleteLater();
     });
 }
@@ -68,11 +71,11 @@ QList<NetworkDeviceInfo> FroniusDiscovery::discoveryResults() const
     return m_discoveryResults;
 }
 
-void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDeviceInfo)
+void FroniusDiscovery::checkHostAddress(const QHostAddress &address)
 {
-    qCDebug(dcFronius()) << "Discovery: Checking network device:" << networkDeviceInfo;
+    qCDebug(dcFronius()) << "Discovery: Checking host address" << address.toString();
 
-    FroniusSolarConnection *connection = new FroniusSolarConnection(m_networkManager, networkDeviceInfo.address(), this);
+    FroniusSolarConnection *connection = new FroniusSolarConnection(m_networkManager, address, this);
     m_connections.append(connection);
 
     FroniusNetworkReply *reply = connection->getVersion();
@@ -80,9 +83,9 @@ void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         QByteArray data = reply->networkReply()->readAll();
         if (reply->networkReply()->error() != QNetworkReply::NoError) {
             if (reply->networkReply()->error() == QNetworkReply::ContentNotFoundError) {
-                qCInfo(dcFronius()) << "Discovery: The device on" << networkDeviceInfo.address().toString() << "does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device.";
+                qCInfo(dcFronius()) << "Discovery: The device on" << address.toString() << "does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device.";
             } else {
-                qCDebug(dcFronius()) << "Discovery: Reply finished with error on" << networkDeviceInfo.address().toString() << reply->networkReply()->errorString();
+                qCDebug(dcFronius()) << "Discovery: Reply finished with error on" << address.toString() << reply->networkReply()->errorString();
             }
             cleanupConnection(connection);
             return;
@@ -91,14 +94,14 @@ void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcFronius()) << "Discovery: Failed to parse JSON data from" << networkDeviceInfo.address().toString() << ":" << error.errorString() << data;
+            qCDebug(dcFronius()) << "Discovery: Failed to parse JSON data from" << address.toString() << ":" << error.errorString() << data;
             cleanupConnection(connection);
             return;
         }
 
         QVariantMap versionResponseMap = jsonDoc.toVariant().toMap();
         if (!versionResponseMap.contains("CompatibilityRange")) {
-            qCDebug(dcFronius()) << "Discovery: Unexpected JSON reply from" << networkDeviceInfo.address().toString() << "Probably not a Fronius device.";
+            qCDebug(dcFronius()) << "Discovery: Unexpected JSON reply from" << address.toString() << "Probably not a Fronius device.";
             cleanupConnection(connection);
             return;
         }
@@ -109,7 +112,7 @@ void FroniusDiscovery::checkNetworkDevice(const NetworkDeviceInfo &networkDevice
             qCWarning(dcFronius()) << "Discovery: The Fronius data logger has a version which is known to have a broken JSON API firmware.";
         }
 
-        m_discoveryResults.append(networkDeviceInfo);
+        m_discoveredAddresses.append(address);
         cleanupConnection(connection);
     });
 }
@@ -124,14 +127,15 @@ void FroniusDiscovery::finishDiscovery()
 {
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
 
-    foreach (FroniusSolarConnection *connection, m_connections) {
+    foreach (FroniusSolarConnection *connection, m_connections)
         cleanupConnection(connection);
-    }
+
+    foreach (const QHostAddress &address, m_discoveredAddresses)
+        m_discoveryResults.append(m_networkDeviceInfos.get(address));
 
     qCDebug(dcFronius()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count()
-                       << "Fronius devices in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
+                         << "Fronius devices in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     m_gracePeriodTimer.stop();
 
     emit discoveryFinished();
-
 }
