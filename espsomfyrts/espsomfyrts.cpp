@@ -80,6 +80,11 @@ EspSomfyRts::EspSomfyRts(NetworkDeviceMonitor *monitor, QObject *parent)
     });
 }
 
+NetworkDeviceMonitor *EspSomfyRts::monitor() const
+{
+    return m_monitor;
+}
+
 QHostAddress EspSomfyRts::address() const
 {
     return QHostAddress(m_websocketUrl.host());
