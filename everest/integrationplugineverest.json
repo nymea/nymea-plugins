@@ -14,23 +14,29 @@
                     "id": "965cbe0d-088c-42a2-965d-ceafbb8b01e9",
                     "setupMethod": "JustAdd",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
+                    "interfaces": [ "evcharger", "smartmeterconsumer", "networkdevice", "connectable" ],
                     "paramTypes": [
+                        {
+                            "id": "f1f3e9a7-3a35-4089-8869-b9bfd64659e5",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString"
+                        },
                         {
                             "id": "911b6fa3-010c-486e-8251-71a6aa21adb3",
                             "name": "address",
-                            "displayName": "Host address",
+                            "displayName": "IP address",
                             "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue": ""
                         },
                         {
                             "id": "cb9517ef-1ae2-49c9-9036-0c6e15bb3652",
-                            "name": "mac",
+                            "name": "macAddress",
                             "displayName": "MAC address",
                             "type": "QString",
-                            "readOnly": true,
-                            "defaultValue": "00:00:00:00:00:00"
+                            "defaultValue": "00:00:00:00:00:00",
+                            "readOnly": true
                         },
                         {
                             "id": "73f27e36-6f68-40a9-8805-22e88911736c",
