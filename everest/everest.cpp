@@ -133,7 +133,16 @@ void Everest::setMaxChargingCurrent(double current)
     QByteArray payload = QByteArray::number(current);
 
     m_client->publish(topic, payload);
+}
 
+void Everest::setMaxChargingCurrentAndPhaseCount(uint phasesCount, double current)
+{
+    QString topic = m_topicPrefix + "/cmd/set_limit_amps_phases";
+    QVariantMap data;
+    data.insert("amps", current);
+    data.insert("phases", phasesCount);
+
+    m_client->publish(topic, QJsonDocument::fromVariant(data).toJson());
 }
 
 void Everest::onConnected()
@@ -207,16 +216,16 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         m_thing->setStateMaxValue(everestMaxChargingCurrentStateTypeId, maxCurrent);
         m_thing->setStateMinValue(everestMaxChargingCurrentStateTypeId, minCurrent == 0 ? 6 : minCurrent);
 
-        // FIXME: once we have a method for phase switching, we can re-enable the featre here
-
-        // bool phaseSwitchingAvailable = dataMap.value("supports_changing_phases_during_charging", false).toBool();
-        // if (!phaseSwitchingAvailable) {
-        //     // Only option left is set the desired phase count to 3, force that value
-        //     m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 3 });
-        //     m_thing->setStateValue(everestDesiredPhaseCountStateTypeId, 3);
-        // } else {
-        //     m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 1, 3 });
-        // }
+        bool phaseSwitchingAvailable = dataMap.value("supports_changing_phases_during_charging", false).toBool();
+        if (!phaseSwitchingAvailable) {
+            // Only option left is set the desired phase count to 3, force that value
+            m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 3 });
+            m_thing->setStateValue(everestDesiredPhaseCountStateTypeId, 3);
+            m_thing->setStateValue(everestPhaseCountStateTypeId, 3);
+        } else {
+            m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 1, 3 });
+            m_thing->setStateValue(everestPhaseCountStateTypeId, m_thing->stateValue(everestDesiredPhaseCountStateTypeId));
+        }
 
     } else if (topic.endsWith("limits")) {
         /*
@@ -227,7 +236,7 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
             }
         */
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
-        m_thing->setStateValue(everestPhaseCountStateTypeId, dataMap.value("nr_of_phases_available").toUInt());
+        //m_thing->setStateValue(everestPhaseCountStateTypeId, dataMap.value("nr_of_phases_available").toUInt());
         double maxCurrent = dataMap.value("max_current").toDouble();
         if (maxCurrent >= 6) {
             // FIXME: make it a double again once supported from the interface
@@ -312,7 +321,6 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         m_thing->setStateValue(everestTemperatureStateTypeId, dataMap.value("temperature").toDouble());
         m_thing->setStateValue(everestFanSpeedStateTypeId, dataMap.value("fan_rpm").toDouble());
-
     }
 }
 
