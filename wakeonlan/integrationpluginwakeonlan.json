@@ -20,7 +20,8 @@
                             "name": "mac",
                             "displayName": "MAC address",
                             "type": "QString",
-                            "inputType": "MacAddress"
+                            "inputType": "MacAddress",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [

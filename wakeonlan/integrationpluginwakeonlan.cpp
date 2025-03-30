@@ -55,15 +55,16 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
     NetworkDeviceDiscoveryReply *discoveryReply = hardwareManager()->networkDeviceDiscovery()->discover();
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [=](){
-        ThingDescriptors descriptors;
         qCDebug(dcWakeOnLan()) << "Discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "devices";
         foreach (const NetworkDeviceInfo &networkDeviceInfo, discoveryReply->networkDeviceInfos()) {
-            // We need the mac address...
-            if (networkDeviceInfo.macAddress().isEmpty())
+
+            // We need a unique mac
+            if (networkDeviceInfo.monitorMode() != NetworkDeviceInfo::MonitorModeMac)
                 continue;
 
+            MacAddressInfo macInfo = networkDeviceInfo.macAddressInfos().constFirst();
             // Filter out already added network devices, rediscovery is in this case no option
-            if (myThings().filterByParam(wolThingMacParamTypeId, networkDeviceInfo.macAddress()).count() != 0)
+            if (myThings().filterByParam(wolThingMacParamTypeId, macInfo.macAddress().toString()).count() != 0)
                 continue;
 
             QString title;
@@ -73,25 +74,22 @@ void IntegrationPluginWakeOnLan::discoverThings(ThingDiscoveryInfo *info)
                 title = networkDeviceInfo.hostName() + " (" + networkDeviceInfo.address().toString() + ")";
             }
             QString description;
-            if (networkDeviceInfo.macAddressManufacturer().isEmpty()) {
-                description = networkDeviceInfo.macAddress();
+            if (macInfo.vendorName().isEmpty()) {
+                description = macInfo.macAddress().toString();
             } else {
-                description = networkDeviceInfo.macAddress() + " (" + networkDeviceInfo.macAddressManufacturer() + ")";
+                description = macInfo.macAddress().toString() + " (" + macInfo.vendorName() + ")";
             }
             ThingDescriptor descriptor(wolThingClassId, title, description);
-            ParamList params;
-            params.append(Param(wolThingMacParamTypeId, networkDeviceInfo.macAddress()));
-            descriptor.setParams(params);
-            descriptors.append(descriptor);
+            descriptor.setParams({Param(wolThingMacParamTypeId, macInfo.macAddress().toString())});
+            info->addThingDescriptor(descriptor);
         }
-        info->addThingDescriptors(descriptors);
         info->finish(Thing::ThingErrorNoError);
     });
 }
 
 void IntegrationPluginWakeOnLan::executeAction(ThingActionInfo *info)
 {
-    qCDebug(dcWakeOnLan) << "Wake up" << info->thing()->name();
+    qCInfo(dcWakeOnLan) << "Wake up" << info->thing()->name();
     wakeup(info->thing()->paramValue(wolThingMacParamTypeId).toString());
     return info->finish(Thing::ThingErrorNoError);
 }
