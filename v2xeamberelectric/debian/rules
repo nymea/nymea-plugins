@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_VERBOSE=1
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+PREPROCESS_FILES := $(wildcard debian/*.in)
+
+$(PREPROCESS_FILES:.in=): %: %.in
+	sed 's,/@DEB_HOST_MULTIARCH@,$(DEB_HOST_MULTIARCH:%=/%),g' $< > $@
+
+override_dh_install: $(PREPROCESS_FILES:.in=)
+	make -j9 install DESTDIR=debian/tmp AM_UPDATE_INFO_DIR=no INSTALL_ROOT=debian/tmp
+	dh_install
+
+override_dh_missing:
+	dh_missing --list-missing
+
+override_dh_auto_build:
+	dh_auto_build
+	make lrelease
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf $(PREPROCESS_FILES:.in=)
+
+%:
+	dh $@ --parallel
+
