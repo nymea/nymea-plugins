@@ -85,7 +85,7 @@ void V2xeAmberElectric::setupThing(ThingSetupInfo *info)
     qCDebug(dcAmberElectric()) << "Either install an API key pacakge (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
 
     if (!mPluginTimer) {
-        mPluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);//TODO make 30 minutes after test
+        mPluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(1800);//TODO make 30 minutes after test for 
         connect(mPluginTimer, &PluginTimer::timeout, this, &V2xeAmberElectric::onPluginTimer);
     }
     info->finish(Thing::ThingErrorNoError);
