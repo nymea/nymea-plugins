@@ -84,6 +84,7 @@ PLUGIN_DIRS = \
     unifi               \
     usbrelay            \
     usbrly82            \
+    v2xeamberelectric   \
     wakeonlan           \
     wemo                \
     ws2812fx            \

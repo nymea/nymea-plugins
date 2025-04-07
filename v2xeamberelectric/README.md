@@ -3,6 +3,5 @@
 
 Description of the plugin...
 
-plugin for amber electric api to get live data of energy use ,
-
+This Nymea plugin fetches live and forecasted price data, providing real-time and future pricing information for integration with smart energy management systems
 
