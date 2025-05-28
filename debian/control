@@ -841,6 +841,15 @@ Description: nymea integration plugin to connect to your Tado account
  This package contains the nymea integration plugin for Tado devices.
 
 
+Package: nymea-plugin-v2xeamberelectric
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: This nymea plugin fetches live and forecasted price data,
+ providing real-time and future pricing information for integration with smart energy management systems.
+
+
 Package: nymea-plugin-wheretheissat
 Architecture: any
 Depends: ${misc:Depends},
