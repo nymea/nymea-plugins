@@ -124,7 +124,7 @@ void IntegrationPluginMeross::confirmPairing(ThingPairingInfo *info, const QStri
 
     QByteArray nonce = QUuid::createUuid().toString().remove(QRegExp("[{}-]")).left(16).toUtf8();
     QByteArray initKey = "23x17ahWarFH6w29";
-    QByteArray timestamp = QByteArray::number(QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000);
+    QByteArray timestamp = QByteArray::number(QDateTime::currentMSecsSinceEpoch() / 1000);
     QByteArray signature = initKey + timestamp +  nonce + encodedParams;
 
     signature = QCryptographicHash::hash(signature, QCryptographicHash::Md5).toHex();
@@ -374,7 +374,7 @@ QNetworkReply* IntegrationPluginMeross::request(Thing *thing, const QString &nam
     QByteArray key = m_keys.value(thing);
 
     QString messageId = QUuid::createUuid().toString().remove(QRegExp("[{}-]"));
-    qulonglong timestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    qulonglong timestamp = QDateTime::currentMSecsSinceEpoch();
     quint16 timestampMs = timestamp % 1000;
     timestamp = timestamp / 1000;
     QByteArray signature = QCryptographicHash::hash(QString(messageId + key + QString::number(timestamp)).toUtf8(), QCryptographicHash::Md5).toHex();
