@@ -69,7 +69,7 @@ void IntegrationPluginEverest::startMonitoringAutoThings()
 
                 ParamList params;
                 params.append(Param(everestThingConnectorParamTypeId, connectorName));
-                params.append(Param(everestThingAddressParamTypeId, result.networkDeviceInfo.address().toString()));
+                params.append(Param(everestThingAddressParamTypeId, result.address.toString()));
                 descriptor.setParams(params);
 
                 // Let's check if we aleardy have a thing with those params
@@ -215,8 +215,15 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
     }
 
     if (!everstClient) {
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
+        if (!monitor) {
+            qCWarning(dcEverest()) << "Incomplete paramerters. Could not register network device monitor with these thing paramaters:" << thing->name() << thing->params();
+            info->finish(Thing::ThingErrorMissingParameter);
+            return;
+        }
+
         everstClient = new EverestClient(this);
-        everstClient->setMonitor(hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing));
+        everstClient->setMonitor(monitor);
         m_everstClients.append(everstClient);
         qCDebug(dcEverest()) << "Created new" << everstClient;
         everstClient->start();
