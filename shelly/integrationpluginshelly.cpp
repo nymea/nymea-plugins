@@ -119,7 +119,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyEm3ThingClassId) {
             namePattern = QRegularExpression("^shellyem3-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyPro3EMThingClassId) {
-            namePattern = QRegularExpression("^ShellyPro3EM-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
+            namePattern = QRegularExpression("^ShellyPro3EM(400)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
         } else if (info->thingClassId() == shellyHTThingClassId) {
             namePattern = QRegularExpression("shellyht(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
         } else if (info->thingClassId() == shellyI3ThingClassId) {

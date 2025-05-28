@@ -1,3 +1,9 @@
+nymea-plugins (1.11.0+202505281205~6693e6c5~bookworm) UNRELEASED; urgency=medium
+
+  * New Package build
+
+ --  <timon@nymea-plugins-bookworm-amd64-armhf>  Wed, 28 May 2025 12:12:22 +0000
+
 nymea-plugins (1.11.0) jammy; urgency=medium
 
   [ Simon Stürz ]
