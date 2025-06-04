@@ -1,17 +1,18 @@
 include(../plugins.pri)
 
-QT += network
+QT += network websockets
 PKGCONFIG += nymea-mqtt
 
 SOURCES += \
-    everest.cpp \
-    everestclient.cpp \
-    everestdiscovery.cpp \
-    integrationplugineverest.cpp
+    mqtt/everestmqtt.cpp \
+    mqtt/everestmqttclient.cpp \
+    mqtt/everestmqttdiscovery.cpp \
+    integrationplugineverest.cpp \
+    jsonrpc/everestjsonrpcclient.cpp
 
 HEADERS += \
-    everest.h \
-    everestclient.h \
-    everestdiscovery.h \
-    integrationplugineverest.h
-
+    mqtt/everestmqtt.h \
+    mqtt/everestmqttclient.h \
+    mqtt/everestmqttdiscovery.h \
+    integrationplugineverest.h \
+    jsonrpc/everestjsonrpcclient.h

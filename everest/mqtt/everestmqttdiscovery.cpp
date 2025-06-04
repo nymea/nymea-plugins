@@ -28,29 +28,28 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "everestdiscovery.h"
+#include "everestmqttdiscovery.h"
 #include "extern-plugininfo.h"
-#include "everest.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>
 
 
-EverestDiscovery::EverestDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent)
+EverestMqttDiscovery::EverestMqttDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent)
     : QObject{parent},
     m_networkDeviceDiscovery{networkDeviceDiscovery}
 {
 
 }
 
-void EverestDiscovery::start()
+void EverestMqttDiscovery::start()
 {
     qCInfo(dcEverest()) << "Discovery: Start discovering Everest MQTT brokers in the network...";
     m_startDateTime = QDateTime::currentDateTime();
 
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
 
-    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &EverestDiscovery::checkHostAddress);
+    connect(discoveryReply, &NetworkDeviceDiscoveryReply::hostAddressDiscovered, this, &EverestMqttDiscovery::checkHostAddress);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, discoveryReply, &NetworkDeviceDiscoveryReply::deleteLater);
     connect(discoveryReply, &NetworkDeviceDiscoveryReply::finished, this, [discoveryReply, this](){
         qCDebug(dcEverest()) << "Discovery: Network device discovery finished. Found" << discoveryReply->networkDeviceInfos().count() << "network devices";
@@ -68,7 +67,7 @@ void EverestDiscovery::start()
     checkHostAddress(QHostAddress::LocalHost);
 }
 
-void EverestDiscovery::startLocalhost()
+void EverestMqttDiscovery::startLocalhost()
 {
     qCInfo(dcEverest()) << "Discovery: Start discovering EVerest on localhost ...";
     m_startDateTime = QDateTime::currentDateTime();
@@ -79,12 +78,12 @@ void EverestDiscovery::startLocalhost()
     checkHostAddress(QHostAddress::LocalHost);
 }
 
-QList<EverestDiscovery::Result> EverestDiscovery::results() const
+QList<EverestMqttDiscovery::Result> EverestMqttDiscovery::results() const
 {
     return m_results;
 }
 
-void EverestDiscovery::checkHostAddress(const QHostAddress &address)
+void EverestMqttDiscovery::checkHostAddress(const QHostAddress &address)
 {
     MqttClient *client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300,
                                         QString(), QByteArray(), Mqtt::QoS0, false, this);
@@ -162,7 +161,7 @@ void EverestDiscovery::checkHostAddress(const QHostAddress &address)
 }
 
 
-void EverestDiscovery::cleanupClient(MqttClient *client)
+void EverestMqttDiscovery::cleanupClient(MqttClient *client)
 {
     if (!m_clients.contains(client))
         return;
@@ -177,7 +176,7 @@ void EverestDiscovery::cleanupClient(MqttClient *client)
     }
 }
 
-void EverestDiscovery::finishDiscovery()
+void EverestMqttDiscovery::finishDiscovery()
 {
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
 

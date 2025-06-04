@@ -9,7 +9,7 @@
             "id": "07ba8a98-799f-4a6e-a8d9-b45cd38dbcc5",
             "thingClasses": [
                 {
-                    "name": "everest",
+                    "name": "everestMqtt",
                     "displayName": "Everest",
                     "id": "965cbe0d-088c-42a2-965d-ceafbb8b01e9",
                     "setupMethod": "JustAdd",

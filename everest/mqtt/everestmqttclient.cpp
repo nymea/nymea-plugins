@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,10 +28,10 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "everestclient.h"
+#include "everestmqttclient.h"
 #include "extern-plugininfo.h"
 
-EverestClient::EverestClient(QObject *parent)
+EverestMqttClient::EverestMqttClient(QObject *parent)
     : QObject{parent}
 {
     m_client = new MqttClient("nymea-" + QUuid::createUuid().toString().left(8), 300, QString(), QByteArray(), Mqtt::QoS0, false, this);
@@ -71,24 +71,24 @@ EverestClient::EverestClient(QObject *parent)
     });
 }
 
-EverestClient::~EverestClient()
+EverestMqttClient::~EverestMqttClient()
 {
-    foreach (Everest *everest, m_everests) {
+    foreach (EverestMqtt *everest, m_everests) {
         removeThing(everest->thing());
     }
 }
 
-MqttClient *EverestClient::client() const
+MqttClient *EverestMqttClient::client() const
 {
     return m_client;
 }
 
-Things EverestClient::things() const
+Things EverestMqttClient::things() const
 {
     return m_everests.keys();
 }
 
-void EverestClient::addThing(Thing *thing)
+void EverestMqttClient::addThing(Thing *thing)
 {
     if (m_everests.contains(thing)) {
         qCWarning(dcEverest()) << "The" << thing << "has already been added to the everest client. "
@@ -97,11 +97,11 @@ void EverestClient::addThing(Thing *thing)
         return;
     }
 
-    Everest *everest = new Everest(m_client, thing, this);
+    EverestMqtt *everest = new EverestMqtt(m_client, thing, this);
     m_everests.insert(thing, everest);
 }
 
-void EverestClient::removeThing(Thing *thing)
+void EverestMqttClient::removeThing(Thing *thing)
 {
     if (!m_everests.contains(thing)) {
         qCWarning(dcEverest()) << "The" << thing << "has already been removed from the everest client. "
@@ -109,12 +109,12 @@ void EverestClient::removeThing(Thing *thing)
         return;
     }
 
-    Everest *everest = m_everests.take(thing);
+    EverestMqtt *everest = m_everests.take(thing);
     everest->deinitialize();
     everest->deleteLater();
 }
 
-Everest *EverestClient::getEverest(Thing *thing) const
+EverestMqtt *EverestMqttClient::getEverest(Thing *thing) const
 {
     if (!m_everests.contains(thing))
         return nullptr;
@@ -122,18 +122,18 @@ Everest *EverestClient::getEverest(Thing *thing) const
     return m_everests.value(thing);
 }
 
-NetworkDeviceMonitor *EverestClient::monitor() const
+NetworkDeviceMonitor *EverestMqttClient::monitor() const
 {
     return m_monitor;
 }
 
-void EverestClient::setMonitor(NetworkDeviceMonitor *monitor)
+void EverestMqttClient::setMonitor(NetworkDeviceMonitor *monitor)
 {
     m_monitor = monitor;
-    connect(m_monitor, &NetworkDeviceMonitor::reachableChanged, this, &EverestClient::onMonitorReachableChanged);
+    connect(m_monitor, &NetworkDeviceMonitor::reachableChanged, this, &EverestMqttClient::onMonitorReachableChanged);
 }
 
-void EverestClient::start()
+void EverestMqttClient::start()
 {
     qCDebug(dcEverest()) << "Starting" << this;
     m_running = true;
@@ -155,7 +155,7 @@ void EverestClient::start()
     }
 }
 
-void EverestClient::stop()
+void EverestMqttClient::stop()
 {
     qCDebug(dcEverest()) << "Stopping" << this;
     m_running = false;
@@ -163,7 +163,7 @@ void EverestClient::stop()
     m_client->disconnectFromHost();
 }
 
-void EverestClient::onMonitorReachableChanged(bool reachable)
+void EverestMqttClient::onMonitorReachableChanged(bool reachable)
 {
     qCDebug(dcEverest()) << "Network monitor for" << m_monitor->macAddress().toString()
     << (reachable ? " is now reachable" : "is not reachable any more");
@@ -185,10 +185,10 @@ void EverestClient::onMonitorReachableChanged(bool reachable)
     }
 }
 
-QDebug operator<<(QDebug debug, EverestClient *everestClient)
+QDebug operator<<(QDebug debug, EverestMqttClient *everestClient)
 {
     QDebugStateSaver saver(debug);
-    debug.nospace() << "EverestClient(";
+    debug.nospace() << "EverestMqttClient(";
     switch(everestClient->monitor()->monitorMode()) {
     case NetworkDeviceInfo::MonitorModeMac:
         debug.nospace() << everestClient->monitor()->networkDeviceInfo().macAddressInfos().constFirst() << ", ";

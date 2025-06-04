@@ -37,7 +37,7 @@
 #include <mqttclient.h>
 #include <network/networkdevicediscovery.h>
 
-class EverestDiscovery : public QObject
+class EverestMqttDiscovery : public QObject
 {
     Q_OBJECT
 public:
@@ -47,12 +47,12 @@ public:
         NetworkDeviceInfo networkDeviceInfo;
     } Result;
 
-    explicit EverestDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
+    explicit EverestMqttDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
 
     void start();
     void startLocalhost();
 
-    QList<EverestDiscovery::Result> results() const;
+    QList<EverestMqttDiscovery::Result> results() const;
 
 signals:
     void finished();
@@ -60,7 +60,7 @@ signals:
 private:
     NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
     QDateTime m_startDateTime;
-    QList<EverestDiscovery::Result> m_results;
+    QList<EverestMqttDiscovery::Result> m_results;
     QList<MqttClient *> m_clients;
     NetworkDeviceInfos m_networkDeviceInfos;
 

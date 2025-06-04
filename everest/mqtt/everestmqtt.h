@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,8 +28,8 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef EVEREST_H
-#define EVEREST_H
+#ifndef EVERESTMQTT_H
+#define EVERESTMQTT_H
 
 #include <QTimer>
 #include <QObject>
@@ -38,7 +38,7 @@
 
 #include <integrations/thing.h>
 
-class Everest : public QObject
+class EverestMqtt : public QObject
 {
     Q_OBJECT
 public:
@@ -58,8 +58,8 @@ public:
     };
     Q_ENUM(State)
 
-    explicit Everest(MqttClient *client, Thing *thing, QObject *parent = nullptr);
-    ~Everest();
+    explicit EverestMqtt(MqttClient *client, Thing *thing, QObject *parent = nullptr);
+    ~EverestMqtt();
 
     Thing *thing() const;
 
@@ -98,4 +98,4 @@ private:
     State convertStringToState(const QString &stateString);
 };
 
-#endif // EVEREST_H
+#endif // EVERESTMQTT_H

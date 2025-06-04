@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -42,14 +42,14 @@
 
 #include <QDebug>
 
-#include "everest.h"
+#include "everestmqtt.h"
 
-class EverestClient : public QObject
+class EverestMqttClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit EverestClient(QObject *parent = nullptr);
-    ~EverestClient();
+    explicit EverestMqttClient(QObject *parent = nullptr);
+    ~EverestMqttClient();
 
     MqttClient *client() const;
 
@@ -57,7 +57,7 @@ public:
     void addThing(Thing *thing);
     void removeThing(Thing *thing);
 
-    Everest *getEverest(Thing *thing) const;
+    EverestMqtt *getEverest(Thing *thing) const;
 
     NetworkDeviceMonitor *monitor() const;
     void setMonitor(NetworkDeviceMonitor *monitor);
@@ -76,10 +76,10 @@ private:
 
     bool m_running = false;
 
-    QHash<Thing *, Everest *> m_everests;
+    QHash<Thing *, EverestMqtt *> m_everests;
     NetworkDeviceMonitor *m_monitor = nullptr;
 };
 
-QDebug operator<<(QDebug debug, EverestClient *everestClient);
+QDebug operator<<(QDebug debug, EverestMqttClient *everestClient);
 
 #endif // EVERESTCLIENT_H

@@ -30,7 +30,7 @@
 
 #include "integrationplugineverest.h"
 #include "plugininfo.h"
-#include "everestdiscovery.h"
+#include "mqtt/everestmqttdiscovery.h"
 
 #include <network/networkdevicediscovery.h>
 
@@ -47,29 +47,29 @@ void IntegrationPluginEverest::init()
 void IntegrationPluginEverest::startMonitoringAutoThings()
 {
     // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
-    // Since this integration plugin is most luikly running on an EV charger running EVerest, the local instance should
+    // Since this integration plugin is most liekly running on an EV charger running EVerest, the local instance should
     // be set up automatically. Additional instances in the network can still be added by running a normal network discovery
 
-    EverestDiscovery *discovery = new EverestDiscovery(nullptr, this);
-    connect(discovery, &EverestDiscovery::finished, discovery, &EverestDiscovery::deleteLater);
-    connect(discovery, &EverestDiscovery::finished, this, [this, discovery](){
+    EverestMqttDiscovery *discovery = new EverestMqttDiscovery(nullptr, this);
+    connect(discovery, &EverestMqttDiscovery::finished, discovery, &EverestMqttDiscovery::deleteLater);
+    connect(discovery, &EverestMqttDiscovery::finished, this, [this, discovery](){
 
         ThingDescriptors descriptors;
 
-        foreach (const EverestDiscovery::Result &result, discovery->results()) {
+        foreach (const EverestMqttDiscovery::Result &result, discovery->results()) {
 
             // Create one EV charger foreach available connector on that host
             foreach(const QString &connectorName, result.connectors) {
 
                 QString title = QString("EVerest");
                 QString description = connectorName;
-                ThingDescriptor descriptor(everestThingClassId, title, description);
+                ThingDescriptor descriptor(everestMqttThingClassId, title, description);
 
                 qCInfo(dcEverest()) << "Discovered -->" << title << description;
 
                 ParamList params;
-                params.append(Param(everestThingConnectorParamTypeId, connectorName));
-                params.append(Param(everestThingAddressParamTypeId, result.address.toString()));
+                params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
+                params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.address().toString()));
                 descriptor.setParams(params);
 
                 // Let's check if we aleardy have a thing with those params
@@ -117,11 +117,11 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
         return;
     }
 
-    EverestDiscovery *discovery = new EverestDiscovery(hardwareManager()->networkDeviceDiscovery(), this);
-    connect(discovery, &EverestDiscovery::finished, discovery, &EverestDiscovery::deleteLater);
-    connect(discovery, &EverestDiscovery::finished, info, [this, info, discovery](){
+    EverestMqttDiscovery *discovery = new EverestMqttDiscovery(hardwareManager()->networkDeviceDiscovery(), this);
+    connect(discovery, &EverestMqttDiscovery::finished, discovery, &EverestMqttDiscovery::deleteLater);
+    connect(discovery, &EverestMqttDiscovery::finished, info, [this, info, discovery](){
 
-        foreach (const EverestDiscovery::Result &result, discovery->results()) {
+        foreach (const EverestMqttDiscovery::Result &result, discovery->results()) {
 
             // Create one EV charger foreach available connector on that host
             foreach(const QString &connectorName, result.connectors) {
@@ -146,17 +146,17 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
                     break;
                 }
 
-                ThingDescriptor descriptor(everestThingClassId, title, description);
+                ThingDescriptor descriptor(everestMqttThingClassId, title, description);
                 qCInfo(dcEverest()) << "Discovered -->" << title << description;
 
                 // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
                 // depending on the possibilities within this network. It is not recommended to fill in all information available.
                 // Only the information available depending on the monitor mode are relevant for the monitor.
                 ParamList params;
-                params.append(Param(everestThingConnectorParamTypeId, connectorName));
-                params.append(Param(everestThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
-                params.append(Param(everestThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
-                params.append(Param(everestThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
+                params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
+                params.append(Param(everestMqttThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
+                params.append(Param(everestMqttThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
+                params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
                 descriptor.setParams(params);
 
                 // Let's check if we aleardy have a thing with those params
@@ -197,14 +197,14 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QHostAddress address(thing->paramValue(everestThingAddressParamTypeId).toString());
-    MacAddress macAddress(thing->paramValue(everestThingMacAddressParamTypeId).toString());
-    QString hostName(thing->paramValue(everestThingHostNameParamTypeId).toString());
-    QString connector(thing->paramValue(everestThingConnectorParamTypeId).toString());
+    QHostAddress address(thing->paramValue(everestMqttThingAddressParamTypeId).toString());
+    MacAddress macAddress(thing->paramValue(everestMqttThingMacAddressParamTypeId).toString());
+    QString hostName(thing->paramValue(everestMqttThingHostNameParamTypeId).toString());
+    QString connector(thing->paramValue(everestMqttThingConnectorParamTypeId).toString());
 
-    EverestClient *everstClient = nullptr;
+    EverestMqttClient *everstClient = nullptr;
 
-    foreach (EverestClient *ec, m_everstClients) {
+    foreach (EverestMqttClient *ec, m_everstClients) {
         if (ec->monitor()->macAddress() == macAddress &&
             ec->monitor()->hostName() == hostName &&
             ec->monitor()->address() == address) {
@@ -222,7 +222,7 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
             return;
         }
 
-        everstClient = new EverestClient(this);
+        everstClient = new EverestMqttClient(this);
         everstClient->setMonitor(monitor);
         m_everstClients.append(everstClient);
         qCDebug(dcEverest()) << "Created new" << everstClient;
@@ -240,17 +240,17 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
     qCDebug(dcEverest()) << "Executing action for thing" << info->thing()
     << info->action().actionTypeId().toString() << info->action().params();
 
-    if (info->thing()->thingClassId() == everestThingClassId) {
+    if (info->thing()->thingClassId() == everestMqttThingClassId) {
 
         Thing *thing = info->thing();
-        EverestClient *everstClient = m_thingClients.value(thing);
+        EverestMqttClient *everstClient = m_thingClients.value(thing);
         if (!everstClient) {
             qCWarning(dcEverest()) << "Failed to execute action. Unable to find everst client for" << thing;
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
 
-        Everest *everest = everstClient->getEverest(thing);
+        EverestMqtt *everest = everstClient->getEverest(thing);
         if (!everest) {
             qCWarning(dcEverest()) << "Failed to execute action. Unable to find everst for"
                                    << thing << "on" << everstClient;
@@ -258,32 +258,32 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (!thing->stateValue(everestConnectedStateTypeId).toBool()) {
+        if (!thing->stateValue(everestMqttConnectedStateTypeId).toBool()) {
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
         // All checks where good, let's execute the action
-        if (info->action().actionTypeId() == everestPowerActionTypeId) {
-            bool power = info->action().paramValue(everestPowerActionPowerParamTypeId).toBool();
+        if (info->action().actionTypeId() == everestMqttPowerActionTypeId) {
+            bool power = info->action().paramValue(everestMqttPowerActionPowerParamTypeId).toBool();
             qCDebug(dcEverest()) << (power ? "Resume charging on" : "Pause charging on") << thing;
             everest->enableCharging(power);
-            thing->setStateValue(everestPowerStateTypeId, power);
+            thing->setStateValue(everestMqttPowerStateTypeId, power);
             info->finish(Thing::ThingErrorNoError);
-        } else if (info->action().actionTypeId() == everestMaxChargingCurrentActionTypeId) {
+        } else if (info->action().actionTypeId() == everestMqttMaxChargingCurrentActionTypeId) {
             // Note: once we support phase switching, we cannot use the
-            uint phaseCount = thing->stateValue(everestDesiredPhaseCountStateTypeId).toUInt();
-            double current = info->action().paramValue(everestMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
+            uint phaseCount = thing->stateValue(everestMqttDesiredPhaseCountStateTypeId).toUInt();
+            double current = info->action().paramValue(everestMqttMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
             qCDebug(dcEverest()).nospace() << "Setting max charging current to " << current << "A (Phases: " << phaseCount << ") " << thing;
             everest->setMaxChargingCurrentAndPhaseCount(phaseCount, current);
-            thing->setStateValue(everestMaxChargingCurrentStateTypeId, current);
+            thing->setStateValue(everestMqttMaxChargingCurrentStateTypeId, current);
             info->finish(Thing::ThingErrorNoError);
-        } else if (info->action().actionTypeId() == everestDesiredPhaseCountActionTypeId) {
-            uint phaseCount = info->action().paramValue(everestDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toUInt();
-            double current = thing->stateValue(everestMaxChargingCurrentStateTypeId).toDouble();
+        } else if (info->action().actionTypeId() == everestMqttDesiredPhaseCountActionTypeId) {
+            uint phaseCount = info->action().paramValue(everestMqttDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toUInt();
+            double current = thing->stateValue(everestMqttMaxChargingCurrentStateTypeId).toDouble();
             qCDebug(dcEverest()).nospace() << "Setting desired phase count to " << phaseCount << " (" << current << "A) " << thing;
             everest->setMaxChargingCurrentAndPhaseCount(phaseCount, current);
-            thing->setStateValue(everestDesiredPhaseCountStateTypeId, phaseCount);
+            thing->setStateValue(everestMqttDesiredPhaseCountStateTypeId, phaseCount);
             info->finish(Thing::ThingErrorNoError);
         }
 
@@ -296,8 +296,8 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
 void IntegrationPluginEverest::thingRemoved(Thing *thing)
 {
     qCDebug(dcEverest()) << "Remove thing" << thing;
-    if (thing->thingClassId() == everestThingClassId) {
-        EverestClient *everestClient = m_thingClients.take(thing);
+    if (thing->thingClassId() == everestMqttThingClassId) {
+        EverestMqttClient *everestClient = m_thingClients.take(thing);
         everestClient->removeThing(thing);
         if (everestClient->things().isEmpty()) {
             qCDebug(dcEverest()) << "Deleting" << everestClient << "since there is no thing left";
@@ -311,8 +311,6 @@ void IntegrationPluginEverest::thingRemoved(Thing *thing)
 
             everestClient->deleteLater();
         }
-
-
     }
 }
 

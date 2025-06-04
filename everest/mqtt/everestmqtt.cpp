@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,7 +28,7 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "everest.h"
+#include "everestmqtt.h"
 #include "extern-plugininfo.h"
 
 #include <QJsonDocument>
@@ -38,12 +38,12 @@
 
 NYMEA_LOGGING_CATEGORY(dcEverestTraffic, "EverestTraffic")
 
-Everest::Everest(MqttClient *client, Thing *thing, QObject *parent)
+EverestMqtt::EverestMqtt(MqttClient *client, Thing *thing, QObject *parent)
     : QObject{parent},
     m_client{client},
     m_thing{thing}
 {
-    m_connector = m_thing->paramValue(everestThingConnectorParamTypeId).toString();
+    m_connector = m_thing->paramValue(everestMqttThingConnectorParamTypeId).toString();
     m_topicPrefix = "everest_api/" + m_connector;
 
     m_subscribedTopics.append(buildTopic("hardware_capabilities"));
@@ -52,18 +52,18 @@ Everest::Everest(MqttClient *client, Thing *thing, QObject *parent)
     m_subscribedTopics.append(buildTopic("session_info"));
     m_subscribedTopics.append(buildTopic("telemetry"));
 
-    connect(m_client, &MqttClient::connected, this, &Everest::onConnected);
-    connect(m_client, &MqttClient::disconnected, this, &Everest::onDisconnected);
-    connect(m_client, &MqttClient::publishReceived, this, &Everest::onPublishReceived);
-    connect(m_client, &MqttClient::subscribed, this, &Everest::onSubscribed);
+    connect(m_client, &MqttClient::connected, this, &EverestMqtt::onConnected);
+    connect(m_client, &MqttClient::disconnected, this, &EverestMqtt::onDisconnected);
+    connect(m_client, &MqttClient::publishReceived, this, &EverestMqtt::onPublishReceived);
+    connect(m_client, &MqttClient::subscribed, this, &EverestMqtt::onSubscribed);
 
     m_aliveTimer.setInterval(2000);
     m_aliveTimer.setSingleShot(true);
     connect(&m_aliveTimer, &QTimer::timeout, this, [this](){
         qCDebug(dcEverest()) << "No MQTT traffic since" << m_aliveTimer.interval()
         << "ms. Mark device as not connected" << m_thing;
-        m_thing->setStateValue(everestCurrentPowerStateTypeId, 0);
-        m_thing->setStateValue(everestConnectedStateTypeId, false);
+        m_thing->setStateValue(everestMqttCurrentPowerStateTypeId, 0);
+        m_thing->setStateValue(everestMqttConnectedStateTypeId, false);
     });
 
     if (m_client->isConnected()) {
@@ -72,22 +72,22 @@ Everest::Everest(MqttClient *client, Thing *thing, QObject *parent)
     }
 }
 
-Everest::~Everest()
+EverestMqtt::~EverestMqtt()
 {
     deinitialize();
 }
 
-Thing *Everest::thing() const
+Thing *EverestMqtt::thing() const
 {
     return m_thing;
 }
 
-QString Everest::connector() const
+QString EverestMqtt::connector() const
 {
     return m_connector;
 }
 
-void Everest::initialize()
+void EverestMqtt::initialize()
 {
     qCDebug(dcEverest()) << "Initializing" << m_thing->name();
     if (!m_client->isConnected()) {
@@ -103,7 +103,7 @@ void Everest::initialize()
     qCDebug(dcEverest()) << "Initialized" << m_thing->name() << "successfully";
 }
 
-void Everest::deinitialize()
+void EverestMqtt::deinitialize()
 {
     qCDebug(dcEverest()) << "Deinitializing" << m_thing->name();
     if (m_initialized && m_client->isConnected()) {
@@ -115,7 +115,7 @@ void Everest::deinitialize()
     m_initialized = false;
 }
 
-void Everest::enableCharging(bool enable)
+void EverestMqtt::enableCharging(bool enable)
 {
     QString topic;
     if (enable) {
@@ -127,7 +127,7 @@ void Everest::enableCharging(bool enable)
     m_client->publish(topic, QByteArray::fromHex("01"));
 }
 
-void Everest::setMaxChargingCurrent(double current)
+void EverestMqtt::setMaxChargingCurrent(double current)
 {
     QString topic = m_topicPrefix + "/cmd/set_limit_amps";
     QByteArray payload = QByteArray::number(current);
@@ -135,7 +135,7 @@ void Everest::setMaxChargingCurrent(double current)
     m_client->publish(topic, payload);
 }
 
-void Everest::setMaxChargingCurrentAndPhaseCount(uint phasesCount, double current)
+void EverestMqtt::setMaxChargingCurrentAndPhaseCount(uint phasesCount, double current)
 {
     QString topic = m_topicPrefix + "/cmd/set_limit_amps_phases";
     QVariantMap data;
@@ -145,20 +145,20 @@ void Everest::setMaxChargingCurrentAndPhaseCount(uint phasesCount, double curren
     m_client->publish(topic, QJsonDocument::fromVariant(data).toJson());
 }
 
-void Everest::onConnected()
+void EverestMqtt::onConnected()
 {
     m_aliveTimer.start();
     initialize();
 }
 
-void Everest::onDisconnected()
+void EverestMqtt::onDisconnected()
 {
-    m_thing->setStateValue(everestConnectedStateTypeId, false);
-    m_thing->setStateValue(everestCurrentPowerStateTypeId, 0);
+    m_thing->setStateValue(everestMqttConnectedStateTypeId, false);
+    m_thing->setStateValue(everestMqttCurrentPowerStateTypeId, 0);
     m_initialized = false;
 }
 
-void Everest::onSubscribed(const QString &topic, Mqtt::SubscribeReturnCode subscribeReturnCode)
+void EverestMqtt::onSubscribed(const QString &topic, Mqtt::SubscribeReturnCode subscribeReturnCode)
 {
     if (subscribeReturnCode == Mqtt::SubscribeReturnCodeFailure) {
         qCWarning(dcEverest()) << "Failed to subscribe to" << topic << m_thing;
@@ -167,7 +167,7 @@ void Everest::onSubscribed(const QString &topic, Mqtt::SubscribeReturnCode subsc
     }
 }
 
-void Everest::onPublishReceived(const QString &topic, const QByteArray &payload, bool retained)
+void EverestMqtt::onPublishReceived(const QString &topic, const QByteArray &payload, bool retained)
 {
     Q_UNUSED(retained)
 
@@ -177,7 +177,7 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
 
     // We are for sure connected now
     m_aliveTimer.start();
-    m_thing->setStateValue(everestConnectedStateTypeId, true);
+    m_thing->setStateValue(everestMqttConnectedStateTypeId, true);
 
     qCDebug(dcEverestTraffic()) << "Received publish on" << topic << qUtf8Printable(payload);
 
@@ -213,18 +213,18 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         uint maxCurrent = dataMap.value("max_current_A_import").toUInt();
         uint minCurrent = dataMap.value("min_current_A_import").toUInt();
 
-        m_thing->setStateMaxValue(everestMaxChargingCurrentStateTypeId, maxCurrent);
-        m_thing->setStateMinValue(everestMaxChargingCurrentStateTypeId, minCurrent == 0 ? 6 : minCurrent);
+        m_thing->setStateMaxValue(everestMqttMaxChargingCurrentStateTypeId, maxCurrent);
+        m_thing->setStateMinValue(everestMqttMaxChargingCurrentStateTypeId, minCurrent == 0 ? 6 : minCurrent);
 
         bool phaseSwitchingAvailable = dataMap.value("supports_changing_phases_during_charging", false).toBool();
         if (!phaseSwitchingAvailable) {
             // Only option left is set the desired phase count to 3, force that value
-            m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 3 });
-            m_thing->setStateValue(everestDesiredPhaseCountStateTypeId, 3);
-            m_thing->setStateValue(everestPhaseCountStateTypeId, 3);
+            m_thing->setStatePossibleValues(everestMqttDesiredPhaseCountStateTypeId, { 3 });
+            m_thing->setStateValue(everestMqttDesiredPhaseCountStateTypeId, 3);
+            m_thing->setStateValue(everestMqttPhaseCountStateTypeId, 3);
         } else {
-            m_thing->setStatePossibleValues(everestDesiredPhaseCountStateTypeId, { 1, 3 });
-            m_thing->setStateValue(everestPhaseCountStateTypeId, m_thing->stateValue(everestDesiredPhaseCountStateTypeId));
+            m_thing->setStatePossibleValues(everestMqttDesiredPhaseCountStateTypeId, { 1, 3 });
+            m_thing->setStateValue(everestMqttPhaseCountStateTypeId, m_thing->stateValue(everestMqttDesiredPhaseCountStateTypeId));
         }
 
     } else if (topic.endsWith("limits")) {
@@ -240,7 +240,7 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         double maxCurrent = dataMap.value("max_current").toDouble();
         if (maxCurrent >= 6) {
             // FIXME: make it a double again once supported from the interface
-            m_thing->setStateValue(everestMaxChargingCurrentStateTypeId, qRound(maxCurrent));
+            m_thing->setStateValue(everestMqttMaxChargingCurrentStateTypeId, qRound(maxCurrent));
         }
 
     } else if (topic.endsWith("powermeter")) {
@@ -268,10 +268,10 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         */
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         QVariantMap energyImportedMap = dataMap.value("energy_Wh_import").toMap();
-        m_thing->setStateValue(everestTotalEnergyConsumedStateTypeId,
+        m_thing->setStateValue(everestMqttTotalEnergyConsumedStateTypeId,
                                energyImportedMap.value("total").toDouble() / 1000.0);
         QVariantMap powerMap = dataMap.value("power_W").toMap();
-        m_thing->setStateValue(everestCurrentPowerStateTypeId, powerMap.value("total").toUInt());
+        m_thing->setStateValue(everestMqttCurrentPowerStateTypeId, powerMap.value("total").toUInt());
 
     } else if (topic.endsWith("session_info")) {
         /*
@@ -288,23 +288,23 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         */
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
-        m_thing->setStateValue(everestSessionEnergyStateTypeId,
+        m_thing->setStateValue(everestMqttSessionEnergyStateTypeId,
                                dataMap.value("charged_energy_wh").toDouble() / 1000.0);
 
         // Interpret state
         QString stateString = dataMap.value("state").toString();
-        m_thing->setStateValue(everestStateStateTypeId, stateString);
+        m_thing->setStateValue(everestMqttStateStateTypeId, stateString);
 
         State state = convertStringToState(stateString);
         if (state == StateUnknown)
             return; // No need to proceed here
 
-        m_thing->setStateValue(everestChargingStateTypeId, state == StateCharging);
-        m_thing->setStateValue(everestPluggedInStateTypeId, state != StateUnplugged);
+        m_thing->setStateValue(everestMqttChargingStateTypeId, state == StateCharging);
+        m_thing->setStateValue(everestMqttPluggedInStateTypeId, state != StateUnplugged);
 
         // TODO: check if we can set the power state in other EVSE states
-        if (state == StateCharging && !m_thing->stateValue(everestPowerStateTypeId).toBool()) {
-            m_thing->setStateValue(everestPowerStateTypeId, true);
+        if (state == StateCharging && !m_thing->stateValue(everestMqttPowerStateTypeId).toBool()) {
+            m_thing->setStateValue(everestMqttPowerStateTypeId, true);
         }
 
     } else if (topic.endsWith("telemetry")) {
@@ -319,14 +319,14 @@ void Everest::onPublishReceived(const QString &topic, const QByteArray &payload,
         */
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
-        m_thing->setStateValue(everestTemperatureStateTypeId, dataMap.value("temperature").toDouble());
-        m_thing->setStateValue(everestFanSpeedStateTypeId, dataMap.value("fan_rpm").toDouble());
+        m_thing->setStateValue(everestMqttTemperatureStateTypeId, dataMap.value("temperature").toDouble());
+        m_thing->setStateValue(everestMqttFanSpeedStateTypeId, dataMap.value("fan_rpm").toDouble());
     }
 }
 
-QString Everest::buildTopic(const QString &topic)
+QString EverestMqtt::buildTopic(const QString &topic)
 {
-    Q_ASSERT_X(!m_connector.isEmpty(), "Everest::buildTopic", "The connector must be known before building a topic");
+    Q_ASSERT_X(!m_connector.isEmpty(), "EverestMqtt::buildTopic", "The connector must be known before building a topic");
 
     QString baseTopic = QString(m_topicPrefix + "/var");
     if (!topic.startsWith("/"))
@@ -335,7 +335,7 @@ QString Everest::buildTopic(const QString &topic)
     return baseTopic + topic;
 }
 
-Everest::State Everest::convertStringToState(const QString &stateString)
+EverestMqtt::State EverestMqtt::convertStringToState(const QString &stateString)
 {
     State state = StateUnknown;
 

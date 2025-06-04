@@ -34,7 +34,7 @@
 #include "integrations/integrationplugin.h"
 #include "extern-plugininfo.h"
 
-#include "everestclient.h"
+#include "mqtt/everestmqttclient.h"
 
 #include <mqttclient.h>
 
@@ -58,8 +58,8 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    QList<EverestClient *> m_everstClients;
-    QHash<Thing *, EverestClient *> m_thingClients;
+    QList<EverestMqttClient *> m_everstClients;
+    QHash<Thing *, EverestMqttClient *> m_thingClients;
 
 };
 
