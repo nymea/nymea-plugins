@@ -35,6 +35,7 @@
 #include "extern-plugininfo.h"
 
 #include "mqtt/everestmqttclient.h"
+#include "jsonrpc/everestjsonrpcclient.h"
 
 #include <mqttclient.h>
 

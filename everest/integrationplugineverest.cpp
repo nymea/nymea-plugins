@@ -41,7 +41,8 @@ IntegrationPluginEverest::IntegrationPluginEverest()
 
 void IntegrationPluginEverest::init()
 {
-
+    EverestJsonRpcClient *client = new EverestJsonRpcClient(this);
+    client->setSeverUrl(QUrl("ws://10.10.10.165:8080"));
 }
 
 void IntegrationPluginEverest::startMonitoringAutoThings()

@@ -28,44 +28,43 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef EVERESTJSONRPCCLIENT_H
-#define EVERESTJSONRPCCLIENT_H
+#ifndef EVERESTJSONRPCINTERFACE_H
+#define EVERESTJSONRPCINTERFACE_H
 
 #include <QObject>
+#include <QWebSocket>
 
-#include "everestjsonrpcreply.h"
-#include "everestjsonrpcinterface.h"
-
-class EverestJsonRpcClient : public QObject
+class EverestJsonRpcInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit EverestJsonRpcClient(QObject *parent = nullptr);
+    explicit EverestJsonRpcInterface(QObject *parent = nullptr);
+    ~EverestJsonRpcInterface();
 
-    QUrl serverUrl();
-    void setSeverUrl(const QUrl &serverUrl);
+    QUrl serverUrl() const;
 
-    bool available() const;
+    void sendData(const QByteArray &data);
 
-    EverestJsonRpcReply *hello();
+public slots:
+    void connectServer(const QUrl &serverUrl);
+    void disconnectServer();
 
 signals:
-    void availableChanged(bool available);
-
-private:
-    bool m_available = false;
-
-    int m_commandId = 0;
-    EverestJsonRpcInterface *m_interface = nullptr;
-
-
-    QHash<int, EverestJsonRpcReply *> m_replies;
-
-    void sendRequest(const QVariantMap &request);
+    void connectedChanged(bool connected);
+    void dataReceived(const QByteArray &data);
 
 private slots:
-    void processDataPacket(const QByteArray &data);
+    void onDisconnected();
+    void onError(QAbstractSocket::SocketError error);
+    void onStateChanged(QAbstractSocket::SocketState state);
+    void onTextMessageReceived(const QString &message);
+    void onBinaryMessageReceived(const QByteArray &message);
+
+private:
+    QWebSocket *m_webSocket = nullptr;
+    QUrl m_serverUrl;
+    bool m_connected = false;
 
 };
 
-#endif // EVERESTJSONRPCCLIENT_H
+#endif // EVERESTJSONRPCINTERFACE_H

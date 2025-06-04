@@ -28,44 +28,52 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef EVERESTJSONRPCCLIENT_H
-#define EVERESTJSONRPCCLIENT_H
-
-#include <QObject>
-
 #include "everestjsonrpcreply.h"
-#include "everestjsonrpcinterface.h"
 
-class EverestJsonRpcClient : public QObject
+EverestJsonRpcReply::EverestJsonRpcReply(int commandId, QString method, QVariantMap params, QObject *parent)
+    : QObject{parent},
+    m_commandId{commandId},
+    m_method{method},
+    m_params{params}
 {
-    Q_OBJECT
-public:
-    explicit EverestJsonRpcClient(QObject *parent = nullptr);
 
-    QUrl serverUrl();
-    void setSeverUrl(const QUrl &serverUrl);
+}
 
-    bool available() const;
-
-    EverestJsonRpcReply *hello();
-
-signals:
-    void availableChanged(bool available);
-
-private:
-    bool m_available = false;
-
-    int m_commandId = 0;
-    EverestJsonRpcInterface *m_interface = nullptr;
+int EverestJsonRpcReply::commandId() const
+{
+    return m_commandId;
+}
 
 
-    QHash<int, EverestJsonRpcReply *> m_replies;
+QString EverestJsonRpcReply::method() const
+{
+    return m_method;
+}
 
-    void sendRequest(const QVariantMap &request);
+QVariantMap EverestJsonRpcReply::params() const
+{
+    return m_params;
+}
 
-private slots:
-    void processDataPacket(const QByteArray &data);
+QVariantMap EverestJsonRpcReply::requestMap()
+{
+    QVariantMap request;
+    request.insert("id", commandId());
+    request.insert("jsonrpc", "2.0");
+    request.insert("method", method());
+    if (!m_params.isEmpty())
+        request.insert("params", params());
 
-};
+    m_commandId++;
+    return request;
+}
 
-#endif // EVERESTJSONRPCCLIENT_H
+QVariantMap EverestJsonRpcReply::response() const
+{
+    return m_response;
+}
+
+void EverestJsonRpcReply::setResponse(const QVariantMap &response)
+{
+    m_response = response;
+}
