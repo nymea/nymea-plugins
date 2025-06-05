@@ -111,32 +111,31 @@ void EverestMqttDiscovery::checkHostAddress(const QHostAddress &address)
         // We found a mqtt server, let's check if we find everest_api module on it...
         qCDebug(dcEverest()) << "Discovery: Successfully connected to host" << address.toString();
 
-        connect(client, &MqttClient::publishReceived, client, [this, client, address]
-                (const QString &topic, const QByteArray &payload, bool retained) {
+        connect(client, &MqttClient::publishReceived, client, [this, client, address] (const QString &topic, const QByteArray &payload, bool retained) {
 
-                    qCDebug(dcEverest()) << "Discovery: Received publish on" << topic
-                                         << "retained:" << retained << qUtf8Printable(payload);
+            qCDebug(dcEverest()) << "Discovery: Received publish on" << topic
+                                 << "retained:" << retained << qUtf8Printable(payload);
 
-                    if (topic == m_everestApiModuleTopicConnectors) {
-                        QJsonParseError jsonError;
-                        QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &jsonError);
-                        if (jsonError.error) {
-                            qCDebug(dcEverest()) << "Discovery: Received payload on topic" << topic
-                                                 << "with JSON error:" << jsonError.errorString();
-                            cleanupClient(client);
-                            return;
-                        }
+            if (topic == m_everestApiModuleTopicConnectors) {
+                QJsonParseError jsonError;
+                QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &jsonError);
+                if (jsonError.error) {
+                    qCDebug(dcEverest()) << "Discovery: Received payload on topic" << topic
+                                         << "with JSON error:" << jsonError.errorString();
+                    cleanupClient(client);
+                    return;
+                }
 
-                        QStringList connectors = jsonDoc.toVariant().toStringList();
-                        qCInfo(dcEverest()) << "Discovery: Found Everest on" << address.toString() << connectors;
-                        Result result;
-                        result.address = address;
-                        result.connectors = connectors;
-                        m_results.append(result);
+                QStringList connectors = jsonDoc.toVariant().toStringList();
+                qCInfo(dcEverest()) << "Discovery: Found Everest on" << address.toString() << connectors;
+                Result result;
+                result.address = address;
+                result.connectors = connectors;
+                m_results.append(result);
 
-                        cleanupClient(client);
-                    }
-                });
+                cleanupClient(client);
+            }
+        });
 
         connect(client, &MqttClient::subscribeResult, client, [this, client]
                 (quint16 packetId, const Mqtt::SubscribeReturnCodes &subscribeReturnCodes) {
@@ -189,7 +188,7 @@ void EverestMqttDiscovery::finishDiscovery()
         m_results[i].networkDeviceInfo = m_networkDeviceInfos.get(m_results.at(i).address);
 
     qCInfo(dcEverest()) << "Discovery: Finished the discovery process. Found"
-                        << m_results.count() << "Everest instances in"
+                        << m_results.count() << "Everest mqtt instances in"
                         << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
 
     emit finished();

@@ -28,55 +28,49 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef EVERESTJSONRPCCLIENT_H
-#define EVERESTJSONRPCCLIENT_H
+#ifndef EVERESTJSONRPCDISCOVERY_H
+#define EVERESTJSONRPCDISCOVERY_H
 
 #include <QObject>
 
-#include "everestjsonrpcreply.h"
-#include "everestjsonrpcinterface.h"
+#include <network/networkdevicediscovery.h>
 
-class EverestJsonRpcClient : public QObject
+#include "jsonrpc/everestjsonrpcclient.h"
+
+class EverestJsonRpcDiscovery : public QObject
 {
     Q_OBJECT
 public:
-    explicit EverestJsonRpcClient(QObject *parent = nullptr);
+    typedef struct Result {
+        QHostAddress address;
+        NetworkDeviceInfo networkDeviceInfo;
+    } Result;
 
-    QUrl serverUrl();
-    void setSeverUrl(const QUrl &serverUrl);
+    explicit EverestJsonRpcDiscovery(NetworkDeviceDiscovery *networkDeviceDiscovery, quint16 port = 8080, QObject *parent = nullptr);
 
-    bool available() const;
+    void start();
+    void startLocalhost();
 
-    QString apiVersion() const;
-
-    // API calls
-    EverestJsonRpcReply *apiHello();
-    EverestJsonRpcReply *chargePointGetEVSEInfos();
-
-    EverestJsonRpcReply *evseGetInfo();
-    EverestJsonRpcReply *evseGetStatus(int evseIndex);
-    EverestJsonRpcReply *evseGetHardwareCapabilities(int evseIndex);
-
-public slots:
-    void connectToServer(const QUrl &serverUrl);
-    void disconnectFromServer();
+    QList<EverestJsonRpcDiscovery::Result> results() const;
 
 signals:
-    void connectionErrorOccurred();
-    void availableChanged(bool available);
-
-private slots:
-    void sendRequest(EverestJsonRpcReply *reply);
-    void processDataPacket(const QByteArray &data);
+    void finished();
 
 private:
-    bool m_available = false;
-    int m_commandId = 0;
-    EverestJsonRpcInterface *m_interface = nullptr;
-    QHash<int, EverestJsonRpcReply *> m_replies;
+    NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
+    quint16 m_port = 8080;
 
-    QString m_apiVersion;
+    QDateTime m_startDateTime;
+    NetworkDeviceInfos m_networkDeviceInfos;
+    QList<EverestJsonRpcClient *> m_clients;
+    QList<EverestJsonRpcDiscovery::Result> m_results;
+
+    bool m_localhostDiscovery = false;
+
+    void checkHostAddress(const QHostAddress &address);
+    void cleanupClient(EverestJsonRpcClient *client);
+    void finishDiscovery();
 
 };
 
-#endif // EVERESTJSONRPCCLIENT_H
+#endif // EVERESTJSONRPCDISCOVERY_H

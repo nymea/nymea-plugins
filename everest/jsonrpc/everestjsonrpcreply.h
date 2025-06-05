@@ -31,32 +31,53 @@
 #ifndef EVERESTJSONRPCREPLY_H
 #define EVERESTJSONRPCREPLY_H
 
+#include <QTimer>
 #include <QObject>
 #include <QVariantMap>
 
 class EverestJsonRpcReply : public QObject
 {
     Q_OBJECT
-public:
-    explicit EverestJsonRpcReply(int commandId, QString method, QVariantMap params = QVariantMap(), QObject *parent = nullptr);
 
+    friend class EverestJsonRpcClient;
+
+public:
+    enum Error {
+        ErrorNoError = 0,
+        ErrorTimeout,
+        ErrorConnectionError,
+        ErrorJsonRpcError
+    };
+    Q_ENUM(Error)
+
+    Error error() const;
+
+    // Request
     int commandId() const;
     QString method() const;
     QVariantMap params() const;
     QVariantMap requestMap();
 
+    // Response
     QVariantMap response() const;
-    void setResponse(const QVariantMap &response);
 
 signals:
     void finished();
 
 private:
+    explicit EverestJsonRpcReply(int commandId, QString method, QVariantMap params = QVariantMap(), QObject *parent = nullptr);
+
     int m_commandId;
     QString m_method;
     QVariantMap m_params;
     QVariantMap m_response;
 
+    QTimer m_timer;
+    Error m_error = ErrorNoError;
+
+    void setResponse(const QVariantMap &response);
+    void startWaiting();
+    void finishReply(Error error = ErrorNoError);
 };
 
 #endif // EVERESTJSONRPCREPLY_H

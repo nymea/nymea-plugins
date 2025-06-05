@@ -5,6 +5,7 @@ PKGCONFIG += nymea-mqtt
 
 SOURCES += \
     jsonrpc/everestjsonrpcclient.cpp \
+    jsonrpc/everestjsonrpcdiscovery.cpp \
     jsonrpc/everestjsonrpcinterface.cpp \
     jsonrpc/everestjsonrpcreply.cpp \
     mqtt/everestmqtt.cpp \
@@ -14,6 +15,7 @@ SOURCES += \
 
 HEADERS += \
     jsonrpc/everestjsonrpcclient.h \
+    jsonrpc/everestjsonrpcdiscovery.h \
     jsonrpc/everestjsonrpcinterface.h \
     jsonrpc/everestjsonrpcreply.h \
     mqtt/everestmqtt.h \

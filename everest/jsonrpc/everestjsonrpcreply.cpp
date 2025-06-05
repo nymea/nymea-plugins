@@ -36,14 +36,23 @@ EverestJsonRpcReply::EverestJsonRpcReply(int commandId, QString method, QVariant
     m_method{method},
     m_params{params}
 {
+    m_timer.setInterval(2000);
+    m_timer.setSingleShot(true);
+    connect(&m_timer, &QTimer::timeout, this, [this](){
+        m_error = ErrorTimeout;
+        emit finished();
+    });
+}
 
+EverestJsonRpcReply::Error EverestJsonRpcReply::error() const
+{
+    return m_error;
 }
 
 int EverestJsonRpcReply::commandId() const
 {
     return m_commandId;
 }
-
 
 QString EverestJsonRpcReply::method() const
 {
@@ -76,4 +85,16 @@ QVariantMap EverestJsonRpcReply::response() const
 void EverestJsonRpcReply::setResponse(const QVariantMap &response)
 {
     m_response = response;
+}
+
+void EverestJsonRpcReply::startWaiting()
+{
+    m_timer.start();
+}
+
+void EverestJsonRpcReply::finishReply(Error error)
+{
+    m_timer.stop();
+    m_error = error;
+    emit finished();
 }
