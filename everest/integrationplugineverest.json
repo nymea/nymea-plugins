@@ -174,15 +174,16 @@
                     ]
                 },
                 {
-                    "name": "everestJsonRpc",
-                    "displayName": "Everest (JSON RPC)",
-                    "id": "7f0387b9-670a-4e63-b100-ead9f6b8e46c",
+                    "name": "everestConnection",
+                    "displayName": "EVerest connection",
+                    "id": "6a69c792-14e0-40a1-bbb2-94dcb84d82df",
                     "setupMethod": "JustAdd",
-                    "createMethods": ["discovery", "user"],
-                    "interfaces": [ "evcharger", "smartmeterconsumer", "networkdevice", "connectable" ],
+                    "createMethods": [ "Discovery", "User" ],
+                    "interfaces": [ "gateway", "networkdevice" ],
+                    "providedInterfaces": [ "evcharger" ],
                     "discoveryParamTypes": [
                         {
-                            "id": "ce21618e-1a2a-4dbc-8843-98eb443ca6c3",
+                            "id": "cd1cfca6-22f7-4d31-a95f-f642e0e1470f",
                             "name": "port",
                             "displayName": "Port",
                             "type": "uint",
@@ -191,13 +192,13 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "c54926e2-7b88-4400-b1ca-d01a370919e7",
+                            "id": "2af7a13b-f68c-40ab-960f-64f4e4885913",
                             "name": "hostName",
                             "displayName": "Host name",
                             "type": "QString"
                         },
                         {
-                            "id": "b0b52731-56be-4b9e-931a-512b1f9dfe28",
+                            "id": "3761a8e8-5cff-4285-8dc5-58a5655da603",
                             "name": "address",
                             "displayName": "IP address",
                             "type": "QString",
@@ -205,7 +206,7 @@
                             "defaultValue": ""
                         },
                         {
-                            "id": "839ece70-472c-4c99-97ae-476be75ba996",
+                            "id": "f9c425f3-fe72-422d-b57c-0f2e7518ac38",
                             "name": "macAddress",
                             "displayName": "MAC address",
                             "type": "QString",
@@ -213,24 +214,66 @@
                             "readOnly": true
                         },
                         {
-                            "id": "e0b6b5d8-78db-4e47-83d2-f8a82cd94648",
-                            "name": "connector",
-                            "displayName": "Connector name",
-                            "type": "QString",
-                            "defaultValue": ""
-                        },
-                        {
-                            "id": "3c16a1fa-39a8-4ed0-ab00-14b71882726d",
+                            "id": "d8f64b57-37e7-4b48-857c-a82ac9bfbd28",
                             "name": "port",
                             "displayName": "Port",
                             "type": "uint",
                             "defaultValue": 8080
+                        },
+                        {
+                            "id": "088ef8e6-7979-40d0-8429-3a8dec3866fa",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "cf9930ed-077a-4396-826e-23634a01bffb",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b1695978-8f6e-499d-8b2b-5e9e09ad73ff",
+                            "name": "apiVersion",
+                            "displayName": "API Version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "everestChargerAc",
+                    "displayName": "EVerest AC Charger",
+                    "id": "ec47ac6b-e6ec-4a6c-a584-ac6802f79d12",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "b9773de0-a4a8-457e-b221-448d299b9e38",
+                            "name": "index",
+                            "displayName": "Index",
+                            "type": "uint",
+                            "defaultValue": 0
                         }
                     ],
                     "settingsTypes": [],
                     "stateTypes": [
                         {
-                            "id": "2cbe44b1-5b34-43d6-89d8-bece220270d3",
+                            "id": "c117636b-f3c3-4930-8b93-83732627c6a8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d683be61-113d-4501-bb42-991117fa7889",
                             "name": "power",
                             "displayName": "Charging enabled",
                             "displayNameAction": "Enable or disable charging",
@@ -239,7 +282,7 @@
                             "writable": true
                         },
                         {
-                            "id": "b4d4e47a-d229-409b-b6d4-d5c13783f445",
+                            "id": "11d76fab-b48e-443d-9b4f-1dd13a495256",
                             "name": "maxChargingCurrent",
                             "displayName": "Maximum charging current",
                             "displayNameAction": "Set maximum charging current",
@@ -251,21 +294,21 @@
                             "writable": true
                         },
                         {
-                            "id": "85184e0e-e17e-4f1d-8708-9e8b2f95df74",
+                            "id": "22d66da7-6935-4497-914b-38936267bf25",
                             "name": "pluggedIn",
                             "displayName": "Plugged in",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
-                            "id": "8a39135e-7149-4ccb-9e0a-1fb499107965",
+                            "id": "aab3a0d8-f35d-4430-89b5-67a72be1fa50",
                             "name": "charging",
                             "displayName": "Charging",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
-                            "id": "d95c8330-b219-4c70-837d-a7ab52c1f02a",
+                            "id": "58756435-11bf-4896-bdff-e221aa8ffbcc",
                             "name": "phaseCount",
                             "displayName": "Active phases",
                             "type": "uint",
@@ -274,7 +317,7 @@
                             "defaultValue": 1
                         },
                         {
-                            "id": "7dbdd0f3-79f3-404f-8aad-6319eb4a8385",
+                            "id": "8d3d0334-c410-47ce-ae56-7f8db980a7c7",
                             "name": "desiredPhaseCount",
                             "displayName": "Desired phase count",
                             "displayNameAction": "Set desired phase count",
@@ -286,15 +329,7 @@
                             "defaultValue": 3
                         },
                         {
-                            "id": "1cd82dab-82d8-4dbb-852e-4567284d20e9",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "type": "bool",
-                            "cached": false,
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "4c0a0f46-1f31-4d19-93c5-140dceb364ef",
+                            "id": "2bb15b1e-43a2-4102-bbc2-04689bb749eb",
                             "name": "totalEnergyConsumed",
                             "displayName": "Total energy",
                             "type": "double",
@@ -303,7 +338,7 @@
                             "cached": true
                         },
                         {
-                            "id": "ad0ab5f1-8803-426a-9110-29c9d788eedc",
+                            "id": "905a48b1-b0ec-4e14-93c4-1c629e9af790",
                             "name": "sessionEnergy",
                             "displayName": "Session energy",
                             "type": "double",
@@ -312,7 +347,7 @@
                             "suggestLogging": true
                         },
                         {
-                            "id": "c20d0f42-afe4-47da-9c84-97fba99053b5",
+                            "id": "28219545-18a9-4e5d-8c05-30805c87ac74",
                             "name": "currentPower",
                             "displayName": "Current power",
                             "type": "double",
@@ -321,7 +356,7 @@
                             "cached": false
                         },
                         {
-                            "id": "126a5d55-ee47-4859-8ef2-bc8e79d1372a",
+                            "id": "9226f350-9ffd-4e0d-808b-67da51496ecb",
                             "name": "state",
                             "displayName": "State",
                             "type": "QString",
@@ -329,7 +364,7 @@
                             "cached": false
                         },
                         {
-                            "id": "9df97785-91cd-482f-99f1-c910275bb630",
+                            "id": "ee1c2e36-41c2-475e-8850-c9051720061a",
                             "name": "temperature",
                             "displayName": "Temperature",
                             "type": "double",
@@ -338,7 +373,7 @@
                             "cached": false
                         },
                         {
-                            "id": "f460d54d-8935-4f79-b79a-405de8f2b3ec",
+                            "id": "1b281c9e-4dc1-4dd2-b152-825015fb73e3",
                             "name": "fanSpeed",
                             "displayName": "Fan speed",
                             "type": "double",

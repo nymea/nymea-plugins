@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -42,8 +42,7 @@ IntegrationPluginEverest::IntegrationPluginEverest()
 
 void IntegrationPluginEverest::init()
 {
-    // EverestJsonRpcClient *client = new EverestJsonRpcClient(this);
-    // client->connectToServer(QUrl("ws://10.10.10.165:8080"));
+
 }
 
 void IntegrationPluginEverest::startMonitoringAutoThings()
@@ -118,7 +117,6 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
         info->finish(Thing::ThingErrorUnsupportedFeature, QT_TR_NOOP("The network device discovery is not available."));
         return;
     }
-
 
     if (info->thingClassId() == everestMqttThingClassId) {
         EverestMqttDiscovery *mqttDiscovery = new EverestMqttDiscovery(hardwareManager()->networkDeviceDiscovery(), this);
@@ -198,76 +196,72 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
         return;
     }
 
-    if (info->thingClassId() == everestJsonRpcThingClassId) {
-        quint16 port = info->params().paramValue(everestJsonRpcDiscoveryPortParamTypeId).toUInt();
+    if (info->thingClassId() == everestConnectionThingClassId) {
+        quint16 port = info->params().paramValue(everestConnectionDiscoveryPortParamTypeId).toUInt();
         EverestJsonRpcDiscovery *jsonRpcDiscovery = new EverestJsonRpcDiscovery(hardwareManager()->networkDeviceDiscovery(), port, this);
         connect(jsonRpcDiscovery, &EverestJsonRpcDiscovery::finished, jsonRpcDiscovery, &EverestJsonRpcDiscovery::deleteLater);
         connect(jsonRpcDiscovery, &EverestJsonRpcDiscovery::finished, info, [this, info, jsonRpcDiscovery, port](){
 
             foreach (const EverestJsonRpcDiscovery::Result &result, jsonRpcDiscovery->results()) {
-
                 // Create one EV charger foreach available connector on that host
-                // foreach(const QString &connectorName, result.connectors) {
+                QString title = QString("Everest");
+                QString description;
+                MacAddressInfo macInfo;
 
-                    QString title = QString("Everest");
-                    QString description;
-                    MacAddressInfo macInfo;
+                switch (result.networkDeviceInfo.monitorMode()) {
+                case NetworkDeviceInfo::MonitorModeMac:
+                    macInfo = result.networkDeviceInfo.macAddressInfos().constFirst();
+                    description = result.networkDeviceInfo.address().toString();
+                    if (!macInfo.vendorName().isEmpty())
+                        description += " - " + result.networkDeviceInfo.macAddressInfos().constFirst().vendorName();
 
-                    switch (result.networkDeviceInfo.monitorMode()) {
-                    case NetworkDeviceInfo::MonitorModeMac:
-                        macInfo = result.networkDeviceInfo.macAddressInfos().constFirst();
-                        description = result.networkDeviceInfo.address().toString();
-                        if (!macInfo.vendorName().isEmpty())
-                            description += " - " + result.networkDeviceInfo.macAddressInfos().constFirst().vendorName();
-
-                        break;
-                    case NetworkDeviceInfo::MonitorModeHostName:
-                        description = result.networkDeviceInfo.address().toString();
-                        break;
-                    case NetworkDeviceInfo::MonitorModeIp:
-                        description = "Interface: " +  result.networkDeviceInfo.networkInterface().name();
-                        break;
-                    }
-
-                    ThingDescriptor descriptor(everestJsonRpcThingClassId, title, description);
-                    qCInfo(dcEverest()) << "Discovered -->" << title << description;
-
-                    // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
-                    // depending on the possibilities within this network. It is not recommended to fill in all information available.
-                    // Only the information available depending on the monitor mode are relevant for the monitor.
-                    ParamList params;
-                    params.append(Param(everestJsonRpcThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
-                    params.append(Param(everestJsonRpcThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
-                    params.append(Param(everestJsonRpcThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
-                    params.append(Param(everestJsonRpcThingPortParamTypeId, port));
-                    descriptor.setParams(params);
-
-                    // Let's check if we aleardy have a thing with those params
-                    bool thingExists = true;
-                    Thing *existingThing = nullptr;
-                    foreach (Thing *thing, myThings()) {
-                        if (thing->thingClassId() != info->thingClassId())
-                            continue;
-
-                        foreach(const Param &param, params) {
-                            if (param.value() != thing->paramValue(param.paramTypeId())) {
-                                thingExists = false;
-                                break;
-                            }
-                        }
-
-                        // The params are equal, we already know this thing
-                        if (thingExists)
-                            existingThing = thing;
-                    }
-
-                    // Set the thing ID id we already have this device (for reconfiguration)
-                    if (existingThing)
-                        descriptor.setThingId(existingThing->id());
-
-                    info->addThingDescriptor(descriptor);
+                    break;
+                case NetworkDeviceInfo::MonitorModeHostName:
+                    description = result.networkDeviceInfo.address().toString();
+                    break;
+                case NetworkDeviceInfo::MonitorModeIp:
+                    description = "Interface: " +  result.networkDeviceInfo.networkInterface().name();
+                    break;
                 }
-            // }
+
+                ThingDescriptor descriptor(everestConnectionThingClassId, title, description);
+                qCInfo(dcEverest()) << "Discovered -->" << title << description;
+
+                // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
+                // depending on the possibilities within this network. It is not recommended to fill in all information available.
+                // Only the information available depending on the monitor mode are relevant for the monitor.
+                ParamList params;
+                params.append(Param(everestConnectionThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
+                params.append(Param(everestConnectionThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
+                params.append(Param(everestConnectionThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
+                params.append(Param(everestConnectionThingPortParamTypeId, port));
+                descriptor.setParams(params);
+
+                // Let's check if we aleardy have a thing with those params
+                bool thingExists = true;
+                Thing *existingThing = nullptr;
+                foreach (Thing *thing, myThings()) {
+                    if (thing->thingClassId() != info->thingClassId())
+                        continue;
+
+                    foreach(const Param &param, params) {
+                        if (param.value() != thing->paramValue(param.paramTypeId())) {
+                            thingExists = false;
+                            break;
+                        }
+                    }
+
+                    // The params are equal, we already know this thing
+                    if (thingExists)
+                        existingThing = thing;
+                }
+
+                // Set the thing ID id we already have this device (for reconfiguration)
+                if (existingThing)
+                    descriptor.setThingId(existingThing->id());
+
+                info->addThingDescriptor(descriptor);
+            }
 
             // All discovery results processed, we are done
             info->finish(Thing::ThingErrorNoError);
@@ -282,42 +276,129 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    QHostAddress address(thing->paramValue(everestMqttThingAddressParamTypeId).toString());
-    MacAddress macAddress(thing->paramValue(everestMqttThingMacAddressParamTypeId).toString());
-    QString hostName(thing->paramValue(everestMqttThingHostNameParamTypeId).toString());
-    QString connector(thing->paramValue(everestMqttThingConnectorParamTypeId).toString());
+    qCDebug(dcEverest()) << "Setting up" << thing << thing->params();
 
-    EverestMqttClient *everstClient = nullptr;
+    if (thing->thingClassId() == everestMqttThingClassId) {
 
-    foreach (EverestMqttClient *ec, m_everstClients) {
-        if (ec->monitor()->macAddress() == macAddress &&
-            ec->monitor()->hostName() == hostName &&
-            ec->monitor()->address() == address) {
-            // We have already a client for this host
-            qCDebug(dcEverest()) << "Using existing" << ec;
-            everstClient = ec;
+        QHostAddress address(thing->paramValue(everestMqttThingAddressParamTypeId).toString());
+        MacAddress macAddress(thing->paramValue(everestMqttThingMacAddressParamTypeId).toString());
+        QString hostName(thing->paramValue(everestMqttThingHostNameParamTypeId).toString());
+        QString connector(thing->paramValue(everestMqttThingConnectorParamTypeId).toString());
+
+        EverestMqttClient *everstClient = nullptr;
+
+        foreach (EverestMqttClient *ec, m_everstMqttClients) {
+            if (ec->monitor()->macAddress() == macAddress &&
+                ec->monitor()->hostName() == hostName &&
+                ec->monitor()->address() == address) {
+                // We have already a client for this host
+                qCDebug(dcEverest()) << "Using existing" << ec;
+                everstClient = ec;
+            }
         }
-    }
 
-    if (!everstClient) {
-        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
-        if (!monitor) {
-            qCWarning(dcEverest()) << "Incomplete paramerters. Could not register network device monitor with these thing paramaters:" << thing->name() << thing->params();
-            info->finish(Thing::ThingErrorMissingParameter);
+        if (!everstClient) {
+            everstClient = new EverestMqttClient(this);
+            everstClient->setMonitor(hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing));
+            m_everstMqttClients.append(everstClient);
+            qCDebug(dcEverest()) << "Created new" << everstClient;
+            everstClient->start();
+        }
+
+        everstClient->addThing(thing);
+        m_thingClients.insert(thing, everstClient);
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    } else if (thing->thingClassId() == everestConnectionThingClassId) {
+
+        QHostAddress address(thing->paramValue(everestConnectionThingAddressParamTypeId).toString());
+        MacAddress macAddress(thing->paramValue(everestConnectionThingMacAddressParamTypeId).toString());
+        QString hostName(thing->paramValue(everestConnectionThingHostNameParamTypeId).toString());
+
+        quint16 port = thing->paramValue(everestConnectionThingPortParamTypeId).toUInt();
+
+        EverestConnection *connection = nullptr;
+
+        // Handle reconfigure
+        if (m_everstConnections.contains(thing)) {
+            connection = m_everstConnections.take(thing);
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(connection->monitor());
+            connection->deleteLater();
+            connection = nullptr;
+        }
+
+        connection = new EverestConnection(port, this);
+        connection->setMonitor(hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing));
+        m_everstConnections.insert(thing, connection);
+
+        connect(connection, &EverestConnection::availableChanged, thing, [this, thing, connection](bool available){
+            thing->setStateValue(everestConnectionConnectedStateTypeId, available);
+            // Update connected state of child things
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                child->setStateValue("connected", available);
+            }
+
+            if (available) {
+                thing->setStateValue(everestConnectionApiVersionStateTypeId, connection->client()->apiVersion());
+
+                // Sync things with availabe EvseInfos
+
+                ThingDescriptors descriptors;
+                qCDebug(dcEverest()) << "The client is now available, synching things...";
+                foreach (const EverestJsonRpcClient::EVSEInfo &evseInfo, connection->client()->evseInfos()) {
+                    // FIXME: somehow we need to now if this evse is AC or DC in order to spawn the right child thingclass.
+
+                    // Check if we already have a child device for this index
+                    bool alreadyAdded = false;
+                    foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                        if (childThing->paramValue("index").toInt() == evseInfo.index) {
+                            qCDebug(dcEverest()) << "-> Found already added charger with index" << evseInfo.index;
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyAdded) {
+                        qCDebug(dcEverest()) << "-> Adding new discovered AC charger on" << connection->client()->serverUrl();
+                        ThingDescriptor descriptor(everestChargerAcThingClassId, evseInfo.id, evseInfo.description, thing->id());
+                        descriptor.setParams(ParamList() << Param(everestChargerAcThingIndexParamTypeId, evseInfo.index));
+                        descriptors.append(descriptor);
+                    }
+                }
+
+
+                // TODO: evaluate if any thing dissapeared
+
+                if (!descriptors.isEmpty()) {
+                    emit autoThingsAppeared(descriptors);
+                }
+
+            }
+        });
+
+        info->finish(Thing::ThingErrorNoError);
+
+        connection->start();
+        return;
+    } else if (thing->thingClassId() == everestChargerAcThingClassId) {
+
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EverestConnection *connection = m_everstConnections.value(parentThing);
+        if (!connection) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
-        everstClient = new EverestMqttClient(this);
-        everstClient->setMonitor(monitor);
-        m_everstClients.append(everstClient);
-        qCDebug(dcEverest()) << "Created new" << everstClient;
-        everstClient->start();
+        info->finish(Thing::ThingErrorNoError);
+
+        thing->setStateValue(everestChargerAcConnectedStateTypeId, connection->available());
     }
 
-    everstClient->addThing(thing);
-    m_thingClients.insert(thing, everstClient);
-    info->finish(Thing::ThingErrorNoError);
-    return;
+}
+
+void IntegrationPluginEverest::postSetupThing(Thing *thing)
+{
+    Q_UNUSED(thing)
 }
 
 void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
@@ -381,21 +462,30 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
 void IntegrationPluginEverest::thingRemoved(Thing *thing)
 {
     qCDebug(dcEverest()) << "Remove thing" << thing;
+
     if (thing->thingClassId() == everestMqttThingClassId) {
         EverestMqttClient *everestClient = m_thingClients.take(thing);
         everestClient->removeThing(thing);
         if (everestClient->things().isEmpty()) {
             qCDebug(dcEverest()) << "Deleting" << everestClient << "since there is no thing left";
             // No more things related to this client, we can delete it
-            m_everstClients.removeAll(everestClient);
+            m_everstMqttClients.removeAll(everestClient);
 
             // Unregister monitor
             if (everestClient->monitor())
                 hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(everestClient->monitor());
 
-
             everestClient->deleteLater();
         }
+    } else if (thing->thingClassId() == everestConnectionThingClassId) {
+        m_everstConnections.take(thing)->deleteLater();
+    } else if (thing->thingClassId() == everestChargerAcThingClassId) {
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EverestConnection *connection = m_everstConnections.value(parentThing);
+        if (!connection)
+            return;
+
+        connection->removeThing(thing);
     }
 }
 

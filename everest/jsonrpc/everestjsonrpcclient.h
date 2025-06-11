@@ -33,6 +33,10 @@
 
 #include <QObject>
 
+#include <integrations/thing.h>
+#include <network/macaddress.h>
+#include <network/networkdevicemonitor.h>
+
 #include "everestjsonrpcreply.h"
 #include "everestjsonrpcinterface.h"
 
@@ -40,14 +44,69 @@ class EverestJsonRpcClient : public QObject
 {
     Q_OBJECT
 public:
+    // API Enums
+
+    enum ConnectorType {
+        ConnectorTypecCCS1,
+        ConnectorTypecCCS2,
+        ConnectorTypecG105,
+        ConnectorTypecTesla,
+        ConnectorTypecType1,
+        ConnectorTypecType2,
+        ConnectorTypes309_1P_16A,
+        ConnectorTypes309_1P_32A,
+        ConnectorTypes309_3P_16A,
+        ConnectorTypes309_3P_32A,
+        ConnectorTypesBS1361,
+        ConnectorTypesCEE_7_7,
+        ConnectorTypesType2,
+        ConnectorTypesType3,
+        ConnectorTypeOther1PhMax16A,
+        ConnectorTypeOther1PhOver16A,
+        ConnectorTypeOther3Ph,
+        ConnectorTypePan,
+        ConnectorTypewInductive,
+        ConnectorTypewResonant,
+        ConnectorTypeUndetermined
+    };
+    Q_ENUM(ConnectorType)
+
+    // API Objects
+
+    typedef struct ChargerInfo {
+        QString vendor;
+        QString model;
+        QString serialNumber;
+        QString firmwareVersion;
+    } ChargerInfo;
+
+    typedef struct ConnectorInfo {
+        int connectorId = -1;
+        ConnectorType type = ConnectorTypeUndetermined;
+        QString description; // optional
+    } ConnectorInfo;
+
+    typedef struct EVSEInfo {
+        int index = -1;
+        QString id;
+        QString description; // optional
+        bool bidirectionalCharging = false;
+        QList<ConnectorInfo> availableConnectors;
+    } EVSEInfo;
+
+
     explicit EverestJsonRpcClient(QObject *parent = nullptr);
 
     QUrl serverUrl();
-    void setSeverUrl(const QUrl &serverUrl);
 
     bool available() const;
 
+    // Once available, following properties are set
     QString apiVersion() const;
+    QString everestVersion() const;
+    ChargerInfo chargerInfo() const;
+
+    QList<EVSEInfo> evseInfos() const;
 
     // API calls
     EverestJsonRpcReply *apiHello();
@@ -75,8 +134,17 @@ private:
     EverestJsonRpcInterface *m_interface = nullptr;
     QHash<int, EverestJsonRpcReply *> m_replies;
 
+    // Init infos
     QString m_apiVersion;
+    QString m_everestVersion;
+    ChargerInfo m_chargerInfo;
+    bool m_authenticationRequired = false;
+    QList<EVSEInfo> m_evseInfos;
 
+    // API parser methods
+    EVSEInfo parseEvseInfo(const QVariantMap &evseInfoMap);
+    ConnectorInfo parseConnectorInfo(const QVariantMap &connectorInfoMap);
+    ConnectorType parseConnectorType(const QString &connectorTypeString);
 };
 
 #endif // EVERESTJSONRPCCLIENT_H

@@ -31,6 +31,7 @@
 #include "everestjsonrpcclient.h"
 #include "extern-plugininfo.h"
 
+#include <QMetaEnum>
 #include <QJsonDocument>
 #include <QJsonParseError>
 
@@ -70,6 +71,14 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
 
                 //D | Everest: <-- {"id":0,"jsonrpc":"2.0","result":{"api_version":"0.0.1","authentication_required":false,"charger_info":{"firmware_version":"unknown","model":"unknown","serial":"unknown","vendor":"unknown"},"everest_version":""}
                 m_apiVersion = result.value("api_version").toString();
+                m_everestVersion = result.value("everest_version").toString();
+                m_authenticationRequired = result.value("authentication_required").toBool();
+
+                QVariantMap chargerInfoMap = result.value("charger_info").toMap();
+                m_chargerInfo.vendor = chargerInfoMap.value("vendor").toString();
+                m_chargerInfo.model = chargerInfoMap.value("model").toString();
+                m_chargerInfo.serialNumber = chargerInfoMap.value("serial").toString();
+                m_chargerInfo.firmwareVersion = chargerInfoMap.value("firmware_version").toString();
 
                 EverestJsonRpcReply *reply = chargePointGetEVSEInfos();
                 connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
@@ -93,10 +102,12 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                         return;
                     }
 
-                    // TODO: init infos
+                    m_evseInfos.clear();
+                    foreach (const QVariant &evseInfoVariant, result.value("infos").toList()) {
+                        m_evseInfos.append(parseEvseInfo(evseInfoVariant.toMap()));
+                    }
 
-                    // Init data, we are done and connected.
-
+                    // We are done with the init and the client is now available
                     if (!m_available) {
                         m_available = true;
                         emit availableChanged(m_available);
@@ -128,6 +139,26 @@ QUrl EverestJsonRpcClient::serverUrl()
 bool EverestJsonRpcClient::available() const
 {
     return m_available;
+}
+
+QString EverestJsonRpcClient::apiVersion() const
+{
+    return m_apiVersion;
+}
+
+QString EverestJsonRpcClient::everestVersion() const
+{
+    return m_everestVersion;
+}
+
+QList<EverestJsonRpcClient::EVSEInfo> EverestJsonRpcClient::evseInfos() const
+{
+    return m_evseInfos;
+}
+
+EverestJsonRpcClient::ChargerInfo EverestJsonRpcClient::chargerInfo() const
+{
+    return m_chargerInfo;
 }
 
 EverestJsonRpcReply *EverestJsonRpcClient::apiHello()
@@ -232,6 +263,34 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
         return;
     } else {
         // Data without reply, check if this is a notification
-
+        qCDebug(dcEverest()) << "Received data without reply" << qUtf8Printable(data);
     }
 }
+
+EverestJsonRpcClient::EVSEInfo EverestJsonRpcClient::parseEvseInfo(const QVariantMap &evseInfoMap)
+{
+    EVSEInfo evseInfo;
+    evseInfo.index = evseInfoMap.value("index").toInt();
+    evseInfo.id = evseInfoMap.value("id").toString();
+    evseInfo.bidirectionalCharging = evseInfoMap.value("bidi_charging").toBool();
+    foreach (const QVariant &connectorInfoVariant, evseInfoMap.value("available_connectors").toList()) {
+        evseInfo.availableConnectors.append(parseConnectorInfo(connectorInfoVariant.toMap()));
+    }
+    return evseInfo;
+}
+
+EverestJsonRpcClient::ConnectorInfo EverestJsonRpcClient::parseConnectorInfo(const QVariantMap &connectorInfoMap)
+{
+    ConnectorInfo connectorInfo;
+    connectorInfo.connectorId = connectorInfoMap.value("id").toInt();
+    connectorInfo.type = parseConnectorType(connectorInfoMap.value("type").toString());
+    connectorInfo.description = connectorInfoMap.value("description").toString();
+    return connectorInfo;
+}
+
+EverestJsonRpcClient::ConnectorType EverestJsonRpcClient::parseConnectorType(const QString &connectorTypeString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<ConnectorType>();
+    return static_cast<ConnectorType>(metaEnum.keyToValue(QString("ConnectorType").append(connectorTypeString).toUtf8()));
+}
+

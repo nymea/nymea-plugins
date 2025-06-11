@@ -28,42 +28,55 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINEVEREST_H
-#define INTEGRATIONPLUGINEVEREST_H
+#ifndef EVERESTCONNECTION_H
+#define EVERESTCONNECTION_H
 
-#include "integrations/integrationplugin.h"
-#include "extern-plugininfo.h"
+#include <QTimer>
+#include <QObject>
 
-#include "mqtt/everestmqttclient.h"
-#include "jsonrpc/everestconnection.h"
+#include <integrations/thing.h>
+#include <network/macaddress.h>
+#include <network/networkdevicemonitor.h>
 
-#include <mqttclient.h>
+class EverestJsonRpcClient;
 
-class IntegrationPluginEverest: public IntegrationPlugin
+class EverestConnection : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugineverest.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginEverest();
+    explicit EverestConnection(quint16 port, QObject *parent = nullptr);
 
-    void init() override;
-    void startMonitoringAutoThings() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+    bool available() const;
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    EverestJsonRpcClient *client() const;
 
-    void executeAction(ThingActionInfo *info) override;
+    Things things() const;
+
+    void addThing(Thing *thing);
+    void removeThing(Thing *thing);
+
+    NetworkDeviceMonitor *monitor() const;
+    void setMonitor(NetworkDeviceMonitor *monitor);
+
+public slots:
+    void start();
+    void stop();
+
+signals:
+    void availableChanged(bool available);
+
+private slots:
+    void onMonitorReachableChanged(bool reachable);
 
 private:
-    QList<EverestMqttClient *> m_everstMqttClients;
-    QHash<Thing *, EverestMqttClient *> m_thingClients;
+    NetworkDeviceMonitor *m_monitor = nullptr;
+    QTimer m_reconnectTimer;
+    quint16 m_port = 8080;
 
-    QHash<Thing *, EverestConnection *> m_everstConnections;
+    EverestJsonRpcClient *m_client = nullptr;
+    bool m_running = false;
+
+    QUrl buildUrl() const;
 };
 
-#endif // INTEGRATIONPLUGINEVEREST_H
+#endif // EVERESTCONNECTION_H
