@@ -107,11 +107,15 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                         m_evseInfos.append(parseEvseInfo(evseInfoVariant.toMap()));
                     }
 
+
+
+
                     // We are done with the init and the client is now available
                     if (!m_available) {
                         m_available = true;
                         emit availableChanged(m_available);
                     }
+
 
                 });
             });
@@ -161,26 +165,13 @@ EverestJsonRpcClient::ChargerInfo EverestJsonRpcClient::chargerInfo() const
     return m_chargerInfo;
 }
 
-EverestJsonRpcReply *EverestJsonRpcClient::apiHello()
+EverestJsonRpcReply *EverestJsonRpcClient::evseGetInfo(int evseIndex)
 {
-    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "API.Hello", QVariantMap(), this);
-    qCDebug(dcEverest()) << "Calling" << reply->method();
-    sendRequest(reply);
-    return reply;
-}
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
 
-EverestJsonRpcReply *EverestJsonRpcClient::chargePointGetEVSEInfos()
-{
-    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "ChargePoint.GetEVSEInfos", QVariantMap(), this);
-    qCDebug(dcEverest()) << "Calling" << reply->method();
-    sendRequest(reply);
-    return reply;
-}
-
-EverestJsonRpcReply *EverestJsonRpcClient::evseGetInfo()
-{
-    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetInfo", QVariantMap(), this);
-    qCDebug(dcEverest()) << "Calling" << reply->method();
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetInfo", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
 }
@@ -191,7 +182,7 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetStatus(int evseIndex)
     params.insert("evse_index", evseIndex);
 
     EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetStatus", params, this);
-    qCDebug(dcEverest()) << "Calling" << reply->method();
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
 }
@@ -201,11 +192,111 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetHardwareCapabilities(int evseI
     QVariantMap params;
     params.insert("evse_index", evseIndex);
 
-    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetStatus", params, this);
-    qCDebug(dcEverest()) << "Calling" << reply->method();
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetHardwareCapabilities", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
 }
+
+EverestJsonRpcReply *EverestJsonRpcClient::evseGetMeterData(int evseIndex)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.GetMeterData", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
+EverestJsonRpcReply *EverestJsonRpcClient::evseSetChargingAllowed(int evseIndex, bool allowed)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+    params.insert("charging_allowed", allowed);
+
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.SetChargingAllowed", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
+EverestJsonRpcClient::ResponseError EverestJsonRpcClient::parseResponseError(const QString &responseErrorString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<ResponseError>();
+    return static_cast<ResponseError>(metaEnum.keyToValue(QString("ResponseError").append(responseErrorString).toUtf8()));
+}
+
+EverestJsonRpcClient::ConnectorType EverestJsonRpcClient::parseConnectorType(const QString &connectorTypeString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<ConnectorType>();
+    return static_cast<ConnectorType>(metaEnum.keyToValue(QString("ConnectorType").append(connectorTypeString).toUtf8()));
+}
+
+EverestJsonRpcClient::ChargeProtocol EverestJsonRpcClient::parseChargeProtocol(const QString &chargeProtocolString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<ChargeProtocol>();
+    return static_cast<ChargeProtocol>(metaEnum.keyToValue(QString("ChargeProtocol").append(chargeProtocolString).toUtf8()));
+}
+
+EverestJsonRpcClient::EvseState EverestJsonRpcClient::parseEvseState(const QString &evseStateString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<EvseState>();
+    return static_cast<EvseState>(metaEnum.keyToValue(QString("EvseState").append(evseStateString).toUtf8()));
+}
+
+EverestJsonRpcClient::EVSEInfo EverestJsonRpcClient::parseEvseInfo(const QVariantMap &evseInfoMap)
+{
+    EVSEInfo evseInfo;
+    evseInfo.index = evseInfoMap.value("index").toInt();
+    evseInfo.id = evseInfoMap.value("id").toString();
+    evseInfo.bidirectionalCharging = evseInfoMap.value("bidi_charging").toBool();
+    foreach (const QVariant &connectorInfoVariant, evseInfoMap.value("available_connectors").toList()) {
+        evseInfo.availableConnectors.append(parseConnectorInfo(connectorInfoVariant.toMap()));
+    }
+    return evseInfo;
+}
+
+EverestJsonRpcClient::ConnectorInfo EverestJsonRpcClient::parseConnectorInfo(const QVariantMap &connectorInfoMap)
+{
+    ConnectorInfo connectorInfo;
+    connectorInfo.connectorId = connectorInfoMap.value("id").toInt();
+    connectorInfo.type = parseConnectorType(connectorInfoMap.value("type").toString());
+    connectorInfo.description = connectorInfoMap.value("description").toString();
+    return connectorInfo;
+}
+
+EverestJsonRpcClient::EVSEStatus EverestJsonRpcClient::parseEvseStatus(const QVariantMap &evseStatusMap)
+{
+    EVSEStatus evseStatus;
+    evseStatus.chargedEnergyWh = evseStatusMap.value("charged_energy_wh").toDouble();
+    evseStatus.dischargedEnergyWh = evseStatusMap.value("discharged_energy_wh").toDouble();
+    evseStatus.chargingDuration = evseStatusMap.value("charging_duration_s").toInt();
+    evseStatus.chargingAllowed = evseStatusMap.value("charging_allowed").toBool();
+    evseStatus.available = evseStatusMap.value("available").toBool();
+    evseStatus.activeConnectorId = evseStatusMap.value("active_connector_id").toInt();
+    evseStatus.evseError = evseStatusMap.value("evse_error").toString();
+    evseStatus.chargeProtocol = parseChargeProtocol(evseStatusMap.value("charge_protocol").toString());
+    evseStatus.evseState = parseEvseState(evseStatusMap.value("state").toString());
+    evseStatus.evseStateString = evseStatusMap.value("state").toString();
+    return evseStatus;
+}
+
+EverestJsonRpcClient::HardwareCapabilities EverestJsonRpcClient::parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap)
+{
+    HardwareCapabilities hardwareCapabilities;
+    hardwareCapabilities.maxCurrentExport = hardwareCapabilitiesMap.value("max_current_A_export").toDouble();
+    hardwareCapabilities.maxCurrentImport = hardwareCapabilitiesMap.value("max_current_A_import").toDouble();
+    hardwareCapabilities.maxPhaseCountExport = hardwareCapabilitiesMap.value("max_phase_count_export").toInt();
+    hardwareCapabilities.maxPhaseCountImport = hardwareCapabilitiesMap.value("max_phase_count_import").toInt();
+    hardwareCapabilities.minCurrentExport = hardwareCapabilitiesMap.value("min_current_A_export").toDouble();
+    hardwareCapabilities.minCurrentImport = hardwareCapabilitiesMap.value("min_current_A_import").toDouble();
+    hardwareCapabilities.minPhaseCountExport = hardwareCapabilitiesMap.value("min_phase_count_export").toInt();
+    hardwareCapabilities.minPhaseCountImport = hardwareCapabilitiesMap.value("min_phase_count_import").toInt();
+    hardwareCapabilities.phaseSwitchDuringCharging = hardwareCapabilitiesMap.value("phase_switch_during_charging").toBool();
+    return hardwareCapabilities;
+}
+
 
 void EverestJsonRpcClient::connectToServer(const QUrl &serverUrl)
 {
@@ -267,30 +358,18 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
     }
 }
 
-EverestJsonRpcClient::EVSEInfo EverestJsonRpcClient::parseEvseInfo(const QVariantMap &evseInfoMap)
+EverestJsonRpcReply *EverestJsonRpcClient::apiHello()
 {
-    EVSEInfo evseInfo;
-    evseInfo.index = evseInfoMap.value("index").toInt();
-    evseInfo.id = evseInfoMap.value("id").toString();
-    evseInfo.bidirectionalCharging = evseInfoMap.value("bidi_charging").toBool();
-    foreach (const QVariant &connectorInfoVariant, evseInfoMap.value("available_connectors").toList()) {
-        evseInfo.availableConnectors.append(parseConnectorInfo(connectorInfoVariant.toMap()));
-    }
-    return evseInfo;
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "API.Hello", QVariantMap(), this);
+    qCDebug(dcEverest()) << "Calling" << reply->method();
+    sendRequest(reply);
+    return reply;
 }
 
-EverestJsonRpcClient::ConnectorInfo EverestJsonRpcClient::parseConnectorInfo(const QVariantMap &connectorInfoMap)
+EverestJsonRpcReply *EverestJsonRpcClient::chargePointGetEVSEInfos()
 {
-    ConnectorInfo connectorInfo;
-    connectorInfo.connectorId = connectorInfoMap.value("id").toInt();
-    connectorInfo.type = parseConnectorType(connectorInfoMap.value("type").toString());
-    connectorInfo.description = connectorInfoMap.value("description").toString();
-    return connectorInfo;
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "ChargePoint.GetEVSEInfos", QVariantMap(), this);
+    qCDebug(dcEverest()) << "Calling" << reply->method();
+    sendRequest(reply);
+    return reply;
 }
-
-EverestJsonRpcClient::ConnectorType EverestJsonRpcClient::parseConnectorType(const QString &connectorTypeString)
-{
-    QMetaEnum metaEnum = QMetaEnum::fromType<ConnectorType>();
-    return static_cast<ConnectorType>(metaEnum.keyToValue(QString("ConnectorType").append(connectorTypeString).toUtf8()));
-}
-

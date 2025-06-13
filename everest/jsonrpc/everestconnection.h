@@ -38,6 +38,7 @@
 #include <network/macaddress.h>
 #include <network/networkdevicemonitor.h>
 
+class EverestEvse;
 class EverestJsonRpcClient;
 
 class EverestConnection : public QObject
@@ -50,7 +51,7 @@ public:
 
     EverestJsonRpcClient *client() const;
 
-    Things things() const;
+    EverestEvse *getEvse(Thing *thing);
 
     void addThing(Thing *thing);
     void removeThing(Thing *thing);
@@ -76,7 +77,10 @@ private:
     EverestJsonRpcClient *m_client = nullptr;
     bool m_running = false;
 
+    QHash<Thing *, EverestEvse *> m_everestEvses;
     QUrl buildUrl() const;
 };
+
+QDebug operator<<(QDebug debug, EverestConnection *connection);
 
 #endif // EVERESTCONNECTION_H

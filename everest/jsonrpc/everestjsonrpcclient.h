@@ -46,6 +46,18 @@ class EverestJsonRpcClient : public QObject
 public:
     // API Enums
 
+    enum ResponseError {
+        ResponseErrorNoError = 0,
+        ResponseErrorErrorInvalidParameter,
+        ResponseErrorErrorOutOfRange,
+        ResponseErrorErrorValuesNotApplied,
+        ResponseErrorErrorInvalidEVSEIndex,
+        ResponseErrorErrorInvalidConnectorID,
+        ResponseErrorErrorNoDataAvailable,
+        ResponseErrorErrorUnknownError
+    };
+    Q_ENUM(ResponseError)
+
     enum ConnectorType {
         ConnectorTypecCCS1,
         ConnectorTypecCCS2,
@@ -71,6 +83,29 @@ public:
     };
     Q_ENUM(ConnectorType)
 
+    enum ChargeProtocol {
+        ChargeProtocolUnknown,
+        ChargeProtocolIEC61851,
+        ChargeProtocolDIN70121,
+        ChargeProtocolISO15118,
+        ChargeProtocolISO15118_20
+    };
+    Q_ENUM(ChargeProtocol)
+
+    enum EvseState {
+        EvseStateUnplugged,
+        EvseStateDisabled,
+        EvseStatePreparing,
+        EvseStateReserved,
+        EvseStateAuthRequired,
+        EvseStateWaitingForEnergy,
+        EvseStateCharging,
+        EvseStateChargingPausedEV,
+        EvseStateChargingPausedEVSE,
+        EvseStateFinished
+    };
+    Q_ENUM(EvseState)
+
     // API Objects
 
     typedef struct ChargerInfo {
@@ -94,6 +129,38 @@ public:
         QList<ConnectorInfo> availableConnectors;
     } EVSEInfo;
 
+    typedef struct EVSEStatus {
+        double chargedEnergyWh = 0;
+        double dischargedEnergyWh = 0;
+        int chargingDuration = 0; // seconds
+        bool chargingAllowed = false;
+        bool available = false;
+        int activeConnectorId = -1;
+        QString evseError; // FIXME: maybe convert to internal enum
+        ChargeProtocol chargeProtocol = ChargeProtocolUnknown;
+        EvseState evseState = EvseStateUnplugged;
+        QString evseStateString;
+        // TODO:
+        // o: "ac_charge_param": "$ACChargeParametersObj",
+        // o: "dc_charge_param": "$DCChargeParametersObj",
+        // o: "ac_charge_loop": "$ACChargeLoopObj",
+        // o: "dc_charge_loop": "$DCChargeLoopObj",
+        // o: display_parameters: "$DisplayParametersObj",
+
+    } EVSEStatus;
+
+    typedef struct HardwareCapabilities {
+        double maxCurrentExport = 0;
+        double maxCurrentImport = 0;
+        int maxPhaseCountExport = 0;
+        int maxPhaseCountImport = 0;
+        double minCurrentExport = 0;
+        double minCurrentImport = 0;
+        int minPhaseCountExport = 0;
+        int minPhaseCountImport = 0;
+        bool phaseSwitchDuringCharging = false;
+    } HardwareCapabilities;
+
 
     explicit EverestJsonRpcClient(QObject *parent = nullptr);
 
@@ -109,12 +176,26 @@ public:
     QList<EVSEInfo> evseInfos() const;
 
     // API calls
-    EverestJsonRpcReply *apiHello();
-    EverestJsonRpcReply *chargePointGetEVSEInfos();
-
-    EverestJsonRpcReply *evseGetInfo();
+    EverestJsonRpcReply *evseGetInfo(int evseIndex);
     EverestJsonRpcReply *evseGetStatus(int evseIndex);
     EverestJsonRpcReply *evseGetHardwareCapabilities(int evseIndex);
+    EverestJsonRpcReply *evseGetMeterData(int evseIndex);
+
+    EverestJsonRpcReply *evseSetChargingAllowed(int evseIndex, bool allowed);
+
+    // API parser methods
+
+    // Enums
+    static ResponseError parseResponseError(const QString &responseErrorString);
+    static ConnectorType parseConnectorType(const QString &connectorTypeString);
+    static ChargeProtocol parseChargeProtocol(const QString &chargeProtocolString);
+    static EvseState parseEvseState(const QString &evseStateString);
+
+    // Objects
+    static EVSEInfo parseEvseInfo(const QVariantMap &evseInfoMap);
+    static ConnectorInfo parseConnectorInfo(const QVariantMap &connectorInfoMap);
+    static EVSEStatus parseEvseStatus(const QVariantMap &evseStatusMap);
+    static HardwareCapabilities parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap);
 
 public slots:
     void connectToServer(const QUrl &serverUrl);
@@ -141,10 +222,11 @@ private:
     bool m_authenticationRequired = false;
     QList<EVSEInfo> m_evseInfos;
 
-    // API parser methods
-    EVSEInfo parseEvseInfo(const QVariantMap &evseInfoMap);
-    ConnectorInfo parseConnectorInfo(const QVariantMap &connectorInfoMap);
-    ConnectorType parseConnectorType(const QString &connectorTypeString);
+
+    // API calls
+    EverestJsonRpcReply *apiHello();
+    EverestJsonRpcReply *chargePointGetEVSEInfos();
+
 };
 
 #endif // EVERESTJSONRPCCLIENT_H

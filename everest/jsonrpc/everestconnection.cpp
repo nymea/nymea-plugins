@@ -30,7 +30,8 @@
 
 #include "everestconnection.h"
 #include "extern-plugininfo.h"
-#include "jsonrpc/everestjsonrpcclient.h"
+#include "everestevse.h"
+#include "everestjsonrpcclient.h"
 
 EverestConnection::EverestConnection(quint16 port, QObject *parent)
     : QObject{parent},
@@ -53,10 +54,9 @@ EverestConnection::EverestConnection(quint16 port, QObject *parent)
         }
     });
 
-    // Reconnect timer is only required for IP based connections, otherwise we have the NetworkDeviceMonitor
+    // Reconnect timer in case the network device is reachable but the websocketserver not yet
     m_reconnectTimer.setInterval(5000);
     m_reconnectTimer.setSingleShot(false);
-
     connect(&m_reconnectTimer, &QTimer::timeout, this, [this](){
         if (m_client->available())
             return;
@@ -80,19 +80,22 @@ EverestJsonRpcClient *EverestConnection::client() const
     return m_client;
 }
 
-Things EverestConnection::things() const
+EverestEvse *EverestConnection::getEvse(Thing *thing)
 {
-    return Things();
+    return m_everestEvses.value(thing);
 }
 
 void EverestConnection::addThing(Thing *thing)
 {
-    Q_UNUSED(thing)
+    qCDebug(dcEverest()) << "Adding thing" << thing->name() << "to connection" << m_client->serverUrl().toString();
+    EverestEvse *evse = new EverestEvse(m_client, thing);
+    m_everestEvses.insert(thing, evse);
 }
 
 void EverestConnection::removeThing(Thing *thing)
 {
-    Q_UNUSED(thing)
+    qCDebug(dcEverest()) << "Remove thing" << thing->name() << "from connection" <<  m_client->serverUrl().toString();
+    m_everestEvses.take(thing)->deleteLater();
 }
 
 NetworkDeviceMonitor *EverestConnection::monitor() const
@@ -119,14 +122,14 @@ void EverestConnection::start()
     if (m_monitor) {
         if (m_monitor->reachable()) {
             QUrl url = buildUrl();
-            qCDebug(dcEverest()) << "Connecting JsonRpc client to" << url.toString();
+            qCDebug(dcEverest()) << "Connecting" << this;
             if (m_client->available())
                 m_client->disconnectFromServer();
 
             m_client->connectToServer(url);
         }
     } else {
-        qCDebug(dcEverest()) << "Connecting MQTT client to" << m_monitor->networkDeviceInfo().address().toString();
+        qCDebug(dcEverest()) << "Connecting" << this;
         m_client->connectToServer(buildUrl());
 
         // Note: on connected this will be stopped, otherwise we want the timer running
@@ -171,4 +174,11 @@ QUrl EverestConnection::buildUrl() const
     url.setHost(m_monitor->networkDeviceInfo().address().toString());
     url.setPort(m_port);
     return url;
+}
+
+QDebug operator<<(QDebug debug, EverestConnection *connection)
+{
+    QDebugStateSaver saver(debug);
+    debug.noquote().nospace() << "EverestConnection(" << connection->client()->serverUrl().toString() << ")";
+    return debug;
 }

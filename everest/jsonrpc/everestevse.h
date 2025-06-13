@@ -28,41 +28,41 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINEVEREST_H
-#define INTEGRATIONPLUGINEVEREST_H
+#ifndef EVERESTEVSE_H
+#define EVERESTEVSE_H
 
-#include "integrations/integrationplugin.h"
-#include "extern-plugininfo.h"
+#include <QObject>
 
-#include "mqtt/everestmqttclient.h"
-#include "jsonrpc/everestconnection.h"
+#include "jsonrpc/everestjsonrpcclient.h"
 
-#include <mqttclient.h>
-
-class IntegrationPluginEverest: public IntegrationPlugin
+class EverestEvse : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugineverest.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginEverest();
+    explicit EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *parent = nullptr);
 
-    void init() override;
-    void startMonitoringAutoThings() override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
+    int index() const;
 
-    void setupThing(ThingSetupInfo *info) override;
-    void thingRemoved(Thing *thing) override;
-
-    void executeAction(ThingActionInfo *info) override;
+signals:
 
 private:
-    QList<EverestMqttClient *> m_everstMqttClients;
-    QHash<Thing *, EverestMqttClient *> m_thingClients;
+    EverestJsonRpcClient *m_client = nullptr;
+    Thing *m_thing = nullptr;
 
-    QHash<Thing *, EverestConnection *> m_everstConnections;
+    int m_index = -1;
+    bool m_initialized = false;
+
+    EverestJsonRpcClient::EVSEInfo m_evseInfo;
+    EverestJsonRpcClient::EVSEStatus m_evseStatus;
+    EverestJsonRpcClient::HardwareCapabilities m_hardwareCapabilities;
+
+    QVector<EverestJsonRpcReply *> m_pendingInitReplies;
+
+    void initialize();
+    void evaluateInitFinished(EverestJsonRpcReply *reply);
+
+    void processEvseStatus();
+    void processHardwareCapabilities();
 };
 
-#endif // INTEGRATIONPLUGINEVEREST_H
+#endif // EVERESTEVSE_H

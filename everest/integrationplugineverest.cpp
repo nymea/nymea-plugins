@@ -346,6 +346,7 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                 ThingDescriptors descriptors;
                 qCDebug(dcEverest()) << "The client is now available, synching things...";
                 foreach (const EverestJsonRpcClient::EVSEInfo &evseInfo, connection->client()->evseInfos()) {
+
                     // FIXME: somehow we need to now if this evse is AC or DC in order to spawn the right child thingclass.
 
                     // Check if we already have a child device for this index
@@ -391,14 +392,9 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
         info->finish(Thing::ThingErrorNoError);
 
-        thing->setStateValue(everestChargerAcConnectedStateTypeId, connection->available());
+        connection->addThing(thing);
+        return;
     }
-
-}
-
-void IntegrationPluginEverest::postSetupThing(Thing *thing)
-{
-    Q_UNUSED(thing)
 }
 
 void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
@@ -454,7 +450,31 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
         }
 
         return;
+    } else if (info->thing()->thingClassId() == everestChargerAcThingClassId) {
+        Thing *thing = info->thing();
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EverestConnection *connection = m_everstConnections.value(parentThing);
+        if (!connection) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        if (!thing->stateValue(everestChargerAcConnectedStateTypeId).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        EverestEvse *evse = connection->getEvse(thing);
+        if (!evse) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+
+
+
     }
+
 
     info->finish(Thing::ThingErrorNoError);
 }
