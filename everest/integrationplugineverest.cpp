@@ -30,7 +30,9 @@
 
 #include "integrationplugineverest.h"
 #include "plugininfo.h"
+
 #include "mqtt/everestmqttdiscovery.h"
+#include "jsonrpc/everestevse.h"
 #include "jsonrpc/everestjsonrpcdiscovery.h"
 
 #include <network/networkdevicediscovery.h>
@@ -470,9 +472,78 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
             return;
         }
 
+        if (info->action().actionTypeId() == everestChargerAcPowerActionTypeId) {
+            bool power = info->action().paramValue(everestChargerAcPowerActionPowerParamTypeId).toBool();
+            qCDebug(dcEverest()) << "Execute power action" << power;
+            EverestJsonRpcReply *reply = evse->setChargingAllowed(power) ;
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [info, reply, power](){
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
 
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with an error" << reply->method() << error;
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
 
+                info->thing()->setStateValue(everestChargerAcCurrentPowerStateTypeId, power);
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else if (info->action().actionTypeId() == everestChargerAcMaxChargingCurrentActionTypeId) {
+            double current = info->action().paramValue(everestChargerAcMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
+            qCDebug(dcEverest()) << "Execute action set max charging current" << current << "[A]";
+            EverestJsonRpcReply *reply = evse->setACChargingCurrent(current) ;
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [info, reply, current](){
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
 
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with an error" << reply->method() << error;
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                info->thing()->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, current);
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else if (info->action().actionTypeId() == everestChargerAcDesiredPhaseCountActionTypeId) {
+            int phaseCount = info->action().paramValue(everestChargerAcDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toInt();
+            qCDebug(dcEverest()) << "Execute action set phase count" << phaseCount;
+            EverestJsonRpcReply *reply = evse->setACChargingPhaseCount(phaseCount);
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [info, reply, phaseCount](){
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with an error" << reply->method() << error;
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                info->thing()->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, phaseCount);
+                info->finish(Thing::ThingErrorNoError);
+            });
+        }
+
+        return;
     }
 
 

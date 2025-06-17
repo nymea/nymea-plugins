@@ -59,6 +59,20 @@ int EverestEvse::index() const
     return m_index;
 }
 
+EverestJsonRpcReply *EverestEvse::setChargingAllowed(bool allowed)
+{
+    return m_client->evseSetChargingAllowed(m_index, allowed);
+}
+
+EverestJsonRpcReply *EverestEvse::setACChargingCurrent(double current)
+{
+    return m_client->evseSetACChargingCurrent(m_index, current);
+}
+
+EverestJsonRpcReply *EverestEvse::setACChargingPhaseCount(int phaseCount)
+{
+    return m_client->evseSetACChargingPhaseCount(m_index, phaseCount);
+}
 
 void EverestEvse::initialize()
 {
@@ -156,8 +170,8 @@ void EverestEvse::evaluateInitFinished(EverestJsonRpcReply *reply)
         m_thing->setStateValue("connected", true);
 
         processEvseStatus();
+        processHardwareCapabilities();
     }
-
 }
 
 void EverestEvse::processEvseStatus()

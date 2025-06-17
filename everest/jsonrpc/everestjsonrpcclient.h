@@ -182,6 +182,8 @@ public:
     EverestJsonRpcReply *evseGetMeterData(int evseIndex);
 
     EverestJsonRpcReply *evseSetChargingAllowed(int evseIndex, bool allowed);
+    EverestJsonRpcReply *evseSetACChargingCurrent(int evseIndex, double current);
+    EverestJsonRpcReply *evseSetACChargingPhaseCount(int evseIndex, int phaseCount);
 
     // API parser methods
 

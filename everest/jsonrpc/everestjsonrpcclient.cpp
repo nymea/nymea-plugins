@@ -221,6 +221,30 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseSetChargingAllowed(int evseIndex,
     return reply;
 }
 
+EverestJsonRpcReply *EverestJsonRpcClient::evseSetACChargingCurrent(int evseIndex, double current)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+    params.insert("max_current", current);
+
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.SetACChargingCurrent", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
+EverestJsonRpcReply *EverestJsonRpcClient::evseSetACChargingPhaseCount(int evseIndex, int phaseCount)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+    params.insert("phase_count", phaseCount);
+
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.SetACChargingPhaseCount", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
 EverestJsonRpcClient::ResponseError EverestJsonRpcClient::parseResponseError(const QString &responseErrorString)
 {
     QMetaEnum metaEnum = QMetaEnum::fromType<ResponseError>();

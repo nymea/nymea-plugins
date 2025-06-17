@@ -43,7 +43,9 @@ public:
 
     int index() const;
 
-signals:
+    EverestJsonRpcReply *setChargingAllowed(bool allowed);
+    EverestJsonRpcReply *setACChargingCurrent(double current);
+    EverestJsonRpcReply *setACChargingPhaseCount(int phaseCount);
 
 private:
     EverestJsonRpcClient *m_client = nullptr;
