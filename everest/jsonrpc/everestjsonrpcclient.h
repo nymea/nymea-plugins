@@ -185,6 +185,9 @@ public:
     EverestJsonRpcReply *evseSetACChargingCurrent(int evseIndex, double current);
     EverestJsonRpcReply *evseSetACChargingPhaseCount(int evseIndex, int phaseCount);
 
+    EverestJsonRpcReply *evseSetDCChargingPower(int evseIndex, double chargingPower);
+
+
     // API parser methods
 
     // Enums

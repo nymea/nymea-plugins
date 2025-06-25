@@ -47,6 +47,8 @@ public:
     EverestJsonRpcReply *setACChargingCurrent(double current);
     EverestJsonRpcReply *setACChargingPhaseCount(int phaseCount);
 
+    EverestJsonRpcReply *setDCChargingPower(double chargingPower);
+
 private:
     EverestJsonRpcClient *m_client = nullptr;
     Thing *m_thing = nullptr;

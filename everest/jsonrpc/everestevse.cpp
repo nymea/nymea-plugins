@@ -74,6 +74,11 @@ EverestJsonRpcReply *EverestEvse::setACChargingPhaseCount(int phaseCount)
     return m_client->evseSetACChargingPhaseCount(m_index, phaseCount);
 }
 
+EverestJsonRpcReply *EverestEvse::setDCChargingPower(double chargingPower)
+{
+    return m_client->evseSetDCChargingPower(m_index, chargingPower);
+}
+
 void EverestEvse::initialize()
 {
     qCDebug(dcEverest()) << "Evse: Initializing data for" << m_thing->name();

@@ -388,6 +388,140 @@
                     "eventTypes": [
 
                     ]
+                },
+                {
+                    "name": "everestChargerDc",
+                    "displayName": "EVerest charger DC",
+                    "id": "b31e14dd-43e0-4278-b517-d50afd6806ec",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "evchargerdc", "connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "e02d8186-a678-4e5a-aea7-460109617a02",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "c7b313bf-d12d-434f-b754-d0ada7209fe5",
+                            "name": "power",
+                            "displayName": "Charging enabled",
+                            "displayNameAction": "Enable/disable charging",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "4dc2b506-990b-4e84-8a4b-444aba489ac2",
+                            "name": "currentPower",
+                            "displayName": "Measured power (AC side)",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4c1415c2-bb2e-412a-9861-12ad8daa9051",
+                            "name": "chargingPower",
+                            "displayName": "Charging power",
+                            "displayNameAction": "Set charging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
+                            "id": "2e17f569-807e-4906-8748-0bd094cfd5d2",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "2a78e62c-3b54-47bf-b4ff-b21f6eff9b04",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 50
+                        },
+                        {
+                            "id": "ba4aa397-8d09-4e12-8eca-1d567b536bda",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7dedd1a2-6c99-4c85-8511-319f45b4fc56",
+                            "name": "minChargingPower",
+                            "displayName": "Minimal charging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "e1f1936e-e038-4820-bb7c-46404859ae42",
+                            "name": "maxChargingPower",
+                            "displayName": "Maximal charging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 50000
+                        },
+                        {
+                            "id": "60ce60bd-0a6b-4f76-b51b-c6d342b2a277",
+                            "name": "minDischargingPower",
+                            "displayName": "Minimal discharging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": -100
+                        },
+                        {
+                            "id": "5bd483e4-aae6-4e53-b208-d7caa5b7fbc6",
+                            "name": "maxDischargingPower",
+                            "displayName": "Maximal discharging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": -50000
+                        },
+                        {
+                            "id": "020e30ce-e3db-41ad-8066-a819ac1d4bd5",
+                            "name": "pluggedIn",
+                            "displayName": "Car is plugged in",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "cached": false
+                        },
+                        {
+                            "id": "c13e3183-0e16-466d-8040-8c64706c6609",
+                            "name": "chargingCapabilities",
+                            "displayName": "Charging capabilities",
+                            "type": "QString",
+                            "possibleValues": ["charging", "discharging", "bidirectional"],
+                            "defaultValue": "charging",
+                            "cached": false
+                        },
+                        {
+                            "id": "9bfc98a0-92f7-4b46-b390-72d8da721778",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "782e6a0c-62e5-4b36-947c-c66ee1fa1737",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total returned energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [ ]
                 }
             ]
         }

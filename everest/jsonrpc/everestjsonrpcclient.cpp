@@ -245,6 +245,18 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseSetACChargingPhaseCount(int evseI
     return reply;
 }
 
+EverestJsonRpcReply *EverestJsonRpcClient::evseSetDCChargingPower(int evseIndex, double chargingPower)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+    params.insert("max_power", chargingPower);
+
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(m_commandId, "EVSE.SetDCChargingPower", params, this);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
 EverestJsonRpcClient::ResponseError EverestJsonRpcClient::parseResponseError(const QString &responseErrorString)
 {
     QMetaEnum metaEnum = QMetaEnum::fromType<ResponseError>();

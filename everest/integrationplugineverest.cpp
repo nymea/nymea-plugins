@@ -369,7 +369,6 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                     }
                 }
 
-
                 // TODO: evaluate if any thing dissapeared
 
                 if (!descriptors.isEmpty()) {
@@ -384,6 +383,19 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
         connection->start();
         return;
     } else if (thing->thingClassId() == everestChargerAcThingClassId) {
+
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EverestConnection *connection = m_everstConnections.value(parentThing);
+        if (!connection) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        info->finish(Thing::ThingErrorNoError);
+
+        connection->addThing(thing);
+        return;
+    } else if (thing->thingClassId() == everestChargerDcThingClassId) {
 
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
