@@ -1,0 +1,13 @@
+{
+    "title": "SENEC",
+    "tagline": "Integrate SENEC.Home energy storages from the local network.",
+    "icon": "senec.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "energy"
+    ]
+}
