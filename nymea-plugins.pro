@@ -60,6 +60,7 @@ PLUGIN_DIRS = \
     pushbullet          \
     pushnotifications   \
     reversessh          \
+    senec               \
     senic               \
     serialportcommander \
     sgready             \
