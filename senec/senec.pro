@@ -4,9 +4,11 @@ QT+= network
 
 SOURCES += \
     integrationpluginsenec.cpp \
-    senecaccount.cpp
+    senecaccount.cpp \
+    seneclanstorage.cpp
 
 HEADERS += \
     integrationpluginsenec.h \
-    senecaccount.h
+    senecaccount.h \
+    seneclanstorage.h
 

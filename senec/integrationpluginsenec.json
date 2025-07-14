@@ -46,6 +46,25 @@
                     "id": "a983c5ee-1c58-4cad-87fb-1bc612cbe6e4",
                     "createMethods": [ "Auto" ],
                     "interfaces": ["energystorage", "connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "44836ff6-4d69-42b9-a5a8-b37bcc0b24fe",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "minValue": 7.1,
+                            "maxValue": 17.75,
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0.0
+                        },
+                        {
+                            "id": "0a16f7c8-2e55-4869-aeb3-574f22b40527",
+                            "name":"addMeter",
+                            "displayName": "Add meter",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "paramTypes": [
                         {
                             "id": "9a0fa7b1-bc35-44d4-b987-5ecb87fd8b00",
@@ -56,7 +75,7 @@
                             "defaultValue": ""
                         }
                     ],
-                    "stateTypes":[
+                    "stateTypes": [
                         {
                             "id": "320cb3f0-d2c5-4a30-817f-474f0cc87253",
                             "name": "connected",
@@ -106,6 +125,129 @@
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "senecMeter",
+                    "displayName": "SENEC Meter",
+                    "id": "303f454d-93b7-4f8f-b295-a4c22e09be6d",
+                    "createMethods": [ "auto" ],
+                    "interfaces": ["energymeter", "connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "9aa4dbfb-255b-408b-b148-8fb145ba8c98",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "56e58d03-782d-40bb-8d32-fad396ffefdc",
+                            "name": "currentPower",
+                            "displayName": "Current power usage",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f9920cfa-26a0-4247-ad50-b4fca91596f0",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Energy returned",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "21728bf0-a566-4eb0-a163-5f108f34bb9b",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "385df15e-4f1d-4842-a10a-597d087bdac0",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Current power phase A",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "3bab2b05-99d7-4b3a-b903-054d269a3527",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Current power phase B",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "01a63c94-b635-4e98-8037-d5d69fe0dd7c",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Current power phase C",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "db469573-bb11-48d2-84ba-2b8ff4b13413",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage phase A",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "176d5a01-220d-44da-b875-9a40aaa9c85a",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage phase B",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e7ab02d3-016a-44ca-8da1-5d7ac9acbc6d",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage phase C",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1923f7b0-5b54-46d8-a7e9-9364b7c9eeb8",
+                            "name": "currentPhaseA",
+                            "displayName": "Current phase A",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "4908abf8-f655-4e14-a007-3eefeda7088e",
+                            "name": "currentPhaseB",
+                            "displayName": "Current phase B",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e8415152-0fac-4cd9-98ac-b0e7c006d637",
+                            "name": "currentPhaseC",
+                            "displayName": "Current phase C",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
                         }
                     ]
                 }

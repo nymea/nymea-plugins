@@ -126,6 +126,32 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
         thing->setStateValue(senecAccountUserDisplayNameStateTypeId, username);
 
     } else if (thing->thingClassId() == senecStorageThingClassId) {
+
+        connect(thing, &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
+            if (paramTypeId == senecStorageSettingsCapacityParamTypeId) {
+                thing->setStateValue(senecStorageCapacityStateTypeId, value.toDouble());
+            } else if (paramTypeId == senecStorageSettingsAddMeterParamTypeId) {
+
+                if (value.toBool()) {
+                    // Check if we have to add the meter
+                    if (myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id()).isEmpty()) {
+                        qCDebug(dcSenec()) << "Add meter for" << thing->name();
+                        emit autoThingsAppeared(ThingDescriptors() << ThingDescriptor(senecMeterThingClassId, "SENEC Meter", QString(), thing->id()));
+                    }
+                } else {
+                    // Check if we have to remove the meter
+                    Things existingMeters = myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id());
+                    if (!existingMeters.isEmpty()) {
+                        qCDebug(dcSenec()) << "Remove meter thing for" << thing->name();
+                        emit autoThingDisappeared(existingMeters.takeFirst()->id());
+                    }
+                }
+            }
+        });
+
+        info->finish(Thing::ThingErrorNoError);
+
+    } else if (thing->thingClassId() == senecMeterThingClassId) {
         info->finish(Thing::ThingErrorNoError);
     }
 }
@@ -201,8 +227,11 @@ void IntegrationPluginSenec::postSetupThing(Thing *thing)
         });
     } else if (thing->thingClassId() == senecStorageThingClassId) {
 
+        thing->setStateValue(senecStorageCapacityStateTypeId, thing->setting(senecStorageSettingsCapacityParamTypeId).toDouble());
+
         SenecAccount *account = m_accounts.value(myThings().findById(thing->parentId()));
         QString id = thing->paramValue(senecStorageThingIdParamTypeId).toString();
+
         QNetworkReply *reply = account->getTechnicalData(id);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, account, [reply, thing, this] {
@@ -269,60 +298,106 @@ void IntegrationPluginSenec::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginSenec::refresh(Thing *thing)
 {
-    if (thing) {
-        SenecAccount *account = m_accounts.value(myThings().findById(thing->parentId()));
-        QString id = thing->paramValue(senecStorageThingIdParamTypeId).toString();
-        QNetworkReply *reply = account->getDashboard(id);
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, account, [reply, thing] {
-
-            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            // Check HTTP status code
-            if (status != 200 || reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcSenec()) << "Dashboard request finished with error. Status:" << status << "Error:" << reply->errorString();
-                thing->setStateValue(senecStorageConnectedStateTypeId, false);
-                return;
-            }
-
-            QByteArray responseData = reply->readAll();
-
-            QJsonParseError jsonError;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &jsonError);
-            QVariantMap responseMap = jsonDoc.toVariant().toMap();
-            if (jsonError.error != QJsonParseError::NoError) {
-                qCWarning(dcSenec()) << "Dashboard request finished successfully, but the response contains invalid JSON object:" << responseData;
-                return;
-            }
-
-            qCDebug(dcSenec()) << "Dashboard request finished successfully" << qUtf8Printable(jsonDoc.toJson());
-            thing->setStateValue(senecStorageConnectedStateTypeId, true);
-
-            QVariantMap currentDataMap = responseMap.value("currently").toMap();
-            float batteryCharge = qRound(currentDataMap.value("batteryChargeInW").toFloat() * 100) / 100.0;
-            float batteryDischarge = qRound(currentDataMap.value("batteryDischargeInW").toFloat() * 100) / 100.0;
-            int batteryLevel = currentDataMap.value("batteryLevelInPercent").toInt();
-
-            // qCDebug(dcSenec()) << "charge:" << batteryCharge << "W" << "discharge:" << batteryDischarge << "W" << "level" << batteryLevel << "%";
-
-            float currentPower = 0;
-
-            if (batteryCharge != 0) {
-                currentPower = batteryCharge;
-                thing->setStateValue(senecStorageChargingStateStateTypeId, "charging");
-            } else if (batteryDischarge != 0) {
-                currentPower = -batteryDischarge;
-                thing->setStateValue(senecStorageChargingStateStateTypeId, "discharging");
-            } else {
-                thing->setStateValue(senecStorageChargingStateStateTypeId, "idle");
-            }
-
-            thing->setStateValue(senecStorageCurrentPowerStateTypeId, currentPower);
-            thing->setStateValue(senecStorageBatteryLevelStateTypeId, batteryLevel);
-            thing->setStateValue(senecStorageBatteryCriticalStateTypeId, batteryLevel < 10);
-        });
-    } else {
+    // If no thing given, refresh all storages recursive
+    if (!thing) {
         foreach (Thing *storageThing, myThings().filterByThingClassId(senecStorageThingClassId)) {
             refresh(storageThing);
         }
+
+        return;
     }
+
+    Thing *parentThing = myThings().findById(thing->parentId());
+    SenecAccount *account = m_accounts.value(parentThing);
+    QString id = thing->paramValue(senecStorageThingIdParamTypeId).toString();
+
+    QNetworkReply *reply = account->getDashboard(id);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, account, [reply, thing, this] {
+
+        // Check if we have a meter
+        Thing *meterThing = nullptr;
+        Things meterThings = myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id());
+        if (!meterThings.isEmpty()) {
+            meterThing = meterThings.first();
+        }
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcSenec()) << "Dashboard request finished with error. Status:" << status << "Error:" << reply->errorString();
+            thing->setStateValue(senecStorageConnectedStateTypeId, false);
+            if (meterThing) {
+                meterThing->setStateValue(senecMeterConnectedStateTypeId, false);
+            }
+            return;
+        }
+
+        QByteArray responseData = reply->readAll();
+
+        QJsonParseError jsonError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &jsonError);
+        QVariantMap responseMap = jsonDoc.toVariant().toMap();
+        if (jsonError.error != QJsonParseError::NoError) {
+            qCWarning(dcSenec()) << "Dashboard request finished successfully, but the response contains invalid JSON object:" << responseData;
+            return;
+        }
+
+        qCDebug(dcSenec()) << "Dashboard request finished successfully" << qUtf8Printable(jsonDoc.toJson());
+        thing->setStateValue(senecStorageConnectedStateTypeId, true);
+
+        QVariantMap currentDataMap = responseMap.value("currently").toMap();
+        float batteryCharge = qRound(currentDataMap.value("batteryChargeInW").toFloat() * 100) / 100.0;
+        float batteryDischarge = qRound(currentDataMap.value("batteryDischargeInW").toFloat() * 100) / 100.0;
+        int batteryLevel = currentDataMap.value("batteryLevelInPercent").toInt();
+
+        // qCDebug(dcSenec()) << "charge:" << batteryCharge << "W" << "discharge:" << batteryDischarge << "W" << "level" << batteryLevel << "%";
+
+        // Note: there are some situations where the battery is charging and discharging at the same time.
+        // In that case we use the bigger power. Maybe we cloudl als sum them up, that should be tested...
+
+        float currentPower = 0;
+        if (batteryCharge != 0 && batteryCharge != 0) {
+            if (batteryCharge > batteryDischarge) {
+                currentPower = batteryCharge;
+            } else {
+                currentPower = -batteryDischarge;
+            }
+        } else if (batteryCharge != 0) {
+            currentPower = batteryCharge;
+        } else if (batteryDischarge != 0) {
+            currentPower = -batteryDischarge;
+        }
+
+        if (currentPower > 0) {
+            thing->setStateValue(senecStorageChargingStateStateTypeId, "charging");
+        } else if (currentPower < 0) {
+            thing->setStateValue(senecStorageChargingStateStateTypeId, "discharging");
+        } else {
+            thing->setStateValue(senecStorageChargingStateStateTypeId, "idle");
+        }
+
+        thing->setStateValue(senecStorageCurrentPowerStateTypeId, currentPower);
+        thing->setStateValue(senecStorageBatteryLevelStateTypeId, batteryLevel);
+        thing->setStateValue(senecStorageBatteryCriticalStateTypeId, batteryLevel < 10);
+
+        // Check if we have a meter
+        if (meterThing) {
+            float gridConsume = qRound(currentDataMap.value("gridDrawInW").toFloat() * 100) / 100.0;
+            float gridReturn = qRound(currentDataMap.value("gridFeedInInW").toFloat() * 100) / 100.0;
+
+            qCDebug(dcSenec()) << "Grid power: consume" << gridConsume << "W" << "return:" << gridReturn << "W";
+
+            double currentPower = 0;
+
+            if (gridConsume != 0) {
+                currentPower = gridConsume;
+            } else if (gridReturn != 0) {
+                currentPower = -gridReturn;
+            }
+
+            meterThing->setStateValue(senecMeterCurrentPowerStateTypeId, currentPower);
+            meterThing->setStateValue(senecMeterConnectedStateTypeId, true);
+        }
+    });
 }
