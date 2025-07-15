@@ -28,37 +28,52 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SENECACCOUNT_H
-#define SENECACCOUNT_H
+#ifndef SENECDISCOVERY_H
+#define SENECDISCOVERY_H
 
-#include <QUrl>
 #include <QObject>
-#include <QNetworkReply>
+#include <QTimer>
 
 #include <network/networkaccessmanager.h>
+#include <network/networkdevicediscovery.h>
 
-class SenecAccount : public QObject
+#include "senecstoragelan.h"
+
+class SenecDiscovery : public QObject
 {
     Q_OBJECT
 public:
-    explicit SenecAccount(NetworkAccessManager *networkManager, const QString &username, const QString &token, const QString &refreshToken, QObject *parent = nullptr);
+    explicit SenecDiscovery(NetworkAccessManager *networkManager, NetworkDeviceDiscovery *networkDeviceDiscovery, QObject *parent = nullptr);
 
-    static QUrl baseUrl();
-    static QUrl loginUrl();
-    static QUrl systemsUrl();
+    typedef struct Result {
+        QString deviceId;
+        QHostAddress address;
+        NetworkDeviceInfo networkDeviceInfo;
+    } Result;
 
-    QNetworkReply *getSystems();
-    QNetworkReply *getDashboard(const QString &id);
-    QNetworkReply *getAbilities(const QString &id);
-    QNetworkReply *getTechnicalData(const QString &id);
+    void startDiscovery();
+
+    QList<SenecDiscovery::Result> results() const;
+
+signals:
+    void discoveryFinished();
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;
+    NetworkDeviceDiscovery *m_networkDeviceDiscovery = nullptr;
 
-    QString m_username;
-    QString m_token;
-    QString m_refreshToken;
+    QTimer m_gracePeriodTimer;
+    QDateTime m_startDateTime;
+
+    NetworkDeviceInfos m_networkDeviceInfos;
+    QList<SenecStorageLan *> m_storages;
+    QList<SenecDiscovery::Result> m_results;
+
+    void checkNetworkDevice(const QHostAddress &address);
+    void cleanupStorage(SenecStorageLan *storage);
+
+    void finishDiscovery();
 
 };
 
-#endif // SENECACCOUNT_H
+#endif // SENECDISCOVERY_H

@@ -36,12 +36,66 @@
 
 IntegrationPluginSenec::IntegrationPluginSenec()
 {
+    // Testing the convert methods
+    // QString rawValue = "fl_42A2E5E4"; // 81.449
+    // float value = SenecStorageLan::parseFloat(rawValue);
+    // qCWarning(dcSenec()) << rawValue << value;
+
+    // QString rawValue = "st_foobar";
+    // QString value = SenecStorageLan::parseString(rawValue);
+    // qCWarning(dcSenec()) << rawValue << value;
 
 }
 
 IntegrationPluginSenec::~IntegrationPluginSenec()
 {
 
+}
+
+void IntegrationPluginSenec::discoverThings(ThingDiscoveryInfo *info)
+{
+    if (info->thingClassId() == senecConnectionThingClassId) {
+
+        if (!hardwareManager()->networkDeviceDiscovery()->available()) {
+            qCWarning(dcSenec()) << "Failed to discover network devices. The network device discovery is not available.";
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to discover devices in your network."));
+            return;
+        }
+
+        // qCInfo(dcESPSomfyRTS()) << "Starting network discovery...";
+        // EspSomfyRtsDiscovery *discovery = new EspSomfyRtsDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), info);
+        // connect(discovery, &EspSomfyRtsDiscovery::discoveryFinished, info, [=](){
+        //     ThingDescriptors descriptors;
+        //     qCInfo(dcESPSomfyRTS()) << "Discovery finished. Found" << discovery->results().count() << "devices";
+        //     foreach (const EspSomfyRtsDiscovery::Result &result, discovery->results()) {
+        //         qCInfo(dcESPSomfyRTS()) << "Discovered device on" << result.networkDeviceInfo;
+
+        //         QString title = "ESP Somfy RTS (" + result.name + ")";
+        //         QString description = result.networkDeviceInfo.address().toString();
+
+        //         ThingDescriptor descriptor(espSomfyRtsThingClassId, title, description);
+
+        //         ParamList params;
+        //         params << Param(espSomfyRtsThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
+        //         params << Param(espSomfyRtsThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
+        //         params << Param(espSomfyRtsThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
+        //         descriptor.setParams(params);
+
+        //         // Check if we already have set up this device
+        //         Thing *existingThing = myThings().findByParams(params);
+        //         if (existingThing) {
+        //             qCDebug(dcESPSomfyRTS()) << "This thing already exists in the system:" << result.networkDeviceInfo;
+        //             descriptor.setThingId(existingThing->id());
+        //         }
+
+        //         info->addThingDescriptor(descriptor);
+        //     }
+
+        //     info->finish(Thing::ThingErrorNoError);
+        // });
+
+        // discovery->startDiscovery();
+    }
 }
 
 void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
@@ -51,59 +105,62 @@ void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginSenec::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-    qCDebug(dcSenec()) << "Start logging in" << username << secret.left(2) + QString(secret.length() - 2, '*');
+    if (info->thingClassId() == senecAccountThingClassId) {
 
-    QVariantMap requestMap;
-    requestMap.insert("username", username);
-    requestMap.insert("password", secret);
+        qCDebug(dcSenec()) << "Start logging in" << username << secret.left(2) + QString(secret.length() - 2, '*');
 
-    QNetworkRequest request(SenecAccount::loginUrl());
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QVariantMap requestMap;
+        requestMap.insert("username", username);
+        requestMap.insert("password", secret);
 
-    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(requestMap).toJson(QJsonDocument::Indented));
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [reply, info, username, this] {
+        QNetworkRequest request(SenecAccount::loginUrl());
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSenec()) << "Login request finished with error. Status:" << status << "Error:" << reply->errorString();
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Username or password is invalid."));
-            return;
-        }
+        QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(requestMap).toJson(QJsonDocument::Indented));
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, this, [reply, info, username, this] {
 
-        // Note: as of now (API 4.4.3) the login seems to return a static token, which does not require any refresh.
-        // Not as bad as saving user and password on the device, but almost ...
+            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            // Check HTTP status code
+            if (status != 200 || reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcSenec()) << "Login request finished with error. Status:" << status << "Error:" << reply->errorString();
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Username or password is invalid."));
+                return;
+            }
 
-        // https://documenter.getpostman.com/view/932140/2s9YXib2td
+            // Note: as of now (API 4.4.3) the login seems to return a static token, which does not require any refresh.
+            // Not as bad as saving user and password on the device, but almost ...
 
-        QByteArray responseData = reply->readAll();
+            // https://documenter.getpostman.com/view/932140/2s9YXib2td
 
-        QJsonParseError jsonError;
-        QVariantMap responseMap = QJsonDocument::fromJson(responseData, &jsonError).toVariant().toMap();
-        if (jsonError.error != QJsonParseError::NoError) {
-            qCWarning(dcSenec()) << "Login request finished successfully, but the response contains invalid JSON object:" << responseData;
-            info->finish(Thing::ThingErrorAuthenticationFailure);
-            return;
-        }
+            QByteArray responseData = reply->readAll();
 
-        if (!responseMap.contains("token") || !responseMap.contains("refreshToken")) {
-            qCWarning(dcSenec()) << "Login request finished successfully, but the response JSON does not contain the expected properties" << qUtf8Printable(responseData);
-            info->finish(Thing::ThingErrorHardwareFailure);
-            return;
-        }
+            QJsonParseError jsonError;
+            QVariantMap responseMap = QJsonDocument::fromJson(responseData, &jsonError).toVariant().toMap();
+            if (jsonError.error != QJsonParseError::NoError) {
+                qCWarning(dcSenec()) << "Login request finished successfully, but the response contains invalid JSON object:" << responseData;
+                info->finish(Thing::ThingErrorAuthenticationFailure);
+                return;
+            }
 
-        QString token = responseMap.value("token").toString();
-        QString refreshToken = responseMap.value("refreshToken").toString();
+            if (!responseMap.contains("token") || !responseMap.contains("refreshToken")) {
+                qCWarning(dcSenec()) << "Login request finished successfully, but the response JSON does not contain the expected properties" << qUtf8Printable(responseData);
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
 
-        pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("username", username);
-        pluginStorage()->setValue("token", token);
-        pluginStorage()->setValue("refreshToken", refreshToken);
-        pluginStorage()->endGroup();
+            QString token = responseMap.value("token").toString();
+            QString refreshToken = responseMap.value("refreshToken").toString();
 
-        info->finish(Thing::ThingErrorNoError);
-    });
+            pluginStorage()->beginGroup(info->thingId().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("token", token);
+            pluginStorage()->setValue("refreshToken", refreshToken);
+            pluginStorage()->endGroup();
+
+            info->finish(Thing::ThingErrorNoError);
+        });
+    }
 }
 
 void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
@@ -357,7 +414,7 @@ void IntegrationPluginSenec::refresh(Thing *thing)
         // In that case we use the bigger power. Maybe we cloudl als sum them up, that should be tested...
 
         float currentPower = 0;
-        if (batteryCharge != 0 && batteryCharge != 0) {
+        if (batteryCharge != 0 && batteryDischarge != 0) {
             if (batteryCharge > batteryDischarge) {
                 currentPower = batteryCharge;
             } else {

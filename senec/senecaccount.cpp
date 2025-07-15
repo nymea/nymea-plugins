@@ -58,11 +58,6 @@ QUrl SenecAccount::systemsUrl()
     return url;
 }
 
-bool SenecAccount::available() const
-{
-    return m_available;
-}
-
 QNetworkReply *SenecAccount::getSystems()
 {
     QNetworkRequest request(SenecAccount::systemsUrl());

@@ -34,9 +34,13 @@
 #include <plugintimer.h>
 #include <integrations/integrationplugin.h>
 
+#include <network/networkaccessmanager.h>
+#include <network/networkdevicemonitor.h>
+
 #include "extern-plugininfo.h"
 
 #include "senecaccount.h"
+#include "senecstoragelan.h"
 
 class IntegrationPluginSenec : public IntegrationPlugin
 {
@@ -48,6 +52,8 @@ class IntegrationPluginSenec : public IntegrationPlugin
 public:
     explicit IntegrationPluginSenec();
     ~IntegrationPluginSenec();
+
+    void discoverThings(ThingDiscoveryInfo *info) override;
 
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;

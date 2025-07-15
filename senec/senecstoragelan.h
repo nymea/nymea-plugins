@@ -28,37 +28,66 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SENECACCOUNT_H
-#define SENECACCOUNT_H
+#ifndef SENECSTORAGELAN_H
+#define SENECSTORAGELAN_H
 
 #include <QUrl>
 #include <QObject>
-#include <QNetworkReply>
+#include <QHostAddress>
 
 #include <network/networkaccessmanager.h>
 
-class SenecAccount : public QObject
+class SenecStorageLan : public QObject
 {
     Q_OBJECT
 public:
-    explicit SenecAccount(NetworkAccessManager *networkManager, const QString &username, const QString &token, const QString &refreshToken, QObject *parent = nullptr);
+    explicit SenecStorageLan(NetworkAccessManager *networkManager, QObject *parent = nullptr);
+    explicit SenecStorageLan(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent = nullptr);
 
-    static QUrl baseUrl();
-    static QUrl loginUrl();
-    static QUrl systemsUrl();
+    QHostAddress address() const;
+    void setAddress(const QHostAddress &address);
 
-    QNetworkReply *getSystems();
-    QNetworkReply *getDashboard(const QString &id);
-    QNetworkReply *getAbilities(const QString &id);
-    QNetworkReply *getTechnicalData(const QString &id);
+    QUrl url() const;
+
+    bool available() const;
+
+    QString deviceId() const;
+    float capacity() const;
+    float maxChargePower() const;
+    float maxDischargePower() const;
+
+
+    static float parseFloat(const QString &value);
+    static QString parseString(const QString &value);
+
+
+public slots:
+    void initialize();
+
+signals:
+    void initializeFinished(bool success);
+    void availableChanged(bool available);
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;
 
-    QString m_username;
-    QString m_token;
-    QString m_refreshToken;
+    QUrl m_url;
+    QHostAddress m_address;
+
+    bool m_available = false;
+
+    QString m_deviceId;
+    float m_capacity = 0;
+    float m_maxChargePower = 0;
+    float m_maxDischargePower = 0;
+
+    void updateUrl();
+    void setAvailable(bool available);
+
+
+private slots:
+    void ignoreSslErrors(const QList<QSslError> &errors);
 
 };
 
-#endif // SENECACCOUNT_H
+#endif // SENECSTORAGELAN_H
