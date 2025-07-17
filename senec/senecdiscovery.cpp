@@ -45,7 +45,7 @@ SenecDiscovery::SenecDiscovery(NetworkAccessManager *networkManager, NetworkDevi
 
 void SenecDiscovery::startDiscovery()
 {
-    qCDebug(dcSenec()) << "Discovery: Searching SENEC energy storages in the network...";
+    qCInfo(dcSenec()) << "Discovery: Searching SENEC energy storages in the local network...";
     m_startDateTime = QDateTime::currentDateTime();
 
     NetworkDeviceDiscoveryReply *discoveryReply = m_networkDeviceDiscovery->discover();
@@ -72,6 +72,7 @@ void SenecDiscovery::checkNetworkDevice(const QHostAddress &address)
 
     connect(storage, &SenecStorageLan::initializeFinished, this, [this, storage, address](bool success){
         if (!success) {
+            qCDebug(dcSenec()) << "Discovery: Failed to initialize host" << address.toString() << "Continue ...";
             cleanupStorage(storage);
             return;
         }
@@ -81,10 +82,18 @@ void SenecDiscovery::checkNetworkDevice(const QHostAddress &address)
         result.deviceId = storage->deviceId();
         result.address = address;
         m_results.append(result);
-        qCInfo(dcSenec()) << "Found SENEC storage on" << address.toString() << storage->deviceId();
+
+        qCInfo(dcSenec()) << "Discovery: Found SENEC storage on" << address.toString() << storage->deviceId();
         cleanupStorage(storage);
     });
 
+    storage->initialize();
+}
+
+void SenecDiscovery::cleanupStorage(SenecStorageLan *storage)
+{
+    m_storages.removeAll(storage);
+    storage->deleteLater();
 }
 
 void SenecDiscovery::finishDiscovery()
@@ -95,7 +104,7 @@ void SenecDiscovery::finishDiscovery()
     for (int i = 0; i < m_results.count(); i++)
         m_results[i].networkDeviceInfo = m_networkDeviceInfos.get(m_results.at(i).address);
 
-    qCDebug(dcSenec()) << "Discovery: Finished the discovery process. Found" << m_results.count()
+    qCInfo(dcSenec()) << "Discovery: Finished the discovery process. Found" << m_results.count()
                        << "SENEC devices in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     m_gracePeriodTimer.stop();
 

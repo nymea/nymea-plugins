@@ -37,10 +37,13 @@
 
 #include <network/networkaccessmanager.h>
 
+// https://blog.odenthal.cc/query-the-hidden-api-of-your-senec-photovoltaik-appliance/
+
 class SenecStorageLan : public QObject
 {
     Q_OBJECT
 public:
+
     explicit SenecStorageLan(NetworkAccessManager *networkManager, QObject *parent = nullptr);
     explicit SenecStorageLan(NetworkAccessManager *networkManager, const QHostAddress &address, QObject *parent = nullptr);
 
@@ -51,22 +54,32 @@ public:
 
     bool available() const;
 
+    // Init properties
     QString deviceId() const;
     float capacity() const;
     float maxChargePower() const;
     float maxDischargePower() const;
 
+    // Update properties
+    float batteryLevel() const;
+    float batteryPower() const;
+    float gridPower() const;
+    float inverterPower() const;
 
-    static float parseFloat(const QString &value);
-    static QString parseString(const QString &value);
+
+    static float parseFloat(const QString &value); // fl_
+    static QString parseString(const QString &value); // st_
+    //static quint8 parseUInt8(const QString &value); // u8_
 
 
 public slots:
     void initialize();
+    void update();
 
 signals:
     void initializeFinished(bool success);
     void availableChanged(bool available);
+    void updatedFinished(bool success);
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;
@@ -81,9 +94,13 @@ private:
     float m_maxChargePower = 0;
     float m_maxDischargePower = 0;
 
+    float m_batteryLevel = 0;
+    float m_batteryPower = 0;
+    float m_gridPower = 0;
+    float m_inverterPower = 0;
+
     void updateUrl();
     void setAvailable(bool available);
-
 
 private slots:
     void ignoreSslErrors(const QList<QSslError> &errors);

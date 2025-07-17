@@ -29,22 +29,29 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginsenec.h"
+#include "senecdiscovery.h"
 #include "plugininfo.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>
 
+#include <network/networkdevicediscovery.h>
+
 IntegrationPluginSenec::IntegrationPluginSenec()
 {
     // Testing the convert methods
+
     // QString rawValue = "fl_42A2E5E4"; // 81.449
     // float value = SenecStorageLan::parseFloat(rawValue);
     // qCWarning(dcSenec()) << rawValue << value;
 
-    // QString rawValue = "st_foobar";
+    // QString rawValue = "st_foobar"; // foobar
     // QString value = SenecStorageLan::parseString(rawValue);
     // qCWarning(dcSenec()) << rawValue << value;
 
+    // QString rawValue = "u8_64"; // 100
+    // quint8 value = SenecStorageLan::parseUInt8(rawValue);
+    // qCWarning(dcSenec()) << rawValue << value;
 }
 
 IntegrationPluginSenec::~IntegrationPluginSenec()
@@ -54,7 +61,7 @@ IntegrationPluginSenec::~IntegrationPluginSenec()
 
 void IntegrationPluginSenec::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (info->thingClassId() == senecConnectionThingClassId) {
+    if (info->thingClassId() == senecStorageLanThingClassId) {
 
         if (!hardwareManager()->networkDeviceDiscovery()->available()) {
             qCWarning(dcSenec()) << "Failed to discover network devices. The network device discovery is not available.";
@@ -62,39 +69,39 @@ void IntegrationPluginSenec::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        // qCInfo(dcESPSomfyRTS()) << "Starting network discovery...";
-        // EspSomfyRtsDiscovery *discovery = new EspSomfyRtsDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), info);
-        // connect(discovery, &EspSomfyRtsDiscovery::discoveryFinished, info, [=](){
-        //     ThingDescriptors descriptors;
-        //     qCInfo(dcESPSomfyRTS()) << "Discovery finished. Found" << discovery->results().count() << "devices";
-        //     foreach (const EspSomfyRtsDiscovery::Result &result, discovery->results()) {
-        //         qCInfo(dcESPSomfyRTS()) << "Discovered device on" << result.networkDeviceInfo;
+        qCInfo(dcSenec()) << "Starting network discovery...";
+        SenecDiscovery *discovery = new SenecDiscovery(hardwareManager()->networkManager(), hardwareManager()->networkDeviceDiscovery(), info);
+        connect(discovery, &SenecDiscovery::discoveryFinished, info, [=](){
+            ThingDescriptors descriptors;
+            qCInfo(dcSenec()) << "Discovery finished. Found" << discovery->results().count() << "devices";
+            foreach (const SenecDiscovery::Result &result, discovery->results()) {
+                qCInfo(dcSenec()) << "Discovered device on" << result.networkDeviceInfo;
 
-        //         QString title = "ESP Somfy RTS (" + result.name + ")";
-        //         QString description = result.networkDeviceInfo.address().toString();
+                QString title = "SENEC connection (" + result.deviceId + ")";
+                QString description = result.networkDeviceInfo.address().toString();
 
-        //         ThingDescriptor descriptor(espSomfyRtsThingClassId, title, description);
+                ThingDescriptor descriptor(senecStorageLanThingClassId, title, description);
 
-        //         ParamList params;
-        //         params << Param(espSomfyRtsThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
-        //         params << Param(espSomfyRtsThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
-        //         params << Param(espSomfyRtsThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
-        //         descriptor.setParams(params);
+                ParamList params;
+                params << Param(senecStorageLanThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
+                params << Param(senecStorageLanThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
+                params << Param(senecStorageLanThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
+                descriptor.setParams(params);
 
-        //         // Check if we already have set up this device
-        //         Thing *existingThing = myThings().findByParams(params);
-        //         if (existingThing) {
-        //             qCDebug(dcESPSomfyRTS()) << "This thing already exists in the system:" << result.networkDeviceInfo;
-        //             descriptor.setThingId(existingThing->id());
-        //         }
+                // Check if we already have set up this device
+                Thing *existingThing = myThings().findByParams(params);
+                if (existingThing) {
+                    qCDebug(dcSenec()) << "This thing already exists in the system:" << result.networkDeviceInfo;
+                    descriptor.setThingId(existingThing->id());
+                }
 
-        //         info->addThingDescriptor(descriptor);
-        //     }
+                info->addThingDescriptor(descriptor);
+            }
 
-        //     info->finish(Thing::ThingErrorNoError);
-        // });
+            info->finish(Thing::ThingErrorNoError);
+        });
 
-        // discovery->startDiscovery();
+        discovery->startDiscovery();
     }
 }
 
@@ -181,6 +188,85 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorNoError);
 
         thing->setStateValue(senecAccountUserDisplayNameStateTypeId, username);
+
+    } if (thing->thingClassId() == senecStorageLanThingClassId) {
+
+        // Handle reconfigure
+        if (m_monitors.contains(thing)) {
+            qCDebug(dcSenec()) << "Unregister existing monitor and recreate a new one...";
+            hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+        }
+
+        NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
+        m_monitors.insert(thing, monitor);
+
+        SenecStorageLan *storage = new SenecStorageLan(hardwareManager()->networkManager(), this);
+        m_storages.insert(thing, storage);
+
+        storage->setAddress(monitor->networkDeviceInfo().address());
+        connect(monitor, &NetworkDeviceMonitor::reachableChanged, storage, [monitor, storage](bool reachable){
+            if (reachable) {
+                storage->setAddress(monitor->networkDeviceInfo().address());
+            }
+        });
+
+        connect(storage, &SenecStorageLan::availableChanged, thing, [thing](bool available){
+            thing->setStateValue(senecStorageLanConnectedStateTypeId, available);
+
+            // TODO: Update also child things
+
+        });
+
+        connect(storage, &SenecStorageLan::updatedFinished, thing, [storage, thing, this](bool success){
+
+            thing->setStateValue(senecStorageLanConnectedStateTypeId, storage->available());
+
+            // TODO: Update also child things
+
+            if (!success)
+                return;
+
+            thing->setStateValue(senecStorageLanCapacityStateTypeId, storage->capacity());
+            thing->setStateValue(senecStorageLanBatteryLevelStateTypeId, storage->batteryLevel());
+            thing->setStateValue(senecStorageLanBatteryCriticalStateTypeId, storage->batteryLevel() < 10.0);
+            thing->setStateValue(senecStorageLanCurrentPowerStateTypeId, storage->batteryPower());
+
+            // Check if we have a meter
+            Thing *meterThing = nullptr;
+            Things meterThings = myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id());
+
+            if (!meterThings.isEmpty())
+                meterThing = meterThings.first();
+
+            // If so, update
+            if (meterThing) {
+                meterThing->setStateValue(senecMeterCurrentPowerStateTypeId, storage->gridPower());
+                meterThing->setStateValue(senecMeterConnectedStateTypeId, true);
+            }
+        });
+
+
+        connect(thing, &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
+            if (paramTypeId == senecStorageLanSettingsAddMeterParamTypeId) {
+
+                if (value.toBool()) {
+                    // Check if we have to add the meter
+                    if (myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id()).isEmpty()) {
+                        qCDebug(dcSenec()) << "Add meter for" << thing->name();
+                        emit autoThingsAppeared(ThingDescriptors() << ThingDescriptor(senecMeterThingClassId, "SENEC Meter", QString(), thing->id()));
+                    }
+                } else {
+                    // Check if we have to remove the meter
+                    Things existingMeters = myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(thing->id());
+                    if (!existingMeters.isEmpty()) {
+                        qCDebug(dcSenec()) << "Remove meter thing for" << thing->name();
+                        emit autoThingDisappeared(existingMeters.takeFirst()->id());
+                    }
+                }
+            }
+        });
+
+        info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == senecStorageThingClassId) {
 
@@ -325,6 +411,7 @@ void IntegrationPluginSenec::postSetupThing(Thing *thing)
         connect(m_refreshTimer, &PluginTimer::timeout, this, [this](){
             refresh();
         });
+
         m_refreshTimer->start();
     }
 }
@@ -339,6 +426,11 @@ void IntegrationPluginSenec::thingRemoved(Thing *thing)
         pluginStorage()->beginGroup(thing->id().toString());
         pluginStorage()->remove("");
         pluginStorage()->endGroup();
+    }
+
+    if (thing->thingClassId() == senecStorageLanThingClassId) {
+        hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
+        m_storages.take(thing)->deleteLater();
     }
 
     if (myThings().isEmpty()) {
@@ -359,6 +451,10 @@ void IntegrationPluginSenec::refresh(Thing *thing)
     if (!thing) {
         foreach (Thing *storageThing, myThings().filterByThingClassId(senecStorageThingClassId)) {
             refresh(storageThing);
+        }
+
+        foreach (Thing *storageLanThing, myThings().filterByThingClassId(senecStorageLanThingClassId)) {
+            m_storages.value(storageLanThing)->update();
         }
 
         return;

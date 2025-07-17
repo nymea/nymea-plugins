@@ -66,6 +66,11 @@ QUrl SenecStorageLan::url() const
     return m_url;
 }
 
+bool SenecStorageLan::available() const
+{
+    return m_available;
+}
+
 QString SenecStorageLan::deviceId() const
 {
     return m_deviceId;
@@ -86,6 +91,25 @@ float SenecStorageLan::maxDischargePower() const
     return m_maxDischargePower;
 }
 
+float SenecStorageLan::batteryLevel() const
+{
+    return m_batteryLevel;
+}
+
+float SenecStorageLan::batteryPower() const
+{
+    return m_batteryPower;
+}
+
+float SenecStorageLan::gridPower() const
+{
+    return m_gridPower;
+}
+
+float SenecStorageLan::inverterPower() const
+{
+    return m_inverterPower;
+}
 
 float SenecStorageLan::parseFloat(const QString &value)
 {
@@ -108,6 +132,12 @@ QString SenecStorageLan::parseString(const QString &value)
     Q_ASSERT_X(value.left(3) == "st_", "SenecStorageLan", "The given value does not seem to be a string, it is not starting with st_");
     return value.right(value.length() - 3);
 }
+
+// quint8 SenecStorageLan::parseUInt8(const QString &value)
+// {
+//     Q_ASSERT_X(value.left(3) == "u8_", "SenecStorageLan", "The given value does not seem to be a uint8, it is not starting with u8_");
+
+// }
 
 
 void SenecStorageLan::initialize()
@@ -208,6 +238,70 @@ void SenecStorageLan::initialize()
 
             qCDebug(dcSenec()) << "Initialized successfully";
         });
+    });
+}
+
+void SenecStorageLan::update()
+{
+    if (m_url.isValid()) {
+        qCDebug(dcSenec()) << "Cannot update the storage. The request URL is not valid. Maybe the IP is not known yet or invalid.";
+        emit updatedFinished(false);
+        return;
+    }
+
+    QVariantMap request;
+
+    QVariantMap energyMap;
+    energyMap.insert("GUI_BAT_DATA_POWER", QString());
+    energyMap.insert("GUI_INVERTER_POWER", QString());
+    energyMap.insert("GUI_BAT_DATA_FUEL_CHARGE", QString());
+    energyMap.insert("GUI_HOUSE_POW", QString());
+    energyMap.insert("GUI_GRID_POW", QString());
+
+    request.insert("ENERGY", energyMap);
+
+    QNetworkReply *reply = m_networkManager->post(QNetworkRequest(m_url), QJsonDocument::fromVariant(request).toJson());
+    connect(reply, &QNetworkReply::sslErrors, this, &SenecStorageLan::ignoreSslErrors);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcSenec()) << "Update request finished with error. Status:" << status << "Error:" << reply->errorString();
+            setAvailable(false);
+            emit updatedFinished(false);
+            return;
+        }
+
+        QByteArray responseData = reply->readAll();
+
+        QJsonParseError jsonError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &jsonError);
+        QVariantMap responseMap = jsonDoc.toVariant().toMap();
+        if (jsonError.error != QJsonParseError::NoError) {
+            qCWarning(dcSenec()) << "Update request finished successfully, but the response contains invalid JSON object:" << responseData;
+            setAvailable(false);
+            emit updatedFinished(false);
+            return;
+        }
+
+        qCDebug(dcSenec()) << "Update request finished successfully" << qUtf8Printable(jsonDoc.toJson());
+
+        QVariantMap energyResponseMap = responseMap.value("ENERGY").toMap();
+        m_batteryPower = parseFloat(energyResponseMap.value("GUI_BAT_DATA_POWER").toString());
+        m_batteryLevel = parseFloat(energyResponseMap.value("GUI_BAT_DATA_FUEL_CHARGE").toString());
+        m_gridPower = parseFloat(energyResponseMap.value("GUI_GRID_POW").toString());
+        m_inverterPower = parseFloat(energyResponseMap.value("GUI_INVERTER_POWER").toString());
+
+        setAvailable(true);
+
+        qCDebug(dcSenec()).nospace().noquote() << "Update values: Battery power: " << m_batteryPower
+                                               << "W, Battery level: " << m_batteryLevel
+                                               << "%, Grid power: " << m_gridPower
+                                               << "W, Inverter power: " << m_inverterPower << "W";
+
+        emit updatedFinished(true);
     });
 }
 
