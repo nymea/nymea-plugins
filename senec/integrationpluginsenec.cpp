@@ -230,6 +230,13 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
             thing->setStateValue(senecStorageLanBatteryLevelStateTypeId, storage->batteryLevel());
             thing->setStateValue(senecStorageLanBatteryCriticalStateTypeId, storage->batteryLevel() < 10.0);
             thing->setStateValue(senecStorageLanCurrentPowerStateTypeId, storage->batteryPower());
+            if (storage->batteryPower() > 0) {
+                thing->setStateValue(senecStorageLanChargingStateStateTypeId, "charging");
+            } else if (storage->batteryPower() < 0) {
+                thing->setStateValue(senecStorageLanChargingStateStateTypeId, "discharging");
+            } else {
+                thing->setStateValue(senecStorageLanChargingStateStateTypeId, "idle");
+            }
 
             // Check if we have a meter
             Thing *meterThing = nullptr;
