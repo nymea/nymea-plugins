@@ -1,0 +1,352 @@
+{
+    "displayName": "SENEC",
+    "name": "Senec",
+    "id": "3f055ea5-a883-445d-9556-675f5eda6c9a",
+    "vendors": [
+        {
+            "displayName": "SENEC",
+            "name": "senec",
+            "id": "1be922b9-4439-42cf-9caa-67f2ac7cc425",
+            "thingClasses": [
+                {
+                    "id": "f60497ea-a15a-4237-86bc-935182475e47",
+                    "name": "senecAccount",
+                    "displayName": "SENEC account",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "providedInterfaces": ["energystorage"],
+                    "stateTypes": [
+                        {
+                            "id": "2a508d04-3183-4c0b-9e92-90ff1ebce19e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6842e3b3-ff25-4f34-b1c4-ff3f83c23746",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7670bfb4-5dfc-47f1-9c99-80b120f2aa8b",
+                            "name": "userDisplayName",
+                            "displayName": "Username",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ]
+                },
+                {
+                    "id": "345df3b1-d411-4db5-bbb2-3b14eb86c1ba",
+                    "name": "senecStorageLan",
+                    "displayName": "SENEC.Home storage",
+                    "interfaces": ["energystorage", "networkdevice"],
+                    "createMethods": ["Discovery", "User"],
+                    "settingsTypes": [
+                        {
+                            "id": "239d388c-f4a2-4055-88c3-decc6dace2b8",
+                            "name": "addMeter",
+                            "displayName": "Add meter",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "a45cabe9-9f76-405e-b47c-0a3d00bdd44b",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "51a1bbc0-28a5-43ac-9021-896acbf9413f",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0790e1b1-c8c9-488f-9cda-2a0bbf14b4af",
+                            "name": "macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "inputType": "MacAddress",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d3bdc64b-67fb-4d84-97ed-c5142e5db55d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "3b00470d-11bc-4352-a885-52ab9443cee5",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        },
+                        {
+                            "id": "66a3a7d2-1210-4891-a8f2-6fe4f9b8c6cc",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a9aa13fb-3f51-40e3-9d29-ab882513a87a",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "339f602f-c9f1-446d-bc96-1c7f9a7db922",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "d927e6cf-29f0-412f-b74d-7d803fd3e191",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "senecStorage",
+                    "displayName": "SENEC.Home storage",
+                    "id": "a983c5ee-1c58-4cad-87fb-1bc612cbe6e4",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": ["energystorage", "connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "44836ff6-4d69-42b9-a5a8-b37bcc0b24fe",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "minValue": 7.1,
+                            "maxValue": 17.75,
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0.0
+                        },
+                        {
+                            "id": "0a16f7c8-2e55-4869-aeb3-574f22b40527",
+                            "name": "addMeter",
+                            "displayName": "Add meter",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "9a0fa7b1-bc35-44d4-b987-5ecb87fd8b00",
+                            "name": "id",
+                            "displayName": "System ID",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "320cb3f0-d2c5-4a30-817f-474f0cc87253",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "09225a15-f2d0-46cf-a84f-4a91f389d488",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        },
+                        {
+                            "id": "d6dd533a-beb2-4f57-a3d3-12c48a83306c",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "cba01bf1-5daf-4466-8ae3-ea864593bdc6",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "cef34773-02c2-4eb1-8624-4e595847f674",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "4f571731-85f7-492e-ba51-eb6bf224776f",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "senecMeter",
+                    "displayName": "SENEC Meter",
+                    "id": "303f454d-93b7-4f8f-b295-a4c22e09be6d",
+                    "createMethods": [ "auto" ],
+                    "interfaces": ["energymeter", "connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "9aa4dbfb-255b-408b-b148-8fb145ba8c98",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "56e58d03-782d-40bb-8d32-fad396ffefdc",
+                            "name": "currentPower",
+                            "displayName": "Current power usage",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f9920cfa-26a0-4247-ad50-b4fca91596f0",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Energy returned",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "21728bf0-a566-4eb0-a163-5f108f34bb9b",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "385df15e-4f1d-4842-a10a-597d087bdac0",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Current power phase A",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "3bab2b05-99d7-4b3a-b903-054d269a3527",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Current power phase B",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "01a63c94-b635-4e98-8037-d5d69fe0dd7c",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Current power phase C",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "db469573-bb11-48d2-84ba-2b8ff4b13413",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage phase A",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "176d5a01-220d-44da-b875-9a40aaa9c85a",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage phase B",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e7ab02d3-016a-44ca-8da1-5d7ac9acbc6d",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage phase C",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1923f7b0-5b54-46d8-a7e9-9364b7c9eeb8",
+                            "name": "currentPhaseA",
+                            "displayName": "Current phase A",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "4908abf8-f655-4e14-a007-3eefeda7088e",
+                            "name": "currentPhaseB",
+                            "displayName": "Current phase B",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e8415152-0fac-4cd9-98ac-b0e7c006d637",
+                            "name": "currentPhaseC",
+                            "displayName": "Current phase C",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

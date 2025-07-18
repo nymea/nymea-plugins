@@ -1,0 +1,13 @@
+{
+    "title": "SENEC",
+    "tagline": "Connect nymea to your SENEC account.",
+    "icon": "senec.svg",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "energy"
+    ]
+}

@@ -703,6 +703,7 @@ Description: nymea integration plugin for TCP commander
  This package contains the nymea integration plugin for sending arbitrary
  TCP packets from and to nymea.
 
+
 Package: nymea-plugin-httpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -711,6 +712,16 @@ Conflicts: nymea-plugins-translations (<< 1.0.1)
 Description: nymea integration plugin for HTTP commander
  This package contains the nymea integration plugin for sending arbitrary
  HTTP requests from and to nymea.
+
+
+Package: nymea-plugin-senec
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for SENEC.home
+ This package contains the nymea integration plugin for the SENEC.home 
+ energy storages.
 
 
 Package: nymea-plugin-senic
