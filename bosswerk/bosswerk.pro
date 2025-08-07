@@ -1,9 +1,9 @@
 include(../plugins.pri)
 
-QT += network
+QT *= network
 
 SOURCES += \
-    integrationpluginbosswerk.cpp \
+    integrationpluginbosswerk.cpp
 
 HEADERS += \
-    integrationpluginbosswerk.h \
+    integrationpluginbosswerk.h
