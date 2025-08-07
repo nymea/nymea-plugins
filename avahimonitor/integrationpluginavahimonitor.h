@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,13 @@
 #ifndef INTEGRATIONPLUGINAVAHIMONITOR_H
 #define INTEGRATIONPLUGINAVAHIMONITOR_H
 
-#include "integrations/integrationplugin.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
+#include <integrations/integrationplugin.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
 
 #include <QProcess>
+
+#include "extern-plugininfo.h"
 
 class IntegrationPluginAvahiMonitor : public IntegrationPlugin
 {
@@ -56,6 +58,7 @@ private slots:
 
 private:
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
+
 };
 
 #endif // INTEGRATIONPLUGINAVAHIMONITOR_H
