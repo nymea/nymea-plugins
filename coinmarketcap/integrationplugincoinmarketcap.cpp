@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,8 +29,9 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugincoinmarketcap.h"
-#include "network/networkaccessmanager.h"
 #include "plugininfo.h"
+
+#include <network/networkaccessmanager.h>
 
 #include <QJsonDocument>
 
@@ -44,7 +45,7 @@ void IntegrationPluginCoinMarketCap::startPairing(ThingPairingInfo *info)
     NetworkAccessManager *network = hardwareManager()->networkManager();
     QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://pro-api.coinmarketcap.com")));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, info] {
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
 
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("CoinMarketCap server is not reachable."));
@@ -175,31 +176,31 @@ void IntegrationPluginCoinMarketCap::onPriceCallFinished()
         qCDebug(dcCoinMarketCap()) << "Name" << elementMap.value("name").toString();
         price = elementMap.value("quote").toMap().value(fiatCurrency).toMap().value("price").toDouble();
         if (elementMap.value("name").toString() == "Bitcoin") {
-            qDebug(dcCoinMarketCap()) << "Bitcoin Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Bitcoin Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesBtcStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "Ethereum") {
-            qDebug(dcCoinMarketCap()) << "Etherium Price in" <<  fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Etherium Price in" <<  fiatCurrency << price;
             thing->setStateValue(currentPricesEthStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "XRP") {
-            qDebug(dcCoinMarketCap()) << "XRP Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "XRP Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesXrpStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "Bitcoin Cash") {
-            qDebug(dcCoinMarketCap()) << "Bitcoin-cash Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Bitcoin-cash Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesBchStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "Litecoin") {
-            qDebug(dcCoinMarketCap()) << "Litecoin Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Litecoin Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesLtcStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "NEM") {
-            qDebug(dcCoinMarketCap()) << "Nem Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Nem Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesXemStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "Ethereum Classic") {
-            qDebug(dcCoinMarketCap()) << "Ethereum Classic Price in" << fiatCurrency << price;
+            qCDebug(dcCoinMarketCap()) << "Ethereum Classic Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesEtcStateTypeId, price);
 
         } else if (elementMap.value("name").toString() == "Dash") {
