@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -361,7 +361,7 @@ void Doorbird::connectToEventMonitor()
         while (!m_readBuffer.isEmpty()) {
             // find next --ioboundary
             QString boundary = QStringLiteral("--ioboundary");
-            int startIndex = m_readBuffer.indexOf(boundary);
+            int startIndex = m_readBuffer.indexOf(boundary.toUtf8());
             if (startIndex == -1) {
                 qCWarning(dcDoorBird) << "No meaningful data in buffer:" << m_readBuffer;
                 if (m_readBuffer.size() > 1024) {
@@ -387,7 +387,7 @@ void Doorbird::connectToEventMonitor()
 
             // At this point we have the boundary and Content-Type. Remove all of that and take the entire string to either end or next boundary
             m_readBuffer.remove(0, contentTypeIndex + contentType.length());
-            int nextStartIndex = m_readBuffer.indexOf(boundary);
+            int nextStartIndex = m_readBuffer.indexOf(boundary.toUtf8());
             QByteArray data;
             if (nextStartIndex == -1) {
                 data = m_readBuffer;

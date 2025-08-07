@@ -31,8 +31,8 @@
 #include "integrationplugindoorbird.h"
 #include "plugininfo.h"
 
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -270,7 +270,7 @@ void IntegrationPluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, b
     case Doorbird::EventType::Motion:
         thing->setStateValue(doorBirdIsPresentStateTypeId, status);
         if (status) {
-            thing->setStateValue(doorBirdLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+            thing->setStateValue(doorBirdLastSeenTimeStateTypeId, QDateTime::currentDateTime().toSecsSinceEpoch());
         }
         break;
     case Doorbird::EventType::Doorbell:
