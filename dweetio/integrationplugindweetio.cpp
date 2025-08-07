@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,8 +30,9 @@
 
 #include "integrationplugindweetio.h"
 #include "plugininfo.h"
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
 
 #include <QUuid>
 #include <QJsonDocument>
@@ -60,7 +61,7 @@ void IntegrationPluginDweetio::setupThing(ThingSetupInfo *info)
     if (info->thing()->thingClassId() == postThingClassId) {
         QString thing = info->thing()->paramValue(postThingThingParamTypeId).toString();
         if (thing.isEmpty()){
-            qDebug(dcDweetio) << "No thing name given, creating one";
+            qCDebug(dcDweetio()) << "No thing name given, creating one";
             thing = QUuid::createUuid().toString();
         }
         return info->finish(Thing::ThingErrorNoError);
@@ -135,7 +136,7 @@ void IntegrationPluginDweetio::postContent(const QString &content, Thing *thing,
     contentMap.insert(thing->paramValue(postThingContentNameParamTypeId).toString(), content);
 
     QByteArray data = QJsonDocument::fromVariant(contentMap).toJson(QJsonDocument::Compact);
-    qDebug(dcDweetio) << "Dweet: " << data << "Url: " << url;
+    qCDebug(dcDweetio()) << "Dweet: " << data << "Url: " << url;
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, data);
     m_asyncActions.insert(reply, info);
@@ -155,7 +156,7 @@ void IntegrationPluginDweetio::setConnectionStatus(bool status, Thing *thing)
 void IntegrationPluginDweetio::processPostReply(const QVariantMap &data, Thing *thing)
 {
     QString message = data.value("this").toString();
-    qDebug(dcDweetio) << "Access Reply: " << message << "Device: " << thing->name();
+    qCDebug(dcDweetio()) << "Access Reply: " << message << "Device: " << thing->name();
 }
 
 void IntegrationPluginDweetio::processGetReply(const QVariantMap &data, Thing *thing)
@@ -165,7 +166,7 @@ void IntegrationPluginDweetio::processGetReply(const QVariantMap &data, Thing *t
     QString content = contentMap.value(thing->paramValue(getThingContentNameParamTypeId).toString()).toString();
     thing->setStateValue(getContentStateTypeId, content);
 
-    qDebug(dcDweetio) << "Data: " << data << "Device: " << thing->name();
+    qCDebug(dcDweetio()) << "Data: " << data << "Device: " << thing->name();
 }
 
 void IntegrationPluginDweetio::onNetworkReplyFinished()
