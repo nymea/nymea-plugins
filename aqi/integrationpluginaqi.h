@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,11 @@
 #ifndef INTEGRATIONPLUGINAQI_H
 #define INTEGRATIONPLUGINAQI_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/networkaccessmanager.h"
-#include "airqualityindex.h"
+#include <plugintimer.h>
+#include <integrations/integrationplugin.h>
+#include <network/networkaccessmanager.h>
 
+#include "airqualityindex.h"
 #include "extern-plugininfo.h"
 
 #include <QTimer>
@@ -64,6 +64,7 @@ private:
     QHash<QUuid, ThingDiscoveryInfo *> m_asyncDiscovery;
     QHash<QUuid, ThingSetupInfo *> m_asyncSetups;
     QHash<QUuid, ThingId> m_asyncRequests;
+
     QString getApiKey();
     bool createAqiConnection();
 
@@ -74,6 +75,7 @@ private slots:
     void onRequestExecuted(QUuid requestId, bool success);
     void onAirQualityDataReceived(QUuid requestId, AirQualityIndex::AirQualityData data);
     void onAirQualityStationsReceived(QUuid requestId, QList<AirQualityIndex::Station> stations);
+
 };
 
 #endif // INTEGRATIONPLUGINAQI_H

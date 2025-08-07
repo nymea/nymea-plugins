@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -54,8 +54,9 @@ QUuid AirQualityIndex::searchByName(const QString &name)
 {
     if (m_apiKey.isEmpty()) {
         qCWarning(dcAirQualityIndex()) << "API key is not set, not sending request";
-        return "";
+        return QUuid();
     }
+
     QUuid requestId = QUuid::createUuid();;
     QUrl url;
     url.setUrl(m_baseUrl);
@@ -75,13 +76,14 @@ QUuid AirQualityIndex::searchByName(const QString &name)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (status == 400) {
+            if (status == 400)
                 qCWarning(dcAirQualityIndex()) << "Request error due to exceeded request quota";
-            }
-            requestExecuted(requestId, false);
+
+            emit requestExecuted(requestId, false);
             qCWarning(dcAirQualityIndex()) << "Request error:" << status << reply->errorString();
             return;
         }
+
         QByteArray rawData = reply->readAll();
         qCDebug(dcAirQualityIndex()) << "Search response" << rawData;
 
@@ -95,7 +97,7 @@ QUuid AirQualityIndex::searchByName(const QString &name)
 
         QList<Station> stations;
         QVariantList stationList = doc.toVariant().toMap().value("data").toList();
-        foreach (QVariant stationVariant, stationList) {
+        foreach (const QVariant &stationVariant, stationList) {
             Station station;
             station.aqi = stationVariant.toMap().value("aqi").toInt();
             station.idx = stationVariant.toMap().value("idx").toInt();
@@ -107,10 +109,11 @@ QUuid AirQualityIndex::searchByName(const QString &name)
             station.location.longitude = stationVariant.toMap().value("city").toMap().value("geo").toList().last().toDouble();
             stations.append(station);
         }
+
         if (!stations.isEmpty())
             emit stationsReceived(requestId, stations);
 
-        requestExecuted(requestId, true);
+        emit requestExecuted(requestId, true);
     });
     return requestId;
 }
@@ -119,18 +122,23 @@ QUuid AirQualityIndex::getDataByIp()
 {
     if (m_apiKey.isEmpty()) {
         qCWarning(dcAirQualityIndex()) << "API key is not set, not sending request";
-        return "";
+        return QUuid();
     }
+
     QUuid requestId = QUuid::createUuid();
+
     QUrl url;
     url.setUrl(m_baseUrl);
     url.setPath("/feed/here/");
+
     QUrlQuery query;
     query.addQueryItem("token", m_apiKey);
     url.setQuery(query);
+
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("User-Agent", "nymea");
+
     qCDebug(dcAirQualityIndex()) << "Get data by IP request" << url.toString();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
@@ -139,17 +147,20 @@ QUuid AirQualityIndex::getDataByIp()
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (status == 400) {
+            if (status == 400)
                 qCWarning(dcAirQualityIndex()) << "Request error due to exceeded request quota";
-            }
-            requestExecuted(requestId, false);
+
+            emit requestExecuted(requestId, false);
             qCWarning(dcAirQualityIndex()) << "Request error:" << status << reply->errorString();
             return;
         }
+
         if (!parseData(requestId, reply->readAll()))
-                requestExecuted(requestId, false);
-        requestExecuted(requestId, true);
+            emit requestExecuted(requestId, false);
+
+        emit requestExecuted(requestId, true);
     });
+
     return requestId;
 }
 
@@ -157,19 +168,23 @@ QUuid AirQualityIndex::getDataByGeolocation(double lat, double lng)
 {
     if (m_apiKey.isEmpty()) {
         qCWarning(dcAirQualityIndex()) << "API key is not set, not sending request";
-        return "";
+        return QUuid();
     }
 
     QUuid requestId = QUuid::createUuid();
+
     QUrl url;
     url.setUrl(m_baseUrl);
     url.setPath(QString("/feed/geo:%1;%2/").arg(lat).arg(lng));
+
     QUrlQuery query;
     query.addQueryItem("token", m_apiKey);
     url.setQuery(query);
+
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("User-Agent", "nymea");
+
     qCDebug(dcAirQualityIndex()) << "Get data by geo location request" << url.toString();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
@@ -178,20 +193,21 @@ QUuid AirQualityIndex::getDataByGeolocation(double lat, double lng)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (status == 400) {
+            if (status == 400)
                 qCWarning(dcAirQualityIndex()) << "Request error due to exceeded request quota";
-            }
-            requestExecuted(requestId, false);
+
+            emit requestExecuted(requestId, false);
             qCWarning(dcAirQualityIndex()) << "Request error:" << status << reply->errorString();
             return;
         }
         if (!parseData(requestId, reply->readAll()))
-                requestExecuted(requestId, false);
-        requestExecuted(requestId, true);
+            emit requestExecuted(requestId, false);
+
+        emit requestExecuted(requestId, true);
     });
+
     return requestId;
 }
-
 
 bool AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
 {
@@ -211,8 +227,8 @@ bool AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
     }
 
     Station station;
-    station.aqi =  doc.toVariant().toMap().value("data").toMap().value("aqi").toInt();
-    station.idx =  doc.toVariant().toMap().value("data").toMap().value("idx").toInt();
+    station.aqi = doc.toVariant().toMap().value("data").toMap().value("aqi").toInt();
+    station.idx = doc.toVariant().toMap().value("data").toMap().value("idx").toInt();
 
     QVariantMap city = doc.toVariant().toMap().value("data").toMap().value("city").toMap();
     if (city["geo"].toList().length() == 2) {
@@ -241,6 +257,7 @@ bool AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
     aqiData.co = iaqi["co"].toMap().value("v").toDouble();
     aqiData.temperature = iaqi["t"].toMap().value("v").toDouble();
     aqiData.windSpeed = iaqi["w"].toMap().value("v").toDouble();
+
     emit dataReceived(requestId, aqiData);
     return true;
 }

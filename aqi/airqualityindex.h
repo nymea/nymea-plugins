@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,12 @@
 #ifndef AIRQUALITYINDEX_H
 #define AIRQUALITYINDEX_H
 
-#include "network/networkaccessmanager.h"
 
 #include <QObject>
 #include <QUuid>
 #include <QTime>
+
+#include <network/networkaccessmanager.h>
 
 class AirQualityIndex : public QObject
 {
@@ -70,6 +71,7 @@ public:
     };
 
     explicit AirQualityIndex(NetworkAccessManager *networkAccessManager, const QString &apiKey, QObject *parent = nullptr);
+
     void setApiKey(const QString &apiKey);
     QUuid searchByName(const QString &name);
     QUuid getDataByIp();
