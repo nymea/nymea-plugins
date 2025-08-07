@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,10 +29,11 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginawattar.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+
+#include <integrations/thing.h>
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -72,7 +73,6 @@ IntegrationPluginAwattar::~IntegrationPluginAwattar()
 void IntegrationPluginAwattar::setupThing(ThingSetupInfo *info)
 {
     qCDebug(dcAwattar) << "Setup thing" << info->thing()->name() << info->thing()->params();
-
 
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60 * 60);
@@ -190,7 +190,7 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
                 minPrice = price;
 
             thing->setStateValue(m_currentMarketPriceStateTypeIds.value(thing->thingClassId()), currentPrice / 10.0);
-            thing->setStateValue(m_validUntilStateTypeIds.value(thing->thingClassId()), endTime.toLocalTime().toTime_t());
+            thing->setStateValue(m_validUntilStateTypeIds.value(thing->thingClassId()), endTime.toLocalTime().toSecsSinceEpoch());
         }
     }
 
@@ -210,7 +210,7 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
     thing->setStateValue(m_averageDeviationStateTypeIds.value(thing->thingClassId()), deviation);
 
     qCDebug(dcAwattar()) << "AVG:" << averagePrice << "Min:" << minPrice << "Max:" << maxPrice << "Curr:" << currentPrice;
-    qSort(prices.begin(), prices.end());
+    std::sort(prices.begin(), prices.end());
     int rank = prices.indexOf(currentPrice);
     if (rank < 0) {
         rank = 100;
