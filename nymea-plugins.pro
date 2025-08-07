@@ -5,7 +5,6 @@ PLUGIN_DIRS = \
     aqi                 \ 
     avahimonitor        \
     awattar             \
-    bimmerconnected     \
     bluos               \
     bose                \
     bosswerk            \
@@ -15,7 +14,6 @@ PLUGIN_DIRS = \
     daylightsensor      \
     denon               \
     doorbird            \
-    dht                 \
     dweetio             \
     dynatrace           \
     easee               \
@@ -25,7 +23,6 @@ PLUGIN_DIRS = \
     espuino             \
     evbox               \
     everest             \
-    fastcom             \
     flowercare          \
     fronius             \
     garadget            \
@@ -44,13 +41,11 @@ PLUGIN_DIRS = \
     mailnotification    \
     mqttclient          \
     mystrom             \
-    neatobotvac         \
     nanoleaf            \
     netatmo             \
     networkdetector     \
     notifyevents        \
     nuki                \
-    mcp3008             \
     onewire             \
     openuv              \ 
     openweathermap      \
@@ -69,7 +64,6 @@ PLUGIN_DIRS = \
     somfytahoma         \
     sonos               \
     spothinta           \
-    sunposition         \
     systemmonitor       \
     tado                \
     tasmota             \
@@ -89,6 +83,13 @@ PLUGIN_DIRS = \
     wemo                \
     ws2812fx            \
 
+
+#   bimmerconnected     \
+#   dht                 \
+#   fastcom             \
+#   mcp3008             \
+#   neatobotvac         \
+#   sunposition         \
 
 message(============================================)
 message("Qt version:" $$[QT_VERSION])
