@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,10 +30,10 @@
 
 #include "integrationplugindatetime.h"
 
-#include "integrations/thing.h"
-#include "plugininfo.h"
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+#include <integrations/thing.h>
+#include <plugininfo.h>
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
 
 #include <QJsonDocument>
 #include <QUrlQuery>
@@ -416,13 +416,13 @@ void IntegrationPluginDateTime::updateTimes()
         return;
 
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayDuskTimeStateTypeId, m_dusk.toTime_t());
+        m_todayDevice->setStateValue(todayDuskTimeStateTypeId, m_dusk.toSecsSinceEpoch());
     } else {
         m_todayDevice->setStateValue(todayDuskTimeStateTypeId, 0);
     }
     if (m_sunrise.isValid() && m_sunset.isValid()) {
-        m_todayDevice->setStateValue(todaySunriseTimeStateTypeId, m_sunrise.toTime_t());
-        m_todayDevice->setStateValue(todaySunsetTimeStateTypeId, m_sunset.toTime_t());
+        m_todayDevice->setStateValue(todaySunriseTimeStateTypeId, m_sunrise.toSecsSinceEpoch());
+        m_todayDevice->setStateValue(todaySunsetTimeStateTypeId, m_sunset.toSecsSinceEpoch());
         m_todayDevice->setStateValue(todayDaylightStateTypeId, m_sunrise < m_currentDateTime && m_currentDateTime < m_sunset);
     } else {
         m_todayDevice->setStateValue(todaySunriseTimeStateTypeId, 0);
@@ -430,12 +430,12 @@ void IntegrationPluginDateTime::updateTimes()
         m_todayDevice->setStateValue(todayDaylightStateTypeId, false);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayNoonTimeStateTypeId, m_noon.toTime_t());
+        m_todayDevice->setStateValue(todayNoonTimeStateTypeId, m_noon.toSecsSinceEpoch());
     } else {
         m_todayDevice->setStateValue(todayNoonTimeStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayDawnTimeStateTypeId, m_dawn.toTime_t());
+        m_todayDevice->setStateValue(todayDawnTimeStateTypeId, m_dawn.toSecsSinceEpoch());
     } else {
         m_todayDevice->setStateValue(todayDawnTimeStateTypeId, 0);
     }
