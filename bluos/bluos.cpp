@@ -38,9 +38,9 @@
 
 BluOS::BluOS(NetworkAccessManager *networkmanager,  QHostAddress hostAddress, int port,  QObject *parent) :
     QObject(parent),
+    m_networkManager(networkmanager),
     m_hostAddress(hostAddress),
-    m_port(port),
-    m_networkManager(networkmanager)
+    m_port(port)
 {
 
 }
@@ -121,7 +121,7 @@ QUuid BluOS::setVolume(uint volume)
         int volume = 0;
         bool mute = false;
         if (xml.readNextStartElement()) {
-            if (xml.name() == "volume") {
+            if (xml.name() == QString("volume")) {
                 if(xml.attributes().hasAttribute("mute")) {
                     mute = xml.attributes().value("mute").toInt();
                 }
@@ -277,7 +277,7 @@ QUuid BluOS::setRepeat(RepeatMode repeatMode)
             return;
         }
         if (xml.readNextStartElement()) {
-            if (xml.name() == "playlist") {
+            if (xml.name() == QString("playlist")) {
                 if (xml.attributes().hasAttribute("repeat")) {
                     RepeatMode mode = RepeatMode(xml.attributes().value("repeat").toInt());
                     emit repeatModeReceived(mode);
@@ -323,9 +323,9 @@ QUuid BluOS::listPresets()
         }
         QList<Preset> presetList;
         if (xml.readNextStartElement()) {
-            if (xml.name() == "presets") {
+            if (xml.name() == QString("presets")) {
                 while(xml.readNextStartElement()){
-                    if(xml.name() == "preset"){
+                    if(xml.name() == QString("preset")){
                         Preset preset;
                         if (xml.attributes().hasAttribute("id")) {
                             preset.Id = xml.attributes().value("id").toInt();
@@ -417,9 +417,9 @@ QUuid BluOS::getSources()
         }
         QList<Source> sourceList;
         if (xml.readNextStartElement()) {
-            if (xml.name() == "browse") {
+            if (xml.name() == QString("browse")) {
                 while(xml.readNextStartElement()){
-                    if(xml.name() == "item"){
+                    if(xml.name() == QString("item")){
                         Source source;
                         if (xml.attributes().hasAttribute("text")) {
                             source.Text = xml.attributes().value("text").toString();
@@ -483,9 +483,9 @@ QUuid BluOS::browseSource(const QString &key)
         }
         QList<Source> sourceList;
         if (xml.readNextStartElement()) {
-            if (xml.name() == "browse") {
+            if (xml.name() == QString("browse")) {
                 while(xml.readNextStartElement()){
-                    if(xml.name() == "item"){
+                    if(xml.name() == QString("item")){
                         Source source;
                         if (xml.attributes().hasAttribute("text")) {
                             source.Text = xml.attributes().value("text").toString();
@@ -648,23 +648,23 @@ bool BluOS::parseState(const QByteArray &state)
 
     StatusResponse statusResponse;
     if (xml.readNextStartElement()) {
-        if (xml.name() == "status") {
+        if (xml.name() == QString("status")) {
             while(xml.readNextStartElement()){
-                if(xml.name() == "artist"){
+                if(xml.name() == QString("artist")){
                     statusResponse.Artist = xml.readElementText();
-                } else if(xml.name() == "album"){
+                } else if(xml.name() == QString("album")){
                     statusResponse.Album = xml.readElementText();
-                } else if(xml.name() == "name"){
+                } else if(xml.name() == QString("name")){
                     statusResponse.Name = xml.readElementText();
-                } else if(xml.name() == "service"){
+                } else if(xml.name() == QString("service")){
                     statusResponse.Service = xml.readElementText();
-                } else if(xml.name() == "serviceIcon"){
+                } else if(xml.name() == QString("serviceIcon")){
                     statusResponse.ServiceIcon = xml.readElementText();
-                } else if(xml.name() == "shuffle"){
+                } else if(xml.name() == QString("shuffle")){
                     statusResponse.Shuffle = xml.readElementText().toInt();
-                } else if(xml.name() == "repeat"){
+                } else if(xml.name() == QString("repeat")){
                     statusResponse.Shuffle = xml.readElementText().toInt();
-                } else if(xml.name() == "state"){
+                } else if(xml.name() == QString("state")){
                     QString playback = xml.readElementText();
                     if (playback == "play") {
                         statusResponse.State = PlaybackState::Playing;
@@ -680,15 +680,15 @@ bool BluOS::parseState(const QByteArray &state)
                         statusResponse.State = PlaybackState::Stopped;
                         qCWarning(dcBluOS()) << "State response, unhandled playback mode" << playback;
                     }
-                } else if(xml.name() == "volume"){
+                } else if(xml.name() == QString("volume")){
                     statusResponse.Volume = xml.readElementText().toInt();
-                } else if(xml.name() == "mute"){
+                } else if(xml.name() == QString("mute")){
                     statusResponse.Mute = xml.readElementText().toInt();
-                } else if(xml.name() == "image") {
+                } else if(xml.name() == QString("image")) {
                     statusResponse.Image = xml.readElementText();
-                } else if(xml.name() == "title1") {
+                } else if(xml.name() == QString("title1")) {
                     statusResponse.Title = xml.readElementText();
-                } else if(xml.name() == "group") {
+                } else if(xml.name() == QString("group")) {
                     statusResponse.Group = xml.readElementText();
                 } else {
                     xml.skipCurrentElement();

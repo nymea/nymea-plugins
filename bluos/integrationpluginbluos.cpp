@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,10 +31,10 @@
 
 #include "integrationpluginbluos.h"
 #include "plugininfo.h"
-#include "integrations/thing.h"
-#include "network/networkaccessmanager.h"
-#include "types/mediabrowseritem.h"
-#include "types/browseritem.h"
+
+#include <integrations/thing.h>
+#include <types/mediabrowseritem.h>
+#include <types/browseritem.h>
 
 #include <QDebug>
 #include <QStringList>
@@ -158,42 +158,42 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
                 qCWarning(dcBluOS()) << "Unhandled Playback mode";
             }
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerPlayActionTypeId) {
             QUuid requestId = bluos->play();
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerPauseActionTypeId) {
             QUuid requestId = bluos->pause();
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerStopActionTypeId) {
             QUuid requestId = bluos->stop();
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerSkipNextActionTypeId) {
             QUuid requestId = bluos->skip();
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerSkipBackActionTypeId) {
             QUuid requestId = bluos->back();
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerVolumeActionTypeId) {
             uint volume = action.param(bluosPlayerVolumeActionVolumeParamTypeId).value().toUInt();
             QUuid requestId = bluos->setVolume(volume);
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerMuteActionTypeId) {
             bool mute = action.param(bluosPlayerMuteActionMuteParamTypeId).value().toBool();
             QUuid requestId = bluos->setMute(mute);
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerShuffleActionTypeId) {
             bool shuffle = action.param(bluosPlayerShuffleActionShuffleParamTypeId).value().toBool();
             QUuid requestId = bluos->setShuffle(shuffle);
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         }  else if (action.actionTypeId() == bluosPlayerRepeatActionTypeId) {
             QString repeat = action.param(bluosPlayerRepeatActionRepeatParamTypeId).value().toString();
             QUuid requestId;
@@ -207,17 +207,17 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
                 qCWarning(dcBluOS()) << "Unhandled Repeat Mode";
             }
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerIncreaseVolumeActionTypeId) {
             uint step = action.param(bluosPlayerIncreaseVolumeActionStepParamTypeId).value().toUInt();
             QUuid requestId = bluos->setVolume(qMin<uint>(100, thing->stateValue(bluosPlayerVolumeStateTypeId).toUInt() + step));
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerDecreaseVolumeActionTypeId) {
             uint step = action.param(bluosPlayerDecreaseVolumeActionStepParamTypeId).value().toUInt();
             QUuid requestId = bluos->setVolume(qMax<uint>(0, thing->stateValue(bluosPlayerVolumeStateTypeId).toUInt() - step));
             m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [this, requestId] {m_asyncActions.remove(requestId);});
         } else {
             qCWarning(dcBluOS()) << "Execute Action, unhandled action type id" << action.actionTypeId();
             return info->finish(Thing::ThingErrorThingClassNotFound);
@@ -414,7 +414,7 @@ void IntegrationPluginBluOS::onActionExecuted(QUuid requestId, bool success)
         } else {
             info->finish(Thing::ThingErrorHardwareFailure);
         }
-        m_pluginTimer->timeout(); // get a status update
+        emit m_pluginTimer->timeout(); // get a status update
     }
 }
 
