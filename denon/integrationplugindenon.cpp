@@ -90,7 +90,7 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
                 QString id = service.name().split("@").first();
                 QString name = service.name().split("@").last();
                 QString address = service.hostAddress().toString();
-                qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
+                qCDebug(dcDenon()) << "service discovered" << name << "ID:" << id;
                 if (discoveredIds.contains(id))
                     break;
                 discoveredIds.append(id);
@@ -135,7 +135,7 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
             foreach (const UpnpDeviceDescriptor &upnpThing, reply->deviceDescriptors()) {
                 if (upnpThing.modelName().contains("HEOS", Qt::CaseSensitivity::CaseInsensitive) && upnpThing.serialNumber() != "0000001") {
                     // child things have serial number 0000001
-                    qCDebug(dcDenon) << "uPnP thing found:" << upnpThing.modelDescription() << upnpThing.friendlyName() << upnpThing.hostAddress().toString() << upnpThing.modelName() << upnpThing.manufacturer() << upnpThing.serialNumber();
+                    qCDebug(dcDenon()) << "uPnP thing found:" << upnpThing.modelDescription() << upnpThing.friendlyName() << upnpThing.hostAddress().toString() << upnpThing.modelName() << upnpThing.manufacturer() << upnpThing.serialNumber();
 
                     m_heosIpAddresses.insert(upnpThing.serialNumber(), upnpThing.hostAddress());
                     ThingDescriptor descriptor(heosThingClassId, upnpThing.modelName(), upnpThing.serialNumber());
@@ -206,7 +206,7 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-         qCDebug(dcDenon) << "Setup AVR X1000 thing" << thing->name();
+         qCDebug(dcDenon()) << "Setup AVR X1000 thing" << thing->name();
 
         if (m_avrConnections.contains(thing->id())) {
             qCDebug(dcDenon()) << "Setup after reconfiguration, cleaning up ...";
@@ -251,10 +251,10 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         return;
     } else if (thing->thingClassId() == heosThingClassId) {
 
-        qCDebug(dcDenon) << "Setup Heos connection thing" << thing->name();
+        qCDebug(dcDenon()) << "Setup Heos connection thing" << thing->name();
         QString serialnumber = thing->paramValue(heosThingSerialNumberParamTypeId).toString();
         if (serialnumber.isEmpty()) {
-            qCWarning(dcDenon) << "Serial number is empty";
+            qCWarning(dcDenon()) << "Serial number is empty";
             info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Serial number is not set"));
             return;
         }
@@ -312,7 +312,7 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         }
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
 
-        qCDebug(dcDenon) << "Setup Heos player" << thing->name();
+        qCDebug(dcDenon()) << "Setup Heos player" << thing->name();
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing) {
             qCWarning(dcDenon()) << "Parent thing not found for Heos player" << thing->name();
@@ -334,7 +334,7 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginDenon::thingRemoved(Thing *thing)
 {
-    qCDebug(dcDenon) << "Delete " << thing->name();
+    qCDebug(dcDenon()) << "Delete " << thing->name();
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         if (m_avrConnections.contains(thing->id())) {
@@ -361,7 +361,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    qCDebug(dcDenon) << "Execute action" << thing->id() << action.params();
+    qCDebug(dcDenon()) << "Execute action" << thing->id() << action.params();
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         AvrConnection *avrConnection = m_avrConnections.value(thing->id());
 
@@ -944,7 +944,7 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
         params.append(Param(heosPlayerThingSerialNumberParamTypeId, player->serialNumber()));
         params.append(Param(heosPlayerThingVersionParamTypeId, player->playerVersion()));
         descriptor.setParams(params);
-        qCDebug(dcDenon) << "Found new heos player" << player->name();
+        qCDebug(dcDenon()) << "Found new heos player" << player->name();
         heosPlayerDescriptors.append(descriptor);
     }
     if (!heosPlayerDescriptors.isEmpty())
@@ -969,7 +969,7 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
 
 void IntegrationPluginDenon::onHeosPlayerInfoRecieved(HeosPlayer *heosPlayer)
 {
-    qDebug(dcDenon()) << "Heos player info received" << heosPlayer->name() << heosPlayer->playerId() << heosPlayer->groupId();
+    qCDebug(dcDenon()) << "Heos player info received" << heosPlayer->name() << heosPlayer->playerId() << heosPlayer->groupId();
     m_playerBuffer.insert(heosPlayer->playerId(), heosPlayer);
 }
 
@@ -1110,7 +1110,7 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, 
             } else {
                 item.setThumbnail(source.image_url);
             }
-            qDebug(dcDenon()) << "Music source received:" << source.name << source.type << source.sourceId << source.image_url;
+            qCDebug(dcDenon()) << "Music source received:" << source.name << source.type << source.sourceId << source.image_url;
         }
         result->finish(Thing::ThingErrorNoError);
     }
@@ -1141,7 +1141,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
         foreach(MediaObject media, mediaItems) {
             MediaBrowserItem item;
             item.setIcon(BrowserItem::BrowserIconMusic);
-            qDebug(dcDenon()) << "Adding Item" << media.name << media.mediaId << media.containerId << media.mediaType;
+            qCDebug(dcDenon()) << "Adding Item" << media.name << media.mediaId << media.containerId << media.mediaType;
             item.setDisplayName(media.name);
             if (media.mediaType == MEDIA_TYPE_CONTAINER) {
                 item.setId("container=" + media.containerId + "&" + sourceId);
@@ -1158,7 +1158,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
         foreach(MusicSourceObject source, musicSources) {
             MediaBrowserItem item;
             item.setDisplayName(source.name);
-            qDebug(dcDenon()) << "Adding Item" << source.name << source.sourceId;
+            qCDebug(dcDenon()) << "Adding Item" << source.name << source.sourceId;
             item.setId("source=" + QString::number(source.sourceId));
             item.setIcon(BrowserItem::BrowserIconMusic);
             item.setExecutable(false);
@@ -1209,7 +1209,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
         }
         result->finish(Thing::ThingErrorNoError);
     } else {
-        qWarning(dcDenon()) << "Pending browser result doesnt recognize" << identifier << m_pendingBrowseResult.keys();
+        qCWarning(dcDenon()) << "Pending browser result doesnt recognize" << identifier << m_pendingBrowseResult.keys();
     }
 }
 
@@ -1224,7 +1224,7 @@ void IntegrationPluginDenon::onHeosBrowseErrorReceived(const QString &sourceId, 
 
     if (m_pendingBrowseResult.contains(identifier)) {
         BrowseResult *result = m_pendingBrowseResult.take(identifier);
-        qWarning(dcDenon) << "Browse error" << errorMessage << errorId;
+        qCWarning(dcDenon()) << "Browse error" << errorMessage << errorId;
         result->finish(Thing::ThingErrorHardwareFailure, errorMessage);
     }
 }
@@ -1323,7 +1323,7 @@ void IntegrationPluginDenon::browseThing(BrowseResult *result)
     }
 
     if (result->itemId().isEmpty()) {
-        qDebug(dcDenon()) << "Browse source";
+        qCDebug(dcDenon()) << "Browse source";
         MediaBrowserItem item;
         item.setId("type=group");
         item.setIcon(BrowserItem::BrowserIcon::BrowserIconPackage);
@@ -1341,7 +1341,7 @@ void IntegrationPluginDenon::browseThing(BrowseResult *result)
         if (itemQuery.hasQueryItem("group")) {
             //TBD list players in groups
         } else {
-            qDebug(dcDenon()) << "Browse source" << result->itemId();
+            qCDebug(dcDenon()) << "Browse source" << result->itemId();
             int pid = result->thing()->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
             HeosPlayer *browsingPlayer = m_playerBuffer.value(pid);
             foreach (GroupObject group, m_groupBuffer) {
@@ -1362,7 +1362,7 @@ void IntegrationPluginDenon::browseThing(BrowseResult *result)
             }
 
             foreach (HeosPlayer *player, m_playerBuffer.values()) {
-                qDebug(dcDenon) << "Adding group item" << player->name();
+                qCDebug(dcDenon()) << "Adding group item" << player->name();
                 if (browsingPlayer->playerId() == player->playerId()) { //player is the current browsing thing
                     continue;
                 }
@@ -1384,14 +1384,14 @@ void IntegrationPluginDenon::browseThing(BrowseResult *result)
         }
 
     } else if (result->itemId().startsWith("source=")){
-        qDebug(dcDenon()) << "Browse source" << result->itemId();
+        qCDebug(dcDenon()) << "Browse source" << result->itemId();
         QString id = result->itemId().remove("source=");
         heos->browseSource(id);
         m_pendingBrowseResult.insert(id, result);
         connect(result, &QObject::destroyed, this, [this, id](){ m_pendingBrowseResult.remove(id);});
 
     } else if (result->itemId().startsWith("container=")){
-        qDebug(dcDenon()) << "Browse container" << result->itemId();
+        qCDebug(dcDenon()) << "Browse container" << result->itemId();
         QStringList values = result->itemId().split("&");
         if (values.length() == 2) {
             QString id = values[0].remove("container=");
@@ -1413,7 +1413,7 @@ void IntegrationPluginDenon::browserItem(BrowserItemResult *result)
         result->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
-    qDebug(dcDenon()) << "Browse item called" << result->itemId();
+    qCDebug(dcDenon()) << "Browse item called" << result->itemId();
     
     result->item().setDisplayName("Test name");
     if (m_mediaObjects.contains(result->itemId())) {
@@ -1435,7 +1435,7 @@ void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
     }
     BrowserAction action = info->browserAction();
     int playerId = info->thing()->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
-    qDebug(dcDenon()) << "Execute browse item called. Player Id:" << playerId << "Item ID" << action.itemId();
+    qCDebug(dcDenon()) << "Execute browse item called. Player Id:" << playerId << "Item ID" << action.itemId();
 
     if (m_mediaObjects.contains(action.itemId())) {
         MediaObject media = m_mediaObjects.value(action.itemId());
@@ -1445,7 +1445,7 @@ void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
             heos->playStation(playerId, media.sourceId, media.containerId, media.mediaId, media.name);
         }
     } else {
-        qWarning(dcDenon()) << "Media item not found" << action.itemId();
+        qCWarning(dcDenon()) << "Media item not found" << action.itemId();
     }
 
     info->finish(Thing::ThingErrorNoError);
@@ -1470,7 +1470,7 @@ void IntegrationPluginDenon::executeBrowserItemAction(BrowserItemActionInfo *inf
         } else if(query.hasQueryItem("group")) {
 
             GroupObject group = m_groupBuffer.value(query.queryItemValue("group").toInt());
-            qDebug(dcDenon()) << "Execute browse item action called, Group:" << query.queryItemValue("group").toInt() << group.name;
+            qCDebug(dcDenon()) << "Execute browse item action called, Group:" << query.queryItemValue("group").toInt() << group.name;
             QList<int> playerIds;
             foreach(PlayerObject player, group.players) {
                 playerIds.append(player.playerId);
