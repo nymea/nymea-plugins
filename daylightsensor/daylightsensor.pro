@@ -1,11 +1,9 @@
 include(../plugins.pri)
 
-QT += network
-
-TARGET = $$qtLibraryTarget(nymea_integrationplugindaylightsensor)
+QT *= network
 
 SOURCES += \
-    integrationplugindaylightsensor.cpp \
+    integrationplugindaylightsensor.cpp
 
 HEADERS += \
-    integrationplugindaylightsensor.h \
+    integrationplugindaylightsensor.h
