@@ -1,10 +1,6 @@
 include(../plugins.pri)
 
-QT += \
-    network    \
-    websockets \
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginbose)
+QT *= network websockets
 
 SOURCES += \
     integrationpluginbose.cpp \

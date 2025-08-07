@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,11 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginbose.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
-#include "types/mediabrowseritem.h"
+
+#include <integrations/thing.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
+#include <types/mediabrowseritem.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -545,7 +546,7 @@ void IntegrationPluginBose::onSourcesObjectReceived(QUuid requestId, SourcesObje
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.value(requestId);
         foreach (SourceItemObject sourceItem, sources.sourceItems) {
-            qDebug(dcBose()) << "Source:" << sourceItem.source;
+            qCDebug(dcBose()) << "Source:" << sourceItem.source;
             if (sourceItem.source == "BLUETOOTH") {
                 MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
                 item.setDescription(sourceItem.sourceAccount);
@@ -591,15 +592,15 @@ void IntegrationPluginBose::onBassObjectReceived(QUuid requestId, BassObject bas
 void IntegrationPluginBose::onBassCapabilitiesObjectReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities)
 {
     Q_UNUSED(requestId);
-    qDebug(dcBose()) << "Bass capabilities (max, min, default):" << bassCapabilities.bassMax << bassCapabilities.bassMin << bassCapabilities.bassDefault;
+    qCDebug(dcBose()) << "Bass capabilities (max, min, default):" << bassCapabilities.bassMax << bassCapabilities.bassMin << bassCapabilities.bassDefault;
 }
 
 void IntegrationPluginBose::onGroupObjectReceived(QUuid requestId, GroupObject group)
 {
     Q_UNUSED(requestId);
-    qDebug(dcBose())  << "Group" << group.name << group.status;
+    qCDebug(dcBose())  << "Group" << group.name << group.status;
     foreach (RolesObject role, group.roles) {
-        qDebug(dcBose()) << "-> member:" << role.groupRole.deviceID;
+        qCDebug(dcBose()) << "-> member:" << role.groupRole.deviceID;
     }
 }
 
@@ -607,7 +608,7 @@ void IntegrationPluginBose::onZoneObjectReceived(QUuid requestId, ZoneObject zon
 {
     Q_UNUSED(requestId);
     foreach (MemberObject member, zone.members) {
-        qDebug(dcBose()) << "-> member:" << member.deviceID;
+        qCDebug(dcBose()) << "-> member:" << member.deviceID;
     }
 }
 

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -39,9 +39,7 @@
 #include "extern-plugininfo.h"
 #include "soundtouchtypes.h"
 
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
-
+#include <network/networkaccessmanager.h>
 
 class SoundTouch : public QObject
 {
@@ -67,7 +65,7 @@ public:
     QUuid addZoneSlave(ZoneObject zone);             //Add one or more slave product(s) to a multiroom zone.
     QUuid removeZoneSlave(ZoneObject zone);          //Remove one or more slave product(s) from a multiroom zone.
     QUuid setBass(int volume);                       //Set the bass level of a product, if supported.*/
-    QUuid setName(QString name);                     //Set the products user-facing name.
+    QUuid setName(const QString &name);                     //Set the products user-facing name.
     QUuid setSpeaker(PlayInfoObject playInfo);       //initiate playback of a specified network-accessible audio file on a Bose SoundTouch product.
 
 private:
@@ -82,23 +80,23 @@ private:
     QString m_ipAddress;
     int m_port = 8090;
     QWebSocket *m_websocket = nullptr;
-    void emitRequestStatus(QUuid requestId, QNetworkReply *reply); //returns the status, -1 in case of error
-    void parseData(QUuid requestId, const QByteArray &data);
+    void emitRequestStatus(const QUuid &requestId, QNetworkReply *reply); //returns the status, -1 in case of error
+    void parseData(const QUuid &requestId, const QByteArray &data);
 
 signals:
     void connectionChanged(bool connected);
 
-    void infoReceived(QUuid requestId, InfoObject info);
-    void nowPlayingReceived(QUuid requestId, NowPlayingObject nowPlaying);
-    void volumeReceived(QUuid requestId, VolumeObject volume);
-    void sourcesReceived(QUuid requestId, SourcesObject sources);
-    void zoneReceived(QUuid requestId, ZoneObject);
-    void bassCapabilitiesReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
-    void bassReceived(QUuid requestId, BassObject bass);
-    void presetsReceived(QUuid requestId, QList<PresetObject> presets);
-    void groupReceived(QUuid requestId, GroupObject group);
+    void infoReceived(const QUuid &requestId, InfoObject info);
+    void nowPlayingReceived(const QUuid &requestId, NowPlayingObject nowPlaying);
+    void volumeReceived(const QUuid &requestId, VolumeObject volume);
+    void sourcesReceived(const QUuid &requestId, SourcesObject sources);
+    void zoneReceived(const QUuid &requestId, ZoneObject);
+    void bassCapabilitiesReceived(const QUuid &requestId, BassCapabilitiesObject bassCapabilities);
+    void bassReceived(const QUuid &requestId, BassObject bass);
+    void presetsReceived(const QUuid &requestId, QList<PresetObject> presets);
+    void groupReceived(const QUuid &requestId, GroupObject group);
 
-    void requestExecuted(QUuid requestId, bool success);
+    void requestExecuted(const QUuid &requestId, bool success);
     void errorReceived(ErrorObject error);
 
 private slots:
