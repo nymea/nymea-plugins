@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #ifndef INTEGRATIONPLUGINCOMMANDLAUNCHER_H
 #define INTEGRATIONPLUGINCOMMANDLAUNCHER_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include <QProcess>
 #include <QFileInfo>
@@ -52,8 +52,8 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
-    QHash<QProcess*,Thing*> m_scripts;
-    QHash<QProcess*,Thing*> m_applications;
+    QHash<QProcess *,Thing *> m_scripts;
+    QHash<QProcess *,Thing *> m_applications;
 };
 
 #endif // INTEGRATIONPLUGINCOMMANDLAUNCHER_H
