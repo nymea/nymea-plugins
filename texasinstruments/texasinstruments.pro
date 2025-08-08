@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-QT += bluetooth
-
-TARGET = $$qtLibraryTarget(nymea_integrationplugintexasinstruments)
+QT *= bluetooth
 
 HEADERS += \
     integrationplugintexasinstruments.h \

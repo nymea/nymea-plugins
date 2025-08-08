@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,7 +33,7 @@
 
 #include <QObject>
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 class SensorTag;
 
@@ -56,9 +56,9 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    QHash<Thing*, SensorTag*> m_sensorTags;
-
+    QHash<Thing *, SensorTag *> m_sensorTags;
     PluginTimer *m_reconnectTimer = nullptr;
+
 };
 
 #endif // INTEGRATIONPLUGINTEXASINSTRUMENTS_H

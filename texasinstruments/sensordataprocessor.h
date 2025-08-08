@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -34,9 +34,9 @@
 #include <QFile>
 #include <QObject>
 
-#include "integrations/thing.h"
-#include "extern-plugininfo.h"
+#include <integrations/thing.h>
 
+#include "extern-plugininfo.h"
 #include "sensorfilter.h"
 
 class SensorDataProcessor : public QObject
@@ -90,11 +90,6 @@ private:
     void setMagnetDetected(bool detected);
 
     void logSensorValue(double originalValue, double filteredValue);
-
-
-signals:
-
-private slots:
 
 };
 

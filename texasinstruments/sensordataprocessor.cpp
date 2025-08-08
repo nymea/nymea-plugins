@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,6 +36,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <QDateTime>
+#include <QTextStream>
 
 SensorDataProcessor::SensorDataProcessor(Thing *thing, QObject *parent) :
     QObject(parent),
@@ -107,7 +108,7 @@ bool SensorDataProcessor::testBitUint8(quint8 value, int bitPosition)
 
 void SensorDataProcessor::processTemperatureData(const QByteArray &data)
 {
-    Q_ASSERT(data.count() == 4);
+    Q_ASSERT(data.length() == 4);
 
     quint16 rawObjectTemperature = 0;
     quint16 rawAmbientTemperature = 0;
@@ -141,7 +142,7 @@ void SensorDataProcessor::processTemperatureData(const QByteArray &data)
 
 void SensorDataProcessor::processKeyData(const QByteArray &data)
 {
-    Q_ASSERT(data.count() == 1);
+    Q_ASSERT(data.length() == 1);
     quint8 flags = static_cast<quint8>(data.at(0));
     setLeftButtonPressed(testBitUint8(flags, 0));
     setRightButtonPressed(testBitUint8(flags, 1));
@@ -150,7 +151,7 @@ void SensorDataProcessor::processKeyData(const QByteArray &data)
 
 void SensorDataProcessor::processHumidityData(const QByteArray &data)
 {
-    Q_ASSERT(data.count() == 4);
+    Q_ASSERT(data.length() == 4);
     quint16 rawHumidityTemperature = 0;
     quint16 rawHumidity = 0;
 
@@ -171,14 +172,14 @@ void SensorDataProcessor::processHumidityData(const QByteArray &data)
 
 void SensorDataProcessor::processPressureData(const QByteArray &data)
 {
-    Q_ASSERT(data.count() == 6);
+    Q_ASSERT(data.length() == 6);
 
     QByteArray temperatureData(data.left(3));
-    quint32 rawTemperature = static_cast<quint8>(temperatureData.at(2));
-    rawTemperature <<= 8;
-    rawTemperature |= static_cast<quint8>(temperatureData.at(1));
-    rawTemperature <<= 8;
-    rawTemperature |= static_cast<quint8>(temperatureData.at(0));
+    // quint32 rawTemperature = static_cast<quint8>(temperatureData.at(2));
+    // rawTemperature <<= 8;
+    // rawTemperature |= static_cast<quint8>(temperatureData.at(1));
+    // rawTemperature <<= 8;
+    // rawTemperature |= static_cast<quint8>(temperatureData.at(0));
 
     QByteArray pressureData(data.right(3));
     quint32 rawPressure = static_cast<quint8>(pressureData.at(2));
@@ -199,7 +200,7 @@ void SensorDataProcessor::processPressureData(const QByteArray &data)
 
 void SensorDataProcessor::processOpticalData(const QByteArray &data)
 {
-    Q_ASSERT(data.count() == 2);
+    Q_ASSERT(data.length() == 2);
 
     quint16 rawOptical = 0;
     QByteArray payload(data);
@@ -329,9 +330,8 @@ void SensorDataProcessor::logSensorValue(double originalValue, double filteredVa
     if (!m_filterDebug || !m_logFile)
         return;
 
-    QString logLine = QString("%1 %2 %3\n").arg(QDateTime::currentDateTime().toTime_t()).arg(originalValue).arg(filteredValue);
+    QString logLine = QString("%1 %2 %3\n").arg(QDateTime::currentDateTime().toSecsSinceEpoch()).arg(originalValue).arg(filteredValue);
 
     QTextStream logStream(m_logFile);
-    logStream.setCodec("UTF-8");
     logStream << logLine;
 }
