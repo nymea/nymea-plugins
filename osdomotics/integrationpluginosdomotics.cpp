@@ -52,9 +52,10 @@
 */
 
 #include "integrationpluginosdomotics.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/networkaccessmanager.h"
+
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 IntegrationPluginOsdomotics::IntegrationPluginOsdomotics()
 {

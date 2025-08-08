@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,14 +31,13 @@
 #ifndef INTEGRATIONPLUGINOSDOMOTICS_H
 #define INTEGRATIONPLUGINOSDOMOTICS_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+#include <coap/coap.h>
+#include <plugintimer.h>
 
 #include <QHash>
 #include <QDebug>
 #include <QNetworkReply>
-
-#include "coap/coap.h"
-#include "plugintimer.h"
 
 class IntegrationPluginOsdomotics : public IntegrationPlugin
 {
