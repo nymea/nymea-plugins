@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,7 +30,8 @@
 
 #include "integrationplugindynatrace.h"
 #include "plugininfo.h"
-#include "network/networkaccessmanager.h"
+
+#include <network/networkaccessmanager.h>
 
 #include <QDebug>
 #include <QUrlQuery>
@@ -369,5 +370,6 @@ void IntegrationPluginDynatrace::onConnectionChanged(bool connected)
     Thing *thing = myThings().findById(m_ufoConnections.key(ufo));
     if (!thing)
         return;
+
     thing->setStateValue(ufoConnectedStateTypeId, connected);
 }
