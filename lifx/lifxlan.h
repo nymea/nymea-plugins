@@ -36,8 +36,6 @@
 #include <QHostAddress>
 #include <QUdpSocket>
 
-#include "network/networkaccessmanager.h"
-
 #include <QColor>
 
 class LifxLan : public QObject
@@ -111,19 +109,20 @@ public:
     };
 
     struct LifxProduct {
-      int pid;
-      QString name;
-      bool color;
-      bool infrared;
-      bool matrix;
-      bool multizone;
-      uint minColorTemperature;
-      uint maxColorTemperature;
-      bool chain;
+        int pid;
+        QString name;
+        bool color;
+        bool infrared;
+        bool matrix;
+        bool multizone;
+        uint minColorTemperature;
+        uint maxColorTemperature;
+        bool chain;
     };
 
     explicit LifxLan(const QHostAddress &address, quint16 port = 56700, QObject *parent = nullptr);
     ~LifxLan();
+
     bool enable();
     void setHostAddress(const QHostAddress &address);
     void setPort(quint16 port);
@@ -150,5 +149,6 @@ private slots:
 signals:
     void connectionChanged(bool connected);
     void requestExecuted(int requestId, bool success);
+
 };
 #endif // LIFXLAN_H

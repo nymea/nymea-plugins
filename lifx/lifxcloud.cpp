@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -83,7 +83,7 @@ void LifxCloud::listLights()
         QJsonDocument data; QJsonParseError error;
         data = QJsonDocument::fromJson(rawData, &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcLifx()) << "List lights: Received invalide JSON object" << error.errorString();
+            qCDebug(dcLifx()) << "List lights: Received invalide JSON object" << error.errorString();
             return;
         }
 
@@ -151,7 +151,7 @@ void LifxCloud::listScenes()
     QNetworkRequest request;
     request.setUrl(QUrl("https://api.lifx.com/v1/scenes"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    request.setRawHeader("Authorization","Bearer "+m_authorizationToken);
+    request.setRawHeader("Authorization","Bearer " + m_authorizationToken);
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
@@ -164,7 +164,7 @@ void LifxCloud::listScenes()
         QJsonDocument data; QJsonParseError error;
         data = QJsonDocument::fromJson(rawData, &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcLifx()) << "List scenes: Received invalide JSON object" << error.errorString();
+            qCDebug(dcLifx()) << "List scenes: Received invalide JSON object" << error.errorString();
             return;
         }
         if (!data.isArray())
@@ -213,7 +213,8 @@ int LifxCloud::activateScene(const QString &sceneId)
         qCWarning(dcLifx()) << "Authorization token is not set";
         return -1;
     }
-    int requestId = qrand();
+
+    int requestId = std::rand();
 
     QNetworkRequest request;
     request.setUrl(QUrl(QString("https://api.lifx.com/v1/scenes/scene_id:%1/activate").arg(sceneId)));
@@ -235,7 +236,7 @@ int LifxCloud::setEffect(const QString &lightId, LifxCloud::Effect effect, QColo
         qCWarning(dcLifx()) << "Authorization token is not set";
         return -1;
     }
-    int requestId = qrand();
+    int requestId = std::rand();
     QNetworkRequest request;
     QUrlQuery params;
     switch (effect) {
@@ -285,7 +286,7 @@ int LifxCloud::setState(const QString &selector, State state, QVariant stateValu
         qCWarning(dcLifx()) << "Authorization token is not set";
         return -1;
     }
-    int requestId = qrand();
+    int requestId = std::rand();
     QNetworkRequest request;
     request.setUrl(QUrl(QString("https://api.lifx.com/v1/lights/%1/state").arg(selector)));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");

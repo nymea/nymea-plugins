@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -34,7 +34,8 @@
 #include <QObject>
 #include <QColor>
 #include <QTimer>
-#include "network/networkaccessmanager.h"
+
+#include <network/networkaccessmanager.h>
 
 class LifxCloud : public QObject
 {
@@ -73,13 +74,13 @@ public:
     };
 
     struct Capabilities {
-         bool color;
-         bool colorTemperature;
-         bool ir;
-         bool chain;
-         bool multizone;
-         int minKelvin;
-         int maxKelvin;
+        bool color;
+        bool colorTemperature;
+        bool ir;
+        bool chain;
+        bool multizone;
+        int minKelvin;
+        int maxKelvin;
     };
 
     struct Product {
@@ -105,6 +106,7 @@ public:
     };
 
     explicit LifxCloud(NetworkAccessManager *networkManager, QObject *parent = nullptr);
+
     void setAuthorizationToken(const QByteArray &token);
     bool cloudAuthenticated();
     bool cloudConnected();
@@ -119,7 +121,7 @@ public:
 
     int activateScene(const QString &sceneId);
 
-    int setEffect(const QString &lightId, Effect effect, QColor color = "#FFFFFF");
+    int setEffect(const QString &lightId, Effect effect, QColor color = QColor("#FFFFFF"));
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;
@@ -129,11 +131,12 @@ private:
     bool checkHttpStatusCode(QNetworkReply *reply);
     bool m_authenticated = false;
     bool m_connected = false;
+
 signals:
     void connectionChanged(bool m_connected);
     void authenticationChanged(bool m_authenticated);
-    void lightsListReceived(const QList<Light> &lights);
-    void scenesListReceived(const QList<Scene> &scenes);
+    void lightsListReceived(const QList<LifxCloud::Light> &lights);
+    void scenesListReceived(const QList<LifxCloud::Scene> &scenes);
     void requestExecuted(int requestId, bool susccess);
 };
 

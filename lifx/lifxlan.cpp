@@ -33,13 +33,14 @@
 #include "extern-plugininfo.h"
 
 #include <QColor>
+#include <QVariant>
 
 LifxLan::LifxLan(const QHostAddress &address, quint16 port, QObject *parent) :
     QObject(parent),
     m_host(address),
     m_port(port)
 {
-    m_clientId = qrand();
+    m_clientId = std::rand();
 
     m_socket = new QUdpSocket(this);
 
@@ -89,7 +90,7 @@ int LifxLan::setColorTemperature(uint mirad, uint msFadeTime)
 {
     Q_UNUSED(mirad)
     Q_UNUSED(msFadeTime)
-    int requestId = qrand();
+    int requestId = std::rand();
     Message message;
     sendMessage(message);
     return requestId;
@@ -99,7 +100,7 @@ int LifxLan::setColor(QColor color, uint msFadeTime)
 {
     Q_UNUSED(color)
     Q_UNUSED(msFadeTime)
-    int requestId = qrand();
+    int requestId = std::rand();
     Message message;
     //TODO create LAN message
     sendMessage(message);
@@ -110,7 +111,7 @@ int LifxLan::setBrightness(uint percentage, uint msFadeTime)
 {
     Q_UNUSED(percentage)
     Q_UNUSED(msFadeTime)
-    int requestId = qrand();
+    int requestId = std::rand();
     Message message;
     sendMessage(message);
         //TODO create LAN message
@@ -121,7 +122,7 @@ int LifxLan::setPower(bool power, uint msFadeTime)
 {
     Q_UNUSED(power)
     Q_UNUSED(msFadeTime)
-    int requestId = qrand();
+    int requestId = std::rand();
     Message message;
     sendMessage(message);
         //TODO create LAN message

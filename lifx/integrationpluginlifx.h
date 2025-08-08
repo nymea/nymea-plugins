@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,16 +31,17 @@
 #ifndef INTEGRATIONPLUGINLIFX_H
 #define INTEGRATIONPLUGINLIFX_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "lifxlan.h"
-#include "lifxcloud.h"
+#include <integrations/integrationplugin.h>
 
-#include "network/networkaccessmanager.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
+#include <plugintimer.h>
+#include <network/networkaccessmanager.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
 
 #include <QTimer>
+
+#include "lifxlan.h"
+#include "lifxcloud.h"
 
 class IntegrationPluginLifx : public IntegrationPlugin
 {
