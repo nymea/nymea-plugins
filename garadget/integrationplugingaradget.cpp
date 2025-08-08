@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,13 +29,14 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugingaradget.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
 
-#include <QJsonDocument>
-
-#include "network/mqtt/mqttprovider.h"
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
+#include <network/mqtt/mqttprovider.h>
 #include <mqttclient.h>
+
+#include <QJsonDocument>
 
 
 void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
@@ -63,7 +64,6 @@ void IntegrationPluginGaradget::setupThing(ThingSetupInfo *info)
     }
 }
 
-
 void IntegrationPluginGaradget::postSetupThing(Thing *thing)
 {
 
@@ -71,6 +71,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
         int updatetime = 30;
         int lwtupdatetime = 300 / updatetime;
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(updatetime);
+
         connect(m_pluginTimer, &PluginTimer::timeout, this, [=](){
             m_statuscounter[thing] += 1;
             foreach (Thing *thing, myThings()) {
@@ -89,6 +90,7 @@ void IntegrationPluginGaradget::postSetupThing(Thing *thing)
                 m_statuscounter[thing] = 1;
             }
         });
+
         connect(thing, &Thing::settingChanged, this, [=](const ParamTypeId &settingTypeId){
             foreach (Thing *thing, myThings()) {
                 QJsonObject garadgetobj;
