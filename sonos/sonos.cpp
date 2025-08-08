@@ -52,12 +52,12 @@ Sonos::Sonos(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,
 QUrl Sonos::getLoginUrl(const QUrl &redirectUrl)
 {
     if (m_clientKey.isEmpty()) {
-        qWarning(dcSonos()) << "Client key not defined!";
+        qCWarning(dcSonos()) << "Client key not defined!";
         return QUrl("");
     }
 
     if (redirectUrl.isEmpty()){
-        qWarning(dcSonos()) << "No redirect uri defined!";
+        qCWarning(dcSonos()) << "No redirect uri defined!";
     }
     m_redirectUri = QUrl::toPercentEncoding(redirectUrl.toString());
 
@@ -91,7 +91,7 @@ void Sonos::getHouseholds()
     request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households"));
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcSonos()) << "Sending request" << request.url() << request.rawHeaderList() << request.rawHeader("Authorization");
+    qCDebug(dcSonos()) << "Sending request" << request.url() << request.rawHeaderList() << request.rawHeader("Authorization");
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -113,13 +113,13 @@ void Sonos::getHouseholds()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcSonos()) << "Household ID: Recieved invalide JSON object";
+            qCDebug(dcSonos()) << "Household ID: Recieved invalide JSON object";
             return;
         }
         QList<QString> households;
         foreach (const QVariant &variant, data.toVariant().toMap().value("households").toList()) {
             QVariantMap obj = variant.toMap();
-            //qDebug(dcSonos()) << "Household ID received:" << obj["id"].toString();
+            //qCDebug(dcSonos()) << "Household ID received:" << obj["id"].toString();
             households.append(obj["id"].toString());
         }
         emit householdIdsReceived(households);
@@ -140,7 +140,7 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
     object.insert("favoriteId", favouriteId);
     object.insert("playOnCompletion", true);
     QJsonDocument doc(object);
-    qDebug(dcSonos()) << "Sending request" << doc.toJson();
+    qCDebug(dcSonos()) << "Sending request" << doc.toJson();
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, this] {
@@ -205,7 +205,7 @@ QUuid Sonos::getFavorites(const QString &householdId)
             return;
 
         QVariantList array = data.toVariant().toMap().value("items").toList();
-        //qDebug(dcSonos()) << "Favorites received:" << data.toJson();
+        //qCDebug(dcSonos()) << "Favorites received:" << data.toJson();
 
         QList<FavoriteObject> favorites;
         foreach (const QVariant &variant, array) {
@@ -249,7 +249,7 @@ void Sonos::getGroups(const QString &householdId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        //qCDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError)
@@ -262,7 +262,7 @@ void Sonos::getGroups(const QString &householdId)
         QList<GroupObject> groupObjects;
         foreach (const QVariant &value, array) {
             QVariantMap obj = value.toMap();
-            //qDebug(dcSonos()) << "Group ID received:" << obj["id"].toString();
+            //qCDebug(dcSonos()) << "Group ID received:" << obj["id"].toString();
             GroupObject group;
             group.groupId = obj["id"].toString();
             group.displayName = obj["name"].toString();
@@ -304,7 +304,7 @@ void Sonos::getGroupVolume(const QString &groupId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        //qCDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
@@ -335,7 +335,7 @@ QUuid Sonos::setGroupVolume(const QString &groupId, int volume)
     QJsonObject object;
     object.insert("volume", volume);
     QJsonDocument doc(object);
-    qDebug(dcSonos()) << "Set volume:" << groupId << doc.toJson(QJsonDocument::Compact);
+    qCDebug(dcSonos()) << "Set volume:" << groupId << doc.toJson(QJsonDocument::Compact);
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, groupId, this] {
@@ -375,7 +375,7 @@ QUuid Sonos::setGroupMute(const QString &groupId, bool mute)
     object.insert("muted", mute);
     QJsonDocument doc(object);
 
-    qDebug(dcSonos()) << "Set mute:" << groupId << doc.toJson(QJsonDocument::Compact);
+    qCDebug(dcSonos()) << "Set mute:" << groupId << doc.toJson(QJsonDocument::Compact);
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, groupId, this] {
@@ -415,7 +415,7 @@ QUuid Sonos::setGroupRelativeVolume(const QString &groupId, int volumeDelta)
     object.insert("volumeDelta", QJsonValue::fromVariant(volumeDelta));
     QJsonDocument doc(object);
 
-    qDebug(dcSonos()) << "Relative volume:" << groupId << volumeDelta;
+    qCDebug(dcSonos()) << "Relative volume:" << groupId << volumeDelta;
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, groupId, this] {
@@ -476,7 +476,7 @@ void Sonos::getGroupPlaybackStatus(const QString &groupId)
         QJsonObject object = data.object();
         playBack.itemId = object["itemId"].toString();
         playBack.positionMillis = object["positionMillis"].toInt();
-        playBack.previousItemId = object["previousItemId"].toInt();
+        playBack.previousItemId = QString::number(object["previousItemId"].toInt());
         playBack.previousPositionMillis = object["previousPositionMillis"].toInt();
         QString playBackState = object["playbackState"].toString();
         if (playBackState.contains("BUFFERING")) {
@@ -505,7 +505,7 @@ void Sonos::getGroupPlaybackStatus(const QString &groupId)
 
 QUuid Sonos::groupLoadLineIn(const QString &groupId)
 {
-    qDebug(dcSonos()) << "Load line in:" << groupId;
+    qCDebug(dcSonos()) << "Load line in:" << groupId;
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
@@ -547,7 +547,7 @@ QUuid Sonos::groupPlay(const QString &groupId)
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/play"));
     QUuid actionId = QUuid::createUuid();
 
-    qDebug(dcSonos()) << "Play:" << groupId;
+    qCDebug(dcSonos()) << "Play:" << groupId;
 
     QNetworkReply *reply = m_networkManager->post(request, "");
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, groupId, this] {
@@ -583,7 +583,7 @@ QUuid Sonos::groupPause(const QString &groupId)
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/pause"));
     QUuid actionId = QUuid::createUuid();
 
-    qDebug(dcSonos()) << "Pause:" << groupId;
+    qCDebug(dcSonos()) << "Pause:" << groupId;
 
     QNetworkReply *reply = m_networkManager->post(request, "");
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, groupId, this] {
@@ -780,15 +780,15 @@ QUuid Sonos::groupSetRepeat(const QString &groupId, RepeatMode repeatMode)
     QJsonObject object;
     QJsonObject playModesObject;
     if (repeatMode == RepeatModeAll) {
-        qDebug(dcSonos()) << "Setting repeat mode all";
+        qCDebug(dcSonos()) << "Setting repeat mode all";
         playModesObject["repeat"] = true;
         playModesObject["repeatOne"] = false;
     } else if (repeatMode == RepeatModeOne) {
-        qDebug(dcSonos()) << "Setting repeat mode one";
+        qCDebug(dcSonos()) << "Setting repeat mode one";
         playModesObject["repeat"] = false;
         playModesObject["repeatOne"] = true;
     } else if (repeatMode == RepeatModeNone) {
-        qDebug(dcSonos()) << "Setting repeat mode none";
+        qCDebug(dcSonos()) << "Setting repeat mode none";
         playModesObject["repeat"] = false;
         playModesObject["repeatOne"] = false;
     }
@@ -1024,21 +1024,21 @@ void Sonos::getGroupMetadataStatus(const QString &groupId)
                     ArtistObject artist;
                     QJsonObject artistObject = trackObject["artist"].toObject();
                     artist.name = artistObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains artist" << artist.name;
+                    //qCDebug(dcSonos()) << "Track object contains artist" << artist.name;
                     track.artist = artist;
                 }
                 if (trackObject.contains("album")) {
                     AlbumObject album;
                     QJsonObject albumObject = trackObject["album"].toObject();
                     album.name = albumObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains album" << album.name;
+                    //qCDebug(dcSonos()) << "Track object contains album" << album.name;
                     track.album = album;
                 }
                 if (trackObject.contains("service")) {
                     ServiceObject service;
                     QJsonObject serviceObject = trackObject["service"].toObject();
                     service.name = serviceObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains service" << service.name;
+                    //qCDebug(dcSonos()) << "Track object contains service" << service.name;
                     track.service = service;
                 }
                 if (trackObject.contains("id")) {
@@ -1067,21 +1067,21 @@ void Sonos::getGroupMetadataStatus(const QString &groupId)
                     ArtistObject artist;
                     QJsonObject artistObject = trackObject.value("artist").toObject();
                     artist.name = artistObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains artist" << artist.name;
+                    //qCDebug(dcSonos()) << "Track object contains artist" << artist.name;
                     track.artist = artist;
                 }
                 if (trackObject.contains("album")) {
                     AlbumObject album;
                     QJsonObject albumObject = trackObject.value("album").toObject();
                     album.name = albumObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains album" << album.name;
+                    //qCDebug(dcSonos()) << "Track object contains album" << album.name;
                     track.album = album;
                 }
                 if (trackObject.contains("service")) {
                     ServiceObject service;
                     QJsonObject serviceObject = trackObject.value("service").toObject();
                     service.name = serviceObject["name"].toString();
-                    //qDebug(dcSonos()) << "Track object contains service" << service.name;
+                    //qCDebug(dcSonos()) << "Track object contains service" << service.name;
                     track.service = service;
                 }
                 if (trackObject.contains("id")) {
@@ -1127,7 +1127,7 @@ void Sonos::getPlayerVolume(const QByteArray &playerId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        //qCDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
@@ -1153,7 +1153,7 @@ QUuid Sonos::setPlayerVolume(const QByteArray &playerId, int volume)
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/playerVolume"));
     QUuid actionId = QUuid::createUuid();
 
-    qDebug(dcSonos()) << "Setting volume:" << playerId << volume;
+    qCDebug(dcSonos()) << "Setting volume:" << playerId << volume;
 
     QJsonObject object;
     object.insert("volume", QJsonValue::fromVariant(volume));
@@ -1292,7 +1292,7 @@ void Sonos::getPlaylist(const QString &householdId, const QString &playlistId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        //qCDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
@@ -1345,7 +1345,7 @@ void Sonos::getPlaylists(const QString &householdId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        //qCDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (!data.isObject()) {
@@ -1504,7 +1504,7 @@ void Sonos::onRefreshTimeout()
 void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 {
     if (refreshToken.isEmpty()) {
-        qWarning(dcSonos()) << "No refresh token given!";
+        qCWarning(dcSonos()) << "No refresh token given!";
         emit authenticationStatusChanged(false);
         return;
     }
@@ -1530,7 +1530,7 @@ void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if(jsonDoc.toVariant().toMap().contains("error_description")) {
-                qWarning(dcSonos()) << "Access token error:" << jsonDoc.toVariant().toMap().value("error_description").toString();
+                qCWarning(dcSonos()) << "Access token error:" << jsonDoc.toVariant().toMap().value("error_description").toString();
             }
             emit authenticationStatusChanged(false);
             return;
@@ -1545,7 +1545,7 @@ void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
             int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
             qCDebug(dcSonos()) << "Access token expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
-                qWarning(dcSonos()) << "Access token refresh timer not initialized";
+                qCWarning(dcSonos()) << "Access token refresh timer not initialized";
                 return;
             }
             m_tokenRefreshTimer->start((expireTime - 20) * 1000);
@@ -1558,11 +1558,11 @@ void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
 {
     // Obtaining access token
     if(authorizationCode.isEmpty())
-        qWarning(dcSonos) << "No auhtorization code given!";
+        qCWarning(dcSonos()) << "No auhtorization code given!";
     if(m_clientKey.isEmpty())
-        qWarning(dcSonos) << "Client key not set!";
+        qCWarning(dcSonos()) << "Client key not set!";
     if(m_clientSecret.isEmpty())
-        qWarning(dcSonos) << "Client secret not set!";
+        qCWarning(dcSonos()) << "Client secret not set!";
 
     QUrl url = QUrl(m_baseAuthorizationUrl);
     QUrlQuery query;
@@ -1588,21 +1588,21 @@ void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
         case 400:
             if(!jsonDoc.toVariant().toMap().contains("error")) {
                 if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_client") {
-                    qWarning(dcSonos()) << "Client token provided doesn’t correspond to client that generated auth code.";
+                    qCWarning(dcSonos()) << "Client token provided doesn’t correspond to client that generated auth code.";
                 }
                 if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_redirect_uri") {
-                    qWarning(dcSonos()) << "Missing redirect_uri parameter.";
+                    qCWarning(dcSonos()) << "Missing redirect_uri parameter.";
                 }
                 if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_code") {
-                    qWarning(dcSonos()) << "Expired authorization code.";
+                    qCWarning(dcSonos()) << "Expired authorization code.";
                 }
             }
             return;
         case 401:
-            qWarning(dcSonos()) << "Client does not have permission to use this API.";
+            qCWarning(dcSonos()) << "Client does not have permission to use this API.";
             return;
         case 405:
-            qWarning(dcSonos()) << "Wrong HTTP method used.";
+            qCWarning(dcSonos()) << "Wrong HTTP method used.";
             return;
         default:
             break;
@@ -1622,7 +1622,7 @@ void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
             int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
             qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
-                qWarning(dcSonos()) << "Token refresh timer not initialized";
+                qCWarning(dcSonos()) << "Token refresh timer not initialized";
                 emit authenticationStatusChanged(false);
                 return;
             }

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,12 +31,17 @@
 #ifndef INTEGRATIONPLUGINSONOS_H
 #define INTEGRATIONPLUGINSONOS_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "sonos.h"
+#include <integrations/integrationplugin.h>
 
 #include <QHash>
 #include <QDebug>
+
+#include "sonos.h"
+
+class PluginTimer;
+class BrowseResult;
+class BrowseResult;
+class BrowserItemResult;
 
 class IntegrationPluginSonos : public IntegrationPlugin
 {
