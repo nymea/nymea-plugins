@@ -1,9 +1,7 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginsystemmonitor)
-
 SOURCES += \
-    integrationpluginsystemmonitor.cpp \
+    integrationpluginsystemmonitor.cpp
 
 HEADERS += \
-    integrationpluginsystemmonitor.h \
+    integrationpluginsystemmonitor.h
