@@ -3,7 +3,7 @@ include(../plugins.pri)
 QT += network
 
 SOURCES += \
-    integrationpluginsolarlog.cpp \
+    integrationpluginsolarlog.cpp
 
 HEADERS += \
-    integrationpluginsolarlog.h \
+    integrationpluginsolarlog.h
