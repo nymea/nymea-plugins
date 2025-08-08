@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,12 +29,14 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugineq-3.h"
-
-#include "integrations/thing.h"
-#include "types/param.h"
-#include "plugininfo.h"
-
+#include "maxcubediscovery.h"
 #include "eqivabluetooth.h"
+#include "plugininfo.h"
+#include "maxcube.h"
+
+#include <integrations/thing.h>
+#include <types/param.h>
+#include <hardwaremanager.h>
 
 #include <QDebug>
 
@@ -169,7 +171,9 @@ void IntegrationPluginEQ3::setupThing(ThingSetupInfo *info)
     qCDebug(dcEQ3) << "Setup thing" << thing->params();
 
     if(thing->thingClassId() == cubeThingClassId){
-        MaxCube *cube = new MaxCube(this,thing->paramValue(cubeThingSerialParamTypeId).toString(),QHostAddress(thing->paramValue(cubeThingHostParamTypeId).toString()),thing->paramValue(cubeThingPortParamTypeId).toInt());
+        MaxCube *cube = new MaxCube(this, thing->paramValue(cubeThingSerialParamTypeId).toString(),
+                                    QHostAddress(thing->paramValue(cubeThingHostParamTypeId).toString()),
+                                    thing->paramValue(cubeThingPortParamTypeId).toInt());
         m_cubes.insert(cube,thing);
 
         connect(cube, &MaxCube::cubeConnectionStatusChanged, this, &IntegrationPluginEQ3::cubeConnectionStatusChanged);

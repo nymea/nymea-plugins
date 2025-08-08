@@ -53,12 +53,6 @@ private:
     QString m_roomName;
     QByteArray m_groupRfAddress;
 
-signals:
-
-
-
-public slots:
-
 };
 
 #endif // ROOM_H

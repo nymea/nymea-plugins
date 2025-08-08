@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,13 +31,14 @@
 #ifndef INTEGRATIONPLUGINEQ3_H
 #define INTEGRATIONPLUGINEQ3_H
 
-#include "integrations/integrationplugin.h"
-#include "maxcubediscovery.h"
-#include "plugintimer.h"
-#include "eqivabluetooth.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 #include <QHostAddress>
 
+#include "eqivabluetooth.h"
+
+class MaxCube;
 class QNetworkReply;
 
 class IntegrationPluginEQ3: public IntegrationPlugin
@@ -70,7 +71,7 @@ private:
     QList<Param> m_config;
     QHash<MaxCube *, Thing *> m_cubes;
 
-    QHash<Thing*, EqivaBluetooth*> m_eqivaDevices;
+    QHash<Thing *, EqivaBluetooth *> m_eqivaDevices;
 
 private slots:
     void onPluginTimer();

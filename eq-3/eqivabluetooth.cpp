@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -166,7 +166,11 @@ bool EqivaBluetooth::locked() const
 int EqivaBluetooth::setLocked(bool locked)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << commandLock;
     stream << (locked ? valueOn : valueOff);
     return enqueue("SetLocked", data);
@@ -180,7 +184,11 @@ bool EqivaBluetooth::boostEnabled() const
 int EqivaBluetooth::setBoostEnabled(bool enabled)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << commandBoost;
     stream << (enabled ? valueOn : valueOff);
     return enqueue("SetBoostEnabled", data);
@@ -194,7 +202,11 @@ qreal EqivaBluetooth::targetTemperature() const
 int EqivaBluetooth::setTargetTemperature(qreal targetTemperature)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << commandSetTemp;
     if (targetTemperature == 4.5) {
         stream << static_cast<quint8>(4.5 * 2); // 4.5 degrees is off
@@ -211,8 +223,12 @@ EqivaBluetooth::Mode EqivaBluetooth::mode() const
 
 int EqivaBluetooth::setMode(EqivaBluetooth::Mode mode)
 {
-    QByteArray data;
+    QByteArray data;    
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << commandSetMode;
     switch (mode) {
     case ModeAuto:
@@ -259,7 +275,7 @@ void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::Controll
 
     if (state == QLowEnergyController::UnconnectedState) {
         int delay = qMin(m_reconnectAttempt, 30);
-        qWarning(dcEQ3()) << m_name << "Eqiva thing disconnected. Reconnecting in" << delay << "sec";
+        qCWarning(dcEQ3()) << m_name << "Eqiva thing disconnected. Reconnecting in" << delay << "sec";
         m_available = false;
         emit availableChanged();
 
@@ -312,7 +328,11 @@ void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::Controll
         qCDebug(dcEQ3()) << m_name << "Characteristic read:" << info.name() << info.uuid() << value.toHex();
 
         QByteArray data(value);
-        QDataStream stream(&data, QIODevice::ReadOnly);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QDataStream stream(&data, QDataStream::WriteOnly);
+#else
+        QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
         quint8 header;
         stream >> header;
         quint8 notificationType;
@@ -371,7 +391,11 @@ void EqivaBluetooth::serviceStateChanged(QLowEnergyService::ServiceState newStat
 
     // Enable notifications
     QLowEnergyCharacteristic characteristic = m_eqivaService->characteristic(notificationCharacteristicUuid);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = characteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = characteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_eqivaService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 }
 
@@ -384,7 +408,11 @@ void EqivaBluetooth::characteristicChanged(const QLowEnergyCharacteristic &info,
     m_refreshTimer.start();
 
     QByteArray data(value);
-    QDataStream stream(&data, QIODevice::ReadOnly);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
+    QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     quint8 header;
     stream >> header;
     if (header == notifyHeader) {
@@ -470,7 +498,11 @@ void EqivaBluetooth::sendDate()
     QDateTime now = QDateTime::currentDateTime();
 
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << commandSetDate;
     stream << static_cast<quint8>(now.date().year() - 2000);
     stream << static_cast<quint8>(now.date().month());

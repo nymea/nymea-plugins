@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,7 +33,7 @@
 
 #include <QObject>
 
-#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
+#include <hardware/bluetoothlowenergy/bluetoothlowenergymanager.h>
 
 
 class EqivaBluetooth : public QObject
@@ -145,7 +145,7 @@ private slots:
     void deviceDiscoveryDone();
 
 signals:
-    void finished(const QList<DiscoveryResult> &results);
+    void finished(const QList<EqivaBluetoothDiscovery::DiscoveryResult> &results);
 
 private:
     BluetoothLowEnergyManager *m_bluetoothManager = nullptr;
