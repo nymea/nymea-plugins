@@ -31,10 +31,11 @@
 #ifndef INTEGRATIONPLUGINTEMPO_H
 #define INTEGRATIONPLUGINTEMPO_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
 
 #include "tempo.h"
+
+class PluginTimer;
 
 class IntegrationPluginTempo : public IntegrationPlugin
 {
@@ -70,5 +71,6 @@ private slots:
 
     void onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads, int limit, int offset);
     void onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads, int limit, int offset);
+
 };
 #endif // INTEGRATIONPLUGINTEMPO_H
