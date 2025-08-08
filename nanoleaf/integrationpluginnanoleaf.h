@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,12 +31,12 @@
 #ifndef INTEGRATIONPLUGINNANOLEAF_H
 #define INTEGRATIONPLUGINNANOLEAF_H
 
-#include "integrations/integrationplugin.h"
-#include "nanoleaf.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+#include <network/networkaccessmanager.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
 
-#include "plugintimer.h"
-#include "network/networkaccessmanager.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "nanoleaf.h"
 
 #include <QHostAddress>
 
@@ -66,8 +66,8 @@ public:
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<ThingId, Nanoleaf*> m_nanoleafConnections;
-    QHash<ThingId, Nanoleaf*> m_unfinishedNanoleafConnections;
+    QHash<ThingId, Nanoleaf *> m_nanoleafConnections;
+    QHash<ThingId, Nanoleaf *> m_unfinishedNanoleafConnections;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     QHash<Nanoleaf *, ThingPairingInfo *> m_unfinishedPairing;
     QHash<Nanoleaf *, ThingSetupInfo *> m_asyncDeviceSetup;

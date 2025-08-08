@@ -87,7 +87,7 @@ void Nanoleaf::addUser()
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->post(request, "");
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -108,7 +108,7 @@ void Nanoleaf::addUser()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         m_authToken = data.toVariant().toMap().value("auth_token").toString();
@@ -129,7 +129,7 @@ void Nanoleaf::deleteUser()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->deleteResource(request);
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -153,7 +153,7 @@ void Nanoleaf::getControllerInfo()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -166,7 +166,7 @@ void Nanoleaf::getControllerInfo()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         emit connectionChanged(true);
@@ -241,7 +241,7 @@ void Nanoleaf::getPower()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -254,7 +254,7 @@ void Nanoleaf::getPower()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         bool power = data.toVariant().toMap().value("value").toBool();
@@ -274,7 +274,7 @@ void Nanoleaf::getHue()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -286,7 +286,7 @@ void Nanoleaf::getHue()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         int hue = data.toVariant().toMap().value("value").toBool();
@@ -317,7 +317,7 @@ void Nanoleaf::getBrightness()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         int brightness = data.toVariant().toMap().value("value").toInt();
@@ -348,7 +348,7 @@ void Nanoleaf::getSaturation()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         int brightness = data.toVariant().toMap().value("value").toInt();
@@ -380,7 +380,7 @@ void Nanoleaf::getColorTemperature()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         int kelvin = data.toVariant().toMap().value("value").toInt();
@@ -412,7 +412,7 @@ void Nanoleaf::getColorMode()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         emit connectionChanged(true);
@@ -443,11 +443,11 @@ void Nanoleaf::registerForEvents()
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
 
-    connect(reply, &QNetworkReply::readyRead, this, [reply, this] {
+    connect(reply, &QNetworkReply::readyRead, this, [reply] {
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         qCDebug(dcNanoleaf()) << "On event stream" << data.toJson();
@@ -464,7 +464,7 @@ void Nanoleaf::registerForEvents()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         qCDebug(dcNanoleaf()) << "Event received" << data.toJson();
@@ -528,7 +528,7 @@ QUuid Nanoleaf::setPower(bool power)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -570,7 +570,7 @@ QUuid Nanoleaf::setHue(int hue)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -604,7 +604,7 @@ QUuid Nanoleaf::setBrightness(int percentage)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -638,7 +638,7 @@ QUuid Nanoleaf::setSaturation(int percentage)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    //qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
+    //qCDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -680,7 +680,7 @@ QUuid Nanoleaf::setKelvin(int kelvin)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
+    qCDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -718,7 +718,7 @@ void Nanoleaf::getEffects()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            qCDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
         QStringList effects;
@@ -774,7 +774,7 @@ QUuid Nanoleaf::setEffect(const QString &effect)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -802,7 +802,7 @@ QUuid Nanoleaf::identify()
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, "");
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    qCDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
