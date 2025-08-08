@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,9 +30,10 @@
 
 #include "integrationpluginlogilink.h"
 #include "plugininfo.h"
-#include "plugintimer.h"
 
+#include <plugintimer.h>
 #include <network/networkaccessmanager.h>
+
 #include <QNetworkReply>
 #include <QAuthenticator>
 #include <QUrlQuery>
@@ -243,30 +244,30 @@ void IntegrationPluginLogilink::getStates(Thing *thing)
         }
         thing->setStateValue(pdu8p01ConnectedStateTypeId, true);
         if (xml.readNextStartElement()) {
-            if (xml.name() == "response") {
+            if (xml.name() == QString("response")) {
                 qCDebug(dcLogilink()) << "XML contains response";
             } else {
                 qCWarning(dcLogilink()) << "xml name" << xml.name();
             }
             while(xml.readNextStartElement()) {
                 qCDebug(dcLogilink()) << "XML name" << xml.name();
-                if (xml.name() == "curBan") {
+                if (xml.name() == QString("curBan")) {
                     auto current = xml.readElementText().toDouble();
                     qCDebug(dcLogilink()) << "Current" << current;
                     thing->setStateValue(pdu8p01TotalLoadStateTypeId, current);
-                } else if (xml.name() == "statBan") {
+                } else if (xml.name() == QString("statBan")) {
                     auto status = xml.readElementText();
                     qCDebug(dcLogilink()) << "Status" << status;
                     thing->setStateValue(pdu8p01StatusStateTypeId, status);
-                } else if (xml.name() == "tempBan") {
+                } else if (xml.name() == QString("tempBan")) {
                     auto temperature = xml.readElementText().toDouble();
                     qCDebug(dcLogilink()) << "Temperature" << temperature;
                     thing->setStateValue(pdu8p01TemperatureStateTypeId, temperature);
-                } else if (xml.name() == "humBan") {
+                } else if (xml.name() == QString("humBan")) {
                     auto humidity = xml.readElementText().toDouble();
                     qCDebug(dcLogilink()) << "hummidity" << humidity;
                     thing->setStateValue(pdu8p01HumidityStateTypeId, humidity);
-                } else if (xml.name().startsWith("outletStat")){
+                } else if (xml.name().startsWith(QString("outletStat"))){
                     int socketNumber = xml.name().right(1).toInt();
                     bool socketValue = xml.readElementText().startsWith("on");
                     auto socketThing = myThings().filterByParentId(thing->id())
