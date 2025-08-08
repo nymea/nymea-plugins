@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -39,8 +39,6 @@
 #include <QStringList>
 #include <QLoggingCategory>
 
-//#include "integrations/integrationplugin.h"
-
 Q_DECLARE_LOGGING_CATEGORY(dcSmtpClient)
 
 struct Message {
@@ -48,7 +46,6 @@ struct Message {
     QString body;
     int id;
 };
-
 
 class SmtpClient : public QObject
 {

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -42,7 +42,11 @@ SmtpClient::SmtpClient(QObject *parent):
     connect(m_socket, &QSslSocket::readyRead, this, &SmtpClient::readData);
     connect(m_socket, &QSslSocket::disconnected, this, &SmtpClient::disconnected);
     connect(m_socket, &QSslSocket::encrypted, this, &SmtpClient::onEncrypted);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    connect(m_socket, &QTcpSocket::errorOccurred, this, &SmtpClient::onSocketError);
+#else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+#endif
 }
 
 void SmtpClient::connectToHost()
@@ -247,9 +251,9 @@ void SmtpClient::processServerResponse(int responseCode, const QString &response
 
             if (m_authenticationMethod == AuthenticationMethodPlain) {
                 send("AUTH PLAIN " + QByteArray().append(static_cast<char>(0))
-                     .append(m_user)
+                     .append(m_user.toUtf8())
                      .append(static_cast<char>(0))
-                     .append(m_password)
+                     .append(m_password.toUtf8())
                      .toBase64());
 
                 // If we just want to test the Login, we are almost done here
@@ -266,7 +270,7 @@ void SmtpClient::processServerResponse(int responseCode, const QString &response
         break;
     case StateUser:
         if (responseCode == 334) {
-            send(QByteArray().append(m_user).toBase64());
+            send(QByteArray().append(m_user.toUtf8()).toBase64());
             setState(StatePassword);
         } else {
             handleUnexpectedSmtpCode(responseCode, response);
@@ -274,7 +278,7 @@ void SmtpClient::processServerResponse(int responseCode, const QString &response
         break;
     case StatePassword:
         if (responseCode == 334) {
-            send(QByteArray().append(m_password).toBase64());
+            send(QByteArray().append(m_password.toUtf8()).toBase64());
             // if we just want to test the Login, we are almost done here
             if (!m_testLogin) {
                 setState(StateMail);
