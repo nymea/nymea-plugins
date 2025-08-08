@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-QT += network websockets
+QT *= network websockets
 
 SOURCES += \
     integrationplugineasee.cpp \
