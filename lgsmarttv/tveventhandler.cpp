@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,6 +30,9 @@
 
 #include "tveventhandler.h"
 #include "extern-plugininfo.h"
+
+#include <QDateTime>
+#include <QRegularExpression>
 
 TvEventHandler::TvEventHandler(const QHostAddress &host, const int &port, QObject *parent) :
     QTcpServer(parent),
@@ -85,8 +88,8 @@ void TvEventHandler::readClient()
         // check if we got header
         if (data.startsWith("POST") && !m_expectingData) {
             m_expectingData = true;
-            QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
-            qCDebug(dcLgSmartTv()) << "event handler -> event occured" << "http://" << m_host.toString() << ":" << m_port << tokens[1];
+            QStringList tokens = QString(data).split(QRegularExpression("[ \r\n][ \r\n]*"));
+            qCDebug(dcLgSmartTv()) << "Event handler -> event occured" << "http://" << m_host.toString() << ":" << m_port << tokens[1];
         }
     }
 }
@@ -94,7 +97,7 @@ void TvEventHandler::readClient()
 void TvEventHandler::onDisconnected()
 {
     QTcpSocket* socket = (QTcpSocket*)sender();
-    qCDebug(dcLgSmartTv()) << "event handler -> client disconnected" << socket->peerAddress();
+    qCDebug(dcLgSmartTv()) << "Event handler -> client disconnected" << socket->peerAddress();
     socket->deleteLater();
 }
 
