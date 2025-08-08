@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -109,13 +109,19 @@ void IntegrationPluginSerialPortCommander::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Could not open serial port."));
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        connect(serialPort, &QSerialPort::errorOccurred, this, &IntegrationPluginSerialPortCommander::onSerialError);
+#else
         connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
-        connect(serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-        connect(serialPort, SIGNAL(baudRateChanged(qint32, QSerialPort::Directions)), this, SLOT(onBaudRateChanged(qint32, QSerialPort::Directions)));
-        connect(serialPort, SIGNAL(parityChanged(QSerialPort::Parity)), this, SLOT(onParityChanged(QSerialPort::Parity)));
-        connect(serialPort, SIGNAL(dataBitsChanged(QSerialPort::DataBits)), this, SLOT(onDataBitsChanged(QSerialPort::DataBits)));
-        connect(serialPort, SIGNAL(stopBitsChanged(QSerialPort::StopBits)), this, SLOT(onStopBitsChanged(QSerialPort::StopBits)));
-        connect(serialPort, SIGNAL(flowControlChanged(QSerialPort::FlowControl)), this, SLOT(onFlowControlChanged(QSerialPort::FlowControl)));
+#endif
+        connect(serialPort, &QSerialPort::readyRead, this, &IntegrationPluginSerialPortCommander::onReadyRead);
+        connect(serialPort, &QSerialPort::baudRateChanged, this, &IntegrationPluginSerialPortCommander::onBaudRateChanged);
+        connect(serialPort, &QSerialPort::parityChanged, this, &IntegrationPluginSerialPortCommander::onParityChanged);
+        connect(serialPort, &QSerialPort::dataBitsChanged, this, &IntegrationPluginSerialPortCommander::onDataBitsChanged);
+        connect(serialPort, &QSerialPort::stopBitsChanged, this, &IntegrationPluginSerialPortCommander::onStopBitsChanged);
+        connect(serialPort, &QSerialPort::flowControlChanged, this, &IntegrationPluginSerialPortCommander::onFlowControlChanged);
+
+
         m_serialPorts.insert(thing, serialPort);
         thing->setStateValue(serialPortCommanderConnectedStateTypeId, true);
     }
@@ -171,13 +177,13 @@ void IntegrationPluginSerialPortCommander::onReadyRead()
     while (!serialPort->atEnd()) {
         data.append(serialPort->read(100));
     }
-    qDebug(dcSerialPortCommander()) << "Message received" << data;
+    qCDebug(dcSerialPortCommander()) << "Message received" << data;
 
     Event event(serialPortCommanderTriggeredEventTypeId, thing->id());
     ParamList parameters;
     parameters.append(Param(serialPortCommanderTriggeredEventInputDataParamTypeId, data));
     event.setParams(parameters);
-    emitEvent(event);
+    emit emitEvent(event);
 }
 
 void IntegrationPluginSerialPortCommander::onSerialError(QSerialPort::SerialPortError error)
