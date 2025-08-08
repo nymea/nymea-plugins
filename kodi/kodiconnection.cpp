@@ -29,7 +29,6 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "kodiconnection.h"
-#include "kodijsonhandler.h"
 #include "extern-plugininfo.h"
 
 #include <QPixmap>
@@ -44,7 +43,11 @@ KodiConnection::KodiConnection(const QHostAddress &hostAddress, int port, QObjec
 
     connect(m_socket, &QTcpSocket::connected, this, &KodiConnection::onConnected);
     connect(m_socket, &QTcpSocket::disconnected, this, &KodiConnection::onDisconnected);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    connect(m_socket, &QTcpSocket::errorOccurred, this, &KodiConnection::onError);
+#else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+#endif
     connect(m_socket, &QTcpSocket::readyRead, this, &KodiConnection::readData);
 }
 
@@ -54,6 +57,7 @@ void KodiConnection::connectKodi()
         qCDebug(dcKodi) << "Aready connecting... skipping request";
         return;
     }
+
     m_socket->connectToHost(m_hostAddress, m_port);
 }
 
@@ -83,7 +87,7 @@ void KodiConnection::setPort(int port)
 }
 
 
-bool KodiConnection::connected()
+bool KodiConnection::connected() const
 {
     return m_connected;
 }
@@ -114,15 +118,15 @@ void KodiConnection::readData()
     QByteArray data = m_socket->readAll();
 
     QStringList commandList = QString(data).split("}{");
-    for(int i = 0; i < commandList.count(); ++i) {
+    for (int i = 0; i < commandList.count(); ++i) {
         QString command = commandList.at(i);
-        if(command.isEmpty()) {
+        if (command.isEmpty()) {
             continue;
         }
-        if(i < commandList.count() - 1) {
+        if (i < commandList.count() - 1) {
             command.append("}");
         }
-        if(i > 0) {
+        if (i > 0) {
             command.prepend("{");
         }
         emit dataReady(command.toUtf8());

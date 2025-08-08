@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,10 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "kodi.h"
-#include <QDebug>
 #include "extern-plugininfo.h"
+
 #include <QUrl>
 #include <QTime>
+#include <QDebug>
+#include <QRegularExpression>
 
 Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *parent) :
     QObject(parent),
@@ -46,7 +48,6 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     m_jsonHandler = new KodiJsonHandler(m_connection, this);
     connect(m_jsonHandler, &KodiJsonHandler::notificationReceived, this, &Kodi::processNotification);
     connect(m_jsonHandler, &KodiJsonHandler::replyReceived, this, &Kodi::processResponse);
-
 
     // Init FS
     m_virtualFs = new VirtualFsNode(BrowserItem());
@@ -172,8 +173,6 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     musicAddons->getParams.insert("sort", sort);
     musicAddons->getParams.insert("properties", properties);
     addons->addChild(musicAddons);
-
-
 }
 
 Kodi::~Kodi()
@@ -362,7 +361,7 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("artist:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^artist:"));
+        idString.remove(QRegularExpression("^artist:"));
         QVariantMap filter;
         filter.insert("artistid", idString.toInt());
         QVariantMap params;
@@ -378,7 +377,7 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("album:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^album:"));
+        idString.remove(QRegularExpression("^album:"));
         QVariantMap filter;
         filter.insert("albumid", idString.toInt());
         QVariantMap params;
@@ -396,7 +395,7 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("tvshow:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^tvshow:"));
+        idString.remove(QRegularExpression("^tvshow:"));
         QVariantMap params;
         params.insert("tvshowid", idString.toInt());
         QVariantList properties;
@@ -412,9 +411,9 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("season:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^season:"));
+        idString.remove(QRegularExpression("^season:"));
         int seasonId = idString.left(idString.indexOf(",")).toInt();
-        idString.remove(QRegExp("^[0-9]*,tvshow:"));
+        idString.remove(QRegularExpression("^[0-9]*,tvshow:"));
         int tvShowId = idString.toInt();
         QVariantMap params;
         params.insert("tvshowid", tvShowId);
@@ -432,7 +431,7 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("addon:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^addon:"));
+        idString.remove(QRegularExpression("^addon:"));
         QVariantMap params;
         params.insert("directory", "plugin://" + idString);
 //        QVariantList properties;
@@ -447,7 +446,7 @@ void Kodi::browse(BrowseResult *result)
 
     if (result->itemId().startsWith("file:")) {
         QString idString = result->itemId();
-        idString.remove(QRegExp("^file:"));
+        idString.remove(QRegularExpression("^file:"));
         QVariantMap params;
         params.insert("directory", idString);
         params.insert("properties", properties);
@@ -468,19 +467,19 @@ void Kodi::browserItem(BrowserItemResult *result)
     QString method;
     QVariantMap params;
     if (idString.startsWith("song:")) {
-        idString.remove(QRegExp("^song:"));
+        idString.remove(QRegularExpression("^song:"));
         params.insert("songid", idString.toInt());
         method = "AudioLibrary.GetSongDetails";
     } else if (idString.startsWith("movie:")) {
-        idString.remove(QRegExp("^movie:"));
+        idString.remove(QRegularExpression("^movie:"));
         params.insert("movieid", idString.toInt());
         method = "VideoLibrary.GetMovieDetails";
     } else if (idString.startsWith("episode:")) {
-        idString.remove(QRegExp("^episode:"));
+        idString.remove(QRegularExpression("^episode:"));
         params.insert("episodeid", idString.toInt());
         method = "VideoLibrary.GetEpisodeDetails";
     } else if (idString.startsWith("musicvideo:")) {
-        idString.remove(QRegExp("^musicvideo:"));
+        idString.remove(QRegularExpression("^musicvideo:"));
         params.insert("musicvideoid", idString.toInt());
         method = "VideoLibrary.GetMusicVideoDetails";
     } else {
@@ -499,11 +498,11 @@ int Kodi::launchBrowserItem(const QString &itemId)
 
     QString idString = itemId;
     if (idString.startsWith("song:")) {
-        idString.remove(QRegExp("^song:"));
+        idString.remove(QRegularExpression("^song:"));
         int idx = idString.indexOf(",album:");
         if (idx > 0) {
             int position = idString.left(idx).toInt();
-            idString.remove(QRegExp("^[0-9]*,album:"));
+            idString.remove(QRegularExpression("^[0-9]*,album:"));
             int albumId = idString.toInt();
 
             QVariantMap params;
@@ -522,13 +521,13 @@ int Kodi::launchBrowserItem(const QString &itemId)
             playlistItem.insert("songid", idString.toInt());
         }
     } else if (idString.startsWith("movie:")) {
-        idString.remove(QRegExp("^movie:"));
+        idString.remove(QRegularExpression("^movie:"));
         playlistItem.insert("movieid", idString.toInt());
     } else if (idString.startsWith("episode:")) {
-        idString.remove(QRegExp("^episode:"));
+        idString.remove(QRegularExpression("^episode:"));
         playlistItem.insert("episodeid", idString.toInt());
     } else if (idString.startsWith("file:")) {
-        idString.remove(QRegExp("^file:"));
+        idString.remove(QRegularExpression("^file:"));
         playlistItem.insert("file", idString);
     } else {
         qCWarning(dcKodi()) << "Unhandled launchBrowserItem request!" << itemId;
@@ -585,7 +584,7 @@ void Kodi::onVolumeChanged(const int &volume, const bool &muted)
 
 void Kodi::onUpdateFinished(const QVariantMap &data)
 {
-    qCDebug(dcKodi()) << "update finished:" << data;
+    qCDebug(dcKodi()) << "Update finished:" << data;
     if (data.contains("volume")) {
         m_volume = data.value("volume").toInt();
     }
@@ -597,7 +596,7 @@ void Kodi::onUpdateFinished(const QVariantMap &data)
 
 void Kodi::activePlayersChanged(const QVariantList &data)
 {
-    qCDebug(dcKodi()) << "active players changed" << data.count() << data;
+    qCDebug(dcKodi()) << "Active players changed" << data.count() << data;
     m_activePlayerCount = data.count();
     if (m_activePlayerCount == 0) {
         onPlaybackStatusChanged("Stopped");
@@ -612,7 +611,7 @@ void Kodi::activePlayersChanged(const QVariantList &data)
 
 void Kodi::playerPropertiesReceived(const QVariantMap &properties)
 {
-    qCDebug(dcKodi()) << "player props received" << properties;
+    qCDebug(dcKodi()) << "Player props received" << properties;
 
     if (m_activePlayerCount > 0) {
         if (properties.value("speed").toDouble() > 0) {
@@ -657,7 +656,7 @@ void Kodi::mediaMetaDataReceived(const QVariantMap &data)
     if (artwork.isEmpty()) {
         artwork = item.value("fanart").toString();
     }
-    qCDebug(dcKodi) << "title:" << title << artwork;
+    qCDebug(dcKodi) << "Title:" << title << artwork;
     emit mediaMetadataChanged(title, artist, collection, artwork);
 }
 
@@ -673,7 +672,7 @@ void Kodi::onPlaybackStatusChanged(const QString &playbackState)
 
 void Kodi::processNotification(const QString &method, const QVariantMap &params)
 {
-    qCDebug(dcKodi) << "got notification" << method << params;
+    qCDebug(dcKodi) << "Got notification" << method << params;
 
     if (method == "Application.OnVolumeChanged") {
         QVariantMap data = params.value("data").toMap();
@@ -693,7 +692,7 @@ void Kodi::processNotification(const QString &method, const QVariantMap &params)
 void Kodi::processResponse(int id, const QString &method, const QVariantMap &response)
 {
 
-    qCDebug(dcKodi) << "response received:" << method << response;
+    qCDebug(dcKodi) << "Response received:" << method << response;
 
     if (response.contains("error")) {
         qCWarning(dcKodi) << "got error response for request " << method << ":" << response.value("error").toMap().value("message").toString();
