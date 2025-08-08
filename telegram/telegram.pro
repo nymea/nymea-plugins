@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationplugintelegram)
-
-QT+= network
+QT *= network
 
 SOURCES += \
     integrationplugintelegram.cpp
