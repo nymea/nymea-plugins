@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -68,7 +68,11 @@ bool AveaBulb::setPower(bool power)
 
     // Power off
     QByteArray command;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&command, QDataStream::WriteOnly);
+#else
     QDataStream stream(&command, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
 
     quint8 commandId = static_cast<quint8>(ColorMessageColor);
@@ -108,7 +112,11 @@ bool AveaBulb::setColor(const QColor &color)
 
     // Convert rgb to wrgb
     QByteArray command;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&command, QDataStream::WriteOnly);
+#else
     QDataStream stream(&command, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
 
     m_red = scaleColorValueUp(color.red());
@@ -133,7 +141,11 @@ bool AveaBulb::setBrightness(int percentage)
     qCDebug(dcElgato()) << "Brightness value" << percentage << "% -->" << brightnessValue;
 
     QByteArray command;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&command, QDataStream::WriteOnly);
+#else
     QDataStream stream(&command, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint8>(ColorMessageBrightness);
     stream << brightnessValue;
@@ -216,7 +228,11 @@ bool AveaBulb::syncColor()
 
     // Convert rgb to wrgb
     QByteArray command;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&command, QDataStream::WriteOnly);
+#else
     QDataStream stream(&command, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
 
     quint8 commandId = static_cast<quint8>(ColorMessageColor);
@@ -301,7 +317,11 @@ void AveaBulb::onColorServiceStateChanged(const QLowEnergyService::ServiceState 
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_colorCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_colorCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_colorService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Load current configuration
@@ -318,7 +338,11 @@ void AveaBulb::onColorServiceCharacteristicChanged(const QLowEnergyCharacteristi
     qCDebug(dcElgato()) << "Color characteristic changed" << characteristic.uuid().toString() << value.toHex();
 
     QByteArray payload = value;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::ReadOnly);
+#endif
     quint16 messageType;
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> messageType;
