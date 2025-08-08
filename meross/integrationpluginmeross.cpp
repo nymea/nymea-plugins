@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -32,16 +32,17 @@
 #include "integrationpluginmeross.h"
 #include "plugininfo.h"
 
-#include <plugintimer.h>
 #include <network/networkdevicediscovery.h>
 #include <network/networkaccessmanager.h>
 #include <network/networkdevicediscoveryreply.h>
+#include <plugintimer.h>
 
 #include <QNetworkReply>
 #include <QAuthenticator>
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QMetaEnum>
+#include <QRegularExpression>
 
 IntegrationPluginMeross::IntegrationPluginMeross()
 {
@@ -122,7 +123,7 @@ void IntegrationPluginMeross::confirmPairing(ThingPairingInfo *info, const QStri
     params.insert("password", secret);
     QByteArray encodedParams = QJsonDocument::fromVariant(params).toJson(QJsonDocument::Compact).toBase64();
 
-    QByteArray nonce = QUuid::createUuid().toString().remove(QRegExp("[{}-]")).left(16).toUtf8();
+    QByteArray nonce = QUuid::createUuid().toString().remove(QRegularExpression("[{}-]")).left(16).toUtf8();
     QByteArray initKey = "23x17ahWarFH6w29";
     QByteArray timestamp = QByteArray::number(QDateTime::currentMSecsSinceEpoch() / 1000);
     QByteArray signature = initKey + timestamp +  nonce + encodedParams;
@@ -373,7 +374,7 @@ QNetworkReply* IntegrationPluginMeross::request(Thing *thing, const QString &nam
 {
     QByteArray key = m_keys.value(thing);
 
-    QString messageId = QUuid::createUuid().toString().remove(QRegExp("[{}-]"));
+    QString messageId = QUuid::createUuid().toString().remove(QRegularExpression("[{}-]"));
     qulonglong timestamp = QDateTime::currentMSecsSinceEpoch();
     quint16 timestampMs = timestamp % 1000;
     timestamp = timestamp / 1000;
