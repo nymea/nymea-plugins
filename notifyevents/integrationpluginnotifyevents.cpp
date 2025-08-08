@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2023, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -81,7 +81,7 @@ void IntegrationPluginNotfyEvents::executeAction(ThingActionInfo *info)
     connect(reply, &QNetworkReply::finished, info, [reply, info]{
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNotifyEvents()) << "Notify.Events message sending failed for" << info->thing()->name() << info->thing()->id() << reply->errorString() << reply->error();
-            emit info->finish(Thing::ThingErrorHardwareNotAvailable);
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
@@ -96,10 +96,7 @@ void IntegrationPluginNotfyEvents::executeAction(ThingActionInfo *info)
             return;
         }
 
-        QVariantMap replyMap = jsonDoc.toVariant().toMap();
-        qDebug(dcNotifyEvents()) << qUtf8Printable(jsonDoc.toJson());
-
-
+        qCDebug(dcNotifyEvents()) << qUtf8Printable(jsonDoc.toJson());
         qCDebug(dcNotifyEvents()) << "Message sent successfully";
         info->finish(Thing::ThingErrorNoError);
     });

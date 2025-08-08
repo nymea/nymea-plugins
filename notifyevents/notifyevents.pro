@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-QT+= network
+QT *= network
 
 SOURCES += \
     integrationpluginnotifyevents.cpp
