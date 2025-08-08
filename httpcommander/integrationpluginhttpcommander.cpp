@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,8 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginhttpcommander.h"
-#include "network/networkaccessmanager.h"
 #include "plugininfo.h"
+
+#include <network/networkaccessmanager.h>
+
+#include <QHostInfo>
+#include <QNetworkReply>
 #include <QNetworkInterface>
 
 IntegrationPluginHttpCommander::IntegrationPluginHttpCommander()
@@ -40,14 +44,14 @@ IntegrationPluginHttpCommander::IntegrationPluginHttpCommander()
 void IntegrationPluginHttpCommander::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qDebug(dcHttpCommander()) << "Setup thing" << thing->name() << thing->params();
+    qCDebug(dcHttpCommander()) << "Setup thing" << thing->name() << thing->params();
 
 
     if (thing->thingClassId() == httpRequestThingClassId) {
         QUrl url = thing->paramValue(httpRequestThingUrlParamTypeId).toUrl();
 
         if (!url.isValid()) {
-            qDebug(dcHttpCommander()) << "Given URL is not valid";
+            qCDebug(dcHttpCommander()) << "Given URL is not valid";
             //: Error setting up thing
             return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given url is not valid."));
         }
@@ -92,9 +96,9 @@ void IntegrationPluginHttpCommander::executeAction(ThingActionInfo *info)
                 info->finish(Thing::ThingErrorInvalidParameter);
                 return;
             }
-            connect(reply, &QNetworkReply::finished, this, [thing, reply, this](){
 
-                qDebug(dcHttpCommander()) << "POST reply finished";
+            connect(reply, &QNetworkReply::finished, this, [thing, reply](){
+                qCDebug(dcHttpCommander()) << "POST reply finished";
                 QByteArray data = reply->readAll();
                 int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 

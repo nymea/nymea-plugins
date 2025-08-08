@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,15 +31,12 @@
 #ifndef HTTPSIMPLESERVER1_H
 #define HTTPSIMPLESERVER1_H
 
-#include "typeutils.h"
-
 #include <QTcpServer>
 #include <QUuid>
 #include <QDateTime>
 #include <QUrl>
 
-class Device;
-class DevicePlugin;
+#include <typeutils.h>
 
 class HttpSimpleServer : public QTcpServer
 {
@@ -48,6 +45,7 @@ public:
 
     HttpSimpleServer(quint16 port, QObject* parent = nullptr);
     ~HttpSimpleServer() override;
+
     void incomingConnection(qintptr socket) override;
 
 signals:
