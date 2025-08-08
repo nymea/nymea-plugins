@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,11 @@
 #ifndef INTEGRATIONPLUGINDEVTCPCOMMANDER_H
 #define INTEGRATIONPLUGINDEVTCPCOMMANDER_H
 
-#include "integrations/integrationplugin.h"
-#include "tcpserver.h"
+#include <integrations/integrationplugin.h>
+
+#include <QTcpServer>
+
+class TcpServer;
 
 class IntegrationPluginTcpCommander : public IntegrationPlugin
 {
@@ -51,8 +54,8 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    QHash<Thing*, QTcpSocket*> m_tcpSockets;
-    QHash<Thing*, TcpServer*> m_tcpServers;
+    QHash<Thing *, QTcpSocket *> m_tcpSockets;
+    QHash<Thing *, TcpServer *> m_tcpServers;
 
 private slots:
     void onTcpSocketConnectionChanged(bool connected);
