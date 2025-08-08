@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,15 +30,13 @@
 
 #include "integrationpluginespuino.h"
 
-#include "integrations/integrationplugin.h"
-
 #include "plugininfo.h"
 
-#include "network/networkaccessmanager.h"
-#include "network/mqtt/mqttprovider.h"
-#include "network/mqtt/mqttchannel.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "platform/platformzeroconfcontroller.h"
+#include <network/networkaccessmanager.h>
+#include <network/mqtt/mqttprovider.h>
+#include <network/mqtt/mqttchannel.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <platform/platformzeroconfcontroller.h>
 
 #include <mqttclient.h>
 
@@ -46,6 +44,7 @@
 #include <QJsonDocument>
 #include <QNetworkReply>
 #include <QUrlQuery>
+#include <QRegularExpression>
 
 void IntegrationPluginEspuino::init()
 {
@@ -55,10 +54,9 @@ void IntegrationPluginEspuino::init()
 void IntegrationPluginEspuino::discoverThings(ThingDiscoveryInfo *info)
 {
     foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
-        QRegExp match("espuino.*");
-        if (!match.exactMatch(entry.name())) {
+
+        if (!QRegularExpression("espuino.*").match(entry.name()).hasMatch())
             continue;
-        }
 
         qCDebug(dcESPuino()) << "Found device:" << entry;
         ThingDescriptor descriptor(info->thingClassId(), entry.hostName(), entry.hostAddress().toString());
@@ -421,7 +419,7 @@ void IntegrationPluginEspuino::browseThing(BrowseResult *result)
 
 void IntegrationPluginEspuino::browseThing(BrowseResult *result, const QString &path)
 {
-    QUrl url(QString("http://%1/explorer?path=%2").arg(getHost(result->thing())).arg(path.isEmpty() ? "/" : path));
+    QUrl url(QString("http://%1/explorer?path=%2").arg(getHost(result->thing()), path.isEmpty() ? "/" : path));
     QNetworkRequest request(url);
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -450,7 +448,7 @@ void IntegrationPluginEspuino::browseThing(BrowseResult *result, const QString &
             if (variantMap.value("dir").toBool()) {
                 id.addQueryItem("playmode", QString::number(5));
                 id.addQueryItem("type", "dir");
-            } else if (variantMap.value("name").toString().contains(QRegExp("\\.(:?mp3|ogg|wav|wma|acc|m4a|flac)$", Qt::CaseInsensitive))) {
+            } else if (variantMap.value("name").toString().contains(QRegularExpression("\\.(:?mp3|ogg|wav|wma|acc|m4a|flac)$", QRegularExpression::CaseInsensitiveOption))) {
                 id.addQueryItem("playmode", QString::number(1));
                 id.addQueryItem("type", "audiofile");
             } else if (variantMap.value("name").toString().endsWith(".m3u", Qt::CaseInsensitive)) {

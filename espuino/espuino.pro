@@ -1,7 +1,6 @@
 include(../plugins.pri)
 
-QT += network \
-      websockets
+QT *= network websockets
 
 PKGCONFIG += nymea-mqtt
 
