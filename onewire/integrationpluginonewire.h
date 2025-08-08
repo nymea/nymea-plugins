@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,10 +31,11 @@
 #ifndef INTEGRATIONPLUGINONEWIRE_H
 #define INTEGRATIONPLUGINONEWIRE_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "owfs.h"
-#include "w1.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+
+#include <owfs.h>
+#include <w1.h>
 
 #include "extern-plugininfo.h"
 
