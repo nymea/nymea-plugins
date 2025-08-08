@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,10 @@
 #ifndef INTEGRATIONPLUGINEVBOX_H
 #define INTEGRATIONPLUGINEVBOX_H
 
-#include "integrations/integrationplugin.h"
-
-#include "evboxport.h"
+#include <integrations/integrationplugin.h>
 
 #include "extern-plugininfo.h"
+#include "evboxport.h"
 
 #include <plugintimer.h>
 #include <QTimer>
@@ -63,9 +62,9 @@ private:
     void finishPendingAction(Thing *thing);
 
 private:
-    QHash<QString, EVBoxPort*> m_ports;
-    QHash<Thing*, QList<ThingActionInfo*>> m_pendingActions;
-    QHash<Thing*, bool> m_waitingForResponses;
+    QHash<QString, EVBoxPort *> m_ports;
+    QHash<Thing *, QList<ThingActionInfo *>> m_pendingActions;
+    QHash<Thing *, bool> m_waitingForResponses;
     PluginTimer *m_timer = nullptr;
 };
 

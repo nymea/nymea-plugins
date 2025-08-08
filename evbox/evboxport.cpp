@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2023, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,16 +30,13 @@
 
 #include "evboxport.h"
 
+#include <QTimer>
 #include <QDataStream>
 
 #include "extern-plugininfo.h"
 
-
-#include <QTimer>
-
 #define STX 0x02
 #define ETX 0x03
-
 
 EVBoxPort::EVBoxPort(const QString &portName, QObject *parent)
     : QObject{parent}
@@ -51,8 +48,11 @@ EVBoxPort::EVBoxPort(const QString &portName, QObject *parent)
     m_serialPort->setParity(QSerialPort::NoParity);
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &EVBoxPort::onReadyRead);
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(m_serialPort, &QSerialPort::errorOccurred, this, [this](){
+#else
     connect(m_serialPort, static_cast<void(QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error), this, [=](){
+#endif
         qCWarning(dcEVBox()) << "Serial Port error" << m_serialPort->error() << m_serialPort->errorString();
         if (m_serialPort->error() != QSerialPort::NoError) {
             if (m_serialPort->isOpen()) {
@@ -262,7 +262,7 @@ void EVBoxPort::processQueue()
 
     commandData += "80"; // Dst addr
     commandData += "A0"; // Sender address
-    commandData += QString::number(cmd.command);
+    commandData += QString::number(cmd.command).toUtf8();
 
     qCDebug(dcEVBox()) << "Sending command" << cmd.command << "to" << cmd.serial << "MaxCurrent:" << cmd.maxChargingCurrent;
 
@@ -272,7 +272,7 @@ void EVBoxPort::processQueue()
             processQueue();
             return;
         }
-        commandData += cmd.serial;
+        commandData += cmd.serial.toUtf8();
         // The content of the “information module” is 16 bytes in size and not defined. ¯\_(ツ)_/¯
         commandData += "00112233445566778899AABBCCDDEEFF";
 
@@ -281,16 +281,16 @@ void EVBoxPort::processQueue()
 
     }
 
-    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(cmd.timeout, 4, 10, QChar('0'));
+    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0')).toUtf8();
+    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0')).toUtf8();
+    commandData += QString("%1").arg(cmd.maxChargingCurrent * 10, 4, 10, QChar('0')).toUtf8();
+    commandData += QString("%1").arg(cmd.timeout, 4, 10, QChar('0')).toUtf8();
     // If we fail to refresh the wallbox after the timeout, it shall turn off, which is what we'll use as default
     // when we don't know what its set to (as we can't read it).
     // Hence we do *not* cache the power and maxChargingCurrent states for this one
-    commandData += QString("%1").arg(6, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(6, 4, 10, QChar('0'));
-    commandData += QString("%1").arg(6, 4, 10, QChar('0'));
+    commandData += QString("%1").arg(6, 4, 10, QChar('0')).toUtf8();
+    commandData += QString("%1").arg(6, 4, 10, QChar('0')).toUtf8();
+    commandData += QString("%1").arg(6, 4, 10, QChar('0')).toUtf8();
 
     commandData += createChecksum(commandData);
 
