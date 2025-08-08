@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,9 +31,9 @@
 #ifndef INTEGRATIONPLUGINNUKI_H
 #define INTEGRATIONPLUGINNUKI_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "bluez/bluetoothmanager.h"
+#include <integrations/integrationplugin.h>
+#include <bluez/bluetoothmanager.h>
+#include <plugintimer.h>
 
 #include "nuki.h"
 
@@ -41,7 +41,7 @@ class IntegrationPluginNuki : public IntegrationPlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "integrationpluginnuki.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginnuki.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:

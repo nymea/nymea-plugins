@@ -44,9 +44,9 @@ QString NukiUtils::convertByteToHexString(const quint8 &byte)
 QString NukiUtils::convertByteArrayToHexString(const QByteArray &byteArray)
 {
     QString hexString;
-    for (int i = 0; i < byteArray.count(); i++) {
+    for (int i = 0; i < byteArray.length(); i++) {
         hexString.append(convertByteToHexString(static_cast<quint8>(byteArray.at(i))));
-        if (i != byteArray.count() - 1) {
+        if (i != byteArray.length() - 1) {
             hexString.append(" ");
         }
     }
@@ -67,7 +67,11 @@ QString NukiUtils::convertByteArrayToHexStringCompact(const QByteArray &byteArra
 QString NukiUtils::convertUint16ToHexString(const quint16 &value)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream << value;
 
     return QString("0x%1").arg(convertByteArrayToHexString(data).remove(" ").remove("0x"));
@@ -76,7 +80,11 @@ QString NukiUtils::convertUint16ToHexString(const quint16 &value)
 QByteArray NukiUtils::converUint32ToByteArrayLittleEndian(const quint32 &value)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << value;
     Q_ASSERT_X(data.length() == 4, "data converting", "Could not convert quint32 value to byte array (little endian)");
@@ -86,7 +94,11 @@ QByteArray NukiUtils::converUint32ToByteArrayLittleEndian(const quint32 &value)
 QByteArray NukiUtils::converUint16ToByteArrayLittleEndian(const quint16 &value)
 {
     QByteArray data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::WriteOnly);
+#else
     QDataStream stream(&data, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << value;
     Q_ASSERT_X(data.length() == 2, "data converting", "Could not convert quint16 value to byte array (little endian)");
@@ -99,7 +111,11 @@ quint16 NukiUtils::convertByteArrayToUint16BigEndian(const QByteArray &littleEnd
 
     quint16 value = 0;
     QByteArray data(littleEndianByteArray);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::ReadOnly);
+#else
     QDataStream stream(&data, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> value;
     return value;
@@ -111,7 +127,11 @@ quint32 NukiUtils::convertByteArrayToUint32BigEndian(const QByteArray &littleEnd
 
     quint32 value = 0;
     QByteArray data(littleEndianByteArray);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::ReadOnly);
+#else
     QDataStream stream(&data, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> value;
     return value;
@@ -140,11 +160,15 @@ bool NukiUtils::validateMessageCrc(const QByteArray &message)
 {
     quint16 crcValue = 0;
     QByteArray crcValueRaw = message.right(2);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&crcValueRaw, QDataStream::ReadOnly);
+#else
     QDataStream stream(&crcValueRaw, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> crcValue;
 
-    QByteArray content = message.left(message.count() - 2);
+    QByteArray content = message.left(message.length() - 2);
 
     quint16 calculatedCrcValue = calculateCrc(content);
     if (crcValue != calculatedCrcValue) {
@@ -163,7 +187,11 @@ QByteArray NukiUtils::createRequestMessageForUnencrypted(NukiUtils::Command comm
      *      2 Bytes: crc (LittleEndian)
      */
     QByteArray message;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&message, QDataStream::WriteOnly);
+#else
     QDataStream stream(&message, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint16>(command);
 
@@ -186,7 +214,11 @@ QByteArray NukiUtils::createRequestMessageForUnencryptedForEncryption(quint32 au
      */
 
     QByteArray message;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&message, QDataStream::WriteOnly);
+#else
     QDataStream stream(&message, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << authenticationId;
     stream << static_cast<quint16>(command);

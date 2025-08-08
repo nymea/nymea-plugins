@@ -154,6 +154,15 @@ void Nuki::printServices()
 void Nuki::readDeviceInformationCharacteristics()
 {
     qCDebug(dcNuki()) << "Start reading device information";
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    m_initUuidsToRead.append(QBluetoothUuid::CharacteristicType::SerialNumberString);
+    m_initUuidsToRead.append(QBluetoothUuid::CharacteristicType::HardwareRevisionString);
+    m_initUuidsToRead.append(QBluetoothUuid::CharacteristicType::FirmwareRevisionString);
+
+    m_deviceInformationService->readCharacteristic(QBluetoothUuid::CharacteristicType::SerialNumberString);
+    m_deviceInformationService->readCharacteristic(QBluetoothUuid::CharacteristicType::HardwareRevisionString);
+    m_deviceInformationService->readCharacteristic(QBluetoothUuid::CharacteristicType::FirmwareRevisionString);
+#else
     m_initUuidsToRead.append(QBluetoothUuid::SerialNumberString);
     m_initUuidsToRead.append(QBluetoothUuid::HardwareRevisionString);
     m_initUuidsToRead.append(QBluetoothUuid::FirmwareRevisionString);
@@ -161,6 +170,8 @@ void Nuki::readDeviceInformationCharacteristics()
     m_deviceInformationService->readCharacteristic(QBluetoothUuid::SerialNumberString);
     m_deviceInformationService->readCharacteristic(QBluetoothUuid::HardwareRevisionString);
     m_deviceInformationService->readCharacteristic(QBluetoothUuid::FirmwareRevisionString);
+#endif
+
 }
 
 void Nuki::executeCurrentAction()
@@ -253,6 +264,18 @@ void Nuki::onBluetoothDeviceStateChanged(const BluetoothDevice::State &state)
 void Nuki::onDeviceInfoCharacteristicReadFinished(BluetoothGattCharacteristic *characteristic, const QByteArray &value)
 {
     qCDebug(dcNuki()) << "Read thing information characteristic finished" << characteristic->chararcteristicName() << qUtf8Printable(value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (characteristic->uuid() == QBluetoothUuid::CharacteristicType::SerialNumberString) {
+        m_serialNumber = QString::fromUtf8(value);
+        m_initUuidsToRead.removeOne(QBluetoothUuid::CharacteristicType::SerialNumberString);
+    } else if (characteristic->uuid() == QBluetoothUuid::CharacteristicType::HardwareRevisionString) {
+        m_hardwareRevision = QString::fromUtf8(value);
+        m_initUuidsToRead.removeOne(QBluetoothUuid::CharacteristicType::HardwareRevisionString);
+    } else if (characteristic->uuid() == QBluetoothUuid::CharacteristicType::FirmwareRevisionString) {
+        m_firmwareRevision = QString::fromUtf8(value);
+        m_initUuidsToRead.removeOne(QBluetoothUuid::CharacteristicType::FirmwareRevisionString);
+    }
+#else
     if (characteristic->uuid() == QBluetoothUuid::SerialNumberString) {
         m_serialNumber = QString::fromUtf8(value);
         m_initUuidsToRead.removeOne(QBluetoothUuid::SerialNumberString);
@@ -263,6 +286,7 @@ void Nuki::onDeviceInfoCharacteristicReadFinished(BluetoothGattCharacteristic *c
         m_firmwareRevision = QString::fromUtf8(value);
         m_initUuidsToRead.removeOne(QBluetoothUuid::FirmwareRevisionString);
     }
+#endif
 
     if (m_initUuidsToRead.isEmpty()) {
         // Initial read done. Make thing available
@@ -412,7 +436,11 @@ bool Nuki::init()
     }
 
     // Verify services
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (!m_bluetoothDevice->hasService(QBluetoothUuid::ServiceClassUuid::DeviceInformation)) {
+#else
     if (!m_bluetoothDevice->hasService(QBluetoothUuid::DeviceInformation)) {
+#endif
         qCWarning(dcNuki()) << "Could not find device information service on device" << m_bluetoothDevice;
         return false;
     }
@@ -429,7 +457,11 @@ bool Nuki::init()
 
     // Create service and characteristic objects
     // Device information
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    m_deviceInformationService = m_bluetoothDevice->getService(QBluetoothUuid::ServiceClassUuid::DeviceInformation);
+#else
     m_deviceInformationService = m_bluetoothDevice->getService(QBluetoothUuid::DeviceInformation);
+#endif
     connect(m_deviceInformationService, &BluetoothGattService::characteristicReadFinished, this, &Nuki::onDeviceInfoCharacteristicReadFinished);
 
     // Keyturner service

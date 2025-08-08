@@ -77,7 +77,7 @@ public:
     QByteArray decryptData(const QByteArray &data, const QByteArray &nonce);
 
     // Generate 32 byte nonce data
-    QByteArray generateNonce(const int &length = 32) const;
+    QByteArray generateNonce(int length = 32) const;
 
 private:
     QBluetoothHostInfo m_hostInfo;

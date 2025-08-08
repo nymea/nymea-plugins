@@ -238,7 +238,11 @@ void NukiController::processNukiStatesData(const QByteArray &data)
     quint8 batteryCritical = 0;
 
     QByteArray payload = data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::ReadOnly);
+#else
     QDataStream stream(&payload, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> nukiState >> nukiLockState >> nukiLockTrigger >> year >> month >> day >> hour >> minute >> second >> utcOffset >> batteryCritical;
 
@@ -273,7 +277,11 @@ void NukiController::processNukiErrorReport(const QByteArray &data)
     quint16 nukiCommand;
 
     QByteArray payload = data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::ReadOnly);
+#else
     QDataStream stream(&payload, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> errorCode >> nukiCommand;
 
@@ -441,7 +449,11 @@ void NukiController::sendReadLockStateRequest()
 
     // Create data for encryption
     QByteArray payload;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint16>(NukiUtils::CommandNukiStates);
 
@@ -477,7 +489,11 @@ void NukiController::sendReadConfigurationRequest()
 
     // Create data for encryption
     QByteArray payload;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint16>(NukiUtils::CommandRequestConfig);
     for (int i = 0; i < m_nukiNonce.length(); i++) {
@@ -516,7 +532,11 @@ void NukiController::sendRequestChallengeRequest()
 
     // Create data for encryption
     QByteArray payload;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint16>(NukiUtils::CommandChallenge);
 
@@ -554,7 +574,11 @@ void NukiController::sendLockActionRequest(NukiUtils::LockAction lockAction, qui
 
     // Create data for encryption
     QByteArray payload;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint8>(lockAction);
     stream << static_cast<quint32>(m_nukiAuthenticator->authorizationId());
@@ -596,7 +620,7 @@ void NukiController::onUserDataCharacteristicChanged(const QByteArray &value)
 
     m_messageBuffer = value;
 
-    if (m_messageBuffer.count() < 30) {
+    if (m_messageBuffer.length() < 30) {
         qCWarning(dcNuki()) << "Controller: Cannot understand message. Rejecting.";
         resetMessageBuffer();
         return;
@@ -605,14 +629,18 @@ void NukiController::onUserDataCharacteristicChanged(const QByteArray &value)
     // Parse message length
     // ADATA: 24 byte nonce, 4 byte autorization, 2 byte encrypted message length
     m_messageBufferAData = m_messageBuffer.left(30);
-    m_messageBufferPData = m_messageBuffer.right(m_messageBuffer.count() - 30);
+    m_messageBufferPData = m_messageBuffer.right(m_messageBuffer.length() - 30);
     m_messageBufferNonce = m_messageBufferAData.left(24);
     QByteArray messageInformation = m_messageBufferAData.right(6);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&messageInformation, QDataStream::ReadOnly);
+#else
     QDataStream stream(&messageInformation, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> m_messageBufferIdentifier >> m_messageBufferLength;
-    if (m_messageBufferPData.count() == m_messageBufferLength) {
+    if (m_messageBufferPData.length() == m_messageBufferLength) {
         processUserDataNotification(m_messageBufferNonce, m_messageBufferIdentifier, m_messageBufferPData);
         resetMessageBuffer();
     }

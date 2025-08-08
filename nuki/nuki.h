@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,14 +37,15 @@
 #include <QUuid>
 #include <QPointer>
 
-#include "typeutils.h"
-#include "integrations/thing.h"
-#include "bluez/bluetoothdevice.h"
-#include "integrations/thingactioninfo.h"
+#include <typeutils.h>
+#include <integrations/thing.h>
+#include <integrations/thingactioninfo.h>
 
 #include "nukiutils.h"
 #include "nukicontroller.h"
 #include "nukiauthenticator.h"
+
+#include "bluez/bluetoothdevice.h"
 
 //#include "nacl-20110221/crypto_auth/"
 
