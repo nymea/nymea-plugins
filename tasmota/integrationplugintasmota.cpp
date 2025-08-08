@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,11 +35,12 @@
 #include <QNetworkReply>
 #include <QHostAddress>
 #include <QJsonDocument>
+#include <QRegularExpression>
 
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
-#include "network/mqtt/mqttprovider.h"
-#include "network/mqtt/mqttchannel.h"
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
+#include <network/mqtt/mqttprovider.h>
+#include <network/mqtt/mqttchannel.h>
 
 static QHash<QString, StateTypeId> sonoff_basicPowerStateTypeIds = {
     {"POWER", sonoff_basicPowerStateTypeId}, // On single channel devices, sometimes there's no index
@@ -124,7 +125,7 @@ void IntegrationPluginTasmota::setupThing(ThingSetupInfo *info)
             //: Error setting up thing
             return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
         }
-        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString().remove(QRegExp("[{}-]")), deviceAddress);
+        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(thing->id().toString().remove(QRegularExpression("[{}-]")), deviceAddress);
         if (!channel) {
             qCWarning(dcTasmota) << "Failed to create MQTT channel.";
             //: Error setting up thing
