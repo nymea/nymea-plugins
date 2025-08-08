@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #include "integrationpluginpushbullet.h"
 #include "plugininfo.h"
 
-#include "network/networkaccessmanager.h"
+#include <network/networkaccessmanager.h>
 
 #include <QJsonDocument>
 
@@ -150,7 +150,7 @@ void IntegrationPluginPushbullet::executeAction(ThingActionInfo *info)
     connect(reply, &QNetworkReply::finished, info, [reply, info]{
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPushbullet()) << "Push message sending failed for" << info->thing()->name() << info->thing()->id() << reply->errorString() << reply->error();
-            emit info->finish(Thing::ThingErrorHardwareNotAvailable);
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
