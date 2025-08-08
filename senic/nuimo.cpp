@@ -335,7 +335,11 @@ void Nuimo::onServiceDiscoveryFinished()
 {
     qCDebug(dcSenic()) << "Service scan finised";
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::ServiceClassUuid::DeviceInformation)) {
+#else
     if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::DeviceInformation)) {
+#endif
         qCWarning(dcSenic()) << "Device Information service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         emit deviceInitializationFinished(false);
         return;
@@ -363,7 +367,11 @@ void Nuimo::onServiceDiscoveryFinished()
 
     // Device info service
     if (!m_deviceInfoService) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_deviceInfoService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::ServiceClassUuid::DeviceInformation, this);
+#else
         m_deviceInfoService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::DeviceInformation, this);
+#endif
         if (!m_deviceInfoService) {
             qCWarning(dcSenic()) << "Could not create thing info service.";
             emit deviceInitializationFinished(false);
@@ -379,7 +387,11 @@ void Nuimo::onServiceDiscoveryFinished()
 
     // Battery service
     if (!m_batteryService) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_batteryService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::ServiceClassUuid::BatteryService, this);
+#else
         m_batteryService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::BatteryService, this);
+#endif
         if (!m_batteryService) {
             qCWarning(dcSenic()) << "Could not create battery service.";
 
@@ -441,9 +453,16 @@ void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceStat
     qCDebug(dcSenic()) << "Device info service discovered.";
 
     printService(m_deviceInfoService);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QString firmware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::CharacteristicType::FirmwareRevisionString).value());
+    QString hardware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::CharacteristicType::HardwareRevisionString).value());
+    QString software = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::CharacteristicType::SoftwareRevisionString).value());
+#else
     QString firmware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value());
     QString hardware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::HardwareRevisionString).value());
     QString software = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::SoftwareRevisionString).value());
+#endif
 
     emit deviceInformationChanged(firmware, hardware, software);
 }
@@ -458,14 +477,22 @@ void Nuimo::onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &
 
     printService(m_batteryService);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    m_batteryCharacteristic = m_batteryService->characteristic(QBluetoothUuid::CharacteristicType::BatteryLevel);
+#else
     m_batteryCharacteristic = m_batteryService->characteristic(QBluetoothUuid::BatteryLevel);
+#endif
     if (!m_batteryCharacteristic.isValid()) {
         qCWarning(dcSenic()) << "Battery characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_batteryCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_batteryCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_batteryService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     uint batteryPercentage = m_batteryCharacteristic.value().toHex().toUInt(nullptr, 16);
@@ -497,7 +524,11 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
         return;
     }
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_inputButtonCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_inputButtonCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
 
@@ -508,7 +539,11 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
         return;
     }
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    notificationDescriptor = m_inputSwipeCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     notificationDescriptor = m_inputSwipeCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
 
@@ -519,7 +554,11 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
         return;
     }
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    notificationDescriptor = m_inputRotationCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     notificationDescriptor = m_inputRotationCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 }
 
@@ -586,8 +625,14 @@ void Nuimo::onInputCharacteristicChanged(const QLowEnergyCharacteristic &charact
 void Nuimo::onLedMatrixServiceStateChanged(const QLowEnergyService::ServiceState &state)
 {
     // Only continue if discovered
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (state != QLowEnergyService::RemoteServiceDiscovered)
+        return;
+#else
     if (state != QLowEnergyService::ServiceDiscovered)
         return;
+#endif
 
     qCDebug(dcSenic()) << "Led matrix service discovered.";
 

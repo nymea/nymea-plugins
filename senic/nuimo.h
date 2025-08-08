@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,8 +35,8 @@
 #include <QTimer>
 #include <QBluetoothUuid>
 
-#include "typeutils.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
+#include <typeutils.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergydevice.h>
 
 class Nuimo : public QObject
 {
@@ -99,9 +99,9 @@ signals:
     void connectedChanged(bool connected);
     void buttonPressed();
     void buttonLongPressed();
-    void batteryValueChanged(const uint &percentage);
-    void swipeDetected(const SwipeDirection &direction);
-    void rotationValueChanged(const uint &value);
+    void batteryValueChanged(uint percentage);
+    void swipeDetected(Nuimo::SwipeDirection direction);
+    void rotationValueChanged(uint value);
     void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
     void deviceInitializationFinished(bool success);
 
