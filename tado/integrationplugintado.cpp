@@ -29,9 +29,10 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugintado.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/networkaccessmanager.h"
+
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 #include <QDebug>
 #include <QUrlQuery>
