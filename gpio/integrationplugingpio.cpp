@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,10 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugingpio.h"
-#include "types/param.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
+
+#include <types/param.h>
+#include <integrations/thing.h>
 
 IntegrationPluginGpio::IntegrationPluginGpio()
 {
