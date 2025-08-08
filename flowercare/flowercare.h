@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,7 +33,7 @@
 
 #include <QObject>
 
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
+#include <hardware/bluetoothlowenergy/bluetoothlowenergydevice.h>
 
 static QBluetoothUuid sensorServiceUuid                      = QBluetoothUuid(QUuid("00001204-0000-1000-8000-00805f9b34fb"));
 
