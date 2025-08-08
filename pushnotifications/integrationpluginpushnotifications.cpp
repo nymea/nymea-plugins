@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,12 +31,12 @@
 #include "integrationpluginpushnotifications.h"
 #include "plugininfo.h"
 
-#include "network/networkaccessmanager.h"
-#include "nymeasettings.h"
+#include <network/networkaccessmanager.h>
+#include <nymeasettings.h>
 
 #include <QJsonDocument>
 
-IntegrationPluginPushNotifications::IntegrationPluginPushNotifications(QObject* parent)
+IntegrationPluginPushNotifications::IntegrationPluginPushNotifications(QObject *parent)
     : IntegrationPlugin{parent}
 {
 }
@@ -202,7 +202,7 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
 
         payload.insert("data", data);
         payload.insert("appid", "io.guh.nymeaapp_nymea-app");
-        payload.insert("expire_on", QDateTime::currentDateTime().toUTC().addMSecs(1000 * 60 * 10).toString(Qt::ISODate));
+        payload.insert("expire_on", QDateTime::currentDateTimeUtc().addMSecs(1000 * 60 * 10).toString(Qt::ISODate));
         payload.insert("token", token.toUtf8().trimmed());
     } else if (pushService == "None") {
         // Nothing to do here... It's the clients responsibility to fetch it from nymea
@@ -235,7 +235,7 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
         QVariantMap replyMap = jsonDoc.toVariant().toMap();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        qDebug(dcPushNotifications) << status << qUtf8Printable(jsonDoc.toJson());
+        qCDebug(dcPushNotifications()) << status << qUtf8Printable(jsonDoc.toJson());
 
         if (pushService == "UBPorts") {
             if (!replyMap.value("ok").toBool()) {
