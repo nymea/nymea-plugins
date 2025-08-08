@@ -37,7 +37,11 @@ KeContactDataLayer::KeContactDataLayer(QObject *parent) : QObject(parent)
     m_udpSocket = new QUdpSocket(this);
     connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContactDataLayer::readPendingDatagrams);
     connect(m_udpSocket, &QUdpSocket::stateChanged, this, &KeContactDataLayer::onSocketStateChanged);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    connect(m_udpSocket, &QUdpSocket::errorOccurred, this, &KeContactDataLayer::onSocketError);
+#else
     connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+#endif
 }
 
 KeContactDataLayer::~KeContactDataLayer()

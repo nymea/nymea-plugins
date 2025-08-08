@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -228,11 +228,11 @@ signals:
     void reachableChanged(bool status);
     void commandExecuted(QUuid requestId, bool success);
     void deviceInformationReceived(const QString &firmware);
-    void reportOneReceived(const ReportOne &reportOne);
-    void reportTwoReceived(const ReportTwo &reportTwo);
-    void reportThreeReceived(const ReportThree &reportThree);
-    void report1XXReceived(int reportNumber, const Report1XX &report);
-    void broadcastReceived(BroadcastType type, const QVariant &content);
+    void reportOneReceived(const KeContact::ReportOne &reportOne);
+    void reportTwoReceived(const KeContact::ReportTwo &reportTwo);
+    void reportThreeReceived(const KeContact::ReportThree &reportThree);
+    void report1XXReceived(int reportNumber, const KeContact::Report1XX &report);
+    void broadcastReceived(KeContact::BroadcastType type, const QVariant &content);
 
 private slots:
     void onReceivedDatagram(const QHostAddress &address, const QByteArray &datagram);
