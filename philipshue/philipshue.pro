@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginphilipshue)
-
-QT += network
+QT *= network
 
 SOURCES += \
     integrationpluginphilipshue.cpp \

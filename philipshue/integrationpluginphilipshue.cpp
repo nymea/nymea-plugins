@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,21 +29,22 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginphilipshue.h"
-
-#include "integrations/thing.h"
-#include "types/param.h"
 #include "plugininfo.h"
-#include "network/upnp/upnpdiscovery.h"
-#include "network/upnp/upnpdiscoveryreply.h"
 
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
+#include <integrations/thing.h>
+#include <types/param.h>
+#include <network/upnp/upnpdiscovery.h>
+#include <network/upnp/upnpdiscoveryreply.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <network/networkaccessmanager.h>
 
 #include <QDebug>
 #include <QColor>
 #include <QDateTime>
 #include <QStringList>
 #include <QJsonDocument>
+#include <QRegularExpression>
 
 IntegrationPluginPhilipsHue::IntegrationPluginPhilipsHue()
 {
@@ -409,7 +410,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         ParamList migratedParams;
         foreach (const Param &oldParam, thing->params()) {
             QString oldId = oldParam.paramTypeId().toString();
-            oldId.remove(QRegExp("[{}]"));
+            oldId.remove(QRegularExpression("[{}]"));
             if (migrationMap.contains(oldId)) {
                 ParamTypeId newId = migrationMap.value(oldId);
                 QVariant oldValue = oldParam.value();
@@ -470,7 +471,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         ParamList migratedParams;
         foreach (const Param &oldParam, thing->params()) {
             QString oldId = oldParam.paramTypeId().toString();
-            oldId.remove(QRegExp("[{}]"));
+            oldId.remove(QRegularExpression("[{}]"));
             if (migrationMap.contains(oldId)) {
                 ParamTypeId newId = migrationMap.value(oldId);
                 QVariant oldValue = oldParam.value();
@@ -1557,7 +1558,7 @@ void IntegrationPluginPhilipsHue::onMotionSensorPresenceChanged(bool presence)
     HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
     Thing *sensorDevice = m_motionSensors.value(sensor);
     sensorDevice->setStateValue(sensor->isPresentStateTypeId(), presence);
-    if (presence) sensorDevice->setStateValue(sensor->lastSeenTimeStateTypeId(), QDateTime::currentDateTime().toTime_t());
+    if (presence) sensorDevice->setStateValue(sensor->lastSeenTimeStateTypeId(), QDateTime::currentDateTime().toSecsSinceEpoch());
 }
 
 void IntegrationPluginPhilipsHue::onMotionSensorLightIntensityChanged(double lightIntensity)
