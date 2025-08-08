@@ -2127,8 +2127,7 @@ bool IntegrationPluginShelly::isGen2Plus(const QString &shellyId) const
     return shellyId.contains("Plus", Qt::CaseInsensitive)
     || shellyId.contains("Pro", Qt::CaseInsensitive)
         || shellyId.contains("G3", Qt::CaseInsensitive) // Gen3 devices have API 2
-        || QRegExp("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", Qt::CaseInsensitive).exactMatch(shellyId) // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
-        ;
+        || QRegularExpression("^(ShellyPlusPlugS|ShellyPlug(US|IT|UK))-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption).match(shellyId).hasMatch(); // Plus plug variants need to be matched quite precisely to not also match the v1 Plug
 }
 
 void IntegrationPluginShelly::handleInputEvent(Thing *thing, const QString &buttonName, const QString &inputEventString, int inputEventCount)

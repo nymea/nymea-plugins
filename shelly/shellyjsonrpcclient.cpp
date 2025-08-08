@@ -132,7 +132,7 @@ void ShellyJsonRpcClient::onTextMessageReceived(const QString &message)
 
 QVariantMap ShellyJsonRpcClient::createAuthMap() const
 {
-    int cnonce = qrand();
+    int cnonce = std::rand();
     QByteArray ha1 = QString("%1:%2:%3").arg(m_user).arg(m_shellyId.toLower()).arg(m_password).toUtf8();
     ha1 = QCryptographicHash::hash(ha1, QCryptographicHash::Sha256).toHex();
     QByteArray ha2 = QByteArrayLiteral("dummy_method:dummy_uri");
