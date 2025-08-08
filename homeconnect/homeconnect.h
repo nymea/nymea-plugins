@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,7 +35,7 @@
 #include <QTimer>
 #include <QUuid>
 
-#include "network/networkaccessmanager.h"
+#include <network/networkaccessmanager.h>
 
 class HomeConnect : public QObject
 {
@@ -177,13 +177,13 @@ signals:
     void receivedAccessToken(const QByteArray &accessToken);
     void commandExecuted(const QUuid &commandId, bool success);
 
-    void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
+    void receivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances);
     void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
     void receivedPrograms(const QString &haId, const QStringList &programs);
     void receivedAvailablePrograms(const QString &haId, const QStringList &programs);
     void receivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);
     void receivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
     void receivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
-    void receivedEvents(EventType eventType, const QString &haId, const QList<Event> &events);
+    void receivedEvents(HomeConnect::EventType eventType, const QString &haId, const QList<HomeConnect::Event> &events);
 };
 #endif // HOMECONNECT_H

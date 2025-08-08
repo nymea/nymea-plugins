@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,12 +31,13 @@
 #ifndef INTEGRATIONPLUGINHOMECONNECT_H
 #define INTEGRATIONPLUGINHOMECONNECT_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "homeconnect.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 #include <QHash>
 #include <QDebug>
+
+#include "homeconnect.h"
 
 class IntegrationPluginHomeConnect : public IntegrationPlugin
 {
