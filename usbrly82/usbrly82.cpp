@@ -192,7 +192,11 @@ bool UsbRly82::connectRelay(const QString &serialPort)
     }
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &UsbRly82::onReadyRead);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    connect(m_serialPort, &QSerialPort::errorOccurred, this, &UsbRly82::onError, Qt::QueuedConnection);
+#else
     connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onError(QSerialPort::SerialPortError)), Qt::QueuedConnection);
+#endif
 
     // Get serial number
     UsbRly82Reply *reply = getSerialNumber();
@@ -450,7 +454,7 @@ void UsbRly82::updateAnalogInputs()
             return;
         }
 
-        if (m_updateAnalogInputsReply->responseData().count() != 16) {
+        if (m_updateAnalogInputsReply->responseData().length() != 16) {
             qCWarning(dcUsbRly82()) << "Reading analog inputs response returned invalid size" << m_updateAnalogInputsReply->responseData().count() << "(should be 16)";
             m_updateAnalogInputsReply = nullptr;
             return;

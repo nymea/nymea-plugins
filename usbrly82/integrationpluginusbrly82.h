@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,9 +31,11 @@
 #ifndef INTEGRATIONPLUGINUSBRLY82_H
 #define INTEGRATIONPLUGINUSBRLY82_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+
 #include "serialportmonitor.h"
-#include "usbrly82.h"
+
+class UsbRly82;
 
 class IntegrationPluginUsbRly82: public IntegrationPlugin
 {
