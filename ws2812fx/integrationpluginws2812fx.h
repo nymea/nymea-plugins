@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -93,7 +93,7 @@
 #define FX_MODE_CUSTOM_2                58
 #define FX_MODE_CUSTOM_3                59
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include <QTimer>
 #include <QSerialPort>
@@ -133,8 +133,6 @@ private slots:
     void onReadyRead();
     void onReconnectTimer();
     void onSerialError(QSerialPort::SerialPortError error);
-
-signals:
 
 };
 
