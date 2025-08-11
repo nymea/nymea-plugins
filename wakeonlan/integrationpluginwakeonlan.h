@@ -31,9 +31,7 @@
 #ifndef INTEGRATIONPLUGINWAKEONLAN_H
 #define INTEGRATIONPLUGINWAKEONLAN_H
 
-#include "integrations/integrationplugin.h"
-
-#include <QProcess>
+#include <integrations/integrationplugin.h>
 
 class IntegrationPluginWakeOnLan : public IntegrationPlugin
 {
@@ -46,7 +44,6 @@ public:
     explicit IntegrationPluginWakeOnLan();
 
     void discoverThings(ThingDiscoveryInfo *info) override;
-
     void executeAction(ThingActionInfo *info) override;
 
 private slots:
