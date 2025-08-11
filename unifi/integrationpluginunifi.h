@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,7 +33,7 @@
 
 #include <QObject>
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include <QNetworkRequest>
 
@@ -56,7 +56,6 @@ public:
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
-//    void executeAction(ThingActionInfo *info) override;
 
 private:
     QNetworkRequest createRequest(const QString &address, uint port, const QString &path, const QString &prefix = QString());
@@ -64,8 +63,8 @@ private:
 
     void markOffline(Thing *thing);
 private:
-    QHash<ThingDiscoveryInfo*, Things> m_pendingDiscoveries;
-    QHash<Thing*, QStringList> m_pendingSiteDiscoveries;
+    QHash<ThingDiscoveryInfo *, Things> m_pendingDiscoveries;
+    QHash<Thing *, QStringList> m_pendingSiteDiscoveries;
 
     PluginTimer *m_loginTimer = nullptr;
     PluginTimer *m_pollTimer = nullptr;
