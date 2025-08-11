@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,7 +33,7 @@
 
 #include <QTimer>
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 class PluginTimer;
 
@@ -66,11 +66,11 @@ private:
 
     void controlTuyaSwitch(const QString &devId, const QString &command, const QVariant &value, ThingActionInfo *info);
 
-    QHash<ThingId, QTimer*> m_tokenExpiryTimers;
+    QHash<ThingId, QTimer *> m_tokenExpiryTimers;
     PluginTimer *m_pluginTimerQuery = nullptr;
     PluginTimer *m_pluginTimerDiscovery = nullptr;
 
-    QHash<Thing*, QList<Thing*>> m_pollQueue;
+    QHash<Thing *, QList<Thing *>> m_pollQueue;
 };
 
 #endif // INTEGRATIONPLUGINTUYA_H

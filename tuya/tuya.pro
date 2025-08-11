@@ -1,13 +1,11 @@
 include(../plugins.pri)
 
-QT += network
+QT *= network
 
 PKGCONFIG += nymea-mqtt
 
-TARGET = $$qtLibraryTarget(nymea_integrationplugintuya)
-
 SOURCES += \
-    integrationplugintuya.cpp \
+    integrationplugintuya.cpp
 
 HEADERS += \
-    integrationplugintuya.h \
+    integrationplugintuya.h
