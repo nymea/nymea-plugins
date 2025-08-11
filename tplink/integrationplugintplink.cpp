@@ -38,6 +38,7 @@
 #include <QJsonDocument>
 #include <QTimer>
 #include <QDataStream>
+#include <QRegularExpression>
 
 // Related projects:
 
@@ -138,19 +139,19 @@ void IntegrationPluginTPLink::discoverThings(ThingDiscoveryInfo *info)
 
             qCWarning(dcTplink()) << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
 
-            QRegExp modelFilter;
+            QRegularExpression modelFilter;
             if (info->thingClassId() == kasaPlug100ThingClassId) {
-                modelFilter = QRegExp("(HS100|HS103|HS105|KP100|KP105).*");
+                modelFilter = QRegularExpression("(HS100|HS103|HS105|KP100|KP105).*");
             } else if (info->thingClassId() == kasaPlug110ThingClassId) {
-                modelFilter = QRegExp("(HS110|KP115).*");
+                modelFilter = QRegularExpression("(HS110|KP115).*");
             } else if (info->thingClassId() == kasaSwitch200ThingClassId) {
-                modelFilter = QRegExp("HS200.*");
+                modelFilter = QRegularExpression("HS200.*");
             } else if (info->thingClassId() == kasaPowerStrip300ThingClassId) {
-                modelFilter = QRegExp("HS300.*");
+                modelFilter = QRegularExpression("HS300.*");
             }
             QString model = sysInfo.value("model").toString();
 
-            if (modelFilter.exactMatch(model)) {
+            if (modelFilter.match(model).hasMatch()) {
                 ThingDescriptor descriptor(info->thingClassId(), sysInfo.value("alias").toString(), sysInfo.value("dev_name").toString());
                 Param idParam = Param(idParamTypesMap.value(info->thingClassId()), sysInfo.value("deviceId").toString());
                 descriptor.setParams(ParamList() << idParam);
@@ -363,7 +364,7 @@ void IntegrationPluginTPLink::executeAction(ThingActionInfo *info)
     job.data = data;
     job.actionInfo = info;
     m_jobQueue[targetThing].append(job);
-    connect(info, &ThingActionInfo::aborted, this, [=](){
+    connect(info, &ThingActionInfo::aborted, targetThing, [this, targetThing, job](){
         m_jobQueue[targetThing].removeAll(job);
     });
 
@@ -422,8 +423,12 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
         fetchState(thing);
     });
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    connect(socket, &QTcpSocket::errorOccurred, this, [](QAbstractSocket::SocketError error){
+#else
     typedef void (QTcpSocket:: *errorSignal)(QAbstractSocket::SocketError);
     connect(socket, static_cast<errorSignal>(&QTcpSocket::error), thing, [](QAbstractSocket::SocketError error) {
+#endif
         qCWarning(dcTplink()) << "Error in device connection:" << error;
     });
 
