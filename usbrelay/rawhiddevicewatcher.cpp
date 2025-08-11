@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -81,7 +81,6 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
         return;
     }
 
-
     udev_enumerate_add_match_subsystem(enumerate, "hidraw");
     udev_enumerate_scan_devices(enumerate);
     devices = udev_enumerate_get_list_entry(enumerate);
@@ -96,7 +95,6 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
 
         qCDebug(dcUsbRelay()) << "[+]" << devicePath;
         m_devicePaths.append(devicePath);
-        emit deviceAdded(devicePath);
     }
 
     udev_enumerate_unref(enumerate);

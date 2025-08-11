@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,9 @@
 #ifndef INTEGRATIONPLUGINUSBRELAY_H
 #define INTEGRATIONPLUGINUSBRELAY_H
 
-#include "usbrelay.h"
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+
+class UsbRelay;
 
 class IntegrationPluginUsbRelay: public IntegrationPlugin
 {
@@ -40,7 +41,6 @@ class IntegrationPluginUsbRelay: public IntegrationPlugin
 
     Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginusbrelay.json")
     Q_INTERFACES(IntegrationPlugin)
-
 
 public:
     explicit IntegrationPluginUsbRelay();
@@ -59,7 +59,6 @@ private:
 
     Thing *getRelayDevice(Thing *parentDevice, int relayNumber);
     UsbRelay *getRelayForDevice(Thing *relayDevice);
-private slots:
 
 };
 
