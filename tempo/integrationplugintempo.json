@@ -42,13 +42,6 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["discovery"],
                     "settingsTypes": [
-                        {
-                            "id": "56c460b2-37d8-453a-b4f4-8e58be348f85",
-                            "name": "startDate",
-                            "displayName": "Start date",
-                            "defaultValue": "",
-                            "type": "QDate"
-                        }
                     ],
                     "paramTypes": [
                         {
