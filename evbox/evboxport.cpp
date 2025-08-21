@@ -48,7 +48,7 @@ EVBoxPort::EVBoxPort(const QString &portName, QObject *parent)
     m_serialPort->setParity(QSerialPort::NoParity);
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &EVBoxPort::onReadyRead);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     connect(m_serialPort, &QSerialPort::errorOccurred, this, [this](){
 #else
     connect(m_serialPort, static_cast<void(QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error), this, [=](){

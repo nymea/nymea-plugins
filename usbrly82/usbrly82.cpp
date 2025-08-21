@@ -192,7 +192,7 @@ bool UsbRly82::connectRelay(const QString &serialPort)
     }
 
     connect(m_serialPort, &QSerialPort::readyRead, this, &UsbRly82::onReadyRead);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     connect(m_serialPort, &QSerialPort::errorOccurred, this, &UsbRly82::onError, Qt::QueuedConnection);
 #else
     connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onError(QSerialPort::SerialPortError)), Qt::QueuedConnection);

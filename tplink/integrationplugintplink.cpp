@@ -423,7 +423,7 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
         fetchState(thing);
     });
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(socket, &QTcpSocket::errorOccurred, this, [](QAbstractSocket::SocketError error){
 #else
     typedef void (QTcpSocket:: *errorSignal)(QAbstractSocket::SocketError);

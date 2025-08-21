@@ -78,7 +78,7 @@ void IntegrationPluginWs2812fx::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error opening serial port."));
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     connect(serialPort, &QSerialPort::errorOccurred, this, &IntegrationPluginWs2812fx::onSerialError);
 #else
     connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
