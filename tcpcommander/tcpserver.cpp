@@ -121,10 +121,9 @@ void TcpServer::newConnection()
     emit connectionCountChanged(m_clients.count());
     connect(socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
     connect(socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(socket, &QTcpSocket::errorOccurred, this, &TcpServer::onError);
 #else
-    // Note: error signal will be interpreted as function, not as signal in C++11
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 #endif
 }

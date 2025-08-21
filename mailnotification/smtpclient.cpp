@@ -42,7 +42,7 @@ SmtpClient::SmtpClient(QObject *parent):
     connect(m_socket, &QSslSocket::readyRead, this, &SmtpClient::readData);
     connect(m_socket, &QSslSocket::disconnected, this, &SmtpClient::disconnected);
     connect(m_socket, &QSslSocket::encrypted, this, &SmtpClient::onEncrypted);
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(m_socket, &QTcpSocket::errorOccurred, this, &SmtpClient::onSocketError);
 #else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));

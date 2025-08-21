@@ -43,7 +43,7 @@ KodiConnection::KodiConnection(const QHostAddress &hostAddress, int port, QObjec
 
     connect(m_socket, &QTcpSocket::connected, this, &KodiConnection::onConnected);
     connect(m_socket, &QTcpSocket::disconnected, this, &KodiConnection::onDisconnected);
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(m_socket, &QTcpSocket::errorOccurred, this, &KodiConnection::onError);
 #else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));

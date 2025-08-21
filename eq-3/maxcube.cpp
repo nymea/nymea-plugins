@@ -40,7 +40,7 @@ MaxCube::MaxCube(QObject *parent, QString serialNumber, QHostAddress hostAdress,
     connect(this, &MaxCube::stateChanged, this, &MaxCube::connectionStateChanged);
     connect(this, &MaxCube::readyRead, this, &MaxCube::onReadyRead);
     connect(this, &MaxCube::cubeDataAvailable, this, &MaxCube::processCubeData);
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(this, &MaxCube::errorOccurred, this, &MaxCube::onTcpError);
 #else
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));

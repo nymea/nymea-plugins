@@ -41,10 +41,9 @@ AvrConnection::AvrConnection(const QHostAddress &hostAddress, const int &port, Q
     connect(m_socket, &QTcpSocket::connected, this, &AvrConnection::onConnected);
     connect(m_socket, &QTcpSocket::disconnected, this, &AvrConnection::onDisconnected);
     connect(m_socket, &QTcpSocket::readyRead, this, &AvrConnection::readData);
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(m_socket, &QTcpSocket::errorOccurred, this, &AvrConnection::onError);
 #else
-    // Note: error signal will be interpreted as function, not as signal in C++11
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 #endif
 
