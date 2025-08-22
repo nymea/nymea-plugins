@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-QT *= serialport
+QT += serialport
 
 PKGCONFIG += libudev
 

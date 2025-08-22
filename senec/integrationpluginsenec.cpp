@@ -37,6 +37,8 @@
 
 #include <network/networkdevicediscovery.h>
 
+#include "senecconnection.h"
+
 IntegrationPluginSenec::IntegrationPluginSenec()
 {
     // Testing the convert methods
@@ -52,6 +54,8 @@ IntegrationPluginSenec::IntegrationPluginSenec()
     // QString rawValue = "u8_64"; // 100
     // quint8 value = SenecStorageLan::parseUInt8(rawValue);
     // qCWarning(dcSenec()) << rawValue << value;
+
+
 }
 
 IntegrationPluginSenec::~IntegrationPluginSenec()
@@ -107,7 +111,31 @@ void IntegrationPluginSenec::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter username and password for your SENEC.home account."));
+    if (info->thingClassId() == senecConnectionThingClassId) {
+        qCDebug(dcSenec()) << "Start pairing process ...";
+
+        SenecConnection *connection = new SenecConnection(hardwareManager()->networkManager(), this);
+        //m_unfinishedTadoAccounts.insert(info->thingId(), tado);
+
+        connect(info, &ThingPairingInfo::aborted, this, [connection]() {
+            qCWarning(dcSenec()) << "Thing pairing has been aborted, cleaning up...";
+            //m_unfinishedTadoAccounts.remove(info->thingId());
+            connection->deleteLater();
+        });
+
+        connect(connection, &SenecConnection::initFinished, info, [info, connection] (bool success) {
+            if (!success) {
+                info->finish(Thing::ThingErrorAuthenticationFailure);
+                return;
+            }
+
+            qCDebug(dcSenec()) << "Senec server is reachable. Starting the OpenID auth process" << connection->authEndpoint().toString(QUrl::FullyEncodedy);
+            info->setOAuthUrl(connection->authEndpoint());
+            info->finish(Thing::ThingErrorNoError);
+        });
+
+        connection->initialize();
+    }
 }
 
 void IntegrationPluginSenec::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)

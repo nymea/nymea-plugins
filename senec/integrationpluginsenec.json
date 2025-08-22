@@ -41,6 +41,43 @@
                     ]
                 },
                 {
+                    "id": "290e4abb-d000-43a4-9e23-e298e5c36707",
+                    "name": "senecConnection",
+                    "displayName": "SENEC connection",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1180576a-1de2-4815-b442-877b572ce586",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ff40d5c7-3095-4b3e-9e10-4c0774336764",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "5d3b2396-6528-47c2-b5a4-f751531bccea",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                },
+                {
                     "id": "345df3b1-d411-4db5-bbb2-3b14eb86c1ba",
                     "name": "senecStorageLan",
                     "displayName": "SENEC.Home storage",
