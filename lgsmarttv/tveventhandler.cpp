@@ -31,20 +31,41 @@
 #include "tveventhandler.h"
 #include "extern-plugininfo.h"
 
-TvEventHandler::TvEventHandler(const QHostAddress &host, const int &port, QObject *parent) :
+TvEventHandler::TvEventHandler(const QHostAddress &host, quint16 eventHandlerPort, QObject *parent) :
     QTcpServer(parent),
     m_host(host),
-    m_port(port),
+    m_port(eventHandlerPort),
     m_expectingData(false)
 {
-    listen(QHostAddress::AnyIPv4, m_port);
+    if (!listen(QHostAddress::AnyIPv4, m_port)) {
+        qCWarning(dcLgSmartTv()) << "EventHandler: Could not listen for events on" << m_port;
+    } else {
+        qCDebug(dcLgSmartTv()) << "EventHandler: listening on port" << m_port;
+    }
+}
+
+uint TvEventHandler::getFreePort()
+{
+    uint port = 9000;
+    QTcpServer testServer;
+    for (int i = 0; i < 100; i++) {
+        if (testServer.listen(QHostAddress::AnyIPv4, port)) {
+            qCDebug(dcLgSmartTv()) << "EventHandler: found free port" << port;
+            testServer.close();
+            return port;
+        } else {
+            qCDebug(dcLgSmartTv()) << "EventHandler: port not free" << port << "picking next one...";
+        }
+    }
+
+    return port;
 }
 
 void TvEventHandler::incomingConnection(qintptr socket)
 {
     QTcpSocket* tcpSocket = new QTcpSocket(this);
     tcpSocket->setSocketDescriptor(socket);
-    qCDebug(dcLgSmartTv()) << "Event handler -> incoming connection" << tcpSocket->peerAddress().toString() << tcpSocket->peerName();
+    qCDebug(dcLgSmartTv()) << "EventHandler: incoming connection" << tcpSocket->peerAddress().toString() << tcpSocket->peerName();
     connect(tcpSocket, &QTcpSocket::readyRead, this, &TvEventHandler::readClient);
     connect(tcpSocket, &QTcpSocket::disconnected, this, &TvEventHandler::onDisconnected);
 }
@@ -53,22 +74,22 @@ void TvEventHandler::readClient()
 {
     QTcpSocket* socket = (QTcpSocket*)sender();
 
-    // reject everything, except the tv
+    // Reject everything, except data from the TV
     if(socket->peerAddress() != m_host){
         socket->close();
         socket->deleteLater();
-        qCWarning(dcLgSmartTv()) << "Event handler -> rejecting connection from " << socket->peerAddress().toString();
+        qCWarning(dcLgSmartTv()) << "EventHandler: rejecting connection from " << socket->peerAddress().toString();
         return;
     }
 
 
     // the tv sends first the header (POST /udap/api/.... HTTP/1.1)
     // in the scond package the tv sends the information (xml format)
-    while(!socket->atEnd()){
+    while (!socket->atEnd()){
         QByteArray data = socket->readAll();
 
         // check if we got information
-        if(data.startsWith("<?xml") && m_expectingData){
+        if (data.startsWith("<?xml") && m_expectingData){
             m_expectingData = false;
 
             // Answere with OK
@@ -86,7 +107,7 @@ void TvEventHandler::readClient()
         if (data.startsWith("POST") && !m_expectingData) {
             m_expectingData = true;
             QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
-            qCDebug(dcLgSmartTv()) << "event handler -> event occured" << "http://" << m_host.toString() << ":" << m_port << tokens[1];
+            qCDebug(dcLgSmartTv()) << "EventHandler: event occured" << "http://" << m_host.toString() << ":" << m_port << tokens[1];
         }
     }
 }
@@ -94,7 +115,7 @@ void TvEventHandler::readClient()
 void TvEventHandler::onDisconnected()
 {
     QTcpSocket* socket = (QTcpSocket*)sender();
-    qCDebug(dcLgSmartTv()) << "event handler -> client disconnected" << socket->peerAddress();
+    qCDebug(dcLgSmartTv()) << "EventHandler: client disconnected" << socket->peerAddress();
     socket->deleteLater();
 }
 

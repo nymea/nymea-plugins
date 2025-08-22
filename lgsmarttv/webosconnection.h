@@ -28,42 +28,50 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef TVEVENTHANDLER_H
-#define TVEVENTHANDLER_H
+#ifndef WEBOSCONNECTION_H
+#define WEBOSCONNECTION_H
 
-#include <QTcpServer>
-#include <QTcpSocket>
-#include <QDebug>
-#include <QDateTime>
-#include <QTextStream>
-#include <QRegExp>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
+#include <QObject>
+#include <QWebSocket>
 
-class TvEventHandler : public QTcpServer
+class WebosConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit TvEventHandler(const QHostAddress &host, quint16 eventHandlerPort = 9000, QObject *parent = 0);
+    explicit WebosConnection(QObject *parent = nullptr);
 
-    static uint getFreePort();
+    QHostAddress hostAddress() const;
+    void setHostAddress(const QHostAddress &hostAddress);
 
-protected:
-    void incomingConnection(qintptr socket) override;
+    QString apiKey() const;
+    void setApiKey(const QString &apiKey);
+
+    bool connected() const;
 
 private:
-    QHostAddress m_host;
-    quint16 m_port;
-    bool m_expectingData;
+    QHostAddress m_hostAddress;
+    QWebSocket *m_websocket = nullptr;
+
+    QString m_apiKey;
+    int m_id = 0;
+
+    void sendRequest(const QVariantMap &request);
+    void getVolume();
 
 signals:
-    void eventOccured(const QByteArray &path);
+    void connectedChanged(bool connected);
 
 private slots:
-    void readClient();
+    void onConnected();
     void onDisconnected();
+    void onStateChanged(const QAbstractSocket::SocketState &state);
+    void onTextMessageReceived(const QString &message);
+
+public slots:
+    void registerClient();
+    void connectTv();
+
 
 };
 
-#endif // TVEVENTHANDLER_H
+#endif // WEBOSCONNECTION_H

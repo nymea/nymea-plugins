@@ -50,7 +50,7 @@ class TvDevice : public QObject
 {
     Q_OBJECT
 public:
-    explicit TvDevice(const QHostAddress &hostAddress, const int &port, QObject *parent = 0);
+    explicit TvDevice(const QHostAddress &hostAddress, quint16 port, quint16 eventHandlerPort, QObject *parent = 0);
 
     enum RemoteKey{
         Power           = 1,
@@ -125,11 +125,9 @@ public:
     void setKey(const QString &key);
     QString key() const;
 
-    void setHostAddress(const QHostAddress &hostAddress);
     QHostAddress hostAddress() const;
-
-    void setPort(const int &port);
-    int port() const;
+    quint16 port() const;
+    quint16 eventHandlerPort() const;
 
     void setUuid(const QString &uuid);
     QString uuid() const;
@@ -152,41 +150,78 @@ public:
     QString inputSourceLabelName() const;
 
     // other methods
-    static QPair<QNetworkRequest, QByteArray> createDisplayKeyRequest(const QHostAddress &host, const int &port);
-    static QPair<QNetworkRequest, QByteArray> createPairingRequest(const QHostAddress &host, const int &port, const QString &key);
-    static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QUrl &url);
-    static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QHostAddress &host, const int &port);
-    static QPair<QNetworkRequest, QByteArray> createEventRequest(const QHostAddress &host, const int &port);
+    static QPair<QNetworkRequest, QByteArray> createDisplayKeyRequest(const QHostAddress &host, quint16 port);
+    static QPair<QNetworkRequest, QByteArray> createPairingRequest(const QHostAddress &host, quint16 port, quint16 eventHandlerPort, const QString &key);
+    static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QHostAddress &host, quint16 port, quint16 eventHandlerPort);
+    static QPair<QNetworkRequest, QByteArray> createEventRequest(const QHostAddress &host, quint16 port, quint16 eventHandlerPort);
 
     QPair<QNetworkRequest, QByteArray> createPressButtonRequest(const TvDevice::RemoteKey &key);
 
+    QUrl buildDisplayImageUrl() const;
+
     QNetworkRequest createVolumeInformationRequest();
     QNetworkRequest createChannelInformationRequest();
+    QNetworkRequest createChannelListRequest();
+    QNetworkRequest createAppListCountRequest(int type);
+    QNetworkRequest createAppListRequest(int type, int appCount);
+
     void onVolumeInformationUpdate(const QByteArray &data);
     void onChannelInformationUpdate(const QByteArray &data);
+    void onAppListUpdated(const QByteArray &appList);
+
+    static QString printXmlData(const QByteArray &data);
+
+    void browse(BrowseResult *result);
+    void browserItem(BrowserItemResult *result);
+    int launchBrowserItem(const QString &itemId);
+
+    void clearAppList();
+    void addAppList(const QVariantList &appList);
 
 private:
     TvEventHandler *m_eventHandler;
 
     QHostAddress m_hostAddress;
-    int m_port;
+    quint16 m_port = 0;
+    quint16 m_eventHandlerPort = 0;
     QString m_uuid;
     QString m_key;
 
+    QVariantList m_appList;
+
     // States
-    bool m_paired;
-    bool m_reachable;
-    bool m_is3DMode;
-    bool m_mute;
-    int m_volumeLevel;
-    int m_inputSourceIndex;
-    int m_channelNumber;
+    bool m_paired = false;
+    bool m_reachable = false;
+    bool m_is3DMode = false;
+    bool m_mute = false;
+    int m_volumeLevel = 20;
+    int m_inputSourceIndex = -1;
+    int m_channelNumber = -1;
     QString m_channelType;
     QString m_channelName;
     QString m_programName;
     QString m_inputSourceLabel;
 
-    QString printXmlData(const QByteArray &data);
+    class VirtualFsNode {
+    public:
+        VirtualFsNode(const BrowserItem &item):item(item) {}
+        ~VirtualFsNode() { qDeleteAll(childs); }
+        BrowserItem item;
+        QList<VirtualFsNode*> childs;
+        QString getMethod;
+        QVariantMap getParams;
+        void addChild(VirtualFsNode* child) {childs.append(child); }
+        VirtualFsNode *findNode(const QString &id) {
+            if (item.id() == id) return this;
+            foreach (VirtualFsNode *child, childs) {
+                VirtualFsNode *node = child->findNode(id);
+                if (node) return node;
+            }
+            return nullptr;
+        }
+    };
+    VirtualFsNode* m_virtualFs = nullptr;
+
 
 signals:
     void stateChanged();
