@@ -38,6 +38,7 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
+    linuxinput          \
     logilink            \
     mecelectronics      \
     meross              \
