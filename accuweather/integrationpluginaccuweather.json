@@ -1,0 +1,163 @@
+{
+    "name": "accuWeather",
+    "displayName": "AccuWeather",
+    "id": "763cbaa9-d3e2-4b1d-8840-5562d0f943cd",
+    "apiKeys": ["accuweather"],
+    "paramTypes": [
+        {
+            "id": "aa842ac9-1fd3-4d2f-baee-080c25c75a49",
+            "name": "customApiKey",
+            "displayName": "Custom API key",
+            "type": "QString",
+            "defaultValue": ""
+        }
+    ],
+    "vendors": [
+        {
+            "name": "accuWeather",
+            "displayName": "AccuWeather",
+            "id": "5a37901c-642b-4b19-aa89-79fddf5dc663",
+            "thingClasses": [
+                {
+                    "id": "18d0dc96-1bf3-41de-aae1-5c0d4636d662",
+                    "name": "weather",
+                    "displayName": "Weather",
+                    "interfaces": ["weather"],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "41e98e23-ec49-40b2-87a4-72d3cb21f795",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "type": "double",
+                            "defaultValue": "0.00"
+                        },
+                        {
+                            "id": "ed2e8542-89c4-4bbd-ac13-7319c75ac8cc",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "type": "double",
+                            "defaultValue": "0.00"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "24d86c32-6a2e-4390-a4f8-9fd75663e4ba",
+                            "name": "refreshWeather",
+                            "displayName": "Refresh"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f16891f3-1174-44f6-a940-cffc8b64bdc1",
+                            "name": "weatherCondition",
+                            "displayName": "weather condition",
+                            "displayNameEvent": "weather condition changed",
+                            "type": "QString",
+                            "possibleValues": ["clear-day", "clear-night", "few-clouds-day", "few-clouds-night", "clouds", "overcast", "light-rain", "shower-rain", "thunderstorm", "snow", "fog"],
+                            "defaultValue": "clear-day"
+                        },
+                        {
+                            "id": "36b2f09b-7d77-4fbc-a68f-23d735dda0b1",
+                            "name": "updateTime",
+                            "displayName": "last update",
+                            "displayNameEvent": "last update changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6013402f-b5b1-46b3-8490-f0c20d62fe61",
+                            "name": "temperature",
+                            "displayName": "temperature",
+                            "displayNameEvent": "temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "14ec2781-cb04-4bbf-b097-7d01ef982630",
+                            "name": "temperatureMin",
+                            "displayName": "temperature minimum",
+                            "displayNameEvent": "temperature minimum changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fefe5563-452f-4833-b5cf-49c3cc67c772",
+                            "name": "temperatureMax",
+                            "displayName": "temperature maximum",
+                            "displayNameEvent": "temperature maximum changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6f32ec73-3240-4630-ada9-1c10b8e98123",
+                            "name": "humidity",
+                            "displayName": "humidity",
+                            "displayNameEvent": "humidity changed",
+                            "unit": "Percentage",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4a42eea9-00eb-440b-915e-dbe42180f83b",
+                            "name": "pressure",
+                            "displayName": "pressure",
+                            "displayNameEvent": "pressure changed",
+                            "unit": "HectoPascal",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "2bf63430-e9e2-4fbf-88e6-6f1b4770f287",
+                            "name": "windSpeed",
+                            "displayName": "wind speed",
+                            "displayNameEvent": "wind speed changed",
+                            "unit": "MeterPerSecond",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "589e2ea5-65b2-4afd-9b72-e3708a589a12",
+                            "name": "windDirection",
+                            "displayName": "wind direction",
+                            "displayNameEvent": "wind direction changed",
+                            "unit": "Degree",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "798553bc-45c7-42eb-9105-430bddb5d9b7",
+                            "name": "cloudiness",
+                            "displayName": "cloudiness",
+                            "displayNameEvent": "cloudiness changed",
+                            "unit": "Percentage",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1e10d129-cb88-48b0-9244-e3e7e7b175d9",
+                            "name": "visibility",
+                            "displayName": "visibility",
+                            "displayNameEvent": "visibility changed",
+                            "unit": "Meter",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f9539108-0e0e-4736-a306-6408f8e20a26",
+                            "name": "weatherDescription",
+                            "displayName": "weather description",
+                            "displayNameEvent": "weather description changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
