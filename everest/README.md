@@ -1,6 +1,20 @@
 # nymea-plugin-everest
 
-This nymea integration plugin allows to connect to any EVerest instance in the network or on localhost with an API module and to add every connector configured on this instance.
+This nymea integration plugin allows to connect to any EVerest instance in the network or on localhost.
+
+## Using the RpcApi module
+
+By default the integration requires the use of the RpcApi module, which provides a JSON RPC interface based on a websocket communication to the EVerest core.
+
+
+## Using the MQTT based API module
+
+If required, the MQTT based API module of everest can be used.
+
+By default the MQTT API module will not be initialized unless explictily enabled by creating following file
+
+    touch /etc/nymea/everest-mqtt
+
 Each connector has to be added manually using the discovery. Once added, the integration creates an EV charger within nymea which makes it available to the energy manager and the overall nymea eco system.
 
 Known issues:

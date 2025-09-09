@@ -108,8 +108,6 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                     }
 
 
-
-
                     // We are done with the init and the client is now available
                     if (!m_available) {
                         m_available = true;
@@ -298,12 +296,29 @@ EverestJsonRpcClient::EVSEStatus EverestJsonRpcClient::parseEvseStatus(const QVa
     evseStatus.chargingDuration = evseStatusMap.value("charging_duration_s").toInt();
     evseStatus.chargingAllowed = evseStatusMap.value("charging_allowed").toBool();
     evseStatus.available = evseStatusMap.value("available").toBool();
-    evseStatus.activeConnectorId = evseStatusMap.value("active_connector_id").toInt();
-    evseStatus.evseError = evseStatusMap.value("evse_error").toString();
+    evseStatus.activeConnectorIndex = evseStatusMap.value("active_connector_index").toInt();
+    evseStatus.errorPresent = evseStatusMap.value("error_present").toBool();
     evseStatus.chargeProtocol = parseChargeProtocol(evseStatusMap.value("charge_protocol").toString());
     evseStatus.evseState = parseEvseState(evseStatusMap.value("state").toString());
     evseStatus.evseStateString = evseStatusMap.value("state").toString();
+    evseStatus.acChargeStatus = EverestJsonRpcClient::parseACChargeStatus(evseStatusMap.value("ac_charge_status").toMap());
+    evseStatus.acChargeParameters = EverestJsonRpcClient::parseACChargeParameters(evseStatusMap.value("ac_charge_param").toMap());
     return evseStatus;
+}
+
+EverestJsonRpcClient::ACChargeStatus EverestJsonRpcClient::parseACChargeStatus(const QVariantMap &acChargeStatusMap)
+{
+    EverestJsonRpcClient::ACChargeStatus status;
+    status.activePhaseCount = acChargeStatusMap.value("evse_active_phase_count").toInt();
+    return status;
+}
+
+EverestJsonRpcClient::ACChargeParameters EverestJsonRpcClient::parseACChargeParameters(const QVariantMap &acChargeParametersMap)
+{
+    EverestJsonRpcClient::ACChargeParameters params;
+    params.maxCurrent = acChargeParametersMap.value("evse_max_current").toInt();
+    params.maxPhaseCount = acChargeParametersMap.value("evse_max_phase_count").toInt();
+    return params;
 }
 
 EverestJsonRpcClient::HardwareCapabilities EverestJsonRpcClient::parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap)
@@ -320,7 +335,6 @@ EverestJsonRpcClient::HardwareCapabilities EverestJsonRpcClient::parseHardwareCa
     hardwareCapabilities.phaseSwitchDuringCharging = hardwareCapabilitiesMap.value("phase_switch_during_charging").toBool();
     return hardwareCapabilities;
 }
-
 
 void EverestJsonRpcClient::connectToServer(const QUrl &serverUrl)
 {
@@ -358,27 +372,56 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
     }
 
     QVariantMap dataMap = jsonDoc.toVariant().toMap();
-    if (!dataMap.contains("id") || dataMap.value("jsonrpc").toString() != "2.0") {
+    if (dataMap.value("jsonrpc").toString() != "2.0") {
         qCWarning(dcEverest()) << "Received valid JSON data but does not seem to be a JSON RPC 2.0 format" << m_interface->serverUrl().toString() << qUtf8Printable(data);
         return;
     }
 
-    int commandId = dataMap.value("id").toInt();
-    EverestJsonRpcReply *reply = m_replies.take(commandId);
-    if (reply) {
-        reply->setResponse(dataMap);
+    if (dataMap.contains("id")) {
 
-        // Verify if we received a json rpc error
-        if (dataMap.contains("error")) {
-            reply->finishReply(EverestJsonRpcReply::ErrorJsonRpcError);
+        // Response to a request
+
+        int commandId = dataMap.value("id").toInt();
+
+        EverestJsonRpcReply *reply = m_replies.take(commandId);
+        if (reply) {
+            reply->setResponse(dataMap);
+
+            // Verify if we received a json rpc error
+            if (dataMap.contains("error")) {
+                reply->finishReply(EverestJsonRpcReply::ErrorJsonRpcError);
+            } else {
+                reply->finishReply();
+            }
+
+            return;
         } else {
-            reply->finishReply();
+            // Data without reply, check if this is a notification
+            qCDebug(dcEverest()) << "Received response data without reply" << qUtf8Printable(data);
         }
-
-        return;
     } else {
-        // Data without reply, check if this is a notification
-        qCDebug(dcEverest()) << "Received data without reply" << qUtf8Printable(data);
+
+        // A Notification is a Request object without an "id" member.
+        QString notification = dataMap.value("method").toString();
+        QVariantMap params = dataMap.value("params").toMap();
+
+        qCDebug(dcEverest()) << "Received notification" << notification << params;
+
+        if (notification == "EVSE.StatusChanged") {
+            int evseIndex = params.value("evse_index").toInt();
+            EVSEStatus evseStatus = EverestJsonRpcClient::parseEvseStatus(params.value("evse_status").toMap());
+            emit evseStatusChanged(evseIndex, evseStatus);
+        } else if (notification == "ChargePoint.ActiveErrorsChanged") {
+            // TODO
+        } else if (notification == "EVSE.HardwareCapabilitiesChanged") {
+            int evseIndex = params.value("evse_index").toInt();
+            HardwareCapabilities hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(params.value("hardware_capabilities").toMap());
+            emit hardwareCapabilitiesChanged(evseIndex, hardwareCapabilities);
+        } else if (notification == "EVSE.MeterDataChanged") {
+            int evseIndex = params.value("evse_index").toInt();
+            HardwareCapabilities hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(params.value("hardware_capabilities").toMap());
+            emit hardwareCapabilitiesChanged(evseIndex, hardwareCapabilities);
+        }
     }
 }
 

@@ -127,6 +127,8 @@ void EverestConnection::start()
                 m_client->disconnectFromServer();
 
             m_client->connectToServer(url);
+        } else {
+            qCDebug(dcEverest()) << "Monitor is not reachable yet" << this;
         }
     } else {
         qCDebug(dcEverest()) << "Connecting" << this;

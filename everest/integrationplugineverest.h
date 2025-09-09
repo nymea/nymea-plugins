@@ -59,6 +59,7 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    bool m_useMqtt = false;
     QList<EverestMqttClient *> m_everstMqttClients;
     QHash<Thing *, EverestMqttClient *> m_thingClients;
 

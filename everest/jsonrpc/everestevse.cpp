@@ -49,9 +49,27 @@ EverestEvse::EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *pa
         }
     });
 
-    if (m_client->available()) {
+    connect(m_client, &EverestJsonRpcClient::evseStatusChanged, this, [this](int evseIndex, const EverestJsonRpcClient::EVSEStatus &evseStatus){
+        // We are only insterested in our own status
+        if (m_index != evseIndex)
+            return;
+
+        m_evseStatus = evseStatus;
+        processEvseStatus();
+    });
+
+    connect(m_client, &EverestJsonRpcClient::hardwareCapabilitiesChanged, this, [this](int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities){
+        // We are only insterested in our own status
+        if (m_index != evseIndex)
+            return;
+
+        m_hardwareCapabilities = hardwareCapabilities;
+        processHardwareCapabilities();
+    });
+
+    if (m_client->available())
         qCDebug(dcEverest()) << "Evse: The connection is already available. Initializing the instance...";
-    }
+
 }
 
 int EverestEvse::index() const

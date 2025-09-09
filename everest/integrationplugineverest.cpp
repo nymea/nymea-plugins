@@ -35,6 +35,9 @@
 #include "jsonrpc/everestevse.h"
 #include "jsonrpc/everestjsonrpcdiscovery.h"
 
+#include <QFileInfo>
+
+#include <nymeasettings.h>
 #include <network/networkdevicediscovery.h>
 
 IntegrationPluginEverest::IntegrationPluginEverest()
@@ -44,71 +47,80 @@ IntegrationPluginEverest::IntegrationPluginEverest()
 
 void IntegrationPluginEverest::init()
 {
-
+    QFileInfo enableMqttFileInfo(NymeaSettings::settingsPath() + "/everest-mqtt");
+    m_useMqtt = enableMqttFileInfo.exists();
+    if (m_useMqtt) {
+        qCDebug(dcEverest()) << "MQTT API module enabled, detected" << enableMqttFileInfo.absoluteFilePath();
+    } else {
+        qCDebug(dcEverest()) << "MQTT API module disabled, the file" << enableMqttFileInfo.absoluteFilePath() << "does not exist.";
+    }
 }
 
 void IntegrationPluginEverest::startMonitoringAutoThings()
 {
-    // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
-    // Since this integration plugin is most liekly running on an EV charger running EVerest, the local instance should
-    // be set up automatically. Additional instances in the network can still be added by running a normal network discovery
+    if (m_useMqtt) {
 
-    EverestMqttDiscovery *mqttDiscovery = new EverestMqttDiscovery(nullptr, this);
-    connect(mqttDiscovery, &EverestMqttDiscovery::finished, mqttDiscovery, &EverestMqttDiscovery::deleteLater);
-    connect(mqttDiscovery, &EverestMqttDiscovery::finished, this, [this, mqttDiscovery](){
+        // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
+        // Since this integration plugin is most liekly running on an EV charger running EVerest, the local instance should
+        // be set up automatically. Additional instances in the network can still be added by running a normal network discovery
 
-        ThingDescriptors descriptors;
+        EverestMqttDiscovery *mqttDiscovery = new EverestMqttDiscovery(nullptr, this);
+        connect(mqttDiscovery, &EverestMqttDiscovery::finished, mqttDiscovery, &EverestMqttDiscovery::deleteLater);
+        connect(mqttDiscovery, &EverestMqttDiscovery::finished, this, [this, mqttDiscovery](){
 
-        foreach (const EverestMqttDiscovery::Result &result, mqttDiscovery->results()) {
+            ThingDescriptors descriptors;
 
-            // Create one EV charger foreach available connector on that host
-            foreach(const QString &connectorName, result.connectors) {
+            foreach (const EverestMqttDiscovery::Result &result, mqttDiscovery->results()) {
 
-                QString title = QString("EVerest");
-                QString description = connectorName;
-                ThingDescriptor descriptor(everestMqttThingClassId, title, description);
+                // Create one EV charger foreach available connector on that host
+                foreach(const QString &connectorName, result.connectors) {
 
-                qCInfo(dcEverest()) << "Discovered -->" << title << description;
+                    QString title = QString("EVerest");
+                    QString description = connectorName;
+                    ThingDescriptor descriptor(everestMqttThingClassId, title, description);
 
-                ParamList params;
-                params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
-                params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.address().toString()));
-                descriptor.setParams(params);
+                    qCInfo(dcEverest()) << "Discovered -->" << title << description;
 
-                // Let's check if we aleardy have a thing with those params
-                bool thingExists = true;
-                Thing *existingThing = nullptr;
-                foreach (Thing *thing, myThings()) {
-                    foreach(const Param &param, params) {
-                        if (param.value() != thing->paramValue(param.paramTypeId())) {
-                            thingExists = false;
-                            break;
+                    ParamList params;
+                    params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
+                    params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.address().toString()));
+                    descriptor.setParams(params);
+
+                    // Let's check if we aleardy have a thing with those params
+                    bool thingExists = true;
+                    Thing *existingThing = nullptr;
+                    foreach (Thing *thing, myThings()) {
+                        foreach(const Param &param, params) {
+                            if (param.value() != thing->paramValue(param.paramTypeId())) {
+                                thingExists = false;
+                                break;
+                            }
+                        }
+
+                        // The params are equal, we already have set up this thing
+                        if (thingExists) {
+                            existingThing = thing;
                         }
                     }
 
-                    // The params are equal, we already have set up this thing
-                    if (thingExists) {
-                        existingThing = thing;
+                    // Add only connectors we don't have set up yet
+                    if (existingThing) {
+                        qCDebug(dcEverest()) << "Discovered EVerest connector on localhost but we already set up this connector" << existingThing->name() << existingThing->params();
+                    } else {
+                        qCDebug(dcEverest()) << "Adding new EVerest connector on localhost" << title << params;
+                        descriptors.append(descriptor);
                     }
                 }
-
-                // Add only connectors we don't have set up yet
-                if (existingThing) {
-                    qCDebug(dcEverest()) << "Discovered EVerest connector on localhost but we already set up this connector" << existingThing->name() << existingThing->params();
-                } else {
-                    qCDebug(dcEverest()) << "Adding new EVerest connector on localhost" << title << params;
-                    descriptors.append(descriptor);
-                }
             }
-        }
 
-        if (!descriptors.isEmpty()) {
-            qCDebug(dcEverest()) << "Adding" << descriptors.count() << "new EVerest instances.";
-            emit autoThingsAppeared(descriptors);
-        }
-    });
+            if (!descriptors.isEmpty()) {
+                qCDebug(dcEverest()) << "Adding" << descriptors.count() << "new EVerest instances.";
+                emit autoThingsAppeared(descriptors);
+            }
+        });
 
-    mqttDiscovery->startLocalhost();
+        mqttDiscovery->startLocalhost();
+    }
 }
 
 void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
@@ -120,81 +132,86 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
         return;
     }
 
-    if (info->thingClassId() == everestMqttThingClassId) {
-        EverestMqttDiscovery *mqttDiscovery = new EverestMqttDiscovery(hardwareManager()->networkDeviceDiscovery(), this);
-        connect(mqttDiscovery, &EverestMqttDiscovery::finished, mqttDiscovery, &EverestMqttDiscovery::deleteLater);
-        connect(mqttDiscovery, &EverestMqttDiscovery::finished, info, [this, info, mqttDiscovery](){
+    if (m_useMqtt) {
+        if (info->thingClassId() == everestMqttThingClassId) {
+            EverestMqttDiscovery *mqttDiscovery = new EverestMqttDiscovery(hardwareManager()->networkDeviceDiscovery(), this);
+            connect(mqttDiscovery, &EverestMqttDiscovery::finished, mqttDiscovery, &EverestMqttDiscovery::deleteLater);
+            connect(mqttDiscovery, &EverestMqttDiscovery::finished, info, [this, info, mqttDiscovery](){
 
-            foreach (const EverestMqttDiscovery::Result &result, mqttDiscovery->results()) {
+                foreach (const EverestMqttDiscovery::Result &result, mqttDiscovery->results()) {
 
-                // Create one EV charger foreach available connector on that host
-                foreach(const QString &connectorName, result.connectors) {
+                    // Create one EV charger foreach available connector on that host
+                    foreach(const QString &connectorName, result.connectors) {
 
-                    QString title = QString("Everest (%1)").arg(connectorName);
-                    QString description;
-                    MacAddressInfo macInfo;
+                        QString title = QString("Everest (%1)").arg(connectorName);
+                        QString description;
+                        MacAddressInfo macInfo;
 
-                    switch (result.networkDeviceInfo.monitorMode()) {
-                    case NetworkDeviceInfo::MonitorModeMac:
-                        macInfo = result.networkDeviceInfo.macAddressInfos().constFirst();
-                        description = result.networkDeviceInfo.address().toString();
-                        if (!macInfo.vendorName().isEmpty())
-                            description += " - " + result.networkDeviceInfo.macAddressInfos().constFirst().vendorName();
+                        switch (result.networkDeviceInfo.monitorMode()) {
+                        case NetworkDeviceInfo::MonitorModeMac:
+                            macInfo = result.networkDeviceInfo.macAddressInfos().constFirst();
+                            description = result.networkDeviceInfo.address().toString();
+                            if (!macInfo.vendorName().isEmpty())
+                                description += " - " + result.networkDeviceInfo.macAddressInfos().constFirst().vendorName();
 
-                        break;
-                    case NetworkDeviceInfo::MonitorModeHostName:
-                        description = result.networkDeviceInfo.address().toString();
-                        break;
-                    case NetworkDeviceInfo::MonitorModeIp:
-                        description = "Interface: " +  result.networkDeviceInfo.networkInterface().name();
-                        break;
-                    }
-
-                    ThingDescriptor descriptor(everestMqttThingClassId, title, description);
-                    qCInfo(dcEverest()) << "Discovered -->" << title << description;
-
-                    // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
-                    // depending on the possibilities within this network. It is not recommended to fill in all information available.
-                    // Only the information available depending on the monitor mode are relevant for the monitor.
-                    ParamList params;
-                    params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
-                    params.append(Param(everestMqttThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
-                    params.append(Param(everestMqttThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
-                    params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
-                    descriptor.setParams(params);
-
-                    // Let's check if we aleardy have a thing with those params
-                    bool thingExists = true;
-                    Thing *existingThing = nullptr;
-                    foreach (Thing *thing, myThings()) {
-                        if (thing->thingClassId() != info->thingClassId())
-                            continue;
-
-                        foreach(const Param &param, params) {
-                            if (param.value() != thing->paramValue(param.paramTypeId())) {
-                                thingExists = false;
-                                break;
-                            }
+                            break;
+                        case NetworkDeviceInfo::MonitorModeHostName:
+                            description = result.networkDeviceInfo.address().toString();
+                            break;
+                        case NetworkDeviceInfo::MonitorModeIp:
+                            description = "Interface: " +  result.networkDeviceInfo.networkInterface().name();
+                            break;
                         }
 
-                        // The params are equal, we already know this thing
-                        if (thingExists)
-                            existingThing = thing;
+                        ThingDescriptor descriptor(everestMqttThingClassId, title, description);
+                        qCInfo(dcEverest()) << "Discovered -->" << title << description;
+
+                        // Note: the network device info already provides the correct set of parameters in order to be used by the monitor
+                        // depending on the possibilities within this network. It is not recommended to fill in all information available.
+                        // Only the information available depending on the monitor mode are relevant for the monitor.
+                        ParamList params;
+                        params.append(Param(everestMqttThingConnectorParamTypeId, connectorName));
+                        params.append(Param(everestMqttThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress()));
+                        params.append(Param(everestMqttThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName()));
+                        params.append(Param(everestMqttThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress()));
+                        descriptor.setParams(params);
+
+                        // Let's check if we aleardy have a thing with those params
+                        bool thingExists = true;
+                        Thing *existingThing = nullptr;
+                        foreach (Thing *thing, myThings()) {
+                            if (thing->thingClassId() != info->thingClassId())
+                                continue;
+
+                            foreach(const Param &param, params) {
+                                if (param.value() != thing->paramValue(param.paramTypeId())) {
+                                    thingExists = false;
+                                    break;
+                                }
+                            }
+
+                            // The params are equal, we already know this thing
+                            if (thingExists)
+                                existingThing = thing;
+                        }
+
+                        // Set the thing ID id we already have this device (for reconfiguration)
+                        if (existingThing)
+                            descriptor.setThingId(existingThing->id());
+
+                        info->addThingDescriptor(descriptor);
                     }
-
-                    // Set the thing ID id we already have this device (for reconfiguration)
-                    if (existingThing)
-                        descriptor.setThingId(existingThing->id());
-
-                    info->addThingDescriptor(descriptor);
                 }
-            }
 
-            // All discovery results processed, we are done
-            info->finish(Thing::ThingErrorNoError);
-        });
+                // All discovery results processed, we are done
+                info->finish(Thing::ThingErrorNoError);
+            });
 
-        mqttDiscovery->start();
+            mqttDiscovery->start();
+            return;
+        }
+    } else {
+        info->finish(Thing::ThingErrorUnsupportedFeature);
         return;
     }
 

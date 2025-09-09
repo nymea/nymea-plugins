@@ -129,17 +129,34 @@ public:
         QList<ConnectorInfo> availableConnectors;
     } EVSEInfo;
 
+    typedef struct ACChargeStatus {
+        int activePhaseCount = 3;
+    } ACChargeStatus;
+
+    typedef struct ACChargeParameters {
+        // V 1.0.0 supported values
+        double maxCurrent = 0; // A
+        double maxPhaseCount = 0;
+
+        // double maxChargePower = 0; // W
+        // double minChargePower = 0; // W
+        // double nominalFrequency = 0; // Hz
+
+    } ACChargeParameters;
+
     typedef struct EVSEStatus {
         double chargedEnergyWh = 0;
         double dischargedEnergyWh = 0;
         int chargingDuration = 0; // seconds
         bool chargingAllowed = false;
         bool available = false;
-        int activeConnectorId = -1;
-        QString evseError; // FIXME: maybe convert to internal enum
+        int activeConnectorIndex = -1;
+        bool errorPresent = false;
         ChargeProtocol chargeProtocol = ChargeProtocolUnknown;
         EvseState evseState = EvseStateUnplugged;
         QString evseStateString;
+        ACChargeStatus acChargeStatus;
+        ACChargeParameters acChargeParameters;
         // TODO:
         // o: "ac_charge_param": "$ACChargeParametersObj",
         // o: "dc_charge_param": "$DCChargeParametersObj",
@@ -148,6 +165,7 @@ public:
         // o: display_parameters: "$DisplayParametersObj",
 
     } EVSEStatus;
+
 
     typedef struct HardwareCapabilities {
         double maxCurrentExport = 0;
@@ -160,6 +178,56 @@ public:
         int minPhaseCountImport = 0;
         bool phaseSwitchDuringCharging = false;
     } HardwareCapabilities;
+
+
+    /*
+
+    MeterDataObj {
+
+        o: "current_A": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float",
+            "N": "float"
+        },
+        "energy_Wh_import": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float",
+            "total": "float"
+        },
+        o: "energy_Wh_export": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float",
+            "total": "float"
+        },
+        o: "frequency_Hz": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float"
+        },
+        "meter_id": "string",
+        o: "serial_number": "string",
+        o: "phase_seq_error": "bool",
+        o: "power_W": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float",
+            "total": "float"
+        },
+        "timestamp": "string",
+        o: "voltage_V": {
+            "L1": "float",
+            "L2": "float",
+            "L3": "float"
+    }
+
+     */
+
+    typedef struct MeterData {
+
+    } MeterData;
 
 
     explicit EverestJsonRpcClient(QObject *parent = nullptr);
@@ -197,6 +265,8 @@ public:
     static EVSEInfo parseEvseInfo(const QVariantMap &evseInfoMap);
     static ConnectorInfo parseConnectorInfo(const QVariantMap &connectorInfoMap);
     static EVSEStatus parseEvseStatus(const QVariantMap &evseStatusMap);
+    static ACChargeStatus parseACChargeStatus(const QVariantMap &acChargeStatusMap);
+    static ACChargeParameters parseACChargeParameters(const QVariantMap &acChargeParametersMap);
     static HardwareCapabilities parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap);
 
 public slots:
@@ -207,6 +277,12 @@ signals:
     void connectionErrorOccurred();
     void availableChanged(bool available);
 
+    // Notifications
+    void evseStatusChanged(int evseIndex, const EverestJsonRpcClient::EVSEStatus &evseStatus);
+    void hardwareCapabilitiesChanged(int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities);
+    void meterDataChanged(int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities);
+    // TODO void activeErrorsChanged();
+
 private slots:
     void sendRequest(EverestJsonRpcReply *reply);
     void processDataPacket(const QByteArray &data);
@@ -214,6 +290,7 @@ private slots:
 private:
     bool m_available = false;
     int m_commandId = 0;
+
     EverestJsonRpcInterface *m_interface = nullptr;
     QHash<int, EverestJsonRpcReply *> m_replies;
 
@@ -223,7 +300,6 @@ private:
     ChargerInfo m_chargerInfo;
     bool m_authenticationRequired = false;
     QList<EVSEInfo> m_evseInfos;
-
 
     // API calls
     EverestJsonRpcReply *apiHello();
