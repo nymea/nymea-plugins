@@ -129,9 +129,9 @@ void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
                 return;
             }
 
-            qCDebug(dcSenec()) << "Senec server is reachable. Starting the OpenID auth process" << connection->authEndpoint().toString(QUrl::FullyEncodedy);
-            info->setOAuthUrl(connection->authEndpoint());
-            info->finish(Thing::ThingErrorNoError);
+            // qCDebug(dcSenec()) << "Senec server is reachable. Starting the OpenID auth process" << connection->authEndpoint().toString(QUrl::FullyEncod7edy);
+            // info->setOAuthUrl(connection->authEndpoint());
+            // info->finish(Thing::ThingErrorNoError);
         });
 
         connection->initialize();
@@ -228,13 +228,13 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
         NetworkDeviceMonitor *monitor = hardwareManager()->networkDeviceDiscovery()->registerMonitor(thing);
         m_monitors.insert(thing, monitor);
 
-        SenecStorageLan *storage = new SenecStorageLan(hardwareManager()->networkManager(), this);
+        SenecStorageLan *storage = new SenecStorageLan(hardwareManager()->networkManager(), monitor->networkDeviceInfo().address(), this);
         m_storages.insert(thing, storage);
 
-        storage->setAddress(monitor->networkDeviceInfo().address());
         connect(monitor, &NetworkDeviceMonitor::reachableChanged, storage, [monitor, storage](bool reachable){
             if (reachable) {
                 storage->setAddress(monitor->networkDeviceInfo().address());
+                storage->initialize();
             }
         });
 
@@ -302,6 +302,8 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
         });
 
         info->finish(Thing::ThingErrorNoError);
+
+        storage->initialize();
 
     } else if (thing->thingClassId() == senecStorageThingClassId) {
 

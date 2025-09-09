@@ -34,6 +34,7 @@
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonParseError>
+#include <QNetworkRequest>
 
 SenecStorageLan::SenecStorageLan(NetworkAccessManager *networkManager, QObject *parent)
     : QObject{parent},
@@ -142,17 +143,26 @@ QString SenecStorageLan::parseString(const QString &value)
 
 void SenecStorageLan::initialize()
 {
-    if (m_url.isValid()) {
-        qCWarning(dcSenec()) << "Cannot initialize the storage. The request URL is not valid. Maybe the IP is not known yet or invalid.";
-        emit initializeFinished(false);
-        return;
-    }
+    // if (m_url.isValid()) {
+    //     qCWarning(dcSenec()) << "Cannot initialize the storage. The request URL is not valid. Maybe the IP is not known yet or invalid.";
+    //     emit initializeFinished(false);
+    //     return;
+    // }
 
     // Verify the debug request is working
-    QVariantMap request;
-    request.insert("DEBUG", QVariantMap());
+    QVariantMap requestData;
+    requestData.insert("DEBUG", QVariantMap());
 
-    QNetworkReply *reply = m_networkManager->post(QNetworkRequest(m_url), QJsonDocument::fromVariant(request).toJson());
+    m_url = QUrl(QString("https://%1/lala.cgi").arg(m_address.toString()));
+
+    QNetworkRequest request(m_url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = QJsonDocument::fromVariant(requestData).toJson(QJsonDocument::Compact);
+
+    qCDebug(dcSenec()) << "POST" << m_url.toString() << m_address.toString() << qUtf8Printable(data);
+
+    QNetworkReply *reply = m_networkManager->post(request, data);
     connect(reply, &QNetworkReply::sslErrors, this, &SenecStorageLan::ignoreSslErrors);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
@@ -190,15 +200,18 @@ void SenecStorageLan::initialize()
 
         // Request basic information
 
-        QVariantMap request;
+        QVariantMap requestData;
         QVariantMap factoryMap;
         factoryMap.insert("DEVICE_ID", QString());
         factoryMap.insert("DESIGN_CAPACITY", QString());
         factoryMap.insert("MAX_CHARGE_POWER_DC", QString());
         factoryMap.insert("MAX_DISCHARGE_POWER_DC", QString());
-        request.insert("FACTORY", factoryMap);
+        requestData.insert("FACTORY", factoryMap);
 
-        QNetworkReply *reply = m_networkManager->post(QNetworkRequest(m_url), QJsonDocument::fromVariant(request).toJson());
+        QNetworkRequest request(m_url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+        QNetworkReply *reply = m_networkManager->post(QNetworkRequest(m_url), QJsonDocument::fromVariant(requestData).toJson());
         connect(reply, &QNetworkReply::sslErrors, this, &SenecStorageLan::ignoreSslErrors);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, this, [this, reply] {
@@ -243,13 +256,13 @@ void SenecStorageLan::initialize()
 
 void SenecStorageLan::update()
 {
-    if (m_url.isValid()) {
-        qCDebug(dcSenec()) << "Cannot update the storage. The request URL is not valid. Maybe the IP is not known yet or invalid.";
-        emit updatedFinished(false);
-        return;
-    }
+    // if (m_url.isValid()) {
+    //     qCDebug(dcSenec()) << "Cannot update the storage. The request URL is not valid. Maybe the IP is not known yet or invalid.";
+    //     emit updatedFinished(false);
+    //     return;
+    // }
 
-    QVariantMap request;
+    QVariantMap requestData;
 
     QVariantMap energyMap;
     energyMap.insert("GUI_BAT_DATA_POWER", QString());
@@ -258,9 +271,14 @@ void SenecStorageLan::update()
     energyMap.insert("GUI_HOUSE_POW", QString());
     energyMap.insert("GUI_GRID_POW", QString());
 
-    request.insert("ENERGY", energyMap);
+    requestData.insert("ENERGY", energyMap);
 
-    QNetworkReply *reply = m_networkManager->post(QNetworkRequest(m_url), QJsonDocument::fromVariant(request).toJson());
+    m_url = QUrl(QString("https://%1/lala.cgi").arg(m_address.toString()));
+
+    QNetworkRequest request(m_url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_networkManager->post(request, QJsonDocument::fromVariant(requestData).toJson());
     connect(reply, &QNetworkReply::sslErrors, this, &SenecStorageLan::ignoreSslErrors);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
@@ -292,7 +310,7 @@ void SenecStorageLan::update()
         m_batteryPower = parseFloat(energyResponseMap.value("GUI_BAT_DATA_POWER").toString());
         m_batteryLevel = parseFloat(energyResponseMap.value("GUI_BAT_DATA_FUEL_CHARGE").toString());
         m_gridPower = parseFloat(energyResponseMap.value("GUI_GRID_POW").toString());
-        m_inverterPower = parseFloat(energyResponseMap.value("GUI_INVERTER_POWER").toString());
+        m_inverterPower = -1* parseFloat(energyResponseMap.value("GUI_INVERTER_POWER").toString());
 
         setAvailable(true);
 
@@ -307,16 +325,7 @@ void SenecStorageLan::update()
 
 void SenecStorageLan::updateUrl()
 {
-    QUrl url;
-    if (m_address.isNull()) {
-        m_url = url;
-        return;
-    }
-
-    url.setScheme("https");
-    url.setHost(m_address.toString());
-    url.setPath("lala.cgi");
-    m_url = url;
+    m_url = QUrl(QString("https://%1/lala.cgi").arg(m_address.toString()));
 }
 
 void SenecStorageLan::setAvailable(bool available)

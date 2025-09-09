@@ -68,6 +68,7 @@ void SenecDiscovery::checkNetworkDevice(const QHostAddress &address)
     qCDebug(dcSenec()) << "Discovery: Verifying" << address;
 
     SenecStorageLan *storage = new SenecStorageLan(m_networkManager, address, this);
+    storage->setAddress(address);
     m_storages.append(storage);
 
     connect(storage, &SenecStorageLan::initializeFinished, this, [this, storage, address](bool success){
