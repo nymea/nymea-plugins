@@ -51,7 +51,7 @@ EverestEvse::EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *pa
 
     connect(m_client, &EverestJsonRpcClient::evseStatusChanged, this, [this](int evseIndex, const EverestJsonRpcClient::EVSEStatus &evseStatus){
         // We are only insterested in our own status
-        if (m_index != evseIndex)
+        if (m_index != evseIndex || !m_initialized)
             return;
 
         m_evseStatus = evseStatus;
@@ -60,7 +60,7 @@ EverestEvse::EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *pa
 
     connect(m_client, &EverestJsonRpcClient::hardwareCapabilitiesChanged, this, [this](int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities){
         // We are only insterested in our own status
-        if (m_index != evseIndex)
+        if (m_index != evseIndex || !m_initialized)
             return;
 
         m_hardwareCapabilities = hardwareCapabilities;
@@ -69,16 +69,17 @@ EverestEvse::EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *pa
 
     connect(m_client, &EverestJsonRpcClient::meterDataChanged, this, [this](int evseIndex, const EverestJsonRpcClient::MeterData &meterData){
         // We are only insterested in our own status
-        if (m_index != evseIndex)
+        if (m_index != evseIndex || !m_initialized)
             return;
 
         m_meterData = meterData;
         processMeterData();
     });
 
-    if (m_client->available())
+    if (m_client->available()) {
         qCDebug(dcEverest()) << "Evse: The connection is already available. Initializing the instance...";
-
+        initialize();
+    }
 }
 
 int EverestEvse::index() const

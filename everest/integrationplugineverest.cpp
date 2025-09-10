@@ -50,9 +50,9 @@ void IntegrationPluginEverest::init()
     QFileInfo enableMqttFileInfo(NymeaSettings::settingsPath() + "/everest-mqtt");
     m_useMqtt = enableMqttFileInfo.exists();
     if (m_useMqtt) {
-        qCDebug(dcEverest()) << "MQTT API module enabled, detected" << enableMqttFileInfo.absoluteFilePath();
+        qCDebug(dcEverest()) << "MQTT API module autodetection enabled, found enable file" << enableMqttFileInfo.absoluteFilePath();
     } else {
-        qCDebug(dcEverest()) << "MQTT API module disabled, the file" << enableMqttFileInfo.absoluteFilePath() << "does not exist.";
+        qCDebug(dcEverest()) << "MQTT API module autodetection disabled, the enable file" << enableMqttFileInfo.absoluteFilePath() << "does not exist.";
     }
 }
 
@@ -210,9 +210,6 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
             mqttDiscovery->start();
             return;
         }
-    } else {
-        info->finish(Thing::ThingErrorUnsupportedFeature);
-        return;
     }
 
     if (info->thingClassId() == everestConnectionThingClassId) {
