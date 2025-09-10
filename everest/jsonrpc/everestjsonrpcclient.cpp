@@ -35,6 +35,8 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
+Q_DECLARE_LOGGING_CATEGORY(dcEverestTraffic)
+
 EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
     : QObject{parent},
     m_interface{new EverestJsonRpcInterface(this)}
@@ -69,7 +71,6 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                     return;
                 }
 
-                //D | Everest: <-- {"id":0,"jsonrpc":"2.0","result":{"api_version":"0.0.1","authentication_required":false,"charger_info":{"firmware_version":"unknown","model":"unknown","serial":"unknown","vendor":"unknown"},"everest_version":""}
                 m_apiVersion = result.value("api_version").toString();
                 m_everestVersion = result.value("everest_version").toString();
                 m_authenticationRequired = result.value("authentication_required").toBool();
@@ -83,8 +84,7 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                 EverestJsonRpcReply *reply = chargePointGetEVSEInfos();
                 connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
                 connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
-                    qCDebug(dcEverest()) << "Reply finished" << m_interface->serverUrl().toString() << reply->method()
-                    << qUtf8Printable(QJsonDocument::fromVariant(reply->response()).toJson(QJsonDocument::Indented));
+                    qCDebug(dcEverest()) << "Reply finished" << m_interface->serverUrl().toString() << reply->method();
 
                     if (reply->error()) {
                         qCWarning(dcEverest()) << "JsonRpc reply finished with error" << reply->method() << reply->error();
@@ -336,6 +336,66 @@ EverestJsonRpcClient::HardwareCapabilities EverestJsonRpcClient::parseHardwareCa
     return hardwareCapabilities;
 }
 
+EverestJsonRpcClient::MeterData EverestJsonRpcClient::parseMeterData(const QVariantMap &meterDataMap)
+{
+    MeterData meterData;
+
+    meterData.meterId = meterDataMap.value("meter_id").toString();
+
+    meterData.energyImportedL1 = meterDataMap.value("energy_Wh_import").toMap().value("L1").toFloat();
+    meterData.energyImportedL2 = meterDataMap.value("energy_Wh_import").toMap().value("L2").toFloat();
+    meterData.energyImportedL3 = meterDataMap.value("energy_Wh_import").toMap().value("L3").toFloat();
+    meterData.energyImportedTotal = meterDataMap.value("energy_Wh_import").toMap().value("total").toFloat();
+
+    // optional
+    if (meterDataMap.contains("serial_number"))
+        meterData.serialNumber = meterDataMap.value("serial_number").toString();
+
+    // optional
+    if (meterDataMap.contains("phase_seq_error"))
+        meterData.phaseSequenceError = meterDataMap.value("phase_seq_error").toBool();
+
+    // optional
+    if (meterDataMap.contains("power_W")) {
+        meterData.powerL1 = meterDataMap.value("power_W").toMap().value("L1").toFloat();
+        meterData.powerL2 = meterDataMap.value("power_W").toMap().value("L2").toFloat();
+        meterData.powerL3 = meterDataMap.value("power_W").toMap().value("L3").toFloat();
+        meterData.powerTotal = meterDataMap.value("power_W").toMap().value("total").toFloat();
+    }
+
+    // optional
+    if (meterDataMap.contains("voltage_V")) {
+        meterData.voltageL1 = meterDataMap.value("voltage_V").toMap().value("L1").toFloat();
+        meterData.voltageL2 = meterDataMap.value("voltage_V").toMap().value("L2").toFloat();
+        meterData.voltageL3 = meterDataMap.value("voltage_V").toMap().value("L3").toFloat();
+    }
+
+    // optional
+    if (meterDataMap.contains("current_A")) {
+        meterData.currentL1 = meterDataMap.value("current_A").toMap().value("L1").toFloat();
+        meterData.currentL2 = meterDataMap.value("current_A").toMap().value("L2").toFloat();
+        meterData.currentL3 = meterDataMap.value("current_A").toMap().value("L3").toFloat();
+        meterData.currentN = meterDataMap.value("current_A").toMap().value("N").toFloat();
+    }
+
+    // optional
+    if (meterDataMap.contains("energy_Wh_export")) {
+        meterData.energyExportedL1 = meterDataMap.value("energy_Wh_export").toMap().value("L1").toFloat();
+        meterData.energyExportedL2 = meterDataMap.value("energy_Wh_export").toMap().value("L2").toFloat();
+        meterData.energyExportedL3 = meterDataMap.value("energy_Wh_export").toMap().value("L3").toFloat();
+        meterData.energyExportedTotal = meterDataMap.value("energy_Wh_export").toMap().value("total").toFloat();
+    }
+
+    // optional
+    if (meterDataMap.contains("frequency_Hz")) {
+        meterData.frequencyL1 = meterDataMap.value("frequency_Hz").toMap().value("L1").toFloat();
+        meterData.frequencyL2 = meterDataMap.value("frequency_Hz").toMap().value("L2").toFloat();
+        meterData.frequencyL3 = meterDataMap.value("frequency_Hz").toMap().value("L3").toFloat();
+    }
+
+    return meterData;
+}
+
 void EverestJsonRpcClient::connectToServer(const QUrl &serverUrl)
 {
     m_interface->connectServer(serverUrl);
@@ -351,7 +411,7 @@ void EverestJsonRpcClient::sendRequest(EverestJsonRpcReply *reply)
     QVariantMap requestMap = reply->requestMap();
     QByteArray data = QJsonDocument::fromVariant(requestMap).toJson(QJsonDocument::Compact) + '\n';
 
-    qCDebug(dcEverest()) << "-->" << m_interface->serverUrl().toString() << qUtf8Printable(data);
+    qCDebug(dcEverestTraffic()) << "-->" << m_interface->serverUrl().toString() << qUtf8Printable(data);
     m_interface->sendData(data);
 
     m_replies.insert(m_commandId, reply);
@@ -362,7 +422,7 @@ void EverestJsonRpcClient::sendRequest(EverestJsonRpcReply *reply)
 
 void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
 {
-    qCDebug(dcEverest()) << "<--" << m_interface->serverUrl().toString() << qUtf8Printable(data);
+    qCDebug(dcEverestTraffic()) << "<--" << m_interface->serverUrl().toString() << qUtf8Printable(data);
 
     QJsonParseError error;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -393,7 +453,6 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
             } else {
                 reply->finishReply();
             }
-
             return;
         } else {
             // Data without reply, check if this is a notification
@@ -405,7 +464,7 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
         QString notification = dataMap.value("method").toString();
         QVariantMap params = dataMap.value("params").toMap();
 
-        qCDebug(dcEverest()) << "Received notification" << notification << params;
+        qCDebug(dcEverest()) << "Received notification" << notification;
 
         if (notification == "EVSE.StatusChanged") {
             int evseIndex = params.value("evse_index").toInt();
@@ -413,14 +472,15 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
             emit evseStatusChanged(evseIndex, evseStatus);
         } else if (notification == "ChargePoint.ActiveErrorsChanged") {
             // TODO
+            qCWarning(dcEverest()) << "Active errors changed" << qUtf8Printable(QJsonDocument::fromVariant(params).toJson());
         } else if (notification == "EVSE.HardwareCapabilitiesChanged") {
             int evseIndex = params.value("evse_index").toInt();
             HardwareCapabilities hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(params.value("hardware_capabilities").toMap());
             emit hardwareCapabilitiesChanged(evseIndex, hardwareCapabilities);
         } else if (notification == "EVSE.MeterDataChanged") {
             int evseIndex = params.value("evse_index").toInt();
-            HardwareCapabilities hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(params.value("hardware_capabilities").toMap());
-            emit hardwareCapabilitiesChanged(evseIndex, hardwareCapabilities);
+            MeterData meterData = EverestJsonRpcClient::parseMeterData(params.value("meter_data").toMap());
+            emit meterDataChanged(evseIndex, meterData);
         }
     }
 }

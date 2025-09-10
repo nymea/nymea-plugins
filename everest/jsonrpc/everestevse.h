@@ -57,6 +57,7 @@ private:
     EverestJsonRpcClient::EVSEInfo m_evseInfo;
     EverestJsonRpcClient::EVSEStatus m_evseStatus;
     EverestJsonRpcClient::HardwareCapabilities m_hardwareCapabilities;
+    EverestJsonRpcClient::MeterData m_meterData;
 
     QVector<EverestJsonRpcReply *> m_pendingInitReplies;
 
@@ -65,6 +66,7 @@ private:
 
     void processEvseStatus();
     void processHardwareCapabilities();
+    void processMeterData();
 };
 
 #endif // EVERESTEVSE_H

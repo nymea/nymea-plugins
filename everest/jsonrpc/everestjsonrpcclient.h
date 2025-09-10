@@ -44,6 +44,7 @@ class EverestJsonRpcClient : public QObject
 {
     Q_OBJECT
 public:
+
     // API Enums
 
     enum ResponseError {
@@ -52,7 +53,7 @@ public:
         ResponseErrorErrorOutOfRange,
         ResponseErrorErrorValuesNotApplied,
         ResponseErrorErrorInvalidEVSEIndex,
-        ResponseErrorErrorInvalidConnectorID,
+        ResponseErrorErrorInvalidConnectorId,
         ResponseErrorErrorNoDataAvailable,
         ResponseErrorErrorUnknownError
     };
@@ -102,7 +103,8 @@ public:
         EvseStateCharging,
         EvseStateChargingPausedEV,
         EvseStateChargingPausedEVSE,
-        EvseStateFinished
+        EvseStateFinished,
+        EvseStateSwitchingPhases
     };
     Q_ENUM(EvseState)
 
@@ -134,14 +136,13 @@ public:
     } ACChargeStatus;
 
     typedef struct ACChargeParameters {
-        // V 1.0.0 supported values
         double maxCurrent = 0; // A
         double maxPhaseCount = 0;
 
+        // Not supported yet with 1.0.0
         // double maxChargePower = 0; // W
         // double minChargePower = 0; // W
         // double nominalFrequency = 0; // Hz
-
     } ACChargeParameters;
 
     typedef struct EVSEStatus {
@@ -155,17 +156,15 @@ public:
         ChargeProtocol chargeProtocol = ChargeProtocolUnknown;
         EvseState evseState = EvseStateUnplugged;
         QString evseStateString;
-        ACChargeStatus acChargeStatus;
-        ACChargeParameters acChargeParameters;
+
+        ACChargeStatus acChargeStatus; // optional
+        ACChargeParameters acChargeParameters; // optional
         // TODO:
-        // o: "ac_charge_param": "$ACChargeParametersObj",
         // o: "dc_charge_param": "$DCChargeParametersObj",
-        // o: "ac_charge_loop": "$ACChargeLoopObj",
-        // o: "dc_charge_loop": "$DCChargeLoopObj",
+        // o: "dc_charge_status": "$DCChargeLoopObj",
         // o: display_parameters: "$DisplayParametersObj",
 
     } EVSEStatus;
-
 
     typedef struct HardwareCapabilities {
         double maxCurrentExport = 0;
@@ -179,56 +178,34 @@ public:
         bool phaseSwitchDuringCharging = false;
     } HardwareCapabilities;
 
-
-    /*
-
-    MeterDataObj {
-
-        o: "current_A": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float",
-            "N": "float"
-        },
-        "energy_Wh_import": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float",
-            "total": "float"
-        },
-        o: "energy_Wh_export": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float",
-            "total": "float"
-        },
-        o: "frequency_Hz": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float"
-        },
-        "meter_id": "string",
-        o: "serial_number": "string",
-        o: "phase_seq_error": "bool",
-        o: "power_W": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float",
-            "total": "float"
-        },
-        "timestamp": "string",
-        o: "voltage_V": {
-            "L1": "float",
-            "L2": "float",
-            "L3": "float"
-    }
-
-     */
-
     typedef struct MeterData {
-
+        QString meterId;
+        QString serialNumber;
+        bool phaseSequenceError = false;
+        //quint64 timestamp = 0;
+        float powerL1 = 0; // W
+        float powerL2 = 0; // W
+        float powerL3 = 0; // W
+        float powerTotal = 0; // W
+        float currentL1 = 0; // A
+        float currentL2 = 0; // A
+        float currentL3 = 0; // A
+        float currentN = 0; // A
+        float voltageL1 = 0; // V
+        float voltageL2 = 0; // V
+        float voltageL3 = 0; // V
+        float energyImportedL1 = 0; // Wh
+        float energyImportedL2 = 0; // Wh
+        float energyImportedL3 = 0; // Wh
+        float energyImportedTotal = 0; // Wh
+        float energyExportedL1 = 0; // Wh
+        float energyExportedL2 = 0; // Wh
+        float energyExportedL3 = 0; // Wh
+        float energyExportedTotal = 0; // Wh
+        float frequencyL1 = 0; // Hz
+        float frequencyL2 = 0; // Hz
+        float frequencyL3 = 0; // Hz
     } MeterData;
-
 
     explicit EverestJsonRpcClient(QObject *parent = nullptr);
 
@@ -268,6 +245,7 @@ public:
     static ACChargeStatus parseACChargeStatus(const QVariantMap &acChargeStatusMap);
     static ACChargeParameters parseACChargeParameters(const QVariantMap &acChargeParametersMap);
     static HardwareCapabilities parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap);
+    static MeterData parseMeterData(const QVariantMap &meterDataMap);
 
 public slots:
     void connectToServer(const QUrl &serverUrl);
@@ -280,8 +258,8 @@ signals:
     // Notifications
     void evseStatusChanged(int evseIndex, const EverestJsonRpcClient::EVSEStatus &evseStatus);
     void hardwareCapabilitiesChanged(int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities);
-    void meterDataChanged(int evseIndex, const EverestJsonRpcClient::HardwareCapabilities &hardwareCapabilities);
-    // TODO void activeErrorsChanged();
+    void meterDataChanged(int evseIndex, const EverestJsonRpcClient::MeterData &hardwareCapabilities);
+    // void activeErrorsChanged(); // TODO
 
 private slots:
     void sendRequest(EverestJsonRpcReply *reply);

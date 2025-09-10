@@ -329,6 +329,14 @@
                             "defaultValue": 3
                         },
                         {
+                            "id": "9226f350-9ffd-4e0d-808b-67da51496ecb",
+                            "name": "state",
+                            "displayName": "State",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
                             "id": "2bb15b1e-43a2-4102-bbc2-04689bb749eb",
                             "name": "totalEnergyConsumed",
                             "displayName": "Total energy",
@@ -356,11 +364,93 @@
                             "cached": false
                         },
                         {
-                            "id": "9226f350-9ffd-4e0d-808b-67da51496ecb",
-                            "name": "state",
-                            "displayName": "State",
-                            "type": "QString",
-                            "defaultValue": "",
+                            "id": "717723fa-1d04-4211-9419-2f4ecc680dc0",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Current power phase A",
+                            "displayNameEvent": "Current power phase A changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "4f2e367e-3735-4164-ab29-ea0b2f4f244d",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Current power phase B",
+                            "displayNameEvent": "Current power phase B changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "0fb40c19-ff3f-4901-8445-4ed7ea5e225a",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Current power phase C",
+                            "displayNameEvent": "Current power phase C changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "cbbec08d-6abc-416e-929d-17ae381c496e",
+                            "name": "currentPhaseA",
+                            "displayName": "Phase A current",
+                            "displayNameEvent": "Phase A current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "36c21980-866c-4f6f-b447-33eb4d16539f",
+                            "name": "currentPhaseB",
+                            "displayName": "Phase B current",
+                            "displayNameEvent": "Phase B current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "43f6e2ee-88d1-40ac-89b6-2e2d83b6ca1e",
+                            "name": "currentPhaseC",
+                            "displayName": "Phase C current",
+                            "displayNameEvent": "Phase C current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "aa0da7f5-c7da-4c6b-800b-844b4cba4637",
+                            "name": "voltagePhaseA",
+                            "displayName": "Phase A voltage",
+                            "displayNameEvent": "Phase A volatage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "22545ffc-2123-413d-b000-5d67e5994498",
+                            "name": "voltagePhaseB",
+                            "displayName": "Phase B voltage",
+                            "displayNameEvent": "Phase B voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0.00,
+                            "cached": false
+                        },
+                        {
+                            "id": "13847b09-528b-4164-90e7-78c680276877",
+                            "name": "voltagePhaseC",
+                            "displayName": "Phase C voltage",
+                            "displayNameEvent": "Phase C voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0.00,
                             "cached": false
                         },
                         {
