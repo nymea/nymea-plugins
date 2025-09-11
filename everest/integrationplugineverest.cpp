@@ -58,6 +58,53 @@ void IntegrationPluginEverest::init()
 
 void IntegrationPluginEverest::startMonitoringAutoThings()
 {
+    // Check localhost for a websocket RpcApi module
+
+    // Let's check if we aleardy have a thing with those params
+    if (myThings().filterByThingClassId(everestConnectionThingClassId).filterByParam(everestConnectionThingAddressParamTypeId, "127.0.0.1").isEmpty()) {
+
+        // No localhost connection, trying to connect
+
+        QUrl url;
+        url.setScheme("ws");
+        url.setHost("127.0.0.1");
+        url.setPort(8080);
+
+        qCDebug(dcEverest()) << "AutoSetup: There is no localhost everest connection set up. Checking everest RpcApi modules on" << url.toString();
+
+        EverestJsonRpcClient *client = new EverestJsonRpcClient(this);
+        connect(client, &EverestJsonRpcClient::availableChanged, this, [this, client](bool available){
+            if (available) {
+                qCDebug(dcEverest()) << "AutoSetup: Found JsonRpc interface on" << client->serverUrl().toString();
+
+                QString title = QString("EVerest connection");
+                ThingDescriptor descriptor(everestConnectionThingClassId, title);
+
+                ParamList params;
+                params.append(Param(everestConnectionThingAddressParamTypeId, client->serverUrl().host()));
+                params.append(Param(everestConnectionThingMacAddressParamTypeId, QString()));
+                params.append(Param(everestConnectionThingHostNameParamTypeId, QString()));
+                params.append(Param(everestConnectionThingPortParamTypeId, client->serverUrl().port()));
+                descriptor.setParams(params);
+
+                qCDebug(dcEverest()) << "AutoSetup: Adding new localhost EVerest connection instances.";
+                emit autoThingsAppeared(ThingDescriptors() << descriptor);
+
+                client->disconnectFromServer();
+                client->deleteLater();
+            }
+        });
+
+        connect(client, &EverestJsonRpcClient::connectionErrorOccurred, this, [client](){
+            qCDebug(dcEverest()) << "AutoSetup: The connection to" << client->serverUrl().toString() << "failed";
+            client->disconnectFromServer();
+            client->deleteLater();
+        });
+
+        client->connectToServer(url);
+    }
+
+
     if (m_useMqtt) {
 
         // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
@@ -121,6 +168,9 @@ void IntegrationPluginEverest::startMonitoringAutoThings()
 
         mqttDiscovery->startLocalhost();
     }
+
+
+
 }
 
 void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
@@ -220,7 +270,7 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
 
             foreach (const EverestJsonRpcDiscovery::Result &result, jsonRpcDiscovery->results()) {
                 // Create one EV charger foreach available connector on that host
-                QString title = QString("Everest");
+                QString title = QString("Everest connection");
                 QString description;
                 MacAddressInfo macInfo;
 
