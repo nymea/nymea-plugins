@@ -195,6 +195,13 @@
                             "displayName": "Add meter",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "67e91768-86c4-4021-a93b-4c240adce687",
+                            "name": "addInverter",
+                            "displayName": "Add inverter",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "paramTypes": [
@@ -380,6 +387,40 @@
                             "unit": "Ampere",
                             "defaultValue": 0,
                             "cached": false
+                        }
+                    ]
+                },
+                {
+                    "name": "senecInverter",
+                    "displayName": "SENEC Inverter",
+                    "id": "5682ab06-9e0e-40ce-97c0-53dd411a012f",
+                    "createMethods": [ "auto" ],
+                    "interfaces": ["solarinverter", "connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "4a9e27cb-0e4f-4189-8a26-ddd7a604fb90",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "990a62ba-3582-4e1e-8449-dfdece3c519c",
+                            "name": "currentPower",
+                            "displayName": "Current power usage",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f052af7c-2408-4f1e-af35-c874461acb9d",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Energy returned",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
                         }
                     ]
                 }

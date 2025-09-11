@@ -134,13 +134,6 @@ QString SenecStorageLan::parseString(const QString &value)
     return value.right(value.length() - 3);
 }
 
-// quint8 SenecStorageLan::parseUInt8(const QString &value)
-// {
-//     Q_ASSERT_X(value.left(3) == "u8_", "SenecStorageLan", "The given value does not seem to be a uint8, it is not starting with u8_");
-
-// }
-
-
 void SenecStorageLan::initialize()
 {
     // if (m_url.isValid()) {

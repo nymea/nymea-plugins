@@ -129,9 +129,9 @@ void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
                 return;
             }
 
-            // qCDebug(dcSenec()) << "Senec server is reachable. Starting the OpenID auth process" << connection->authEndpoint().toString(QUrl::FullyEncod7edy);
-            // info->setOAuthUrl(connection->authEndpoint());
-            // info->finish(Thing::ThingErrorNoError);
+            qCDebug(dcSenec()) << "Senec server is reachable. Starting the OpenID auth process" << connection->authEndpoint().toString(QUrl::FullyEncoded);
+            info->setOAuthUrl(connection->authEndpoint());
+            info->finish(Thing::ThingErrorNoError);
         });
 
         connection->initialize();
@@ -238,18 +238,20 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
             }
         });
 
-        connect(storage, &SenecStorageLan::availableChanged, thing, [thing](bool available){
+        connect(storage, &SenecStorageLan::availableChanged, thing, [thing, this](bool available){
             thing->setStateValue(senecStorageLanConnectedStateTypeId, available);
 
-            // TODO: Update also child things
-
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                child->setStateValue("connected", available);
+            }
         });
 
         connect(storage, &SenecStorageLan::updatedFinished, thing, [storage, thing, this](bool success){
 
             thing->setStateValue(senecStorageLanConnectedStateTypeId, storage->available());
-
-            // TODO: Update also child things
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+                child->setStateValue("connected", storage->available());
+            }
 
             if (!success)
                 return;
@@ -278,8 +280,20 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
                 meterThing->setStateValue(senecMeterCurrentPowerStateTypeId, storage->gridPower());
                 meterThing->setStateValue(senecMeterConnectedStateTypeId, true);
             }
-        });
 
+            // Check if we have an inverter
+            Thing *inverterThing = nullptr;
+            Things inverterThings = myThings().filterByThingClassId(senecInverterThingClassId).filterByParentId(thing->id());
+            if (!inverterThings.isEmpty()) {
+                inverterThing = inverterThings.first();
+            }
+
+            // If so, update
+            if (inverterThing) {
+                inverterThing->setStateValue(senecInverterCurrentPowerStateTypeId, storage->inverterPower());
+                inverterThing->setStateValue(senecInverterConnectedStateTypeId, true);
+            }
+        });
 
         connect(thing, &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
             if (paramTypeId == senecStorageLanSettingsAddMeterParamTypeId) {
@@ -296,6 +310,22 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
                     if (!existingMeters.isEmpty()) {
                         qCDebug(dcSenec()) << "Remove meter thing for" << thing->name();
                         emit autoThingDisappeared(existingMeters.takeFirst()->id());
+                    }
+                }
+            } else if (paramTypeId == senecStorageLanSettingsAddMeterParamTypeId) {
+
+                if (value.toBool()) {
+                    // Check if we have to add the meter
+                    if (myThings().filterByThingClassId(senecInverterThingClassId).filterByParentId(thing->id()).isEmpty()) {
+                        qCDebug(dcSenec()) << "Add inverter for" << thing->name();
+                        emit autoThingsAppeared(ThingDescriptors() << ThingDescriptor(senecInverterThingClassId, "SENEC Inverter", QString(), thing->id()));
+                    }
+                } else {
+                    // Check if we have to remove the meter
+                    Things existingInverters = myThings().filterByThingClassId(senecInverterThingClassId).filterByParentId(thing->id());
+                    if (!existingInverters.isEmpty()) {
+                        qCDebug(dcSenec()) << "Remove inverter thing for" << thing->name();
+                        emit autoThingDisappeared(existingInverters.takeFirst()->id());
                     }
                 }
             }
@@ -326,12 +356,30 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
                         emit autoThingDisappeared(existingMeters.takeFirst()->id());
                     }
                 }
+            } else if (paramTypeId == senecStorageSettingsAddInverterParamTypeId) {
+
+                if (value.toBool()) {
+                    // Check if we have to add the meter
+                    if (myThings().filterByThingClassId(senecInverterThingClassId).filterByParentId(thing->id()).isEmpty()) {
+                        qCDebug(dcSenec()) << "Add inverter for" << thing->name();
+                        emit autoThingsAppeared(ThingDescriptors() << ThingDescriptor(senecInverterThingClassId, "SENEC Inverter", QString(), thing->id()));
+                    }
+                } else {
+                    // Check if we have to remove the meter
+                    Things existingInverters = myThings().filterByThingClassId(senecInverterThingClassId).filterByParentId(thing->id());
+                    if (!existingInverters.isEmpty()) {
+                        qCDebug(dcSenec()) << "Remove inverter thing for" << thing->name();
+                        emit autoThingDisappeared(existingInverters.takeFirst()->id());
+                    }
+                }
             }
         });
 
         info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == senecMeterThingClassId) {
+        info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == senecInverterThingClassId) {
         info->finish(Thing::ThingErrorNoError);
     }
 }

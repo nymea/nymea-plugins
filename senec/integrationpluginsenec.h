@@ -68,6 +68,7 @@ private:
     PluginTimer *m_refreshTimer = nullptr;
 
     QHash<Thing *, SenecAccount *> m_accounts;
+
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
     QHash<Thing *, SenecStorageLan *> m_storages;
 
