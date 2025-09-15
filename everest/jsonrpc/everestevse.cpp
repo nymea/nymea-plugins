@@ -239,7 +239,9 @@ void EverestEvse::processEvseStatus()
         m_thing->setStateValue(everestChargerAcStateStateTypeId, m_evseStatus.evseStateString);
         m_thing->setStateValue(everestChargerAcChargingStateTypeId, m_evseStatus.evseState == EverestJsonRpcClient::EvseStateCharging);
         m_thing->setStateValue(everestChargerAcPluggedInStateTypeId, m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged);
-        // TODO: check what we do it available is false, shall we disconnect the thing or introduce a new state
+
+        m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
+        m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
     }
 }
 
@@ -253,7 +255,6 @@ void EverestEvse::processHardwareCapabilities()
             m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, 3);
         } else {
             m_thing->setStatePossibleValues(everestChargerAcDesiredPhaseCountStateTypeId, { 1, 3 });
-            m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, m_thing->stateValue(everestChargerAcDesiredPhaseCountStateTypeId));
         }
 
         m_thing->setStateMaxValue(everestChargerAcMaxChargingCurrentStateTypeId, m_hardwareCapabilities.maxCurrentImport);
