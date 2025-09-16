@@ -241,6 +241,8 @@ void EverestEvse::processEvseStatus()
         m_thing->setStateValue(everestChargerAcPluggedInStateTypeId, m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged);
 
         m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
+        m_thing->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
+
         m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
     }
 }
