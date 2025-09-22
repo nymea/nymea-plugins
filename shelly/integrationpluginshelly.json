@@ -2898,7 +2898,7 @@
                 {
                     "id": "ba293550-d2af-4463-b973-e1812ab67b96",
                     "name": "shellyEm3",
-                    "displayName": "Shelly 3EM",
+                    "displayName": "Shelly 3EM (gen1)",
                     "createMethods": ["discovery"],
                     "interfaces": [ "energymeter", "wirelessconnectable", "update"],
                     "paramTypes": [
@@ -3207,7 +3207,7 @@
                 {
                     "id": "d7962c7c-82fe-4d2c-8e79-0b9ff2ee5573",
                     "name": "shellyPro3EM",
-                    "displayName": "Shelly Pro 3EM",
+                    "displayName": "Shelly Pro 3EM (120A / 400A)",
                     "createMethods": ["discovery"],
                     "interfaces": [ "energymeter", "wirelessconnectable", "update"],
                     "paramTypes": [
@@ -3449,6 +3449,256 @@
                         },
                         {
                             "id": "b0043a22-21e4-4dfc-a813-2a11908a6c04",
+                            "name": "reset",
+                            "displayName": "Reset data"
+                        }
+                    ]
+                },
+                {
+                    "id": "c4428100-b270-4d95-91ae-492da8176311",
+                    "name": "shelly3EM",
+                    "displayName": "Shelly 3EM (Gen3)",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "energymeter", "wirelessconnectable", "update"],
+                    "paramTypes": [
+                        {
+                            "id": "a50bcfc8-ca4e-43d6-a250-546f717ad8b2",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "e5c6a979-1e31-4252-8cb3-08c1e604a67f",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "e116f070-bde3-4440-89b5-9fa671419c1e",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "3da67c4e-0a70-423b-a3bf-c6fb035ece0c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a199035a-ede2-4b7e-8bbc-4346bddfc8ef",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1c3cf72d-46e8-47b7-b80b-312d23a16311",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total consumed energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a7a74cfa-ade2-4527-af7e-1475fff5b88f",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total returned energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a49564b6-71e6-4765-9758-af61898632c1",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "687b3de6-7f02-45d2-ae23-015b8341be0b",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Power usage (Phase A)",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "0a5e4116-f486-49a8-bb49-2d911ff64fd8",
+                            "name": "currentPhaseA",
+                            "displayName": "Current (Phase A)",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "a17fc5ba-7250-4c29-85eb-06491925b3ce",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage (Phase A)",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
+                        },
+                        {
+                            "id": "39533108-28d9-4ec5-af17-b42c95dd73bc",
+                            "name": "energyConsumedPhaseA",
+                            "displayName": "Total consumed energy (Phase A)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "962bc7d3-d80f-461d-b08e-c01f23af3197",
+                            "name": "energyProducedPhaseA",
+                            "displayName": "Total returned energy (Phase A)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "549a50bf-11a0-47dd-99bc-8dcca9c31989",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Power usage (Phase B)",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "eb475aad-faf4-4c75-bc1a-b301176604bb",
+                            "name": "currentPhaseB",
+                            "displayName": "Current (Phase B)",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "b0dcc6d0-5449-4716-9dbe-859513349b64",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage (Phase B)",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
+                        },
+                        {
+                            "id": "6f238eb1-9c4f-4beb-889a-73aa95a837ff",
+                            "name": "energyConsumedPhaseB",
+                            "displayName": "Total consumed energy (Phase B)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b3c78052-4d92-4103-9ab3-f23e256e92a3",
+                            "name": "energyProducedPhaseB",
+                            "displayName": "Total returned energy (Phase B)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "aae6fcb0-d6ca-4b51-a913-5f2134c14026",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Power usage (Phase C)",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "89ba2b3a-4fc7-4266-812b-7738d5b4c33d",
+                            "name": "currentPhaseC",
+                            "displayName": "Current (Phase C)",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "3ea8e4cf-c1ad-4843-b2de-a3196231224e",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage (Phase C)",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false,
+                            "filter": "adaptive"
+                        },
+                        {
+                            "id": "38f76e32-46b0-46bc-8dd3-93a422996584",
+                            "name": "energyConsumedPhaseC",
+                            "displayName": "Total consumed energy (Phase C)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3d0c568d-d478-4f1f-83df-1e07eb57d04b",
+                            "name": "energyProducedPhaseC",
+                            "displayName": "Total returned energy (Phase C)",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d667bec3-e0a2-48fc-86be-2da1ff487bb3",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "3f08799c-74ff-415a-86fd-d89d29dc8f10",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d742d57b-4b60-484a-ae3b-ba1730e6bc45",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d8505ed8-f7cc-4bfd-939a-90f99aaa242b",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "971a7849-f5b1-496c-9f7c-0f61a6c5182b",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        },
+                        {
+                            "id": "f4e2db2b-3832-4ffb-bd75-60e180fc59dd",
                             "name": "reset",
                             "displayName": "Reset data"
                         }
