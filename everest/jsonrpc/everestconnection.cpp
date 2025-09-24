@@ -172,6 +172,10 @@ void EverestConnection::onMonitorReachableChanged(bool reachable)
 QUrl EverestConnection::buildUrl() const
 {
     QUrl url;
+
+    if (!m_monitor)
+        return url;
+
     url.setScheme("ws");
     url.setHost(m_monitor->networkDeviceInfo().address().toString());
     url.setPort(m_port);

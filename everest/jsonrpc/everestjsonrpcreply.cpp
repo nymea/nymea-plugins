@@ -36,7 +36,7 @@ EverestJsonRpcReply::EverestJsonRpcReply(int commandId, QString method, QVariant
     m_method{method},
     m_params{params}
 {
-    m_timer.setInterval(2000);
+    m_timer.setInterval(30000);
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, [this](){
         m_error = ErrorTimeout;
@@ -73,7 +73,6 @@ QVariantMap EverestJsonRpcReply::requestMap()
     if (!m_params.isEmpty())
         request.insert("params", params());
 
-    m_commandId++;
     return request;
 }
 

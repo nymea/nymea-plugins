@@ -104,7 +104,6 @@ void IntegrationPluginEverest::startMonitoringAutoThings()
         client->connectToServer(url);
     }
 
-
     if (m_useMqtt) {
 
         // Check on localhost if there is any EVerest instance running and if we have to set up a thing for this EV charger
@@ -168,8 +167,6 @@ void IntegrationPluginEverest::startMonitoringAutoThings()
 
         mqttDiscovery->startLocalhost();
     }
-
-
 
 }
 
@@ -432,7 +429,6 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                         descriptors.append(descriptor);
                     }
                 }
-
 
                 // TODO: evaluate if any thing dissapeared
 

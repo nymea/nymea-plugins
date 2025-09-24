@@ -272,6 +272,8 @@ private:
     EverestJsonRpcInterface *m_interface = nullptr;
     QHash<int, EverestJsonRpcReply *> m_replies;
 
+    EverestJsonRpcReply *createReply(QString method, QVariantMap params = QVariantMap());
+
     // Init infos
     QString m_apiVersion;
     QString m_everestVersion;
