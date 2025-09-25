@@ -116,8 +116,10 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegularExpression("^shellybutton1-[0-9-A-Z]+$");
         } else if (info->thingClassId() == shellyEmThingClassId) {
             namePattern = QRegularExpression("^shellyem(g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
-        } else if (info->thingClassId() == shellyEm3ThingClassId) {
+        } else if (info->thingClassId() == shellyEm3ThingClassId) { // gen1
             namePattern = QRegularExpression("^shellyem3-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shelly3EMThingClassId) { // 3EM-63 W/T Gen3
+            namePattern = QRegularExpression("^shelly3em(63g3)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
         } else if (info->thingClassId() == shellyPro3EMThingClassId) {
             namePattern = QRegularExpression("^ShellyPro3EM(400)?-[0-9A-Z]+$", QRegularExpression::CaseInsensitiveOption);
         } else if (info->thingClassId() == shellyHTThingClassId) {
@@ -1796,6 +1798,12 @@ void IntegrationPluginShelly::setupGen2Plus(ThingSetupInfo *info)
                 return;
             }
 
+            if (info->thing()->thingClassId() == shelly3EMThingClassId) {
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+
             if (info->thing()->thingClassId() == shellyPro3EMThingClassId) {
                 info->finish(Thing::ThingErrorNoError);
                 return;
@@ -1924,28 +1932,55 @@ void IntegrationPluginShelly::setupGen2Plus(ThingSetupInfo *info)
             }
             if (id == "em:0") {
                 QVariantMap em0 = notification.value("em:0").toMap();
-                thing->setStateValue(shellyPro3EMCurrentPowerPhaseAStateTypeId, em0.value("a_act_power").toDouble());
-                thing->setStateValue(shellyPro3EMVoltagePhaseAStateTypeId, em0.value("a_voltage").toDouble());
-                thing->setStateValue(shellyPro3EMCurrentPhaseAStateTypeId, em0.value("a_current").toDouble());
-                thing->setStateValue(shellyPro3EMCurrentPowerPhaseBStateTypeId, em0.value("b_act_power").toDouble());
-                thing->setStateValue(shellyPro3EMVoltagePhaseBStateTypeId, em0.value("b_voltage").toDouble());
-                thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
-                thing->setStateValue(shellyPro3EMCurrentPowerPhaseCStateTypeId, em0.value("c_act_power").toDouble());
-                thing->setStateValue(shellyPro3EMVoltagePhaseCStateTypeId, em0.value("c_voltage").toDouble());
-                thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
 
-                thing->setStateValue(shellyPro3EMCurrentPowerStateTypeId, em0.value("total_act_power").toDouble());
+                if (thing->thingClassId() == shellyPro3EMThingClassId) {
+                    thing->setStateValue(shellyPro3EMCurrentPowerPhaseAStateTypeId, em0.value("a_act_power").toDouble());
+                    thing->setStateValue(shellyPro3EMVoltagePhaseAStateTypeId, em0.value("a_voltage").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPhaseAStateTypeId, em0.value("a_current").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPowerPhaseBStateTypeId, em0.value("b_act_power").toDouble());
+                    thing->setStateValue(shellyPro3EMVoltagePhaseBStateTypeId, em0.value("b_voltage").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPowerPhaseCStateTypeId, em0.value("c_act_power").toDouble());
+                    thing->setStateValue(shellyPro3EMVoltagePhaseCStateTypeId, em0.value("c_voltage").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPowerStateTypeId, em0.value("total_act_power").toDouble());
+                } else if (thing->thingClassId() == shelly3EMThingClassId) {
+                    thing->setStateValue(shelly3EMCurrentPowerPhaseAStateTypeId, em0.value("a_act_power").toDouble());
+                    thing->setStateValue(shelly3EMVoltagePhaseAStateTypeId, em0.value("a_voltage").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPhaseAStateTypeId, em0.value("a_current").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPowerPhaseBStateTypeId, em0.value("b_act_power").toDouble());
+                    thing->setStateValue(shelly3EMVoltagePhaseBStateTypeId, em0.value("b_voltage").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPowerPhaseCStateTypeId, em0.value("c_act_power").toDouble());
+                    thing->setStateValue(shelly3EMVoltagePhaseCStateTypeId, em0.value("c_voltage").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPowerStateTypeId, em0.value("total_act_power").toDouble());
+                }
+
+
             }
             if (id == "emdata:0") {
                 QVariantMap emdata0 = notification.value("emdata:0").toMap();
-                thing->setStateValue(shellyPro3EMEnergyConsumedPhaseAStateTypeId, emdata0.value("a_total_act_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMEnergyProducedPhaseAStateTypeId, emdata0.value("a_total_act_ret_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMEnergyConsumedPhaseBStateTypeId, emdata0.value("b_total_act_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMEnergyProducedPhaseBStateTypeId, emdata0.value("b_total_act_ret_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMEnergyConsumedPhaseCStateTypeId, emdata0.value("c_total_act_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMEnergyProducedPhaseCStateTypeId, emdata0.value("c_total_act_ret_energy").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMTotalEnergyConsumedStateTypeId, emdata0.value("total_act").toDouble() / 1000);
-                thing->setStateValue(shellyPro3EMTotalEnergyProducedStateTypeId, emdata0.value("total_act_ret").toDouble() / 1000);
+
+                if (thing->thingClassId() == shellyPro3EMThingClassId) {
+                    thing->setStateValue(shellyPro3EMEnergyConsumedPhaseAStateTypeId, emdata0.value("a_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMEnergyProducedPhaseAStateTypeId, emdata0.value("a_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMEnergyConsumedPhaseBStateTypeId, emdata0.value("b_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMEnergyProducedPhaseBStateTypeId, emdata0.value("b_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMEnergyConsumedPhaseCStateTypeId, emdata0.value("c_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMEnergyProducedPhaseCStateTypeId, emdata0.value("c_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMTotalEnergyConsumedStateTypeId, emdata0.value("total_act").toDouble() / 1000);
+                    thing->setStateValue(shellyPro3EMTotalEnergyProducedStateTypeId, emdata0.value("total_act_ret").toDouble() / 1000);
+                } else if (thing->thingClassId() == shelly3EMThingClassId) {
+                    thing->setStateValue(shelly3EMEnergyConsumedPhaseAStateTypeId, emdata0.value("a_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMEnergyProducedPhaseAStateTypeId, emdata0.value("a_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMEnergyConsumedPhaseBStateTypeId, emdata0.value("b_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMEnergyProducedPhaseBStateTypeId, emdata0.value("b_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMEnergyConsumedPhaseCStateTypeId, emdata0.value("c_total_act_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMEnergyProducedPhaseCStateTypeId, emdata0.value("c_total_act_ret_energy").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMTotalEnergyConsumedStateTypeId, emdata0.value("total_act").toDouble() / 1000);
+                    thing->setStateValue(shelly3EMTotalEnergyProducedStateTypeId, emdata0.value("total_act_ret").toDouble() / 1000);
+                }
             }
 
             if (id.startsWith("temperature")) {

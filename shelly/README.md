@@ -17,8 +17,9 @@ The currently supported devices are:
 * Shelly Dimmer / Dimmer 2
 * Shelly Button 1
 * Shelly EM
-* Shelly 3EM
-* Shelly Pro 3EM (including 400A model)
+* Shelly 3EM (gen1)
+* Shelly 3EM (gen3) | 3EM-63W/T
+* Shelly Pro 3EM (120A and 400A)
 * Shelly H+T
 * Shelly i3
 * Shelly Motion
