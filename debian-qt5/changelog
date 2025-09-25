@@ -1,3 +1,12 @@
+nymea-plugins (1.12.0) jammy; urgency=medium
+
+  [ Simon Stürz ]
+  * EVerest: Add RPC API module support
+  * Add Qt6 support
+  * shelly: Add support for shelly 3EM gen3
+
+ -- jenkins <developer@nymea.io>  Thu, 25 Sep 2025 10:51:04 +0200
+
 nymea-plugins (1.11.1) jammy; urgency=medium
 
   [ timon@nymea-plugins-bookworm-amd64-armhf ]
