@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,8 +28,9 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "plugininfo.h"
 #include "integrationpluginusbrelay.h"
+#include "plugininfo.h"
+#include "usbrelay.h"
 
 #include <QTimer>
 #include <hidapi/hidapi.h>
@@ -132,9 +133,9 @@ void IntegrationPluginUsbRelay::discoverThings(ThingDiscoveryInfo *info)
         quint16 releaseNumber = static_cast<quint16>(currentDevice->release_number);
         quint16 productId = static_cast<quint16>(currentDevice->product_id);
         quint16 vendorId = static_cast<quint16>(currentDevice->vendor_id);
-        int relayCount = QString(product.at(product.count() -1)).toInt();
+        int relayCount = QString(product.at(product.length() -1)).toInt();
 
-        qCDebug(dcUsbRelay()) << path << manufacturer << product << serialnumber << "Relay count" << relayCount << QString("%1:%2").arg(QString::number(vendorId, 16)).arg(QString::number(productId, 16)) << releaseNumber;
+        qCDebug(dcUsbRelay()) << path << manufacturer << product << serialnumber << "Relay count" << relayCount << QString("%1:%2").arg(QString::number(vendorId, 16), QString::number(productId, 16)) << releaseNumber;
 
         // Open it to get more details
         hid_device *hidDevice = nullptr;
@@ -161,7 +162,7 @@ void IntegrationPluginUsbRelay::discoverThings(ThingDiscoveryInfo *info)
 
         hid_close(hidDevice);
 
-        ThingDescriptor descriptor(usbRelayConnectorThingClassId, "USB Relay Connector", QString("%1 (%2)").arg(product).arg(path));
+        ThingDescriptor descriptor(usbRelayConnectorThingClassId, "USB Relay Connector", QString("%1 (%2)").arg(product, path));
         ParamList params;
         params.append(Param(usbRelayConnectorThingPathParamTypeId, path));
         params.append(Param(usbRelayConnectorThingRelayCountParamTypeId, relayCount));

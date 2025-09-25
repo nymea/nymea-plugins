@@ -20,8 +20,10 @@
 
 #include "v2xeamberelectric.h"
 #include "plugininfo.h"
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+
+#include <hardwaremanager.h>
+#include <plugintimer.h>
+#include <network/networkaccessmanager.h>
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -29,9 +31,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
-
-
-
 
 const QString constSite = "01J1XBQFGX57137EH0C6AG040D";
 const QString noOfDataNeed = "5";

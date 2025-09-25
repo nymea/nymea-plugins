@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,14 +30,13 @@
 
 #include "httpsimpleserver.h"
 
-#include "types/statetype.h"
 #include "extern-plugininfo.h"
 
 #include <QTcpSocket>
 #include <QDebug>
 #include <QDateTime>
 #include <QUrlQuery>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 
 HttpSimpleServer::HttpSimpleServer(quint16 port, QObject *parent):
@@ -58,8 +57,8 @@ void HttpSimpleServer::incomingConnection(qintptr socket)
     // works asynchronously, this means that all the communication is done
     // in the two slots readClient() and discardClient().
     QTcpSocket* tcpSocket = new QTcpSocket(this);
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readClient()));
-    connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(discardClient()));
+    connect(tcpSocket, &QTcpSocket::readyRead, this, &HttpSimpleServer::readClient);
+    connect(tcpSocket, &QTcpSocket::disconnected, this, &HttpSimpleServer::discardClient);
     tcpSocket->setSocketDescriptor(socket);
 
 }
@@ -69,17 +68,16 @@ void HttpSimpleServer::readClient()
     // This slot is called when the client sent data to the server. The
     // server looks if it was a get request and sends a very simple HTML
     // document back.
-    QTcpSocket* tcpSocket = static_cast<QTcpSocket*>(sender());
+    QTcpSocket *tcpSocket = static_cast<QTcpSocket*>(sender());
     if (tcpSocket->canReadLine()) {
-
         QByteArray data = tcpSocket->readAll();
-        QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
+        QStringList tokens = QString(data).split(QRegularExpression("[ \r\n][ \r\n]*"));
         qCDebug(dcHttpCommander()) << "Http Request, type" << tokens[0] << "path" << tokens[1] << "body" << tokens.last();
 
         if ((tokens[0] == "GET")      ||
-                (tokens[0] == "PUT")  ||
-                (tokens[0] == "POST") ||
-                (tokens[0] == "DELETE")) {
+            (tokens[0] == "PUT")  ||
+            (tokens[0] == "POST") ||
+            (tokens[0] == "DELETE")) {
 
             QTextStream os(tcpSocket);
             os.setAutoDetectUnicode(true);
@@ -96,16 +94,16 @@ void HttpSimpleServer::readClient()
 
 void HttpSimpleServer::discardClient()
 {
-    QTcpSocket* socket = static_cast<QTcpSocket*>(sender());
+    QTcpSocket *socket = static_cast<QTcpSocket *>(sender());
     socket->deleteLater();
 }
 
 QString HttpSimpleServer::generateHeader()
 {
     QString contentHeader(
-                "HTTP/1.0 200 Ok\r\n"
-                "Content-Type: text/html; charset=\"utf-8\"\r\n"
-                "\r\n"
-                );
+        "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: text/html; charset=\"utf-8\"\r\n"
+        "\r\n"
+        );
     return contentHeader;
 }

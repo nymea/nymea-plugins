@@ -103,7 +103,7 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
 
         NetatmoConnection *connection = m_pendingSetups.value(info->thingId());
         if (!connection) {
-            qWarning(dcNetatmo()) << "No NetatmoConnect connection found for device:"  << info->thingName();
+            qCWarning(dcNetatmo()) << "No NetatmoConnect connection found for device:"  << info->thingName();
             m_pendingSetups.remove(info->thingId());
             info->finish(Thing::ThingErrorHardwareFailure);
             return;

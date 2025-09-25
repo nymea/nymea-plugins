@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,15 +31,16 @@
 #ifndef INTEGRATIONPLUGINSOLARLOG_H
 #define INTEGRATIONPLUGINSOLARLOG_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
 
 #include <QDebug>
 #include <QHostAddress>
 #include <QUrlQuery>
 
+class PluginTimer;
 
-class IntegrationPluginSolarLog: public IntegrationPlugin {
+class IntegrationPluginSolarLog: public IntegrationPlugin
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsolarlog.json")
     Q_INTERFACES(IntegrationPlugin)

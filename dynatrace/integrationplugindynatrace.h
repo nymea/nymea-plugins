@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,14 +31,15 @@
 #ifndef INTEGRATIONPLUGINDYNATRACE_H
 #define INTEGRATIONPLUGINDYNATRACE_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/oauth2.h"
-#include "ufo.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+#include <network/oauth2.h>
 
 #include <QHash>
 #include <QTimer>
 #include <QHostInfo>
+
+#include "ufo.h"
 
 class IntegrationPluginDynatrace : public IntegrationPlugin
 {

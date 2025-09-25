@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #ifndef INTEGRATIONPLUGINMYSTROM_H
 #define INTEGRATIONPLUGINMYSTROM_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include <QUrlQuery>
 #include <QNetworkReply>
@@ -58,7 +58,7 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    void finishDiscoveryReply(QNetworkReply* reply, ThingDiscoveryInfo* info, QList<QNetworkReply*> *pendingReplies);
+    void finishDiscoveryReply(QNetworkReply *reply, ThingDiscoveryInfo *info, QList<QNetworkReply *> *pendingReplies);
     QUrl composeUrl(Thing *thing, const QString &path);
 
     ZeroConfServiceBrowser *m_zeroConf = nullptr;

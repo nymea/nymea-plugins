@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,8 +37,10 @@
  * {0000fe95-0000-1000-8000-00805f9b34fb}
  * {0000fef5-0000-1000-8000-00805f9b34fb}
  */
+
+#include <hardware/bluetoothlowenergy/bluetoothlowenergymanager.h>
+
 #include "plugininfo.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 #include "integrationpluginflowercare.h"
 #include "flowercare.h"
 

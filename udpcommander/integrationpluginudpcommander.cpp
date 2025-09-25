@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,8 +29,9 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginudpcommander.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
+
+#include <integrations/thing.h>
 
 IntegrationPluginUdpCommander::IntegrationPluginUdpCommander()
 {
@@ -53,7 +54,7 @@ void IntegrationPluginUdpCommander::setupThing(ThingSetupInfo *info)
         }
         qCDebug(dcUdpCommander()) << "Listening on port" << port;
 
-        connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
+        connect(udpSocket, &QUdpSocket::readyRead, this, &IntegrationPluginUdpCommander::readPendingDatagrams);
         m_receiverList.insert(udpSocket, thing);
 
         return info->finish(Thing::ThingErrorNoError);
@@ -76,7 +77,7 @@ void IntegrationPluginUdpCommander::executeAction(ThingActionInfo *info)
     int port = thing->paramValue(udpCommanderThingPortParamTypeId).toInt();
     QHostAddress address = QHostAddress(thing->paramValue(udpCommanderThingAddressParamTypeId).toString());
     QByteArray data = action.param(udpCommanderTriggerActionDataParamTypeId).value().toByteArray();
-    qDebug(dcUdpCommander()) << "Send UDP datagram:" << data << "address:" << address.toIPv4Address() << "port:" << port;
+    qCDebug(dcUdpCommander()) << "Send UDP datagram:" << data << "address:" << address.toIPv4Address() << "port:" << port;
     udpSocket->writeDatagram(data, address, port);
 
     return info->finish(Thing::ThingErrorNoError);

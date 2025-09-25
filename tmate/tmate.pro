@@ -1,8 +1,8 @@
 include(../plugins.pri)
 
 SOURCES += \
-    integrationplugintmate.cpp \
+    integrationplugintmate.cpp
 
 HEADERS += \
-    integrationplugintmate.h \
+    integrationplugintmate.h
 

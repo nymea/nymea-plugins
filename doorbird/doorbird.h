@@ -1,6 +1,6 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,8 +36,6 @@
 #include <QNetworkAccessManager>
 #include <QUuid>
 #include <QImage>
-
-#include "network/networkaccessmanager.h"
 
 class Doorbird : public QObject
 {
@@ -89,7 +87,7 @@ public:
     void connectToEventMonitor();
 private:
     QHostAddress m_address;
-    QNetworkAccessManager *m_networkAccessManager;
+    QNetworkAccessManager *m_networkAccessManager = nullptr;
     QByteArray m_readBuffer;
 
     QList<QNetworkReply *> m_networkRequests;
@@ -103,7 +101,7 @@ signals:
     void requestSent(QUuid requestId, bool success);
 
     void eventReveiced(EventType eventType, bool status);
-    void favoritesReceived(QList<FavoriteObject> favourites);
+    void favoritesReceived(QList<Doorbird::FavoriteObject> favourites);
 
     void sessionIdReceived(const QString &sessionId);
     void liveImageReceived(QImage image);

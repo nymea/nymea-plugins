@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -32,8 +32,7 @@
 #define SGREADYINTERFACE_H
 
 #include <QObject>
-
-#include "gpio.h"
+#include <gpio.h>
 
 class SgReadyInterface : public QObject
 {

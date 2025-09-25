@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,10 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginmqttclient.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/mqtt/mqttprovider.h"
+
+#include <integrations/thing.h>
+#include <network/mqtt/mqttprovider.h>
 
 #include <mqttclient.h>
 
@@ -173,7 +174,8 @@ void IntegrationPluginMqttClient::publishReceived(const QString &topic, const QB
         topicParamTypeId = mqttClientTriggeredEventTopicParamTypeId;
         payloadParamTypeId = mqttClientTriggeredEventDataParamTypeId;
     }
-    emitEvent(Event(eventTypeId, thing->id(), ParamList() << Param(topicParamTypeId, topic) << Param(payloadParamTypeId, payload)));
+
+    emit emitEvent(Event(eventTypeId, thing->id(), ParamList() << Param(topicParamTypeId, topic) << Param(payloadParamTypeId, payload)));
 }
 
 void IntegrationPluginMqttClient::thingRemoved(Thing *thing)

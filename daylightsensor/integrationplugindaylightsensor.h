@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,9 +31,8 @@
 #ifndef INTEGRATIONPLUGINDAYLIGHTSENSOR_H
 #define INTEGRATIONPLUGINDAYLIGHTSENSOR_H
 
-
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 class IntegrationPluginDaylightSensor: public IntegrationPlugin
 {
@@ -54,7 +53,7 @@ private slots:
 
     void updateDevice(Thing *thing);
 private:
-    QHash<Thing*, PluginTimer*> m_timers;
+    QHash<Thing *, PluginTimer *> m_timers;
     QPair<QDateTime, QDateTime> calculateSunriseSunset(qreal lat, qreal lon, const QDateTime &dateTime);
 
 };

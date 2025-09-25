@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #ifndef INTEGRATIONPLUGINTASMOTA_H
 #define INTEGRATIONPLUGINTASMOTA_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include "extern-plugininfo.h"
 
@@ -43,7 +43,6 @@ class IntegrationPluginTasmota: public IntegrationPlugin
 
     Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugintasmota.json")
     Q_INTERFACES(IntegrationPlugin)
-
 
 public:
     explicit IntegrationPluginTasmota();
@@ -60,7 +59,7 @@ private slots:
     void onPublishReceived(MqttChannel *channel, const QString &topic, const QByteArray &payload);
 
 private:
-    QHash<Thing*, MqttChannel*> m_mqttChannels;
+    QHash<Thing *, MqttChannel *> m_mqttChannels;
 
     // Helpers for parent devices (the ones starting with sonoff)
     QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeMap;

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,8 @@
 #include "integrationpluginnanoleaf.h"
 #include "plugininfo.h"
 
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "platform/platformzeroconfcontroller.h"
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <platform/platformzeroconfcontroller.h>
 
 #include <QHash>
 #include <QDebug>
@@ -60,9 +60,8 @@ void IntegrationPluginNanoleaf::discoverThings(ThingDiscoveryInfo *info)
         QString model = entry.txt("md");
         QString firmwareVersion = entry.txt("srcvers");
 
-        if (serialNumbers.contains(serialNo)) {
+        if (serialNumbers.contains(serialNo))
             continue; //To avoid duplicated devices
-        }
 
         Thing *existingThing = myThings().findByParams(ParamList() << Param(lightPanelsThingSerialNoParamTypeId, serialNo));
         if (existingThing) {
@@ -199,29 +198,29 @@ void IntegrationPluginNanoleaf::executeAction(ThingActionInfo *info)
         if (action.actionTypeId() == lightPanelsPowerActionTypeId) {
             bool power = action.param(lightPanelsPowerActionPowerParamTypeId).value().toBool();
             QUuid requestId = nanoleaf->setPower(power);
-            connect(info, &ThingActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this](){ m_asyncActions.remove(requestId); });
             m_asyncActions.insert(requestId, info);
 
         } else if (action.actionTypeId() == lightPanelsBrightnessActionTypeId) {
             int brightness = action.param(lightPanelsBrightnessActionBrightnessParamTypeId).value().toInt();
             QUuid requestId = nanoleaf->setBrightness(brightness);
-            connect(info, &ThingActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this](){ m_asyncActions.remove(requestId); });
             m_asyncActions.insert(requestId, info);
 
         } else if (action.actionTypeId() == lightPanelsColorActionTypeId) {
             QColor color(action.param(lightPanelsColorActionColorParamTypeId).value().toString());
             QUuid requestId = nanoleaf->setColor(color);
-            connect(info, &ThingActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this](){ m_asyncActions.remove(requestId); });
             m_asyncActions.insert(requestId, info);
 
         } else if (action.actionTypeId() == lightPanelsColorTemperatureActionTypeId) {
             int colorTemperature = action.param(lightPanelsColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             QUuid requestId = nanoleaf->setMired(colorTemperature);
-            connect(info, &ThingActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this](){ m_asyncActions.remove(requestId); });
             m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == lightPanelsAlertActionTypeId) {
             QUuid requestId = nanoleaf->identify();
-            connect(info, &ThingActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this](){ m_asyncActions.remove(requestId); });
             m_asyncActions.insert(requestId, info);
         }
     }

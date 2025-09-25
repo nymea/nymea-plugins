@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,8 +36,6 @@
 #include <QHostAddress>
 #include <QTimer>
 
-#include "maxcube.h"
-
 class MaxCubeDiscovery : public QObject
 {
     Q_OBJECT
@@ -60,11 +58,11 @@ private slots:
     void discoverTimeout();
 
 signals:
-    void cubesDetected(const QList<CubeInfo> &cubeList);
+    void cubesDetected(const QList<MaxCubeDiscovery::CubeInfo> &cubeList);
 
 private:
-    QUdpSocket *m_udpSocket;
-    QTimer *m_timeout;
+    QUdpSocket *m_udpSocket = nullptr;
+    QTimer *m_timeout = nullptr;
 
     quint16 m_port;
 

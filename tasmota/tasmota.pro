@@ -4,10 +4,8 @@ QT += network
 
 PKGCONFIG += nymea-mqtt
 
-TARGET = $$qtLibraryTarget(nymea_integrationplugintasmota)
-
 SOURCES += \
-    integrationplugintasmota.cpp \
+    integrationplugintasmota.cpp
 
 HEADERS += \
-    integrationplugintasmota.h \
+    integrationplugintasmota.h

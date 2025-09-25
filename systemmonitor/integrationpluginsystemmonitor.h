@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,14 +31,15 @@
 #ifndef INTEGRATIONPLUGINSYSTEMMONITOR_H
 #define INTEGRATIONPLUGINSYSTEMMONITOR_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
 
 #include <QDebug>
 #include <QProcess>
 #include <QUrlQuery>
 
 #include "extern-plugininfo.h"
+
+class PluginTimer;
 
 class IntegrationPluginSystemMonitor: public IntegrationPlugin {
 	Q_OBJECT
@@ -66,9 +67,9 @@ private:
 private:
     PluginTimer *m_refreshTimer = nullptr;
 
-    QHash<Thing*, qulonglong> m_oldTotalJiffies;
-    QHash<Thing*, qulonglong> m_oldWorkJiffies;
-    QHash<Thing*, qulonglong> m_oldProcessWorkJiffies;
+    QHash<Thing *, qulonglong> m_oldTotalJiffies;
+    QHash<Thing *, qulonglong> m_oldWorkJiffies;
+    QHash<Thing *, qulonglong> m_oldProcessWorkJiffies;
 
 };
 

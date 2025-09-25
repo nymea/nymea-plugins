@@ -29,7 +29,11 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "owfs.h"
+#include "owcapi.h"
+
 #include "extern-plugininfo.h"
+
+#include <QVariant>
 
 Owfs::Owfs(QObject *parent) :
     QObject(parent)
@@ -56,7 +60,7 @@ bool Owfs::init(const QByteArray &owfsInitArguments)
     //inifArguments.append("--w1");
 
     if (OW_init(owfsInitArguments) < 0) {
-        qWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
+        qCWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
         return false;
     }
     m_path = "/";
@@ -69,10 +73,10 @@ bool Owfs::discoverDevices()
     size_t dirLength ;
 
     if (OW_get(m_path, &dirBuffer, &dirLength) < 0) {
-        qWarning(dcOneWire()) << "DIRECTORY ERROR" << strerror(errno);
+        qCWarning(dcOneWire()) << "DIRECTORY ERROR" << strerror(errno);
         return false;
     }
-    qDebug(dcOneWire()) << "Directory has members" << dirBuffer;
+    qCDebug(dcOneWire()) << "Directory has members" << dirBuffer;
 
     QList<QByteArray> dirMembers ;
     dirMembers = QByteArray(dirBuffer, dirLength).split(',');
@@ -95,7 +99,6 @@ bool Owfs::discoverDevices()
         int family = member.split('.').first().toInt(nullptr, 16);
         if (family != 0) {
             member.remove(member.indexOf('/'), 1);
-            QByteArray type;
             OwfsDevice thing;
             thing.family = family;
             thing.address = member;
@@ -148,10 +151,10 @@ QByteArray Owfs::getValue(const QByteArray &address, const QByteArray &type)
     devicePath.append('\0');
 
     if (OW_get(devicePath, &getBuffer, &getLength) < 0) {
-        qWarning(dcOneWire()) << "ERROR reading" << devicePath << strerror(errno);
+        qCWarning(dcOneWire()) << "ERROR reading" << devicePath << strerror(errno);
     }
 
-    qDebug(dcOneWire()) << "Device value" << devicePath << getBuffer;
+    qCDebug(dcOneWire()) << "Device value" << devicePath << getBuffer;
 
     QByteArray value = QByteArray(getBuffer, getLength);
     free(getBuffer);
@@ -171,21 +174,21 @@ void Owfs::setValue(const QByteArray &address, const QByteArray &type, const QBy
     devicePath.append('\0');
 
     if (OW_put(devicePath, value, value.length()) < 0) {
-        qWarning(dcOneWire()) << "ERROR reading" << devicePath << strerror(errno);
+        qCWarning(dcOneWire()) << "ERROR reading" << devicePath << strerror(errno);
     }
 }
 
 double Owfs::getTemperature(const QByteArray &address, bool *ok)
 {
     QByteArray temperature = getValue(address, "temperature");
-    qDebug(dcOneWire()) << "Temperature" << temperature << temperature.replace(',','.').toDouble();
+    qCDebug(dcOneWire()) << "Temperature" << temperature << temperature.replace(',','.').toDouble();
     return temperature.toDouble(ok);
 }
 
 double Owfs::getHumidity(const QByteArray &address, bool *ok)
 {
     QByteArray humidity = getValue(address, "humidity");
-    qDebug(dcOneWire()) << "Humidity" << humidity << humidity.replace(',','.').toDouble();
+    qCDebug(dcOneWire()) << "Humidity" << humidity << humidity.replace(',','.').toDouble();
     return humidity.toDouble(ok);
 }
 
@@ -226,7 +229,7 @@ bool Owfs::getSwitchOutput(const QByteArray &address, SwitchChannel channel, boo
         break;
     }
     QByteArray state = getValue(address, c);
-    qDebug(dcOneWire()) << "Switch state" << state.toInt();
+    qCDebug(dcOneWire()) << "Switch state" << state.toInt();
     return state.toInt(ok);
 }
 
@@ -261,7 +264,7 @@ bool Owfs::getSwitchInput(const QByteArray &address, SwitchChannel channel, bool
         break;
     }
     QByteArray state = getValue(address, c);
-    qDebug(dcOneWire()) << "Switch state" << state.toInt();
+    qCDebug(dcOneWire()) << "Switch state" << state.toInt();
     return state.toInt(ok);
 }
 

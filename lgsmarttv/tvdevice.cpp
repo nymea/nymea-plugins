@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -67,7 +67,7 @@ QHostAddress TvDevice::hostAddress() const
     return m_hostAddress;
 }
 
-void TvDevice::setPort(const int &port)
+void TvDevice::setPort(int port)
 {
     m_port = port;
 }
@@ -87,11 +87,11 @@ QString TvDevice::uuid() const
     return m_uuid;
 }
 
-void TvDevice::setPaired(const bool &paired)
+void TvDevice::setPaired(bool paired)
 {
     if (m_paired != paired) {
         m_paired = paired;
-        stateChanged();
+        emit stateChanged();
     }
 }
 
@@ -100,7 +100,7 @@ bool TvDevice::paired() const
     return m_paired;
 }
 
-void TvDevice::setReachable(const bool &reachable)
+void TvDevice::setReachable(bool reachable)
 {
     if (m_reachable != reachable) {
         qCDebug(dcLgSmartTv()) << "TV Event handler" << (reachable ? "reachable" : "not reachable any more");
@@ -159,7 +159,7 @@ QString TvDevice::inputSourceLabelName() const
     return m_inputSourceLabel;
 }
 
-QPair<QNetworkRequest, QByteArray> TvDevice::createDisplayKeyRequest(const QHostAddress &host, const int &port)
+QPair<QNetworkRequest, QByteArray> TvDevice::createDisplayKeyRequest(const QHostAddress &host, int port)
 {
     QString urlString = "http://" + host.toString() + ":" + QString::number(port) + "/udap/api/pairing";
     QNetworkRequest request;
@@ -171,7 +171,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createDisplayKeyRequest(const QHost
     return QPair<QNetworkRequest, QByteArray>(request, data);
 }
 
-QPair<QNetworkRequest, QByteArray> TvDevice::createPairingRequest(const QHostAddress &host, const int &port, const QString &key)
+QPair<QNetworkRequest, QByteArray> TvDevice::createPairingRequest(const QHostAddress &host, int port, const QString &key)
 {
     QString urlString = "http://" + host.toString() + ":" + QString::number(port) + "/udap/api/pairing";
     QNetworkRequest request;
@@ -195,7 +195,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QUrl 
     return QPair<QNetworkRequest, QByteArray>(request, data);
 }
 
-QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QHostAddress &host, const int &port)
+QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QHostAddress &host, int port)
 {
     QString urlString = "http://" + host.toString() + ":" + QString::number(port) + "/udap/api/pairing";
     QNetworkRequest request;
@@ -208,7 +208,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QHost
     return QPair<QNetworkRequest, QByteArray>(request, data);
 }
 
-QPair<QNetworkRequest, QByteArray> TvDevice::createEventRequest(const QHostAddress &host, const int &port)
+QPair<QNetworkRequest, QByteArray> TvDevice::createEventRequest(const QHostAddress &host, int port)
 {
     QString urlString = "http://" + host.toString() + ":" + QString::number(port) + "/udap/api/event";
     QNetworkRequest request;
@@ -243,7 +243,7 @@ QNetworkRequest TvDevice::createChannelInformationRequest()
     return request;
 }
 
-QPair<QNetworkRequest, QByteArray> TvDevice::createPressButtonRequest(const TvDevice::RemoteKey &key)
+QPair<QNetworkRequest, QByteArray> TvDevice::createPressButtonRequest(RemoteKey key)
 {
     QString urlString = "http://" + hostAddress().toString()  + ":" + QString::number(port()) + "/udap/api/command";
     QNetworkRequest request;
@@ -265,10 +265,10 @@ void TvDevice::onVolumeInformationUpdate(const QByteArray &data)
     while(!xml.atEnd() && !xml.hasError()) {
         xml.readNext();
 
-        if(xml.name() == "mute") {
+        if (xml.name() == QString("mute")) {
             m_mute = QVariant(xml.readElementText()).toBool();
         }
-        if(xml.name() == "level") {
+        if (xml.name() == QString("level")) {
             m_volumeLevel = QVariant(xml.readElementText()).toInt();
         }
     }
@@ -283,22 +283,22 @@ void TvDevice::onChannelInformationUpdate(const QByteArray &data)
     while(!xml.atEnd() && !xml.hasError()) {
         xml.readNext();
 
-        if(xml.name() == "chtype") {
+        if (xml.name() == QString("chtype")) {
             m_channelType = xml.readElementText();
         }
-        if(xml.name() == "major") {
+        if (xml.name() == QString("major")) {
             m_channelNumber = QVariant(xml.readElementText()).toInt();
         }
-        if(xml.name() == "chname") {
+        if (xml.name() == QString("chname")) {
             m_channelName = xml.readElementText();
         }
-        if(xml.name() == "progName") {
+        if (xml.name() == QString("progName")) {
             m_programName = xml.readElementText();
         }
-        if(xml.name() == "inputSourceIdx") {
+        if (xml.name() == QString("inputSourceIdx")) {
             m_inputSourceIndex = QVariant(xml.readElementText()).toInt();
         }
-        if(xml.name() == "labelName") {
+        if (xml.name() == QString("labelName")) {
             m_inputSourceLabel = xml.readElementText();
         }
     }
@@ -314,11 +314,12 @@ QString TvDevice::printXmlData(const QByteArray &data)
 
     while (!reader.atEnd()) {
         reader.readNext();
-        if(!reader.isWhitespace()) {
+        if (!reader.isWhitespace()) {
             writer.writeCurrentToken(reader);
         }
     }
-    if(reader.hasError()) {
+
+    if (reader.hasError()) {
         qCWarning(dcLgSmartTv()) << "error reading XML thing information:" << reader.errorString();
     }
     return xmlOut;
@@ -329,7 +330,7 @@ void TvDevice::eventOccured(const QByteArray &data)
     qCDebug(dcLgSmartTv()) << "Event handler data received" << printXmlData(data);
 
     // if we got a channel changed event...
-    if(data.contains("ChannelChanged")) {
+    if (data.contains("ChannelChanged")) {
         onChannelInformationUpdate(data);
         return;
     }
@@ -338,7 +339,7 @@ void TvDevice::eventOccured(const QByteArray &data)
 
     // if the tv suspends, it will send a byebye message, which means
     // the pairing will be closed.
-    if(data.contains("api type=\"pairing\"") && data.contains("byebye")) {
+    if (data.contains("api type=\"pairing\"") && data.contains("byebye")) {
         qCDebug(dcLgSmartTv()) << "Ended pairing (host)";
         setPaired(false);
         setReachable(false);
@@ -351,14 +352,15 @@ void TvDevice::eventOccured(const QByteArray &data)
     while(!xml.atEnd() && !xml.hasError()) {
         xml.readNext();
 
-        if(xml.name() == "name") {
-            if(xml.readElementText() == "3DMode") {
+        if (xml.name() == QString("name")) {
+            if (xml.readElementText() == "3DMode") {
                 xml.readNext();
-                if(xml.name() == "value") {
+                if (xml.name() == QString("value")) {
                     m_is3DMode = QVariant(xml.readElementText()).toBool();
                 }
             }
         }
     }
+
     emit stateChanged();
 }

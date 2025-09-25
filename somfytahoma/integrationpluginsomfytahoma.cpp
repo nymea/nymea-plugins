@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -34,9 +34,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include "network/networkaccessmanager.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "platform/platformzeroconfcontroller.h"
+#include <network/networkaccessmanager.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <plugintimer.h>
 
 #include "plugininfo.h"
 #include "somfytahomarequests.h"

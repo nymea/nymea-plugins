@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,9 +35,9 @@
 #include <QQueue>
 #include <QColor>
 
-#include "typeutils.h"
-#include "integrations/thing.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
+#include <typeutils.h>
+#include <integrations/thing.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergydevice.h>
 
 static QBluetoothUuid colorServiceUuid  = QBluetoothUuid(QUuid("f815e810-456c-6761-746f-4d756e696368"));
 static QBluetoothUuid colorCharacteristicUuid = QBluetoothUuid(QUuid("f815e811-456c-6761-746f-4d756e696368"));

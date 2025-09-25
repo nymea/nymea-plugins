@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2025 devendragajjar <devendragajjar@gmail.com>                 *
+ *  Copyright (C) 2025 devendragajjar <devendragajjar@gmail.com>           *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -21,10 +21,8 @@
 #ifndef INTEGRATIONPLUGINEV_CHARGER_H
 #define INTEGRATIONPLUGINEV_CHARGER_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 #include "extern-plugininfo.h"
-#include "plugintimer.h"
-#include "network/networkaccessmanager.h"
 
 #include <QHash>
 #include <QDebug>
@@ -32,6 +30,7 @@
 #include <QPointer>
 #include <QNetworkReply>
 
+class PluginTimer;
 
 class V2xeAmberElectric: public IntegrationPlugin
 {
@@ -39,7 +38,6 @@ class V2xeAmberElectric: public IntegrationPlugin
 
     Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginv2xeamberelectric.json")
     Q_INTERFACES(IntegrationPlugin)
-
 
 public:
     explicit V2xeAmberElectric();

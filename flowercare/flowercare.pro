@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-QT += bluetooth
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginflowercare)
+QT *= bluetooth
 
 SOURCES += \
     integrationpluginflowercare.cpp \

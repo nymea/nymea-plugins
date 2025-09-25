@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -144,7 +144,7 @@ void IntegrationPluginUnifi::discoverThings(ThingDiscoveryInfo *info)
                             } else {
                                 QVariantList clients = response.value("data").toList();
                                 foreach (const QVariant &clientVariant, clients) {
-//                                    qCDebug(dcUnifi()) << "client:" << qUtf8Printable(QJsonDocument::fromVariant(clientVariant).toJson());
+                                    // qCDebug(dcUnifi()) << "client:" << qUtf8Printable(QJsonDocument::fromVariant(clientVariant).toJson());
 
                                     QString name = clientVariant.toMap().value("name").toString();
                                     if (name.isEmpty()) {
@@ -262,7 +262,7 @@ void IntegrationPluginUnifi::setupThing(ThingSetupInfo *info)
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QJsonDocument::fromVariant(login).toJson());
 
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
+        connect(reply, &QNetworkReply::finished, info, [info, reply](){
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcUnifi()) << "SetupThing: Network request error:" << reply->error() << reply->errorString();
                 info->finish(Thing::ThingErrorHardwareFailure);
@@ -348,7 +348,7 @@ void IntegrationPluginUnifi::postSetupThing(Thing *thing)
                         return;
                     }
 
-//                    qCDebug(dcUnifi()) << "Client is present reply" << qUtf8Printable(jsonDoc.toJson());
+                    //                    qCDebug(dcUnifi()) << "Client is present reply" << qUtf8Printable(jsonDoc.toJson());
                     QVariantList clientEntries = jsonDoc.toVariant().toMap().value("data").toList();
                     if (clientEntries.count() != 1) {
                         qCWarning(dcUnifi()) << "Client data not found in controller reply";

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,12 @@
 #include "integrationpluginmecelectronics.h"
 #include "plugininfo.h"
 
-#include <network/networkaccessmanager.h>
 #include <plugintimer.h>
+#include <network/networkaccessmanager.h>
 #include <platform/platformzeroconfcontroller.h>
 #include <network/zeroconf/zeroconfservicebrowser.h>
 
+#include <QRegularExpression>
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QTimer>
@@ -69,8 +70,8 @@ void IntegrationPluginMecMeter::discoverThings(ThingDiscoveryInfo *info)
             continue;
         }
         qCDebug(dcMecElectronics()) << "zeroconf entry:" << entry;
-        QRegExp match("mec[A-Z0-9]{12}");
-        if (match.exactMatch(entry.name())) {
+
+        if (QRegularExpression("mec[A-Z0-9]{12}").match(entry.name()).hasMatch()) {
             qCDebug(dcMecElectronics()) << "Found mec meter!";
             ThingDescriptor descriptor(mecMeterThingClassId, entry.name(), entry.hostAddress().toString());
             descriptor.setParams({Param(mecMeterThingIdParamTypeId, entry.name())});
@@ -345,7 +346,7 @@ QNetworkRequest IntegrationPluginMecMeter::composeRequest(const QString &meterId
 
     if (address.isNull()) {
         pluginStorage()->beginGroup(meterId);
-        address = pluginStorage()->value("cachedAddress").toString();
+        address = QHostAddress(pluginStorage()->value("cachedAddress").toString());
         pluginStorage()->endGroup();
     }
 

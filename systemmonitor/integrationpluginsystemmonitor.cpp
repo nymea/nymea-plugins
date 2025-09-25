@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,11 @@
 #include "integrationpluginsystemmonitor.h"
 #include "plugininfo.h"
 
+#include <plugintimer.h>
+
 #include <QStorageInfo>
+#include <QRegularExpression>
+
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <unistd.h>
@@ -309,7 +313,7 @@ qint32 IntegrationPluginSystemMonitor::getPidByName(const QString &processName)
             continue;
         }
         QString line = statusFile.readLine().trimmed();
-        line.remove(QRegExp("Name:(\\s)*"));
+        line.remove(QRegularExpression("Name:(\\s)*"));
 //        qCDebug(dcSystemMonitor()) << "Found process:" << line << "looking for" << processName.left(15);
         // names in /proc/<pid>/status are trimmed to 15 characters...
         if (processName.left(15) == line.left(15)) {

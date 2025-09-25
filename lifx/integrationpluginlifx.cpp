@@ -29,12 +29,11 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginlifx.h"
-
-#include "integrations/integrationplugin.h"
-#include "types/param.h"
 #include "plugininfo.h"
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
+
+#include <types/param.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
 
 #include <QDebug>
 #include <QColor>

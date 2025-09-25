@@ -1,12 +1,9 @@
 include(../plugins.pri)
 
-QT += serialport
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginws2812fx)
+QT *= serialport
 
 SOURCES += \
-    integrationpluginws2812fx.cpp \
-
+    integrationpluginws2812fx.cpp
 
 HEADERS += \
-    integrationpluginws2812fx.h \
+    integrationpluginws2812fx.h

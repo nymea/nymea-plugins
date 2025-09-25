@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2021, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,9 @@
 #ifndef INTEGRATIONPLUGINGPIO_H
 #define INTEGRATIONPLUGINGPIO_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+
 #include "gpiodescriptor.h"
 
 // libnymea-gpio
@@ -56,7 +57,6 @@ public:
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
-
 
 private:
     QHash<ThingClassId, ParamTypeId> m_gpioParamTypeIds;

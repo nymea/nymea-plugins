@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,8 +29,10 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginopenuv.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
+
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 #include <QDebug>
 #include <QJsonDocument>
@@ -133,7 +135,7 @@ void IntegrationPluginOpenUv::getUvIndex(Thing *thing)
     request.setRawHeader("x-access-token", m_apiKey);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, this, [reply, thing, this] {
+    connect(reply, &QNetworkReply::finished, this, [reply, thing] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -150,7 +152,7 @@ void IntegrationPluginOpenUv::getUvIndex(Thing *thing)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcOpenUv()) << "Recieved invalide JSON object";
+            qCDebug(dcOpenUv()) << "Recieved invalide JSON object";
             return;
         }
         QVariantMap result = data.toVariant().toMap().value("result").toMap();

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,10 +30,10 @@
 
 #include "integrationpluginavahimonitor.h"
 
-#include "integrations/thing.h"
+#include <platform/platformzeroconfcontroller.h>
+#include <integrations/thing.h>
+
 #include "plugininfo.h"
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
 
 #include <QDebug>
 #include <QStringList>

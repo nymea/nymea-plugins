@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -32,8 +32,6 @@
 #define MAXDEVICE_H
 
 #include <QObject>
-
-#include "room.h"
 
 class MaxDevice : public QObject
 {
@@ -86,10 +84,6 @@ private:
     int m_roomId;
     QString m_roomName;
     bool m_batteryOk;
-
-signals:
-
-public slots:
 
 };
 

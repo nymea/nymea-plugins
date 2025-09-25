@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,21 +31,19 @@
 #ifndef INTEGRATIONPLUGINPHILIPSHUE_H
 #define INTEGRATIONPLUGINPHILIPSHUE_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
+
 #include "huebridge.h"
 #include "huelight.h"
 #include "hueremote.h"
 #include "huemotionsensor.h"
 #include "huetapdial.h"
 
-#include "plugintimer.h"
-#include "network/networkaccessmanager.h"
-#include "network/upnp/upnpdiscovery.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
-
-
 class QNetworkReply;
+class UpnpDiscoveryReply;
 
 class IntegrationPluginPhilipsHue: public IntegrationPlugin
 {
@@ -99,9 +97,9 @@ private:
 private:
     class DiscoveryJob {
     public:
-        UpnpDiscoveryReply* upnpReply;
+        UpnpDiscoveryReply *upnpReply;
         bool upnpDone = false;
-        QNetworkReply* nUpnpReply;
+        QNetworkReply *nUpnpReply;
         bool nUpnpDone = false;
         ThingDescriptors results;
     };
@@ -109,7 +107,7 @@ private:
 
     void startUpnPDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery);
     void startNUpnpDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *discovery);
-    void finishDiscovery(ThingDiscoveryInfo *info, DiscoveryJob* job);
+    void finishDiscovery(ThingDiscoveryInfo *info, DiscoveryJob *job);
 
     PluginTimer *m_pluginTimer1Sec = nullptr;
     PluginTimer *m_pluginTimer5Sec = nullptr;
@@ -154,14 +152,14 @@ private:
 
     void bridgeReachableChanged(Thing *thing, bool reachable);
 
-    Thing* bridgeForBridgeId(const QString &id);
+    Thing *bridgeForBridgeId(const QString &id);
     bool lightAlreadyAdded(const QString &uuid);
     bool sensorAlreadyAdded(const QString &uuid);
 
     int brightnessToPercentage(int brightness);
     int percentageToBrightness(int percentage);
 
-    void abortRequests(QHash<QNetworkReply *, Thing *> requestList, Thing* thing);
+    void abortRequests(QHash<QNetworkReply *, Thing *> requestList, Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINPHILIPSHUE_H

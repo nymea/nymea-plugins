@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -51,14 +51,14 @@ public:
     int port() const;
     void setPort(int port);
 
-    bool connected();
+    bool connected() const;
 
 private:
-    QTcpSocket *m_socket;
+    QTcpSocket *m_socket = nullptr;
 
     QHostAddress m_hostAddress;
     int m_port;
-    bool m_connected;
+    bool m_connected = false;
 
 private slots:
     void onConnected();
@@ -72,8 +72,6 @@ signals:
 
 public slots:
     void sendData(const QByteArray &message);
-
-
 
 };
 

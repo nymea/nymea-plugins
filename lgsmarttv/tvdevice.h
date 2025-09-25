@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,13 +37,11 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QUrl>
 #include <QXmlStreamReader>
 #include <QXmlReader>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
 
-#include "integrations/integrationplugin.h"
 #include "tveventhandler.h"
 
 class TvDevice : public QObject
@@ -128,17 +126,17 @@ public:
     void setHostAddress(const QHostAddress &hostAddress);
     QHostAddress hostAddress() const;
 
-    void setPort(const int &port);
+    void setPort(int port);
     int port() const;
 
     void setUuid(const QString &uuid);
     QString uuid() const;
 
     // States
-    void setPaired(const bool &paired);
+    void setPaired(bool paired);
     bool paired() const;
 
-    void setReachable(const bool &reachable);
+    void setReachable(bool reachable);
     bool reachable() const;
 
     bool is3DMode() const;
@@ -152,13 +150,13 @@ public:
     QString inputSourceLabelName() const;
 
     // other methods
-    static QPair<QNetworkRequest, QByteArray> createDisplayKeyRequest(const QHostAddress &host, const int &port);
-    static QPair<QNetworkRequest, QByteArray> createPairingRequest(const QHostAddress &host, const int &port, const QString &key);
+    static QPair<QNetworkRequest, QByteArray> createDisplayKeyRequest(const QHostAddress &host, int port);
+    static QPair<QNetworkRequest, QByteArray> createPairingRequest(const QHostAddress &host, int port, const QString &key);
     static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QUrl &url);
-    static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QHostAddress &host, const int &port);
-    static QPair<QNetworkRequest, QByteArray> createEventRequest(const QHostAddress &host, const int &port);
+    static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QHostAddress &host, int port);
+    static QPair<QNetworkRequest, QByteArray> createEventRequest(const QHostAddress &host, int port);
 
-    QPair<QNetworkRequest, QByteArray> createPressButtonRequest(const TvDevice::RemoteKey &key);
+    QPair<QNetworkRequest, QByteArray> createPressButtonRequest(TvDevice::RemoteKey key);
 
     QNetworkRequest createVolumeInformationRequest();
     QNetworkRequest createChannelInformationRequest();
@@ -166,7 +164,7 @@ public:
     void onChannelInformationUpdate(const QByteArray &data);
 
 private:
-    TvEventHandler *m_eventHandler;
+    TvEventHandler *m_eventHandler = nullptr;
 
     QHostAddress m_hostAddress;
     int m_port;

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,9 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "soundtouch.h"
-#include "hardwaremanager.h"
-#include "integrations/thing.h"
-#include "network/networkaccessmanager.h"
+
+#include <hardwaremanager.h>
+#include <integrations/thing.h>
 
 SoundTouch::SoundTouch(NetworkAccessManager *networkAccessManager, QString ipAddress, QObject *parent) :
     QObject(parent),
@@ -47,7 +47,7 @@ SoundTouch::SoundTouch(NetworkAccessManager *networkAccessManager, QString ipAdd
     //url.setHost(m_ipAddress);
     //url.setScheme("ws");
     //url.setPort(8080);
-    //qDebug(dcBose) << "Connecting websocket to" << url;
+    //qCDebug(dcBose()) << "Connecting websocket to" << url;
     //TODO missing websocket subprotocol "gabbo"
     //QWebsockets doesn't support subprotocols
     //m_websocket->open(url);
@@ -249,9 +249,10 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue, bool pressed)
         xml.writeCharacters("PRESET_6");
         break;
     default:
-        qWarning(dcBose) << "key not yet implemented";
-        return "0";
+        qCWarning(dcBose()) << "key not yet implemented";
+        return QUuid();
     }
+
     xml.writeEndElement(); //key
     xml.writeEndDocument();
     QNetworkRequest request(url);
@@ -444,7 +445,7 @@ QUuid SoundTouch::setBass(int volume)
     return requestId;
 }
 
-QUuid SoundTouch::setName(QString name)
+QUuid SoundTouch::setName(const QString &name)
 {
     QUuid requestId = QUuid::createUuid();
     QUrl url;
@@ -454,7 +455,7 @@ QUuid SoundTouch::setName(QString name)
     url.setPath("/name");
     QByteArray content = ("<?xml version=\"1.0\" ?>");
     content.append("<name>");
-    content.append(name);
+    content.append(name.toUtf8());
     content.append("</name>");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
@@ -498,13 +499,13 @@ QUuid SoundTouch::setSpeaker(PlayInfoObject playInfo)
 
 void SoundTouch::onWebsocketConnected()
 {
-    qDebug(dcBose) << "Bose websocket connected";
+    qCDebug(dcBose()) << "Bose websocket connected";
     emit connectionChanged(true);
 }
 
 void SoundTouch::onWebsocketDisconnected()
 {
-    qDebug(dcBose) << "Bose websocket disconnected";
+    qCDebug(dcBose()) << "Bose websocket disconnected";
     emit connectionChanged(false);
     QTimer::singleShot(5000, this, [this](){
         QUrl url;
@@ -517,7 +518,7 @@ void SoundTouch::onWebsocketDisconnected()
 
 void SoundTouch::onWebsocketMessageReceived(QString message)
 {
-    qDebug(dcBose) << "Websocket message received:" << message;
+    qCDebug(dcBose()) << "Websocket message received:" << message;
     //TODO as soon as QWebSocket supports sub-protocols
 }
 
@@ -529,7 +530,7 @@ QUuid SoundTouch::sendGetRequest(QString path)
     url.setScheme("http");
     url.setPort(m_port);
     url.setPath(path);
-    //qDebug(dcBose) << "Sending request" << url;
+    //qCDebug(dcBose()) << "Sending request" << url;
     QNetworkRequest request = QNetworkRequest(url);
 
     QNetworkReply *reply = m_networkAccessManager->get(request);
@@ -563,7 +564,7 @@ QUuid SoundTouch::sendGetRequest(QString path)
     return requestId;
 }
 
-void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
+void SoundTouch::emitRequestStatus(const QUuid &requestId, QNetworkReply *reply)
 {
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     // Check HTTP status code
@@ -584,17 +585,17 @@ void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
     xml.addData(data);
 
     if (xml.readNextStartElement()) {
-        if (xml.name() == "status") {
+        if (xml.name() == QString("status")) {
             //QString status = xml.readElementText();
             emit requestExecuted(requestId, true);
-        } else if (xml.name() == "errors") {
+        } else if (xml.name() == QString("errors")) {
             emit requestExecuted(requestId, false);
             QString deviceId;
             if(xml.attributes().hasAttribute("deviceID")) {
                 deviceId = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "error"){
+                if(xml.name() == QString("error")){
                     ErrorObject error;
                     error.deviceId = deviceId;
                     error.error = xml.readElementText();
@@ -614,36 +615,36 @@ void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
     }
 }
 
-void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
+void SoundTouch::parseData(const QUuid &requestId, const QByteArray &data)
 {
     QXmlStreamReader xml;
     xml.addData(data);
 
     if (xml.readNextStartElement()) {
-        if (xml.name() == "info") {
+        if (xml.name() == QString("info")) {
             InfoObject info;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qCDebug(dcBose()) << "Device ID" << xml.attributes().value("deviceID").toString();
                 info.deviceID = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "name"){
-                    //qDebug(dcBose) << "name" << xml.readElementText();
+                if(xml.name() == QString("name")){
+                    //qCDebug(dcBose()) << "name" << xml.readElementText();
                     info.name =  xml.readElementText();
-                } else if(xml.name() == "type"){
-                    //qDebug(dcBose) << "type" << xml.readElementText();
+                } else if(xml.name() == QString("type")){
+                    //qCDebug(dcBose()) << "type" << xml.readElementText();
                     info.type =  xml.readElementText();
-                } else if(xml.name() == "components"){
-                    //qDebug(dcBose) << "components element";
+                } else if(xml.name() == QString("components")){
+                    //qCDebug(dcBose()) << "components element";
                     while(xml.readNextStartElement()){
-                        if(xml.name() == "component"){
+                        if(xml.name() == QString("component")){
                             ComponentObject component;
                             while(xml.readNextStartElement()){
-                                if(xml.name() == "softwareVersion"){
-                                    //qDebug(dcBose) << "Software version" << xml.readElementText();
+                                if(xml.name() == QString("softwareVersion")){
+                                    //qCDebug(dcBose()) << "Software version" << xml.readElementText();
                                     component.softwareVersion = xml.readElementText();
-                                } else if(xml.name() == "serialNumber") {
-                                    //qDebug(dcBose) << "Serialnumber" << xml.readElementText();
+                                } else if(xml.name() == QString("serialNumber")) {
+                                    //qCDebug(dcBose()) << "Serialnumber" << xml.readElementText();
                                     component.serialNumber = xml.readElementText();
                                 } else {
                                     xml.skipCurrentElement();
@@ -654,11 +655,11 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                             xml.skipCurrentElement();
                         }
                     }
-                } else if(xml.name() == "networkInfo"){
+                } else if(xml.name() == QString("networkInfo")){
                     while (xml.readNextStartElement()) {
-                        if (xml.name() == "macAddress") {
+                        if (xml.name() == QString("macAddress")) {
                             info.networkInfo.macAddress = xml.readElementText();
-                        } else if(xml.name() == "ipAddress") {
+                        } else if(xml.name() == QString("ipAddress")) {
                             info.networkInfo.ipAddress = xml.readElementText();
                         } else {
                             xml.skipCurrentElement();
@@ -669,45 +670,45 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                 }
             }
             emit infoReceived(requestId, info);
-        } else if (xml.name() == "nowPlaying") {
+        } else if (xml.name() == QString("nowPlaying")) {
             NowPlayingObject nowPlaying;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qCDebug(dcBose()) << "Device ID" << xml.attributes().value("deviceID").toString();
                 nowPlaying.deviceID = xml.attributes().value("deviceID").toString();
             }
             if(xml.attributes().hasAttribute("source")) {
-                //qDebug(dcBose) << "Source" << xml.attributes().value("source").toString();
+                //qCDebug(dcBose()) << "Source" << xml.attributes().value("source").toString();
                 nowPlaying.source = xml.attributes().value("source").toString();
             }
             if(xml.attributes().hasAttribute("sourceAccount")) {
-                //qDebug(dcBose) << "Source Account" << xml.attributes().value("sourceAccount").toString();
+                //qCDebug(dcBose()) << "Source Account" << xml.attributes().value("sourceAccount").toString();
                 nowPlaying.sourceAccount = xml.attributes().value("sourceAccount").toString();
             }
             while(xml.readNextStartElement()){
-                if (xml.name() == "track") {
-                    //qDebug(dcBose) << "track" << xml.readElementText();
+                if (xml.name() == QString("track")) {
+                    //qCDebug(dcBose()) << "track" << xml.readElementText();
                     nowPlaying.track = xml.readElementText();
-                } else if(xml.name() == "artist") {
-                    //qDebug(dcBose) << "artist" << xml.readElementText();
+                } else if(xml.name() == QString("artist")) {
+                    //qCDebug(dcBose()) << "artist" << xml.readElementText();
                     nowPlaying.artist = xml.readElementText();
-                } else if(xml.name() == "album") {
-                    //qDebug(dcBose) << "album" << xml.readElementText();
+                } else if(xml.name() == QString("album")) {
+                    //qCDebug(dcBose()) << "album" << xml.readElementText();
                     nowPlaying.album = xml.readElementText();
-                } else if(xml.name() == "genre") {
-                    //qDebug(dcBose) << "genre" << xml.readElementText();
+                } else if(xml.name() == QString("genre")) {
+                    //qCDebug(dcBose()) << "genre" << xml.readElementText();
                     nowPlaying.genre = xml.readElementText();
-                } else if(xml.name() == "rating") {
-                    //qDebug(dcBose) << "rating" << xml.readElementText();
+                } else if(xml.name() == QString("rating")) {
+                    //qCDebug(dcBose()) << "rating" << xml.readElementText();
                     nowPlaying.rating = xml.readElementText();
-                } else if(xml.name() == "stationName") {
-                    //qDebug(dcBose) << "Station name" << xml.readElementText();
+                } else if(xml.name() == QString("stationName")) {
+                    //qCDebug(dcBose()) << "Station name" << xml.readElementText();
                     nowPlaying.stationName = xml.readElementText();
-                } else if(xml.name() == "art") {
+                } else if(xml.name() == QString("art")) {
                     ArtObject art;
                     if(xml.attributes().hasAttribute("artImageStatus")) {
                         QString artStatus = xml.attributes().value("artImageStatus").toString().toUpper();
                         //ART_STATUS: INVALID, SHOW_DEFAULT_IMAGE, DOWNLOADING, IMAGE_PRESENT
-                        //qDebug(dcBose) << "Art Image status" << artStatus;
+                        //qCDebug(dcBose()) << "Art Image status" << artStatus;
                         if (artStatus == "INVALID") {
                             art.artStatus = ART_STATUS_INVALID;
                         } else if (artStatus == "SHOW_DEFAULT_IMAGE") {
@@ -719,9 +720,9 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                         }
                     }
                     nowPlaying.art.url = xml.readElementText();
-                }else if(xml.name() == "playStatus") {
+                }else if(xml.name() == QString("playStatus")) {
                     QString playStatus = xml.readElementText();
-                    //qDebug(dcBose) << "Play Status" << playStatus;
+                    //qCDebug(dcBose()) << "Play Status" << playStatus;
                     //Modes: PLAY_STATE, PAUSE_STATE, STOP_STATE, BUFFERING_STATE
                     if (playStatus == "PLAY_STATE") {
                         nowPlaying.playStatus = PLAY_STATUS_PLAY_STATE;
@@ -732,17 +733,17 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     } else if (playStatus == "BUFFERING_STATE") {
                         nowPlaying.playStatus = PLAY_STATUS_BUFFERING_STATE;
                     }
-                } else if(xml.name() == "shuffleSetting") {
+                } else if(xml.name() == QString("shuffleSetting")) {
                     QString shuffle = xml.readElementText().toUpper();
-                    //qDebug(dcBose) << "Shuffle Setting" << shuffle;
+                    //qCDebug(dcBose()) << "Shuffle Setting" << shuffle;
                     if (shuffle == "SHUFFLE_ON") {
                         nowPlaying.shuffleSetting = SHUFFLE_STATUS_SHUFFLE_ON;
                     } else {
                         nowPlaying.shuffleSetting = SHUFFLE_STATUS_SHUFFLE_OFF;
                     }
-                }else if(xml.name() == "repeatSetting") {
+                }else if(xml.name() == QString("repeatSetting")) {
                     QString repeat = xml.readElementText().toUpper();
-                    //qDebug(dcBose) << "Repeat Setting" << repeat;
+                    //qCDebug(dcBose()) << "Repeat Setting" << repeat;
                     //Modes: REPEAT_OFF, REPEAT_ALL, REPEAT_ONE
                     if (repeat == "REPEAT_OFF") {
                         nowPlaying.repeatSettings = REPEAT_STATUS_REPEAT_OFF;
@@ -751,9 +752,9 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     } else if (repeat == "REPEAT_ALL") {
                         nowPlaying.repeatSettings = REPEAT_STATUS_REPEAT_ALL;
                     }
-                } else if(xml.name() == "streamType") {
+                } else if(xml.name() == QString("streamType")) {
                     QString streamType = xml.readElementText().toUpper();
-                    //qDebug(dcBose) << "Stream Type" << streamType;
+                    //qCDebug(dcBose()) << "Stream Type" << streamType;
                     //Types: TRACK_ONDEMAND, RADIO_STREAMING, RADIO_TRACKS, NO_TRANSPORT_CONTROLS
                     if (streamType == "RADIO_TRACKS") {
                         nowPlaying.streamType = STREAM_STATUS_RADIO_TRACKS;
@@ -764,54 +765,54 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     } else if (streamType == "NO_TRANSPORT_CONTROLS") {
                         nowPlaying.streamType = STREAM_STATUS_NO_TRANSPORT_CONTROLS;
                     };
-                } else if(xml.name() == "stationLocation") {
+                } else if(xml.name() == QString("stationLocation")) {
                     nowPlaying.stationLocation = xml.readElementText();
                 } else {
                     xml.skipCurrentElement();
                 }
             }
             emit nowPlayingReceived(requestId, nowPlaying);
-        } else if (xml.name() == "volume") {
+        } else if (xml.name() == QString("volume")) {
             VolumeObject volumeObject;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qCDebug(dcBose()) << "Device ID" << xml.attributes().value("deviceID").toString();
                 volumeObject.deviceID = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "targetvolume"){
-                    //qDebug(dcBose) << "Target volume" << xml.readElementText();
+                if(xml.name() == QString("targetvolume")){
+                    //qCDebug(dcBose()) << "Target volume" << xml.readElementText();
                     volumeObject.targetVolume = xml.readElementText().toInt();
-                }else if(xml.name() == "actualvolume"){
-                    //qDebug(dcBose) << "Actual volume" << xml.readElementText();
+                }else if(xml.name() == QString("actualvolume")){
+                    //qCDebug(dcBose()) << "Actual volume" << xml.readElementText();
                     volumeObject.actualVolume = xml.readElementText().toInt();
-                }else if(xml.name() == "muteenabled"){
-                    //qDebug(dcBose) << "Mute enabled" << xml.readElementText();
+                }else if(xml.name() == QString("muteenabled")){
+                    //qCDebug(dcBose()) << "Mute enabled" << xml.readElementText();
                     volumeObject.muteEnabled = ( xml.readElementText().toUpper() == "TRUE" ); //TODO convert from "false" to bool
                 }else {
                     xml.skipCurrentElement();
                 }
             }
             emit volumeReceived(requestId, volumeObject);
-        } else if (xml.name() == "sources") {
+        } else if (xml.name() == QString("sources")) {
             SourcesObject sourcesObject;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qCDebug(dcBose()) << "Device ID" << xml.attributes().value("deviceID").toString();
                 sourcesObject.deviceId = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "sourceItem"){
+                if(xml.name() == QString("sourceItem")){
                     SourceItemObject sourceItem;
                     if(xml.attributes().hasAttribute("source")) {
-                        //qDebug(dcBose) << "Source" << xml.attributes().value("source").toString();
+                        //qCDebug(dcBose()) << "Source" << xml.attributes().value("source").toString();
                         sourceItem.source = xml.attributes().value("source").toString();
                     }
                     if(xml.attributes().hasAttribute("sourceAccount")) {
-                        //qDebug(dcBose) << "Source Account" << xml.attributes().value("sourceAccount").toString();
+                        //qCDebug(dcBose()) << "Source Account" << xml.attributes().value("sourceAccount").toString();
                         sourceItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
                     }
                     if(xml.attributes().hasAttribute("status")) {
                         QString status = xml.attributes().value("status").toString().toUpper(); //UNAVAILABLE, READY
-                        //qDebug(dcBose) << "status" << status;
+                        //qCDebug(dcBose()) << "status" << status;
                         if (status == "READY") {
                             sourceItem.status = SOURCE_STATUS_READY;
                         } else {
@@ -819,7 +820,7 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                         }
                     }
                     if(xml.attributes().hasAttribute("isLocal")) {
-                        //qDebug(dcBose) << "is Local" << xml.attributes().value("isLocal").toString();
+                        //qCDebug(dcBose()) << "is Local" << xml.attributes().value("isLocal").toString();
                         sourceItem.isLocal = ( xml.attributes().value("isLocal").toString().toUpper() == "TRUE" );
                     }
                     if(xml.attributes().hasAttribute("multiroomallowed")) {
@@ -833,52 +834,52 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                 }
             }
             emit sourcesReceived(requestId, sourcesObject);
-        } else if (xml.name() == "bass") {
+        } else if (xml.name() == QString("bass")) {
             BassObject bassObject;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qCDebug(dcBose()) << "Device ID" << xml.attributes().value("deviceID").toString();
                 bassObject.deviceID = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "targetbass"){
-                    //qDebug(dcBose) << "Target bas" << xml.readElementText();
+                if(xml.name() == QString("targetbass")){
+                    //qCDebug(dcBose()) << "Target bas" << xml.readElementText();
                     bassObject.targetBass = xml.readElementText().toInt();
-                } else if(xml.name() == "actualbass"){
-                    //qDebug(dcBose) << "Actual bass" << xml.readElementText();
+                } else if(xml.name() == QString("actualbass")){
+                    //qCDebug(dcBose()) << "Actual bass" << xml.readElementText();
                     bassObject.actualBass = xml.readElementText().toInt();
                 } else {
                     xml.skipCurrentElement();
                 }
             }
             emit bassReceived(requestId, bassObject);
-        } else if (xml.name() == "bassCapabilities") {
+        } else if (xml.name() == QString("bassCapabilities")) {
             BassCapabilitiesObject bassCapabilities;
             if(xml.attributes().hasAttribute("deviceID")) {
                 bassCapabilities.deviceID = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "bassAvailable"){
-                    //qDebug(dcBose) << "BassAvailable" << xml.readElementText();
+                if(xml.name() == QString("bassAvailable")){
+                    //qCDebug(dcBose()) << "BassAvailable" << xml.readElementText();
                     bassCapabilities.bassAvailable = ( xml.readElementText().toUpper() == "TRUE" );
-                } else if(xml.name() == "bassMin"){
-                    //qDebug(dcBose) << "bass Min" << xml.readElementText();
+                } else if(xml.name() == QString("bassMin")){
+                    //qCDebug(dcBose()) << "bass Min" << xml.readElementText();
                     bassCapabilities.bassMin = xml.readElementText().toInt();
-                } else if(xml.name() == "bassMax"){
-                    //qDebug(dcBose) << "bass Max" << xml.readElementText();
+                } else if(xml.name() == QString("bassMax")){
+                    //qCDebug(dcBose()) << "bass Max" << xml.readElementText();
                     bassCapabilities.bassMax = xml.readElementText().toInt();
-                } else if(xml.name() == "bassDefault"){
-                    //qDebug(dcBose) << "bass default" << xml.readElementText();
+                } else if(xml.name() == QString("bassDefault")){
+                    //qCDebug(dcBose()) << "bass default" << xml.readElementText();
                     bassCapabilities.bassDefault = xml.readElementText().toInt();
                 }else {
                     xml.skipCurrentElement();
                 }
             }
             emit bassCapabilitiesReceived(requestId, bassCapabilities);
-        } else if (xml.name() == "presets") {
+        } else if (xml.name() == QString("presets")) {
             QList<PresetObject> presets;
-            qDebug(dcBose) << "Presets";
+            qCDebug(dcBose()) << "Presets";
             while(xml.readNextStartElement()){
-                if(xml.name() == "preset"){
+                if(xml.name() == QString("preset")){
                     PresetObject preset;
                     if(xml.attributes().hasAttribute("id")) {
                         preset.presetId = xml.attributes().value("id").toInt();
@@ -889,10 +890,10 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     if(xml.attributes().hasAttribute("updatedOn")) {
                         preset.updatedOn = xml.attributes().value("updatedOn").toULong();
                     }
-                    qDebug(dcBose) << "Preset" << preset.presetId;
+                    qCDebug(dcBose()) << "Preset" << preset.presetId;
                     while(xml.readNextStartElement()){
 
-                        if (xml.name() == "ContentItem") {
+                        if (xml.name() == QString("ContentItem")) {
                             if(xml.attributes().hasAttribute("source")) {
                                 preset.ContentItem.source = xml.attributes().value("source").toString();
                             }
@@ -904,9 +905,9 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                             }
 
                             while(xml.readNextStartElement()){
-                                 if (xml.name() == "itemName") {
+                                 if (xml.name() == QString("itemName")) {
                                     preset.ContentItem.itemName = xml.readElementText();
-                                 } else if (xml.name() == "containerArt"){
+                                 } else if (xml.name() == QString("containerArt")){
                                     preset.ContentItem.containerArt = xml.readElementText();
                                 } else {
                                      qCWarning(dcBose()) << "Presets: unhandled XML element" << xml.name();
@@ -927,35 +928,35 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
             }
             emit presetsReceived(requestId, presets);
 
-        } else if (xml.name() == "group") {
+        } else if (xml.name() == QString("group")) {
             GroupObject group;
             if(xml.attributes().hasAttribute("deviceID")) {
                 group.id = xml.attributes().value("id").toString();
             }
             while(xml.readNextStartElement()){
-                if(xml.name() == "name") {
+                if(xml.name() == QString("name")) {
                     group.name = xml.readElementText();
-                } else if(xml.name() == "masterDeviceId") {
+                } else if(xml.name() == QString("masterDeviceId")) {
                     group.masterDeviceId = xml.readElementText();
-                } else if(xml.name() == "roles") {
+                } else if(xml.name() == QString("roles")) {
                     //group.roles = xml.readElementText().toInt();
-                } else if(xml.name() == "status"){
+                } else if(xml.name() == QString("status")){
                     QString groupStatus = xml.readElementText();
-                    //qDebug(dcBose) << "Group role" << groupStatus;
+                    //qCDebug(dcBose()) << "Group role" << groupStatus;
                     //group.status = xml.readElementText();
                 }else {
                     xml.skipCurrentElement();
                 }
             }
             emit groupReceived(requestId, group);
-        } else if (xml.name() == "zone") {
+        } else if (xml.name() == QString("zone")) {
             ZoneObject zone;
             if(xml.attributes().hasAttribute("master")) {
                 zone.deviceID = xml.attributes().value("master").toString();
             }
             while(xml.readNextStartElement()){
                 MemberObject member;
-                if(xml.name() == "member") {
+                if(xml.name() == QString("member")) {
                     if(xml.attributes().hasAttribute("ipaddress")) {
                         member.ipAddress = xml.attributes().value("ipaddress").toString();
                     }

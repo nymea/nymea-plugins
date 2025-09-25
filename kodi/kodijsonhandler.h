@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,7 +37,6 @@
 
 #include "kodiconnection.h"
 #include "kodireply.h"
-#include "typeutils.h"
 
 class KodiJsonHandler : public QObject
 {
@@ -55,7 +54,7 @@ private slots:
     void processResponse(const QByteArray &data);
 
 private:
-    KodiConnection *m_connection;
+    KodiConnection *m_connection = nullptr;
     int m_id;
     QHash<int, KodiReply> m_replys;
     QByteArray m_dataBuffer;

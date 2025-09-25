@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,13 +33,6 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QDebug>
-#include <QDateTime>
-#include <QTextStream>
-#include <QRegExp>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
 
 class TvEventHandler : public QTcpServer
 {

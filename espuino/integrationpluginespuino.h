@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,8 @@
 #ifndef INTEGRATIONPLUGINESPUINO_H
 #define INTEGRATIONPLUGINESPUINO_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 #include <QHash>
 
@@ -69,8 +69,8 @@ private slots:
 private:
     QString getHost(Thing *thing) const;
 
-    ZeroConfServiceBrowser *m_zeroConfBrowser;
-    QHash<Thing*, MqttChannel*> m_mqttChannels;
+    ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
+    QHash<Thing *, MqttChannel *> m_mqttChannels;
     QHash<ThingClassId, ParamTypeId> m_ipAddressParamTypeMap;
     QMap<QString, QPointer<ThingActionInfo>> m_pendingActions;
 };

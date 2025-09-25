@@ -3,10 +3,10 @@ include(../plugins.pri)
 QT += network
 
 SOURCES += \
-    integrationplugintplink.cpp \
+    integrationplugintplink.cpp
 
 HEADERS += \
-    integrationplugintplink.h \
+    integrationplugintplink.h
 
 OTHER_FILES += \
     sampledata/HS200.txt \

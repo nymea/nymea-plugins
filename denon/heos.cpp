@@ -50,7 +50,11 @@ Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
     connect(m_socket, &QTcpSocket::connected, this, &Heos::onConnected);
     connect(m_socket, &QTcpSocket::disconnected, this, &Heos::onDisconnected);
     connect(m_socket, &QTcpSocket::readyRead, this, &Heos::readData);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(m_socket, &QTcpSocket::errorOccurred, this, &Heos::onError);
+#else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+#endif
 
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setInterval(5000);
@@ -113,7 +117,7 @@ void Heos::registerForChangeEvents(bool state)
         query = "?enable=off";
     }
     QByteArray cmd = "heos://system/register_for_change_events" + query + "\r\n";
-    qCDebug(dcDenon) << "Register for change events:" << cmd;
+    qCDebug(dcDenon()) << "Register for change events:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -164,35 +168,35 @@ void Heos::prettifyJsonResponse(bool enable)
 void Heos::playNext(int playerId)
 {
     QByteArray cmd = "heos://player/play_next?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Play next:" << cmd;
+    qCDebug(dcDenon()) << "Play next:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::playPrevious(int playerId)
 {
     QByteArray cmd = "heos://player/play_previous?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Play previous:" << cmd;
+    qCDebug(dcDenon()) << "Play previous:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::volumeUp(int playerId, int step)
 {
     QByteArray cmd = "heos://player/volume_up?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume up:" << cmd;
+    qCDebug(dcDenon()) << "Volume up:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::volumeDown(int playerId, int step)
 {
     QByteArray cmd = "heos://player/volume_down?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume down:" << cmd;
+    qCDebug(dcDenon()) << "Volume down:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::clearQueue(int playerId)
 {
     QByteArray cmd = "heos://player/clear_queue?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "clear queue:" << cmd;
+    qCDebug(dcDenon()) << "clear queue:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -203,16 +207,16 @@ void Heos::moveQueue(int playerId, int sourcQueueId, int destinationQueueId)
     queryParams.addQueryItem("pid", QString::number(playerId));
     queryParams.addQueryItem("sqid", QString::number(sourcQueueId));
     queryParams.addQueryItem("dqid", QString::number(destinationQueueId));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "moving queue:" << cmd;
+    qCDebug(dcDenon()) << "moving queue:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::checkForFirmwareUpdate(int playerId)
 {
     QByteArray cmd = "heos://player/check_update?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Check firmware update:" << cmd;
+    qCDebug(dcDenon()) << "Check firmware update:" << cmd;
     m_socket->write(cmd);
 }
 void Heos::getNowPlayingMedia(int playerId)
@@ -230,7 +234,7 @@ void Heos::getPlayers()
 void Heos::getPlayerInfo(int playerId)
 {
     QByteArray cmd = "heos://player/get_player_info?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Get player info:" << cmd;
+    qCDebug(dcDenon()) << "Get player info:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -243,7 +247,7 @@ void Heos::getVolume(int playerId)
 void Heos::setVolume(int playerId, int volume)
 {
     QByteArray cmd = "heos://player/set_volume?pid=" + QVariant(playerId).toByteArray() + "&level=" + QVariant(volume).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Set volume:" << cmd;
+    qCDebug(dcDenon()) << "Set volume:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -262,7 +266,7 @@ void Heos::setMute(int playerId, bool state)
         stateQuery = "&state=off";
     }
     QByteArray cmd = "heos://player/set_mute?pid=" + QVariant(playerId).toByteArray() + stateQuery + "\r\n";
-    qCDebug(dcDenon) << "Set mute:" << cmd;
+    qCDebug(dcDenon()) << "Set mute:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -279,7 +283,7 @@ void Heos::setPlayerState(int playerId, PLAYER_STATE state)
     }
 
     QByteArray cmd = "heos://player/set_play_state?pid=" + QVariant(playerId).toByteArray() + playerStateQuery + "\r\n";
-    qCDebug(dcDenon) << "Set play mode:" << cmd;
+    qCDebug(dcDenon()) << "Set play mode:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -310,7 +314,7 @@ void Heos::setPlayMode(int playerId, REPEAT_MODE repeatMode, bool shuffle)
     }
 
     QByteArray cmd = "heos://player/set_play_mode?pid=" + QVariant(playerId).toByteArray() + repeatModeQuery + shuffleQuery + "\r\n";
-    qCDebug(dcDenon) << "Set play mode:" << cmd;
+    qCDebug(dcDenon()) << "Set play mode:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -357,7 +361,7 @@ void Heos::getGroupMute(int groupId)
 void Heos::setGroupVolume(int groupId, bool volume)
 {
     QByteArray cmd = "heos://group/set_volume?gid=" + QVariant(groupId).toByteArray() + "&level=" + QVariant(volume).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume up:" << cmd;
+    qCDebug(dcDenon()) << "Volume up:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -381,28 +385,28 @@ void Heos::setGroup(QList<int> playerIds)
     }
     cmd.resize(cmd.size()-1); //remove last ','
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Set group:" << cmd;
+    qCDebug(dcDenon()) << "Set group:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::toggleGroupMute(int groupId)
 {
     QByteArray cmd = "heos://group/toggle_mute?gid=" + QVariant(groupId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume up:" << cmd;
+    qCDebug(dcDenon()) << "Volume up:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::groupVolumeUp(int groupId, int step)
 {
     QByteArray cmd = "heos://group/volume_up?pid=" + QVariant(groupId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    qCDebug(dcDenon()) << "Group volume up:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::groupVolumeDown(int groupId, int step)
 {
     QByteArray cmd = "heos://group/volume_down?pid=" + QVariant(groupId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    qCDebug(dcDenon()) << "Group volume up:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -416,9 +420,9 @@ quint32 Heos::getMusicSources()
     QByteArray cmd = "heos://browse/get_music_sources?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Get music sources:" << cmd;
+    qCDebug(dcDenon()) << "Get music sources:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -430,9 +434,9 @@ quint32 Heos::getSourceInfo(const QString &sourceId)
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Get source info:" << cmd;
+    qCDebug(dcDenon()) << "Get source info:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -443,9 +447,9 @@ quint32 Heos::getSearchCriteria(const QString &sourceId)
     QByteArray cmd = "heos://browse/get_search_criteria?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Get search criteria:" << cmd;
+    qCDebug(dcDenon()) << "Get search criteria:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -457,9 +461,9 @@ quint32 Heos::browseSource(const QString &sourceId)
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Browse source:" << cmd;
+    qCDebug(dcDenon()) << "Browse source:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -472,9 +476,9 @@ quint32 Heos::browseSourceContainers(const QString &sourceId, const QString &con
     queryParams.addQueryItem("sid", sourceId);
     queryParams.addQueryItem("cid", containerId);
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Browsing container:" << cmd;
+    qCDebug(dcDenon()) << "Browsing container:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -498,9 +502,9 @@ quint32 Heos::playStation(int playerId, const QString &sourceId, const QString &
         queryParams.addQueryItem("name", stationName);
     }
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "playing station:" << cmd;
+    qCDebug(dcDenon()) << "playing station:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -513,9 +517,9 @@ quint32 Heos::playPresetStation(int playerId, int presetNumber)
     queryParams.addQueryItem("pid", QString::number(playerId));
     queryParams.addQueryItem("preset", QString::number(presetNumber));
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "playing preset station:" << cmd;
+    qCDebug(dcDenon()) << "playing preset station:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -528,9 +532,9 @@ quint32 Heos::playInputSource(int playerId, const QString &inputName)
     queryParams.addQueryItem("pid", QString::number(playerId));
     queryParams.addQueryItem("input", inputName);
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "playing input source:" << cmd;
+    qCDebug(dcDenon()) << "playing input source:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -543,9 +547,9 @@ quint32 Heos::playUrl(int playerId, const QUrl &mediaUrl)
     queryParams.addQueryItem("pid", QString::number(playerId));
     queryParams.addQueryItem("url", mediaUrl.toString());
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "playing url:" << cmd;
+    qCDebug(dcDenon()) << "playing url:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
@@ -574,16 +578,16 @@ quint32 Heos::addContainerToQueue(int playerId, const QString &sourceId, const Q
     queryParams.addQueryItem("cid", containerId);
     queryParams.addQueryItem("aid", QString::number(addCriteria));
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
-    cmd.append(queryParams.toString());
+    cmd.append(queryParams.toString().toUtf8());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "Adding to queue:" << cmd;
+    qCDebug(dcDenon()) << "Adding to queue:" << cmd;
     m_socket->write(cmd);
     return sequence;
 }
 
 void Heos::onError(QAbstractSocket::SocketError socketError)
 {
-    qCWarning(dcDenon) << "Heos: Socket error:" << socketError << m_socket->errorString();
+    qCWarning(dcDenon()) << "Heos: Socket error:" << socketError << m_socket->errorString();
 }
 
 void Heos::readData()
@@ -595,7 +599,7 @@ void Heos::readData()
         data = m_socket->readLine();
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcDenon) << "failed to parse json :" << error.errorString();
+            qCWarning(dcDenon()) << "failed to parse json :" << error.errorString();
             return;
         }
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
@@ -627,18 +631,18 @@ void Heos::readData()
                 if (command.contains("register_for_change_events")) {
                     QString enabled = message.queryItemValue("enabled");
                     if (enabled.contains("off")) {
-                        qDebug(dcDenon) << "Events are disabled";
+                        qCDebug(dcDenon()) << "Events are disabled";
                         m_eventRegistered = false;
                         emit systemEventsEnabled(false);
                     } else {
-                        qDebug(dcDenon) << "Events are enabled";
+                        qCDebug(dcDenon()) << "Events are enabled";
                         m_eventRegistered = true;
                         emit systemEventsEnabled(true);
                     }
 
                 } else if (command.contains("check_account")) {
 
-                    qDebug(dcDenon()) << "System command check_account:" << message.toString();
+                    qCDebug(dcDenon()) << "System command check_account:" << message.toString();
                     bool signedIn;
                     QString username = "";
                     if (message.hasQueryItem("signed_in")){
@@ -651,7 +655,7 @@ void Heos::readData()
 
                 } else if (command.contains("sign_in")) {
 
-                    qDebug(dcDenon()) << "System command sign_in:" << message.toString();
+                    qCDebug(dcDenon()) << "System command sign_in:" << message.toString();
 
                     if (message.hasQueryItem("signed_in")) {
                         QString username = message.queryItemValue("un");
@@ -660,7 +664,7 @@ void Heos::readData()
                     } // otherwise it will be command under process and we will wait for the event
                 } else if (command.contains("sign_out")) {
 
-                    qDebug(dcDenon()) << "System command sign_out:" << message.toString();
+                    qCDebug(dcDenon()) << "System command sign_out:" << message.toString();
                     emit userChanged(false, "");
 
                 } else if (command.contains("heart_beat")) {
@@ -670,7 +674,7 @@ void Heos::readData()
                 } else if (command.contains("prettify_json_response")) {
 
                 }  else {
-                    qDebug(dcDenon) << "Unhandled Heos system command" << command;
+                    qCDebug(dcDenon()) << "Unhandled Heos system command" << command;
                 }
                 /* 4.2 Player Commands
              *  4.2.1 Get Players
@@ -743,7 +747,7 @@ void Heos::readData()
                     QString artwork = dataMap.value("payload").toMap().value("image_url").toString();
                     QString album = dataMap.value("payload").toMap().value("album").toString();
                     QString sourceId = dataMap.value("payload").toMap().value("sid").toString();
-                    qDebug(dcDenon) << "Now playing" << playerId << sourceId << artist << album << song;
+                    qCDebug(dcDenon()) << "Now playing" << playerId << sourceId << artist << album << song;
                     emit nowPlayingMediaStatusReceived(playerId, sourceId, artist, album, song, artwork);
 
                 } else if (command.contains("get_play_state") || command.contains("set_play_state")) {
@@ -797,7 +801,7 @@ void Heos::readData()
                     bool updateExist = payloadVariantMap.value("update").toString().contains("exist");
                     emit playerUpdateAvailable(playerId, updateExist);
                 } else {
-                    qDebug(dcDenon) << "Unhandled Heos group command" << command;
+                    qCDebug(dcDenon()) << "Unhandled Heos group command" << command;
                 }
                 /*
              * 4.3 Group Commands
@@ -815,7 +819,7 @@ void Heos::readData()
             } else if (command.startsWith("group")) {
                 int groupId = 0;
                 if (message.hasQueryItem("gid")) {
-                    qDebug(dcDenon) << "Group id" << message.queryItemValue("gid");
+                    qCDebug(dcDenon()) << "Group id" << message.queryItemValue("gid");
                     groupId = message.queryItemValue("gid").toInt();
                 }
                 if (command.contains("get_groups")) {
@@ -887,7 +891,7 @@ void Heos::readData()
                 } else if (command.contains("toggle_mute")) {
 
                 } else {
-                    qDebug(dcDenon) << "Unhandled Heos group command" << command;
+                    qCDebug(dcDenon()) << "Unhandled Heos group command" << command;
                 }
 
 
@@ -912,12 +916,12 @@ void Heos::readData()
 
                 quint32 sequenceNumber = 0;
                 if (message.hasQueryItem("SEQUENCE")) {
-                    qDebug(dcDenon) << "Sequence number" << message.queryItemValue("SEQUENCE");
+                    qCDebug(dcDenon()) << "Sequence number" << message.queryItemValue("SEQUENCE");
                     sequenceNumber = message.queryItemValue("SEQUENCE").toUInt();
                 }
 
                 if (command.contains("get_music_sources") || command.contains("get_source_info")) {
-                    qDebug(dcDenon()) << "Get music source request response received" << command;
+                    qCDebug(dcDenon()) << "Get music source request response received" << command;
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
                     QList<MusicSourceObject> musicSources;
                     if (success) {
@@ -935,7 +939,7 @@ void Heos::readData()
                     }
 
                 } else if (command.contains("browse/browse")) {
-                    qDebug(dcDenon()) << "Browse response:"  << jsonDoc.toVariant().toMap().value("payload");
+                    qCDebug(dcDenon()) << "Browse response:"  << jsonDoc.toVariant().toMap().value("payload");
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
                     QString sourceId;
                     QString containerId;
@@ -947,7 +951,7 @@ void Heos::readData()
                     }
 
                     if (message.toString().contains("command under process")){
-                        qDebug(dcDenon()) << "Browse command is beeing processed";
+                        qCDebug(dcDenon()) << "Browse command is beeing processed";
                         return;
                     }
                     if (success) {
@@ -961,13 +965,13 @@ void Heos::readData()
                                 source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
                                 source.type = payloadEntryVariant.toMap().value("type").toString();
                                 source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
-                                qDebug(dcDenon()) << "Source" << source.name << source.type << source.sourceId << payloadEntryVariant.toMap().value("sid");
+                                qCDebug(dcDenon()) << "Source" << source.name << source.type << source.sourceId << payloadEntryVariant.toMap().value("sid");
                                 //source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
                                 //source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
                                 musicSources.append(source);
                             } else {
                                 MediaObject media;
-                                qDebug(dcDenon()) << "Media Item" << payloadEntryVariant.toMap().value("mid").toString() << payloadEntryVariant.toMap().value("cid").toString();
+                                qCDebug(dcDenon()) << "Media Item" << payloadEntryVariant.toMap().value("mid").toString() << payloadEntryVariant.toMap().value("cid").toString();
                                 media.name = payloadEntryVariant.toMap().value("name").toString();
                                 if (payloadEntryVariant.toMap().contains("cid")) {
                                     media.containerId = payloadEntryVariant.toMap().value("cid").toString();
@@ -1016,7 +1020,7 @@ void Heos::readData()
                 } else if (command.contains("retrieve_metadata")) {
 
                 } else {
-                    qDebug(dcDenon) << "Unhandled Heos browse command" << command;
+                    qCDebug(dcDenon()) << "Unhandled Heos browse command" << command;
                 }
 
 
@@ -1046,7 +1050,7 @@ void Heos::readData()
                     emit groupsChanged();
 
                 } else if (command.contains("player_state_changed")) {
-                    qDebug(dcDenon()) << "Player state changed";
+                    qCDebug(dcDenon()) << "Player state changed";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         if (message.hasQueryItem("state")) {
@@ -1062,13 +1066,13 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("player_now_playing_changed")) {
-                    qDebug(dcDenon()) << "Player now playing changed, player id:" << message.queryItemValue("pid").toInt();
+                    qCDebug(dcDenon()) << "Player now playing changed, player id:" << message.queryItemValue("pid").toInt();
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         emit playerNowPlayingChanged(playerId);
                     }
                 } else if (command.contains("player_now_playing_progress")) {
-                    //qDebug(dcDenon()) << "Player now playing progress";
+                    //qCDebug(dcDenon()) << "Player now playing progress";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         int currentPossition = message.queryItemValue("cur_pos").toInt();
@@ -1076,7 +1080,7 @@ void Heos::readData()
                         emit playerNowPlayingProgressReceived(playerId, currentPossition, duration);
                     }
                 } else if (command.contains("player_playback_error")) {
-                    qDebug(dcDenon) << "Player playback error";
+                    qCDebug(dcDenon()) << "Player playback error";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -1084,14 +1088,14 @@ void Heos::readData()
                         emit playerPlaybackErrorReceived(playerId, errorMessage);
                     }
                 } else if (command.contains("player_queue_changed")) {
-                    qDebug(dcDenon()) << "Player queue Changed";
+                    qCDebug(dcDenon()) << "Player queue Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
                         emit playerQueueChanged(playerId);
                     }
                 } else if (command.contains("player_volume_changed")) {
-                    qDebug(dcDenon()) << "Event player volume Changed";
+                    qCDebug(dcDenon()) << "Event player volume Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -1111,7 +1115,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("repeat_mode_changed")) {
-                    qDebug(dcDenon()) << "Repeat mode Changed";
+                    qCDebug(dcDenon()) << "Repeat mode Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -1129,7 +1133,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("shuffle_mode_changed")) {
-                    qDebug(dcDenon()) << "Shuffle mode Changed";
+                    qCDebug(dcDenon()) << "Shuffle mode Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -1145,7 +1149,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("group_volume_changed")) {
-                    qDebug(dcDenon()) << "Event group volume Changed";
+                    qCDebug(dcDenon()) << "Event group volume Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("gid")) {
                         playerId = message.queryItemValue("gid").toInt();
@@ -1166,7 +1170,7 @@ void Heos::readData()
                     }
                 } else if (command.contains("user_changed")) {
 
-                    qDebug(dcDenon()) << "Event user changed" << message.toString();
+                    qCDebug(dcDenon()) << "Event user changed" << message.toString();
                     bool signedIn;
                     QString username;
                     if (message.hasQueryItem("signed_out")){
@@ -1177,10 +1181,10 @@ void Heos::readData()
                     }
                     emit userChanged(signedIn, username);
                 } else {
-                    qDebug(dcDenon) << "Unhandled Heos event";
+                    qCDebug(dcDenon()) << "Unhandled Heos event";
                 }
             } else {
-                qDebug(dcDenon) << "Unhandled Heos category" << command;
+                qCDebug(dcDenon()) << "Unhandled Heos category" << command;
             }
         }
     }

@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginpushnotifications)
-
-QT+= network
+QT *= network
 
 # For RSA signing JWT
 PKGCONFIG += openssl

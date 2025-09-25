@@ -29,12 +29,13 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginlgsmarttv.h"
-
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/networkaccessmanager.h"
-#include "network/upnp/upnpdiscovery.h"
-#include "hardwaremanager.h"
+#include "tvdevice.h"
+
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
+#include <network/upnp/upnpdiscovery.h>
+#include <hardwaremanager.h>
 
 #include <QDebug>
 

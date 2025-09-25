@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,15 +31,16 @@
 #ifndef INTEGRATIONPLUGINDATETIME_H
 #define INTEGRATIONPLUGINDATETIME_H
 
-#include "integrations/integrationplugin.h"
-#include "alarm.h"
-#include "countdown.h"
+#include <integrations/integrationplugin.h>
 
 #include <QDateTime>
 #include <QTimeZone>
 #include <QTime>
 #include <QTimer>
 #include <QNetworkReply>
+
+#include "alarm.h"
+#include "countdown.h"
 
 class IntegrationPluginDateTime : public IntegrationPlugin
 {
@@ -60,8 +61,8 @@ public:
     void startMonitoringAutoThings() override;
 
 private:
-    QTimer *m_timer;
-    Thing *m_todayDevice;
+    QTimer *m_timer = nullptr;
+    Thing *m_todayDevice = nullptr;
     QTimeZone m_timeZone;
     QDateTime m_currentDateTime;
 

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,8 +30,6 @@
 
 #ifndef OWFS_H
 #define OWFS_H
-
-#include "owcapi.h"
 
 #include <QObject>
 
@@ -88,7 +86,7 @@ private:
     void setValue(const QByteArray &address, const QByteArray &deviceType, const QByteArray &value);
 
 signals:
-    void devicesDiscovered(QList<OwfsDevice> devices);
+    void devicesDiscovered(QList<Owfs::OwfsDevice> devices);
 };
 
 #endif // OWFS_H

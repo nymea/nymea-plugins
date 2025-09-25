@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -35,6 +35,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QUrlQuery>
+#include <QRegularExpression>
 
 HomeConnect::HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, bool simulationMode, QObject *parent) :
     QObject(parent),
@@ -76,12 +77,12 @@ void HomeConnect::setSimulationMode(bool simulation)
 QUrl HomeConnect::getLoginUrl(const QUrl &redirectUrl, const QString &scope)
 {
     if (m_clientKey.isEmpty()) {
-        qWarning(dcHomeConnect) << "Client key not defined!";
+        qCWarning(dcHomeConnect()) << "Client key not defined!";
         return QUrl("");
     }
 
     if (redirectUrl.isEmpty()){
-        qWarning(dcHomeConnect) << "No redirect uri defined!";
+        qCWarning(dcHomeConnect()) << "No redirect uri defined!";
     }
     m_redirectUri = QUrl::toPercentEncoding(redirectUrl.toString());
 
@@ -93,7 +94,7 @@ QUrl HomeConnect::getLoginUrl(const QUrl &redirectUrl, const QString &scope)
     queryParams.addQueryItem("scope", scope);
     queryParams.addQueryItem("state", QUuid::createUuid().toString());
     queryParams.addQueryItem("nonce", QUuid::createUuid().toString());
-    m_codeChallenge = QUuid::createUuid().toString().remove(QRegExp("[{}-]"));
+    m_codeChallenge = QUuid::createUuid().toString().remove(QRegularExpression("[{}-]"));
     queryParams.addQueryItem("code_challenge", m_codeChallenge);
     queryParams.addQueryItem("code_challenge_method", "plain");
     url.setQuery(queryParams);
@@ -103,7 +104,7 @@ QUrl HomeConnect::getLoginUrl(const QUrl &redirectUrl, const QString &scope)
 
 void HomeConnect::onRefreshTimeout()
 {
-    qCDebug(dcHomeConnect) << "Refresh authentication token";
+    qCDebug(dcHomeConnect()) << "Refresh authentication token";
     getAccessTokenFromRefreshToken(m_refreshToken);
 }
 
@@ -131,19 +132,19 @@ bool HomeConnect::checkStatusCode(QNetworkReply *reply, const QByteArray &rawDat
     case 400: //Error occurred (e.g. validation error - value is out of range)
         if(!jsonDoc.toVariant().toMap().contains("error")) {
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_client") {
-                qWarning(dcHomeConnect()) << "Client token provided doesn’t correspond to client that generated auth code.";
+                qCWarning(dcHomeConnect()) << "Client token provided doesn’t correspond to client that generated auth code.";
             }
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_redirect_uri") {
-                qWarning(dcHomeConnect()) << "Missing redirect_uri parameter.";
+                qCWarning(dcHomeConnect()) << "Missing redirect_uri parameter.";
             }
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_code") {
-                qWarning(dcHomeConnect()) << "Expired authorization code.";
+                qCWarning(dcHomeConnect()) << "Expired authorization code.";
             }
         }
         setAuthenticated(false);
         return false;
     case 401:
-        qWarning(dcHomeConnect()) << "Client does not have permission to use this API.";
+        qCWarning(dcHomeConnect()) << "Client does not have permission to use this API.";
         setAuthenticated(false);
         return false;
     case 403:
@@ -154,7 +155,7 @@ bool HomeConnect::checkStatusCode(QNetworkReply *reply, const QByteArray &rawDat
         qCWarning(dcHomeConnect()) << "Not Found. This resource is not available (e.g. no images on washing machine)";
         return false;
     case 405:
-        qWarning(dcHomeConnect()) << "Wrong HTTP method used.";
+        qCWarning(dcHomeConnect()) << "Wrong HTTP method used.";
         setAuthenticated(false);
         return false;
     case 408:
@@ -194,7 +195,7 @@ bool HomeConnect::checkStatusCode(QNetworkReply *reply, const QByteArray &rawDat
 void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 {
     if (refreshToken.isEmpty()) {
-        qWarning(dcHomeConnect) << "No refresh token given!";
+        qCWarning(dcHomeConnect()) << "No refresh token given!";
         setAuthenticated(false);
         return;
     }
@@ -228,9 +229,9 @@ void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 
         if (data.toVariant().toMap().contains("expires_in")) {
             int expireTime = data.toVariant().toMap().value("expires_in").toInt();
-            qCDebug(dcHomeConnect) << "Access token expires int" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
+            qCDebug(dcHomeConnect()) << "Access token expires int" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
-                qWarning(dcHomeConnect()) << "Access token refresh timer not initialized";
+                qCWarning(dcHomeConnect()) << "Access token refresh timer not initialized";
                 return;
             }
             if (expireTime < 20) {
@@ -246,11 +247,11 @@ void HomeConnect::getAccessTokenFromAuthorizationCode(const QByteArray &authoriz
 {
     // Obtaining access token
     if(authorizationCode.isEmpty())
-        qWarning(dcHomeConnect) << "No authorization code given!";
+        qCWarning(dcHomeConnect()) << "No authorization code given!";
     if(m_clientKey.isEmpty())
-        qWarning(dcHomeConnect) << "Client key not set!";
+        qCWarning(dcHomeConnect()) << "Client key not set!";
     if(m_clientSecret.isEmpty())
-        qWarning(dcHomeConnect) << "Client secret not set!";
+        qCWarning(dcHomeConnect()) << "Client secret not set!";
 
     QUrl url = QUrl(m_baseTokenUrl);
     QUrlQuery query;    url.setQuery(query);
@@ -288,7 +289,7 @@ void HomeConnect::getAccessTokenFromAuthorizationCode(const QByteArray &authoriz
             int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
             qCDebug(dcHomeConnect()) << "Token expires in" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
-                qWarning(dcHomeConnect()) << "Token refresh timer not initialized";
+                qCWarning(dcHomeConnect()) << "Token refresh timer not initialized";
                 setAuthenticated(false);
                 return;
             }
@@ -546,7 +547,7 @@ QUuid HomeConnect::selectProgram(const QString &haId, const QString &programKey,
 QUuid HomeConnect::setSelectedProgramOptions(const QString &haId, QList<HomeConnect::Option> options)
 {
     if (options.isEmpty())
-        return "";
+        return QUuid();
 
     QUuid commandId = QUuid::createUuid();
     QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/selected/options");
@@ -754,7 +755,7 @@ void HomeConnect::connectEventStream()
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
         int reconnectTime = 5000; // Usual reconnect in 5 s
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
             qCDebug(dcHomeConnect()) << "Event stream error" << reply->errorString() << reply->readAll();

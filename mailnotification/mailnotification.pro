@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginmailnotification)
-
-QT+= network
+QT *= network
 
 SOURCES += \
     integrationpluginmailnotification.cpp \

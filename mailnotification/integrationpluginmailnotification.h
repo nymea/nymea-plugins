@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,8 @@
 #ifndef INTEGRATIONPLUGINMAILNOTIFICATION_H
 #define INTEGRATIONPLUGINMAILNOTIFICATION_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+
 #include "smtpclient.h"
 
 class IntegrationPluginMailNotification : public IntegrationPlugin
@@ -52,7 +53,7 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
-    QHash <SmtpClient*, Thing*> m_clients;
+    QHash <SmtpClient *, Thing *> m_clients;
 
 };
 

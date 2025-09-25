@@ -5,7 +5,6 @@ PLUGIN_DIRS = \
     aqi                 \ 
     avahimonitor        \
     awattar             \
-    bimmerconnected     \
     bluos               \
     bose                \
     bosswerk            \
@@ -15,7 +14,6 @@ PLUGIN_DIRS = \
     daylightsensor      \
     denon               \
     doorbird            \
-    dht                 \
     dweetio             \
     dynatrace           \
     easee               \
@@ -25,7 +23,6 @@ PLUGIN_DIRS = \
     espuino             \
     evbox               \
     everest             \
-    fastcom             \
     flowercare          \
     fronius             \
     garadget            \
@@ -44,13 +41,11 @@ PLUGIN_DIRS = \
     mailnotification    \
     mqttclient          \
     mystrom             \
-    neatobotvac         \
     nanoleaf            \
     netatmo             \
     networkdetector     \
     notifyevents        \
     nuki                \
-    mcp3008             \
     onewire             \
     openuv              \ 
     openweathermap      \
@@ -69,7 +64,6 @@ PLUGIN_DIRS = \
     somfytahoma         \
     sonos               \
     spothinta           \
-    sunposition         \
     systemmonitor       \
     tado                \
     tasmota             \
@@ -92,6 +86,18 @@ PLUGIN_DIRS = \
 
 message(============================================)
 message("Qt version:" $$[QT_VERSION])
+
+!greaterThan(QT_MAJOR_VERSION, 5) {
+    PLUGIN_DIRS += \
+        bimmerconnected     \
+        dht                 \
+        fastcom             \
+        mcp3008             \
+        neatobotvac         \
+        sunposition         \
+} else {
+    message("Python plugin disabled for Qt 6")
+}
 
 plugininfo.depends = FORCE
 for (entry, PLUGIN_DIRS):plugininfo.commands += test -d $${entry} || mkdir -p $${entry}; cd $${entry} && qmake -o Makefile $$PWD/$${entry}/$${entry}.pro && cd ..;

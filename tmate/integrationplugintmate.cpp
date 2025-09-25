@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2023, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,11 @@
 #include "integrationplugintmate.h"
 #include "plugininfo.h"
 
+#include <plugintimer.h>
+
 #include <QFile>
 #include <QDir>
+#include <QProcess>
 #include <QRegularExpression>
 
 IntegrationPluginTmate::IntegrationPluginTmate()

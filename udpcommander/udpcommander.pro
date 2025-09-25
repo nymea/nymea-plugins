@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-QT += network
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginudpcommander)
+QT *= network
 
 SOURCES += \
     integrationpluginudpcommander.cpp

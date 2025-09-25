@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-QT += bluetooth
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginsenic)
+QT *= bluetooth
 
 SOURCES += \
     integrationpluginsenic.cpp \

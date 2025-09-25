@@ -1,0 +1,820 @@
+Source: nymea-plugins
+Section: utils
+Priority: optional
+Maintainer: nymea GmbH <contact@nymea.io>
+Standards-Version: 4.7.2
+Homepage: https://nymea.io
+Vcs-Git: https://github.com/nymea/nymea-plugins.git
+Build-depends: debhelper,
+               pkg-config,
+               libnymea-dev,
+               libnymea-mqtt-dev,
+               libnymea-gpio-dev,
+               nymea-dev-tools:native,
+               qt6-base-dev,
+               qt6-base-dev-tools,
+               qt6-5compat-dev,
+               qt6-websockets-dev,
+               qt6-connectivity-dev,
+               qt6-serialport-dev,
+               libow-dev,
+               libsodium-dev,
+               libudev-dev,
+               libhidapi-dev,
+               libssl-dev,
+
+
+Package: nymea-plugin-anel
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for ANEL Elektronik NET-PwrCtrl power sockets
+ This package contains the nymea integration plugin for ANEL Elektronik NET-PwrCtrl
+ network controlled power sockets.
+
+
+Package: nymea-plugin-aqi
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to fetch the air quaility index from http://aqicn.org
+ This package contains the nymea integration plugin for the air quality index online service
+
+
+Package: nymea-plugin-avahimonitor
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for avahimonitor
+ This package contains the nymea integration plugin for monitoring network devices via mDNS
+
+
+Package: nymea-plugin-awattar
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for awattar
+ This package contains the nymea integration plugin for the awattar online service
+
+
+Package: nymea-plugin-bluos
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for bluos
+ This package contains the nymea integration plugin for bluos based media devices
+
+
+Package: nymea-plugin-bose
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for bose soundtouch
+ This package contains the nymea integration plugin for bose soundtouch devices.
+
+
+Package: nymea-plugin-bosswerk
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for Bosswerk micro inverters
+ This package contains the nymea integration plugin for Bosswerk micro inverters.
+
+
+Package: nymea-plugin-coinmarketcap
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for coin market cap
+ This package contains the nymea integration plugin for the coinmarketcap online service
+
+
+Package: nymea-plugin-commandlauncher
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for commandlauncher
+ This package contains the nymea integration plugin for launching system commands
+
+
+Package: nymea-plugin-daikinairco
+Architecture: any
+Depends: ${misc:Depends},
+         python3-pip,
+Description: nymea integration plugin for Daikin airconditioning units
+ This package contains the nymea integration plugin for Daikin airconditioning units.
+
+
+Package: nymea-plugin-datetime
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for datetime
+ This package contains the nymea integration plugin for date and time related features
+
+
+Package: nymea-plugin-daylightsensor
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for a mathematical daylight sensor
+ This package contains a plugin for a mathematical daylight sensor. That means
+ it will work without any internet connection or hardware. It computes daylight
+ times based on the geographical location of the nymea instance.
+
+
+Package: nymea-plugin-denon
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for denon
+ This package contains the nymea integration plugin for Denon sound devices
+
+
+Package: nymea-plugin-doorbird
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for DoorBird
+ This package contains the nymea integration plugin for DoorBird doorbells
+
+
+Package: nymea-plugin-dweetio
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for dweet.io
+ This package contains the nymea integration plugin for dweet.io
+
+
+Package: nymea-plugin-dynatrace
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for dynatrace
+ This package contains the nymea integration plugin for the dynatrace UFO
+
+
+Package: nymea-plugin-easee
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for easee wallboxes
+ This package contains the nymea integration plugin for easee wallboxes
+
+
+Package: nymea-plugin-elgato
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for elgato
+ This package contains the nymea integration plugin for devices from Elgato
+
+
+Package: nymea-plugin-espuino
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for ESPuino
+ This package contains the nymea integration plugin for ESPuino devices.
+
+
+Package: nymea-plugin-espsomfyrts
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for ESP-Somfy-RTS
+ This package contains the nymea integration plugin for the ESP Somfy RTS project.
+
+
+Package: nymea-plugin-evbox
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for EVBox
+ This package contains the nymea integration plugin for EVBox wallboxes
+ implementing the Protocol Max v4.
+
+
+Package: nymea-plugin-everest
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for EVerest based EV chargers
+ This package will install the nymea integration plugin for
+ EVerest based EV charger
+
+
+Package: nymea-plugin-flowercare
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Xiaomi Flower care devices
+ This package contains the nymea integration plugin for Xiaomi Flower care devices,
+ also know as Plant care or MiCare
+
+
+Package: nymea-plugin-fronius
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Fronius PV inverters
+ This package contains the nymea integration plugin for Fronius solar inverters
+
+
+Package: nymea-plugin-eq-3
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for eq-3
+ This package contains the nymea integration plugin for eq-3 devices
+
+
+Package: nymea-plugin-garadget
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Garadget
+ This package contains the nymea integration plugin for Garadget Garage Door Opener
+
+
+Package: nymea-plugin-gpio
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-gpio,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for gpio
+ This package contains the nymea integration plugin to interact with GPIOs
+
+
+Package: nymea-plugin-goecharger
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for the go-eCharger wallbox
+ This package contains the nymea integration plugin for the go-eCharger wallbox
+
+
+Package: nymea-plugin-homeconnect
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for home connect
+ This package contains the nymea integration plugin for home connect appliances
+
+
+Package: nymea-plugin-i2cdevices
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for I2C devies
+ This plugin adds support for I2C devices to nymea.
+ Currently supported devices are the ADS1114/1114/1115 and the Pi-16ADC.
+
+
+Package: nymea-plugin-kodi
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for kodi
+ This package contains the nymea integration plugin for kodi
+
+
+Package: nymea-plugin-lgsmarttv
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for lgsmarttv
+ This package contains the nymea integration plugin for smart tvs from LG
+
+
+Package: nymea-plugin-lifx
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for lifx
+ This package contains the nymea integration plugin for lifx devices
+
+Package: nymea-plugin-logilink
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (< 1.0.1)
+Description: nymea integration plugin for Logilink power sockets
+ This package contains the nymea integration plugin for Logilink PDU
+ network controlled power sockets.
+
+
+Package: nymea-plugin-mecelectronics
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for mec electronics devices
+ This package will add support for the mec meter to nymea.
+
+
+Package: nymea-plugin-meross
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for meross devices
+ This package will add support for the meross devices to nymea.
+
+
+Package: nymea-plugin-mailnotification
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for mailnotification
+ This package contains the nymea integration plugin for sending notifications via email.
+
+
+Package: nymea-plugin-mqttclient
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for a generic MQTT client
+ This package contains a generic MQTT client plugin for nymea.
+
+
+Package: nymea-plugin-mystrom
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for myStrom devices
+ This package will add support for myStrom devices to nymea.
+
+
+Package: nymea-plugin-nanoleaf
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for nanoleaf
+ This package contains the nymea integration plugin for nanoleaf devices.
+
+
+Package: nymea-plugin-netatmo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for netatmo
+ This package contains the nymea integration plugin for the netatmo weather station.
+
+
+Package: nymea-plugin-networkdetector
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for networkdetector
+ This package contains the nymea integration plugin for detecting and monitoring
+ network devices via basic networking mechanisms (ARP, ICMP..).
+
+
+Package: nymea-plugin-notifyevents
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for Notify.Events
+ This package contains the nymea integration plugin for Notify.Events.
+
+
+Package: nymea-plugin-nuki
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Replaces: nymea-nukiplugin
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for the nuki smart lock
+ This package contains the nymea integration plugin for nuki smart lock devices.
+
+
+Package: nymea-plugin-onewire
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for one wire devices
+ This package contains the nymea integration plugin for one wire devices.
+
+
+Package: nymea-plugin-openuv
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for OpenUV
+ This package contains the nymea integration plugin for OpenUV.
+
+
+Package: nymea-plugin-openweathermap
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for openweathermap
+ This package contains the nymea integration plugin for openweathermap.
+
+
+Package: nymea-plugin-osdomotics
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for osdomotics
+ This package contains the nymea integration plugin for osdomotics.
+
+
+Package: nymea-plugin-philipshue
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for philipshue
+ This package contains the nymea integration plugin for Philips Hue bridges
+ and connected devices to it.
+
+
+Package: nymea-plugin-powerfox
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for powerfox
+ This package contains the nymea integration plugin for the powerfox online service
+ to integrate energy meters.
+
+
+Package: nymea-plugin-pushbullet
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Pushbullet
+ This package contains the nymea integration plugin for sending messages via Pushbullet.
+
+
+Package: nymea-plugin-pushnotifications
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to send Push notifications
+ This package contains the nymea integration plugin for sending messages to nymea:app.
+
+
+Package: nymea-plugin-solarlog
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Solar-Log
+ This package contains the nymea integration plugin for Solar-Log devices.
+
+
+Package: nymea-plugin-tasmota
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Sonoff-Tasmota devices
+ This package contains the nymea integration plugin for Tasmota-Sonoff devices.
+
+Package: nymea-plugin-texasinstruments
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Texas Instruments devices
+ This package contains the nymea integration plugin for Texas Instruments devices.
+
+
+Package: nymea-plugin-telegram
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Telegram
+ This plugin allows nymea to send messages to telegram via the bot API.
+ 
+
+Package: nymea-plugin-tempo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Tempo time tracking
+ This package contains the nymea integration plugin for Tempo time tracking.
+
+
+Package: nymea-plugin-tmate
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         tmate,
+Description: nymea integration plugin for tmate
+ This package contains the nymea integration plugin for tmate terminal access.
+
+
+Package: nymea-plugin-tplink
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for tp-link Kasa devices
+ This package contains the nymea integration plugin for TP-Link Kasa devices.
+
+
+Package: nymea-plugin-tuya
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Tuya cloud devices
+ This package contains the nymea integration plugin for Tuya cloud devices.
+
+
+Package: nymea-plugin-udpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for UDP commander
+ This package contains the nymea integration plugin for sending arbitrary 
+ UDP commands from and to nymea.
+
+
+Package: nymea-plugin-unifi
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for UniFi network controllers
+ This package contains the nymea integration plugin for UniFi network controllers.
+
+
+Package: nymea-plugin-usbrelay
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libudev1,
+         libhidapi-hidraw0,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for USB relay
+ This package contains the nymea integration plugin for USB relays.
+
+
+Package: nymea-plugin-usbrly82
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libudev1,
+Description: nymea integration plugin for USB-RLY82 relay
+ This package will install the nymea integration plugin for USB-RLY82 relay
+ with 2 relays and 8 analog/digital inputs.
+
+
+Package: nymea-plugin-wakeonlan
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for wakeonlan
+ This package contains the nymea integration plugin for sending WOL
+ (wake on lan) magic packets to the network.
+
+
+Package: nymea-plugin-wemo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for wemo
+ This package contains the nymea integration plugin for wemo devices.
+
+
+Package: nymea-plugin-ws2812fx
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for ws2812fx
+ This package contains the nymea integration plugin for using ws2812fx
+ LEDs via an Arduino based microcontroller connected to nymea.
+
+
+Package: nymea-plugin-tcpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for TCP commander
+ This package contains the nymea integration plugin for sending arbitrary
+ TCP packets from and to nymea.
+
+Package: nymea-plugin-httpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for HTTP commander
+ This package contains the nymea integration plugin for sending arbitrary
+ HTTP requests from and to nymea.
+
+
+Package: nymea-plugin-senic
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for senic
+ This package contains the nymea integration plugin for the Senic Nuimo.
+
+
+Package: nymea-plugin-sgready
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-gpio,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for SG-Ready heat pump interface based on GPIOs
+ This package contains the nymea integration plugin for SG-Ready heat pump interface based on GPIOs.
+
+
+Package: nymea-plugin-shelly
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Shelly devices
+ This package contains the nymea integration plugin for Shelly devices.
+
+
+Package: nymea-plugin-simpleheatpump
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libnymea-gpio,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for simple heat pumps
+ This package contains the nymea integration plugin for simple heat pumps.
+
+
+Package: nymea-plugin-somfytahoma
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Somfy TaHoma
+ This package contains the nymea integration plugin for Somfy TaHoma devices.
+
+
+Package: nymea-plugin-sonos
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Sonos smart speakers
+ This package contains the nymea integration plugin for Sonos smart speakers.
+
+
+Package: nymea-plugin-spothinta
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: nymea integration plugin for spot-hinta.fi
+ This package contains the nymea integration plugin to retrieve Finlands 
+ spotmarket energy prices from spot-hinta.fi.
+
+
+Package: nymea-plugin-keba
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nmap,
+         arping,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Keba wallboxes
+ This package contains the nymea integration plugin for Keba wallboxes.
+
+
+Package: nymea-plugin-reversessh
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         sshpass,
+Recommends: openssh-server
+Replaces: nymea-plugin-remotessh
+Conflicts: nymea-plugin-remotessh,
+           nymea-plugins-translations (<= 1.0.0)
+Description: nymea integration plugin to configure remotessh for your nymea:core
+ This package contains the nymea integration plugin for remote ssh connections.
+
+
+Package: nymea-plugin-serialportcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libqt5serialport5,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to send and receive strings over a serial port
+ This package contains the nymea integration plugin for sending and receiving
+ arbitrary data via serial ports.
+
+
+Package: nymea-plugin-systemmonitor
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to monitor the system
+ This package contains the nymea integration plugin for system monitoring.
+
+
+Package: nymea-plugin-tado
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to connect to your Tado account
+ This package contains the nymea integration plugin for Tado devices.
+
+
+Package: nymea-plugin-v2xeamberelectric
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: This nymea plugin fetches live and forecasted price data,
+ providing real-time and future pricing information for integration with smart energy management systems.
+
+
+Package: nymea-plugin-wheretheissat
+Architecture: any
+Depends: ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin to monitor the ISS position
+ This package contains the nymea integration plugin for the wheretheiss.at
+ online service.
+
+
+Package: nymea-plugin-yamahaavr
+Architecture: any
+Depends: ${misc:Depends},
+         python3-pip,
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for Yamaha receivers
+ This package contains the nymea integration plugin for (non-Musiccast) Yamaha AV receivers.
+
+
+Package: nymea-plugins-translations
+Architecture: all
+Depends: ${misc:Depends},
+Description: Transitional package.
+ This package used to contain plugins translations. It is empty now, used
+ as a transitional package and will be removed in the future.

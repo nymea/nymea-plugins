@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,10 +31,11 @@
 #ifndef INTEGRATIONPLUGINELGATO_H
 #define INTEGRATIONPLUGINELGATO_H
 
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergydevice.h>
+
 #include "aveabulb.h"
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 class IntegrationPluginElgato : public IntegrationPlugin
 {

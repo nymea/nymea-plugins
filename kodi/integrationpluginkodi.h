@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,9 @@
 #ifndef INTEGRATIONPLUGINKODI_H
 #define INTEGRATIONPLUGINKODI_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+
 #include "kodi.h"
 
 #include <QHash>
@@ -74,13 +75,13 @@ private:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<Thing*, Kodi*> m_kodis;
+    QHash<Thing *, Kodi *> m_kodis;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
     ZeroConfServiceBrowser *m_httpServiceBrowser = nullptr;
 
-    QHash<int, ThingActionInfo*> m_pendingActions;
-    QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
-    QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
+    QHash<int, ThingActionInfo *> m_pendingActions;
+    QHash<int, BrowserActionInfo *> m_pendingBrowserActions;
+    QHash<int, BrowserItemActionInfo *> m_pendingBrowserItemActions;
 
 private slots:
     void onConnectionChanged(bool connected);

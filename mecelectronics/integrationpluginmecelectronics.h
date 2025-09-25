@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #ifndef INTEGRATIONPLUGINMECMETER_H
 #define INTEGRATIONPLUGINMECMETER_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 class PluginTimer;
 class ZeroConfServiceBrowser;

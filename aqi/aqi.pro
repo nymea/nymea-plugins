@@ -1,12 +1,12 @@
 include(../plugins.pri)
 
-QT+= network
+QT *= network
 
 SOURCES += \
     airqualityindex.cpp \
-    integrationpluginaqi.cpp \
+    integrationpluginaqi.cpp
 
 HEADERS += \
     airqualityindex.h \
-    integrationpluginaqi.h \
+    integrationpluginaqi.h
 

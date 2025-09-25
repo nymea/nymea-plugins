@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,13 +29,13 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginkodi.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/upnp/upnpdiscovery.h"
-#include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
-#include "network/zeroconf/zeroconfserviceentry.h"
-#include "network/networkaccessmanager.h"
+
+#include <integrations/thing.h>
+#include <platform/platformzeroconfcontroller.h>
+#include <network/zeroconf/zeroconfservicebrowser.h>
+#include <network/zeroconf/zeroconfserviceentry.h>
+#include <network/networkaccessmanager.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -213,7 +213,7 @@ void IntegrationPluginKodi::discoverThings(ThingDiscoveryInfo *info)
 
         foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
 
-            QUuid uuid = avahiEntry.txt("uuid");
+            QUuid uuid(avahiEntry.txt("uuid"));
             if (descriptors.contains(uuid)) {
                 // Might appear multiple times, IPv4 and IPv6
                 continue;
@@ -312,7 +312,7 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
             commandId = kodi->setRepeat("off");
         }
     } else {
-        qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
+        qCWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
         return info->finish(Thing::ThingErrorActionTypeNotFound);
     }
 
@@ -385,7 +385,7 @@ IntegrationPluginKodi::KodiHostInfo IntegrationPluginKodi::resolve(Thing *thing)
             continue;
         }
 
-        QUuid entryUuid = entry.txt("uuid");
+        QUuid entryUuid(entry.txt("uuid"));
         if (entryUuid != uuid) {
             continue;
         }
@@ -405,7 +405,7 @@ IntegrationPluginKodi::KodiHostInfo IntegrationPluginKodi::resolve(Thing *thing)
     if (ret.address.isNull()) {
         if (pluginStorage()->childGroups().contains(thing->id().toString())) {
             pluginStorage()->beginGroup(thing->id().toString());
-            ret.address = pluginStorage()->value("address").toString();
+            ret.address = QHostAddress(pluginStorage()->value("address").toString());
             ret.rpcPort = pluginStorage()->value("rpcPort").toUInt();
             ret.httpPort = pluginStorage()->value("httpPort").toUInt();
             pluginStorage()->endGroup();
@@ -426,7 +426,6 @@ void IntegrationPluginKodi::onConnectionChanged(bool connected)
     Thing *thing = m_kodis.key(kodi);
 
     thing->setStateValue(kodiConnectedStateTypeId, connected);
-
 
     if (connected) {
         pluginStorage()->beginGroup(thing->id().toString());

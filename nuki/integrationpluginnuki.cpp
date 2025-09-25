@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,11 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginnuki.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
+
+#include <integrations/thing.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergymanager.h>
+
 
 extern "C"{
 #include "sodium.h"

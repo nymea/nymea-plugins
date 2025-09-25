@@ -1,11 +1,11 @@
 include(../plugins.pri)
 
-QT += network
+QT *= network
 
 HEADERS += \
-    integrationpluginunifi.h \
+    integrationpluginunifi.h
 
 SOURCES += \
-    integrationpluginunifi.cpp \
+    integrationpluginunifi.cpp
 
 

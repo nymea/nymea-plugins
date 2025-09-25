@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,10 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginspothinta.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+
+#include <integrations/thing.h>
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
+#include <plugintimer.h>
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -154,7 +156,7 @@ void IntegrationPluginSpotHinta::processPriceData(Thing *thing, const QVariant &
                 minPrice = price;
 
             thing->setStateValue(spothintaCurrentMarketPriceStateTypeId, price);
-            thing->setStateValue(spothintaValidUntilStateTypeId, endTime.toLocalTime().toTime_t());
+            thing->setStateValue(spothintaValidUntilStateTypeId, endTime.toLocalTime().toSecsSinceEpoch());
             thing->setStateValue(spothintaCurrentRankStateTypeId, rank);
         }
     }

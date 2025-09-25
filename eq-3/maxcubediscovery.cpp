@@ -42,8 +42,8 @@ MaxCubeDiscovery::MaxCubeDiscovery(QObject *parent) :
     m_timeout = new QTimer(this);
     m_timeout->setSingleShot(true);
 
-    connect(m_udpSocket,SIGNAL(readyRead()),this,SLOT(readData()));
-    connect(m_timeout,SIGNAL(timeout()),this,SLOT(discoverTimeout()));
+    connect(m_udpSocket, &QUdpSocket::readyRead, this, &MaxCubeDiscovery::readData);
+    connect(m_timeout, &QTimer::timeout, this, &MaxCubeDiscovery::discoverTimeout);
 }
 
 void MaxCubeDiscovery::detectCubes()

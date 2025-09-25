@@ -31,10 +31,10 @@
 #ifndef INTEGRATIONPLUGINWEMO_H
 #define INTEGRATIONPLUGINWEMO_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
-#include <QNetworkReply>
+class QNetworkReply;
+class PluginTimer;
 
 class IntegrationPluginWemo : public IntegrationPlugin
 {

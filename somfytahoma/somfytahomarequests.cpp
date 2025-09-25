@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2022, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -33,10 +33,9 @@
 #include <QJsonDocument>
 #include <QUrlQuery>
 
-#include "network/networkaccessmanager.h"
+#include <network/networkaccessmanager.h>
 
 #include "extern-plugininfo.h"
-
 
 static const QString somfyTahomaWebUrl = QStringLiteral("https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI");
 static const QString localSomfyTahomaPath = QStringLiteral("/enduser-mobile-web/1/enduserAPI");

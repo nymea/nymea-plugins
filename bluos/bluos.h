@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,13 +31,13 @@
 #ifndef BLUOS_H
 #define BLUOS_H
 
-#include <QObject>
-#include <QTimer>
-#include <QHostAddress>
 #include <QUuid>
+#include <QTimer>
+#include <QObject>
+#include <QHostAddress>
 
-#include "network/networkaccessmanager.h"
-#include "integrations/thing.h"
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 class BluOS : public QObject
 {
@@ -67,20 +67,20 @@ public:
     };
 
     struct StatusResponse {
-      QString Album;
-      QString Artist;
-      QString Name;
-      QString Title;
-      QString Service;
-      QUrl ServiceIcon;
-      PlaybackState State;
-      QUrl StationUrl;
-      int Volume;
-      bool Mute;
-      RepeatMode Repeat;
-      bool Shuffle;
-      QUrl Image;
-      QString Group;
+        QString Album;
+        QString Artist;
+        QString Name;
+        QString Title;
+        QString Service;
+        QUrl ServiceIcon;
+        PlaybackState State;
+        QUrl StationUrl;
+        int Volume;
+        bool Mute;
+        RepeatMode Repeat;
+        bool Shuffle;
+        QUrl Image;
+        QString Group;
     };
 
     struct Preset {
@@ -98,6 +98,7 @@ public:
     };
 
     explicit BluOS(NetworkAccessManager *networkManager, QHostAddress hostAddress, int port, QObject *parent = nullptr);
+
     int port();
     QHostAddress hostAddress();
     
@@ -130,24 +131,24 @@ public:
     QUuid removeGroupPlayer(QHostAddress address, int port);
     
 private:
+    NetworkAccessManager *m_networkManager = nullptr;
     QHostAddress m_hostAddress;
     int m_port;
-    NetworkAccessManager *m_networkManager = nullptr;
 
     QUuid playBackControl(PlaybackCommand command);
     bool parseState(const QByteArray &state);
 
 signals:
     void connectionChanged(bool connected);
-    void actionExecuted(QUuid actionId, bool success);
+    void actionExecuted(const QUuid &actionId, bool success);
 
-    void statusReceived(const StatusResponse &status);
+    void statusReceived(const BluOS::StatusResponse &status);
     void volumeReceived(int volume, bool mute);
     void shuffleStateReceived(bool state);
-    void repeatModeReceived(RepeatMode mode);
+    void repeatModeReceived(BluOS::RepeatMode mode);
 
-    void presetsReceived(QUuid requestId, const QList<Preset> &presets);
-    void sourcesReceived(QUuid requestId, const QList<Source> &sources);
-    void browseResultReceived(QUuid requestId, const QList<Source> &sources);
+    void presetsReceived(const QUuid &requestId, const QList<BluOS::Preset> &presets);
+    void sourcesReceived(const QUuid &requestId, const QList<BluOS::Source> &sources);
+    void browseResultReceived(const QUuid &requestId, const QList<BluOS::Source> &sources);
 };
 #endif // BLUOS_H

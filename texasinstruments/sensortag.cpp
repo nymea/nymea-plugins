@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,7 +30,8 @@
 
 #include "sensortag.h"
 #include "extern-plugininfo.h"
-#include "math.h"
+
+#include <math.h>
 
 #include <QTimer>
 #include <QVector3D>
@@ -588,7 +589,11 @@ void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::Servic
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_temperatureDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_temperatureDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_temperatureService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
 
@@ -645,7 +650,11 @@ void SensorTag::onHumidityServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_humidityDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_humidityDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_humidityService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
@@ -701,7 +710,11 @@ void SensorTag::onPressureServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_pressureDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_pressureDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_pressureService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
@@ -757,7 +770,11 @@ void SensorTag::onOpticalServiceStateChanged(const QLowEnergyService::ServiceSta
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_opticalDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_opticalDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_opticalService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
@@ -810,7 +827,11 @@ void SensorTag::onKeyServiceStateChanged(const QLowEnergyService::ServiceState &
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_keyDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_keyDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_keyService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 }
 
@@ -844,7 +865,11 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_movementDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_movementDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_movementService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
@@ -899,7 +924,11 @@ void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &s
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_ioDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_ioDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_ioService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic

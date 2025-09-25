@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2023, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,11 +31,11 @@
 #ifndef INTEGRATIONPLUGINREMOTESSH_H
 #define INTEGRATIONPLUGINREMOTESSH_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 #include "extern-plugininfo.h"
 
-#include <QProcess>
+class QProcess;
+class PluginTimer;
 
 class IntegrationPluginTmate : public IntegrationPlugin
 {
@@ -46,16 +46,14 @@ class IntegrationPluginTmate : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginTmate();
-    ~IntegrationPluginTmate();
+    ~IntegrationPluginTmate() override;
 
-//    void startPairing(ThingPairingInfo *info) override;
-//    void confirmPairing(ThingPairingInfo *info, const QString &user, const QString &secret) override;
     void executeAction(ThingActionInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
 private:
-    QHash<Thing*, QProcess*> m_processes;
+    QHash<Thing *, QProcess *> m_processes;
     PluginTimer *m_watchdog = nullptr;
 };
 

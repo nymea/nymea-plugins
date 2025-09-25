@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,11 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginwemo.h"
-
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "network/networkaccessmanager.h"
-#include "network/upnp/upnpdiscovery.h"
+
+#include <plugintimer.h>
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
+#include <network/upnp/upnpdiscovery.h>
 
 #include <QDebug>
 #include <QNetworkReply>

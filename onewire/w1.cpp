@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -52,7 +52,7 @@ QStringList W1::discoverDevices()
     QFileInfoList list = w1SysFSDir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        if(fileInfo.fileName()[2] == '-') {
+        if(fileInfo.fileName().at(2) == '-') {
             qCDebug(dcOneWire()) << "Found one wire device" << fileInfo.filePath();
             deviceList.append(fileInfo.fileName());
         }

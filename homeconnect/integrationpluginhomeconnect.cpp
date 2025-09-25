@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,9 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginhomeconnect.h"
-#include "integrations/integrationplugin.h"
-#include "network/networkaccessmanager.h"
 #include "plugininfo.h"
+
+#include <network/networkaccessmanager.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -218,7 +218,7 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
 
         HomeConnect *homeConnect = m_setupHomeConnectConnections.value(info->thingId());
         if (!homeConnect) {
-            qWarning(dcHomeConnect()) << "No HomeConnect connection found for device:"  << info->thingName();
+            qCWarning(dcHomeConnect()) << "No HomeConnect connection found for device:"  << info->thingName();
             m_setupHomeConnectConnections.remove(info->thingId());
             return info->finish(Thing::ThingErrorHardwareFailure);
         }
@@ -326,7 +326,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
             Q_FOREACH (Thing *thing, myThings().filterByThingClassId(homeConnectAccountThingClassId)) {
                 HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
                 if (!homeConnect) {
-                    qWarning(dcHomeConnect()) << "No HomeConnect account found for" << thing->name();
+                    qCWarning(dcHomeConnect()) << "No HomeConnect account found for" << thing->name();
                     continue;
                 }
                 homeConnect->getHomeAppliances();
@@ -411,7 +411,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             options.append(coffeeTemperature);
             requestId = homeConnect->setSelectedProgramOptions(haid, options);
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
 
@@ -429,7 +429,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             options.append(beanAmount);
             requestId = homeConnect->setSelectedProgramOptions(haid, options);
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
 
@@ -443,7 +443,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             options.append(fillQuantity);
             requestId = homeConnect->setSelectedProgramOptions(haid, options);
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         } else if (action.actionTypeId() == coffeeMakerStartActionTypeId) {
@@ -454,7 +454,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             QUuid requestId;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         }
@@ -473,7 +473,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         } else {
@@ -489,7 +489,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             QUuid requestId;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         }
@@ -502,7 +502,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             QUuid requestId;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         } else if (action.actionTypeId() == dryerDryingTargetActionTypeId) {
@@ -521,7 +521,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             options.append(dryingTarget);
             requestId = homeConnect->setSelectedProgramOptions(haid, options);
             m_pendingActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         }
@@ -538,7 +538,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 {
-    qCDebug(dcHomeConnect) << "Delete " << thing->name();
+    qCDebug(dcHomeConnect()) << "Delete " << thing->name();
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.take(thing);
                 if (homeConnect)
@@ -567,7 +567,7 @@ void IntegrationPluginHomeConnect::browseThing(BrowseResult *result)
     homeConnect->getProgramsAvailable(haid);
     connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haId, const QStringList programs) {
         if(result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haId) {
-            Q_FOREACH(QString program, programs) {
+            Q_FOREACH(const QString &program, programs) {
                 BrowserItem item;
                 item.setExecutable(true);
                 item.setDisplayName(program.split('.').last());
@@ -723,7 +723,7 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         if (value.toString().split('.').last().contains("Finished")) {
             //apparently the finished event is not emitted by HomeConnect so this will hopefully do the trick
             if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
-                emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+                emit emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
             }
             if (m_progressStateTypeIds.contains(thing->thingClassId())) {
                 thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
@@ -732,21 +732,21 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         // Program Progress Events
     } else if (key == "BSH.Common.Event.ProgramAborted") {
         if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
-            emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+            emit emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
         }
         if (m_progressStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
         }
     } else if (key == "BSH.Common.Event.ProgramFinished") {
         if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
-            emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+            emit emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
         }
         if (m_progressStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
         }
         //} else if (key == "BSH.Common.Event.AlarmClockElapsed") {
     } else if (key == "Cooking.Oven.Event.PreheatFinished") {
-        emitEvent(Event(ovenPreheatFinishedEventTypeId, thing->id()));
+        emit emitEvent(Event(ovenPreheatFinishedEventTypeId, thing->id()));
         // Home Appliance State Changes
         //} else if (key == "BSH.Common.Setting.PowerState") {
     } else if (key == "BSH.Common.Status.RemoteControlActive") {
@@ -768,23 +768,23 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
 
         // Home Appliance Events
     } else if (key == "ConsumerProducts.CoffeeMaker.Event.BeanContainerEmpty") {
-        emitEvent(Event(coffeeMakerBeanContainerEmptyEventTypeId, thing->id()));
+        emit emitEvent(Event(coffeeMakerBeanContainerEmptyEventTypeId, thing->id()));
     } else if (key == "ConsumerProducts.CoffeeMaker.Event.WaterTankEmpty") {
-        emitEvent(Event(coffeeMakerWaterTankEmptyEventTypeId, thing->id()));
+        emit emitEvent(Event(coffeeMakerWaterTankEmptyEventTypeId, thing->id()));
     } else if (key == "ConsumerProducts.CoffeeMaker.Event.DripTrayFull") {
-        emitEvent(Event(coffeeMakerDripTrayFullEventTypeId, thing->id()));
+        emit emitEvent(Event(coffeeMakerDripTrayFullEventTypeId, thing->id()));
     } else if (key == "Refrigeration.FridgeFreezer.Event.DoorAlarmFreezer") {;
-        emitEvent(Event(fridgeDoorAlarmFreezerEventTypeId, thing->id()));
+        emit emitEvent(Event(fridgeDoorAlarmFreezerEventTypeId, thing->id()));
     } else if (key == "Refrigeration.FridgeFreezer.Event.DoorAlarmRefrigerator") {
-        emitEvent(Event(fridgeDoorAlarmRefrigeratorEventTypeId, thing->id()));
+        emit emitEvent(Event(fridgeDoorAlarmRefrigeratorEventTypeId, thing->id()));
     } else if (key == "Refrigeration.FridgeFreezer.Event.TemperatureAlarmFreezer") {
-        emitEvent(Event(fridgeTemperatureAlarmFreezerEventTypeId, thing->id()));
+        emit emitEvent(Event(fridgeTemperatureAlarmFreezerEventTypeId, thing->id()));
     } else if (key == "ConsumerProducts.CleaningRobot.Event.EmptyDustBoxAndCleanFilter") {
-        emitEvent(Event(cleaningRobotEmptyDustBoxAndCleanFilterEventTypeId, thing->id()));
+        emit emitEvent(Event(cleaningRobotEmptyDustBoxAndCleanFilterEventTypeId, thing->id()));
     } else if (key == "ConsumerProducts.CleaningRobot.Event.RobotIsStuck") {
-        emitEvent(Event(cleaningRobotRobotIsStuckEventTypeId, thing->id()));
+        emit emitEvent(Event(cleaningRobotRobotIsStuckEventTypeId, thing->id()));
     } else if (key == "ConsumerProducts.CleaningRobot.Event.DockingStationNotFound") {
-        emitEvent(Event(cleaningRobotDockingStationNotFoundEventTypeId, thing->id()));
+        emit emitEvent(Event(cleaningRobotDockingStationNotFoundEventTypeId, thing->id()));
 
         // UNDOCUMENTED
     } else if (key == "Cooking.Oven.Status.CurrentCavityTemperature") {
@@ -999,7 +999,7 @@ void IntegrationPluginHomeConnect::onReceivedStatusList(const QString &haId, con
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
             qCDebug(dcHomeConnect()) << "Received status list device" << thing->name();
-            Q_FOREACH(QString key, statusList.keys()) {
+            Q_FOREACH(const QString &key, statusList.keys()) {
                 parseKey(thing, key, statusList.value(key));
             }
             break;
@@ -1076,7 +1076,7 @@ void IntegrationPluginHomeConnect::onReceivedSettings(const QString &haId, const
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
             qCDebug(dcHomeConnect()) << "Received setting" << thing->name() << settings;
-            Q_FOREACH(QString setting, settings.keys()) {
+            Q_FOREACH(const QString &setting, settings.keys()) {
                 parseSettingKey(thing, setting, settings.value(setting));
             }
             break;

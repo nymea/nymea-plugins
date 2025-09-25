@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,7 +29,6 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginopenweathermap.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -40,7 +39,10 @@
 #include <QDateTime>
 #include <QTimeZone>
 #include <QSettings>
-#include "nymeasettings.h"
+
+#include <nymeasettings.h>
+#include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 IntegrationPluginOpenweathermap::IntegrationPluginOpenweathermap()
 {

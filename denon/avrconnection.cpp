@@ -41,8 +41,12 @@ AvrConnection::AvrConnection(const QHostAddress &hostAddress, const int &port, Q
     connect(m_socket, &QTcpSocket::connected, this, &AvrConnection::onConnected);
     connect(m_socket, &QTcpSocket::disconnected, this, &AvrConnection::onDisconnected);
     connect(m_socket, &QTcpSocket::readyRead, this, &AvrConnection::readData);
-    // Note: error signal will be interpreted as function, not as signal in C++11
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(m_socket, &QTcpSocket::errorOccurred, this, &AvrConnection::onError);
+#else
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+#endif
+
 
    m_commandTimer = new QTimer(this);
    m_commandTimer->start(50); // 50ms is the minimum request interval specified
@@ -157,20 +161,20 @@ QUuid AvrConnection::sendCommand(const QByteArray &message)
 QUuid AvrConnection::setChannel(const QByteArray &channel)
 {
     QByteArray cmd = "SI" + channel + "\r";
-    qCDebug(dcDenon) << "Change to channel:" << channel;
+    qCDebug(dcDenon()) << "Change to channel:" << channel;
     return sendCommand(cmd);
 }
 
 QUuid AvrConnection::setVolume(uint volume)
 {
-    qCDebug(dcDenon) << "Set volume" << volume;
+    qCDebug(dcDenon()) << "Set volume" << volume;
     QByteArray cmd = "MV" + QByteArray::number(volume) + "\r";
     return sendCommand(cmd);
 }
 
 QUuid AvrConnection::setMute(bool mute)
 {
-    qCDebug(dcDenon) << "Set mute" << mute;
+    qCDebug(dcDenon()) << "Set mute" << mute;
     QByteArray cmd;
     if (mute) {
         cmd = "MUON\r";
@@ -182,7 +186,7 @@ QUuid AvrConnection::setMute(bool mute)
 
 QUuid AvrConnection::setPower(bool power)
 {
-    qCDebug(dcDenon) << "Set power" << power;
+    qCDebug(dcDenon()) << "Set power" << power;
     QByteArray cmd;
     if (power) {
         cmd = "PWON\r";
@@ -194,7 +198,7 @@ QUuid AvrConnection::setPower(bool power)
 
 QUuid AvrConnection::setSurroundMode(const QByteArray &surroundMode)
 {
-    qCDebug(dcDenon) << "Set surround mode" << surroundMode;
+    qCDebug(dcDenon()) << "Set surround mode" << surroundMode;
     QByteArray cmd = "MS" + surroundMode + "\r";
     return sendCommand(cmd);
 }
@@ -298,33 +302,33 @@ QUuid AvrConnection::setRepeat(AvrConnection::RepeatMode mode)
 
 QUuid AvrConnection::increaseVolume()
 {
-    qCDebug(dcDenon) << "Execute volume increase";
+    qCDebug(dcDenon()) << "Execute volume increase";
     QByteArray cmd = "MVUP\r";
     return sendCommand(cmd);
 }
 
 QUuid AvrConnection::decreaseVolume()
 {
-    qCDebug(dcDenon) << "Execute volume decrease";
+    qCDebug(dcDenon()) << "Execute volume decrease";
     QByteArray cmd = "MVDOWN\r";
     return sendCommand(cmd);
 }
 
 void AvrConnection::onConnected()
 {
-    qCDebug(dcDenon) << "connected successfully to" << hostAddress().toString() << port();
+    qCDebug(dcDenon()) << "connected successfully to" << hostAddress().toString() << port();
     emit connectionStatusChanged(true);
 }
 
 void AvrConnection::onDisconnected()
 {
-    qCDebug(dcDenon) << "disconnected from" << hostAddress().toString() << port();
+    qCDebug(dcDenon()) << "disconnected from" << hostAddress().toString() << port();
     emit connectionStatusChanged(false);
 }
 
 void AvrConnection::onError(QAbstractSocket::SocketError socketError)
 {
-    qCWarning(dcDenon) << "socket error:" << socketError << m_socket->errorString();
+    qCWarning(dcDenon()) << "socket error:" << socketError << m_socket->errorString();
     emit socketErrorOccured(socketError);
 }
 
@@ -337,7 +341,7 @@ void AvrConnection::readData()
         if(line.isEmpty())
             continue;
 
-        qCDebug(dcDenon) << "Data received" << line;
+        qCDebug(dcDenon()) << "Data received" << line;
         if (line.contains("MV") && !data.contains("MAX")){
             int index = data.indexOf("MV");
             int volume = data.mid(index+2, 2).toInt();

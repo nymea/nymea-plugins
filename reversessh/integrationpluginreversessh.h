@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,8 +31,9 @@
 #ifndef INTEGRATIONPLUGINREMOTESSH_H
 #define INTEGRATIONPLUGINREMOTESSH_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
+
 #include "extern-plugininfo.h"
 
 #include <QProcess>
@@ -54,7 +55,7 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
-    QHash<Thing*, QProcess*> m_processes;
+    QHash<Thing *, QProcess *> m_processes;
     PluginTimer *m_watchdog = nullptr;
 };
 

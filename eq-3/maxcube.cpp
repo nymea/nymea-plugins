@@ -37,12 +37,15 @@ MaxCube::MaxCube(QObject *parent, QString serialNumber, QHostAddress hostAdress,
 
     m_cubeInitialized = false;
 
-    connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(connectionStateChanged(QAbstractSocket::SocketState)));
+    connect(this, &MaxCube::stateChanged, this, &MaxCube::connectionStateChanged);
+    connect(this, &MaxCube::readyRead, this, &MaxCube::onReadyRead);
+    connect(this, &MaxCube::cubeDataAvailable, this, &MaxCube::processCubeData);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(this, &MaxCube::errorOccurred, this, &MaxCube::onTcpError);
+#else
+    connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
+#endif
 
-    connect(this,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
-    connect(this,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error(QAbstractSocket::SocketError)));
-
-    connect(this,SIGNAL(cubeDataAvailable(QByteArray)),this,SLOT(processCubeData(QByteArray)));
 }
 
 QString MaxCube::serialNumber() const
@@ -698,7 +701,7 @@ quint8 MaxCube::generateCommandId()
     return cmd++;
 }
 
-void MaxCube::connectionStateChanged(const QAbstractSocket::SocketState &socketState)
+void MaxCube::connectionStateChanged(QAbstractSocket::SocketState socketState)
 {
     switch (socketState) {
     case QAbstractSocket::ConnectedState:
@@ -715,7 +718,7 @@ void MaxCube::connectionStateChanged(const QAbstractSocket::SocketState &socketS
     }
 }
 
-void MaxCube::error(QAbstractSocket::SocketError error)
+void MaxCube::onTcpError(QAbstractSocket::SocketError error)
 {
     qCWarning(dcEQ3) << "connection error (" << m_serialNumber << "): " << error;
     emit cubeConnectionStatusChanged(false);

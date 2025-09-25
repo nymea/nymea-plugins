@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-QT += network
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginnetatmo)
+QT *= network
 
 SOURCES += \
     integrationpluginnetatmo.cpp \

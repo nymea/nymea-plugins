@@ -97,7 +97,6 @@ SerialPortMonitor::SerialPortMonitor(QObject *parent) : QObject(parent)
 
         qCDebug(dcUsbRly82()) << "SerialPortMonitor: [+]" << info;
         m_serialPortInfos.insert(info.systemLocation, info);
-        emit serialPortAdded(info);
     }
 
     udev_enumerate_unref(enumerate);

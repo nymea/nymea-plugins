@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,10 +31,14 @@
 #ifndef INTEGRATIONPLUGINLGSMARTTV_H
 #define INTEGRATIONPLUGINLGSMARTTV_H
 
-#include "tvdevice.h"
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/upnp/upnpdevicedescriptor.h"
+#include <integrations/integrationplugin.h>
+
+#include <network/upnp/upnpdevicedescriptor.h>
+#include <plugintimer.h>
+
+#include <QNetworkReply>
+
+class TvDevice;
 
 class IntegrationPluginLgSmartTv : public IntegrationPlugin
 {

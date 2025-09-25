@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,8 +37,8 @@
 #include <QHostAddress>
 #include <QColor>
 
-#include "network/networkaccessmanager.h"
-#include "integrations/thing.h"
+#include <network/networkaccessmanager.h>
+#include <integrations/thing.h>
 
 class Nanoleaf : public QObject
 {
@@ -119,11 +119,11 @@ signals:
     void authenticationStatusChanged(bool authenticated);
     void requestExecuted(QUuid requestId, bool success);
 
-    void controllerInfoReceived(const ControllerInfo &controllerInfo);
+    void controllerInfoReceived(const Nanoleaf::ControllerInfo &controllerInfo);
     void authTokenRecieved(const QString &token);
     void powerReceived(bool power);
     void brightnessReceived(int percentage);
-    void colorModeReceived(ColorMode colorMode);
+    void colorModeReceived(Nanoleaf::ColorMode colorMode);
     void hueReceived(int hue);
     void saturationReceived(int percentage);
     void effectListReceived(const QStringList &effects);
@@ -132,7 +132,7 @@ signals:
     void selectedEffectReceived(const QString &effect);
 
     //Only supported by Canvas
-    void touchEventReceived(GestureID gesture);
+    void touchEventReceived(Nanoleaf::GestureID gesture);
 };
 
 #endif // NANOLEAF_H

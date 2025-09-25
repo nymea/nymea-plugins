@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,6 +30,7 @@
 
 #include "integrationplugintcpcommander.h"
 #include "plugininfo.h"
+#include "tcpserver.h"
 
 #include <QTimer>
 
@@ -58,14 +59,14 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
         connect(tcpSocket, &QTcpSocket::stateChanged, thing, [=](QAbstractSocket::SocketState state){
             thing->setStateValue(tcpClientConnectedStateTypeId, state == QAbstractSocket::ConnectedState);
             if (state == QAbstractSocket::UnconnectedState) {
-                QTimer::singleShot(10000, tcpSocket, [=](){
+                QTimer::singleShot(10000, tcpSocket, [tcpSocket, address, port](){
                     qCDebug(dcTCPCommander()) << "Reconnecting to server" << address << port;
                     tcpSocket->connectToHost(address, port);
                 });
             }
         });
 
-        connect(tcpSocket, &QTcpSocket::readyRead, thing, [=](){
+        connect(tcpSocket, &QTcpSocket::readyRead, thing, [this, thing, tcpSocket](){
             QByteArray data = tcpSocket->readAll();
             ParamList params;
             params << Param(tcpClientTriggeredEventDataParamTypeId, data);
@@ -91,7 +92,7 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
 
         if (tcpServer->isValid()) {
             m_tcpServers.insert(thing, tcpServer);
-            connect(thing, &Thing::settingChanged, tcpServer, [=](const ParamTypeId &paramTypeId, const QVariant &value){
+            connect(thing, &Thing::settingChanged, tcpServer, [tcpServer](const ParamTypeId &paramTypeId, const QVariant &value){
                 if (paramTypeId == tcpServerSettingsConfirmCommandParamTypeId) {
                     tcpServer->setConfirmCommands(value.toBool());
                 }
@@ -106,7 +107,7 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
             return;
         } else {
             tcpServer->deleteLater();
-            qDebug(dcTCPCommander()) << "Could not open TCP Server";
+            qCDebug(dcTCPCommander()) << "Could not open TCP Server";
             info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
             return;
         }
@@ -172,7 +173,7 @@ void IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged(int connec
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Thing *thing = m_tcpServers.key(tcpServer);
     if (thing && thing->thingClassId() == tcpServerThingClassId) {
-        qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
+        qCDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
         thing->setStateValue(tcpServerConnectionCountStateTypeId, connections);
     }
 }
@@ -181,7 +182,7 @@ void IntegrationPluginTcpCommander::onTcpServerCommandReceived(const QString &cl
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Thing *thing = m_tcpServers.key(tcpServer);
-    qDebug(dcTCPCommander()) << thing->name() << "Message received" << data;
+    qCDebug(dcTCPCommander()) << thing->name() << "Message received" << data;
 
     ParamList params;
     params.append(Param(tcpServerTriggeredEventDataParamTypeId, data));

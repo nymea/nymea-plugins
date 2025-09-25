@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,9 +31,8 @@
 #ifndef INTEGRATIONPLUGINSENIC_H
 #define INTEGRATIONPLUGINSENIC_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 #include "nuimo.h"
 
@@ -65,11 +64,11 @@ private slots:
     void onReconnectTimeout();
 
     void onConnectedChanged(bool connected);
-    void onBatteryValueChanged(const uint &percentage);
+    void onBatteryValueChanged(uint percentage);
     void onButtonPressed();
     void onButtonLongPressed();
-    void onSwipeDetected(const Nuimo::SwipeDirection &direction);
-    void onRotationValueChanged(const uint &value);
+    void onSwipeDetected(Nuimo::SwipeDirection direction);
+    void onRotationValueChanged(uint value);
     void onDeviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
 };
 

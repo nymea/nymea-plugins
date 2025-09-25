@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -37,11 +37,9 @@
 #include "kodiconnection.h"
 #include "kodijsonhandler.h"
 
-#include "types/browseritem.h"
-#include "types/browseritemaction.h"
-#include "integrations/thing.h"
-#include "integrations/browseresult.h"
-#include "integrations/browseritemresult.h"
+#include <types/browseritem.h>
+#include <integrations/browseresult.h>
+#include <integrations/browseritemresult.h>
 
 class Kodi : public QObject
 {
@@ -120,10 +118,10 @@ private:
     QString prepareThumbnail(const QString &thumbnail);
 
 private:
-    KodiConnection *m_connection;
+    KodiConnection *m_connection = nullptr;
     int m_httpPort;
-    KodiJsonHandler *m_jsonHandler;
-    bool m_muted;
+    KodiJsonHandler *m_jsonHandler = nullptr;
+    bool m_muted = false;
     int m_volume;
     int m_activePlayerCount = 0; // if it's > 0, there is something playing (either music or video or slideshow)
     int m_activePlayer = -1;
@@ -146,6 +144,7 @@ private:
             return nullptr;
         }
     };
+
     VirtualFsNode* m_virtualFs = nullptr;
 
     QHash<int, BrowseResult*> m_pendingBrowseRequests;

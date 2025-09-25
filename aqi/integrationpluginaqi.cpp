@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,7 +30,8 @@
 
 #include "integrationpluginaqi.h"
 #include "plugininfo.h"
-#include "nymeasettings.h"
+
+#include <nymeasettings.h>
 
 #include <QNetworkAccessManager>
 
@@ -122,7 +123,8 @@ void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
         if(!createAqiConnection()) {
             return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
         }
-        connect(info, &ThingDiscoveryInfo::aborted, [this] {
+
+        connect(info, &ThingDiscoveryInfo::aborted, this, [this] {
             if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty()) {
                 m_aqiConnection->deleteLater();
                 m_aqiConnection = nullptr;
@@ -133,7 +135,9 @@ void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
     }
     QUuid requestId = m_aqiConnection->getDataByIp();
     m_asyncDiscovery.insert(requestId, info);
-    connect(info, &ThingDiscoveryInfo::aborted, [=] {m_asyncDiscovery.remove(requestId);});
+    connect(info, &ThingDiscoveryInfo::aborted, this, [this, requestId] {
+        m_asyncDiscovery.remove(requestId);
+    });
 }
 
 void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
@@ -148,7 +152,7 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
             QUuid requestId = m_aqiConnection->getDataByGeolocation(latitude, longitude);
             m_asyncSetups.insert(requestId, info);
 
-            connect(info, &ThingSetupInfo::aborted, [requestId, this] {
+            connect(info, &ThingSetupInfo::aborted, this, [requestId, this] {
                 m_asyncSetups.remove(requestId);
                 if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty()) {
                     m_aqiConnection->deleteLater();
@@ -219,6 +223,7 @@ double IntegrationPluginAqi::convertFromAQI(int aqi, const QList<QPair<int, doub
         il = map.at(index - 1).first;
         vl = map.at(index - 1).second;
     }
+
     ih = map.at(index).first;
     vh = map.at(index).second;
     double value = (aqi - il) * (vh - vl) / (ih - il) + vl;
@@ -253,7 +258,6 @@ void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityI
         if (!thing)
             return;
 
-
         thing->setStateValue(airQualityIndexConnectedStateTypeId, true);
         thing->setStateValue(airQualityIndexHumidityStateTypeId, data.humidity);
         thing->setStateValue(airQualityIndexTemperatureStateTypeId, data.temperature);
@@ -283,7 +287,6 @@ void IntegrationPluginAqi::onAirQualityStationsReceived(QUuid requestId, QList<A
         }
         info->finish(Thing::ThingErrorNoError);
     }
-
 
     if (m_asyncRequests.contains(requestId)) {
         Thing * thing = myThings().findById(m_asyncRequests.value(requestId));

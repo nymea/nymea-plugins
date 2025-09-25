@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -30,7 +30,8 @@
 
 #include "plugininfo.h"
 #include "integrationplugindaylightsensor.h"
-#include "network/networkaccessmanager.h"
+
+#include <network/networkaccessmanager.h>
 
 #include <QUrlQuery>
 #include <QNetworkReply>
@@ -56,7 +57,7 @@ void IntegrationPluginDaylightSensor::discoverThings(ThingDiscoveryInfo *info)
     QNetworkRequest request(QUrl("http://ip-api.com/json"));
     QNetworkReply* reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info]() {
+    connect(reply, &QNetworkReply::finished, info, [reply, info]() {
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDaylightSensor()) << "Error fetching geolocation from ip-api:" << reply->error() << reply->errorString();
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to fetch data from the internet."));
@@ -124,8 +125,8 @@ void IntegrationPluginDaylightSensor::updateDevice(Thing *thing)
     QDateTime sunrise = sunriseSunset.first.toTimeZone(tz);
     QDateTime sunset = sunriseSunset.second.toTimeZone(tz);
     qCDebug(dcDaylightSensor()) << "Setting up daylight sensor:" << thing->name() << "Sunrise:" << sunrise.toString() << "Sunset:" << sunset.toString();
-    thing->setStateValue(daylightSensorSunriseTimeStateTypeId, sunrise.toTime_t());
-    thing->setStateValue(daylightSensorSunsetTimeStateTypeId, sunset.toTime_t());
+    thing->setStateValue(daylightSensorSunriseTimeStateTypeId, sunrise.toSecsSinceEpoch());
+    thing->setStateValue(daylightSensorSunsetTimeStateTypeId, sunset.toSecsSinceEpoch());
     thing->setStateValue(daylightSensorDaylightStateTypeId, sunrise < now && sunset > now);
 
     qint64 timeToNext = -1;
@@ -228,5 +229,5 @@ QPair<QDateTime, QDateTime> IntegrationPluginDaylightSensor::calculateSunriseSun
     QDateTime sunrise(dateTime.date(), QTime(hourRise, minuteRise));
     QDateTime sunset(dateTime.date(), QTime(hourSet, minuteSet));
 
-    return qMakePair<QDateTime, QDateTime>(sunrise, sunset);
+    return QPair<QDateTime, QDateTime>(sunrise, sunset);
 }

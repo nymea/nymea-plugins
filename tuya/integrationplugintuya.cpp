@@ -36,10 +36,10 @@
 #include <QJsonDocument>
 #include <QColor>
 
-#include "hardwaremanager.h"
-#include "network/networkaccessmanager.h"
+#include <hardwaremanager.h>
+#include <network/networkaccessmanager.h>
 
-#include "plugintimer.h"
+#include <plugintimer.h>
 
 // API info:
 // Python project: https://github.com/PaulAnnekov/tuyaha
@@ -547,7 +547,7 @@ void IntegrationPluginTuya::queryDevice(Thing *thing)
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
-    connect(reply, &QNetworkReply::finished, thing, [this, thing, reply](){
+    connect(reply, &QNetworkReply::finished, thing, [thing, reply](){
         if (reply->error() !=  QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error fetching devices from Tuya cloud" << reply->error();
             return;

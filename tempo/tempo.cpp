@@ -291,19 +291,19 @@ bool Tempo::checkStatusCode(QNetworkReply *reply, const QByteArray &rawData)
     case 400: //Error occurred (e.g. validation error - value is out of range)
         if(!jsonDoc.toVariant().toMap().contains("error")) {
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_client") {
-                qWarning(dcTempo()) << "Client token provided doesn’t correspond to client that generated auth code.";
+                qCWarning(dcTempo()) << "Client token provided doesn’t correspond to client that generated auth code.";
             }
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_redirect_uri") {
-                qWarning(dcTempo()) << "Missing redirect_uri parameter.";
+                qCWarning(dcTempo()) << "Missing redirect_uri parameter.";
             }
             if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_code") {
-                qWarning(dcTempo()) << "Expired authorization code.";
+                qCWarning(dcTempo()) << "Expired authorization code.";
             }
         }
         setAuthenticated(false);
         return false;
     case 401:
-        qWarning(dcTempo()) << "Client does not have permission to use this API.";
+        qCWarning(dcTempo()) << "Client does not have permission to use this API.";
         setAuthenticated(false);
         return false;
     case 403:
@@ -314,7 +314,7 @@ bool Tempo::checkStatusCode(QNetworkReply *reply, const QByteArray &rawData)
         qCWarning(dcTempo()) << "Not Found. This resource is not available (e.g. no images on washing machine)";
         return false;
     case 405:
-        qWarning(dcTempo()) << "Wrong HTTP method used.";
+        qCWarning(dcTempo()) << "Wrong HTTP method used.";
         setAuthenticated(false);
         return false;
     case 408:

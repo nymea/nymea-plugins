@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,9 +29,11 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginsenic.h"
-#include "integrations/thing.h"
 #include "plugininfo.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
+
+#include <integrations/thing.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergydevice.h>
+#include <hardware/bluetoothlowenergy/bluetoothlowenergymanager.h>
 
 IntegrationPluginSenic::IntegrationPluginSenic()
 {
@@ -240,7 +242,7 @@ void IntegrationPluginSenic::onButtonLongPressed()
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Thing *thing = m_nuimos.value(nuimo);
-    emitEvent(Event(nuimoLongPressedEventTypeId, thing->id()));
+    emit emitEvent(Event(nuimoLongPressedEventTypeId, thing->id()));
 
     if (m_autoSymbolMode) {
         nuimo->showImage(Nuimo::MatrixTypeFilledCircle);
@@ -248,23 +250,23 @@ void IntegrationPluginSenic::onButtonLongPressed()
 }
 
 
-void IntegrationPluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
+void IntegrationPluginSenic::onSwipeDetected(Nuimo::SwipeDirection direction)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Thing *thing = m_nuimos.value(nuimo);
 
     switch (direction) {
     case Nuimo::SwipeDirectionLeft:
-        emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "←")));
+        emit emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "←")));
         break;
     case Nuimo::SwipeDirectionRight:
-        emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "→")));
+        emit emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "→")));
         break;
     case Nuimo::SwipeDirectionUp:
-        emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↑")));
+        emit emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↑")));
         break;
     case Nuimo::SwipeDirectionDown:
-        emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↓")));
+        emit emitEvent(Event(nuimoPressedEventTypeId, thing->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↓")));
         break;
     }
 
@@ -287,7 +289,7 @@ void IntegrationPluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direct
 }
 
 
-void IntegrationPluginSenic::onRotationValueChanged(const uint &value)
+void IntegrationPluginSenic::onRotationValueChanged(uint value)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Thing *thing = m_nuimos.value(nuimo);
@@ -324,7 +326,7 @@ void IntegrationPluginSenic::onPluginConfigurationChanged(const ParamTypeId &par
     }
 }
 
-void IntegrationPluginSenic::onBatteryValueChanged(const uint &percentage)
+void IntegrationPluginSenic::onBatteryValueChanged(uint percentage)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Thing *thing = m_nuimos.value(nuimo);

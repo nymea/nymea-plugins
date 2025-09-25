@@ -127,7 +127,9 @@ QByteArray NukiAuthenticator::encryptData(const QByteArray &data, const QByteArr
      *      const unsigned char *sk  The private key of nymea for this Nuki
      */
 
-    unsigned char encrypted[crypto_box_MACBYTES + data.length()];
+    unsigned char *encrypted = NULL;
+    std::vector<unsigned char> realBuffer(crypto_box_MACBYTES + data.length());
+    encrypted = &realBuffer[0];
     int result = crypto_box_easy(encrypted,
                                  reinterpret_cast<const unsigned char *>(data.data()),
                                  static_cast<unsigned long long>(data.length()),
@@ -165,8 +167,9 @@ QByteArray NukiAuthenticator::decryptData(const QByteArray &data, const QByteArr
      *      const unsigned char *pk  The public key of the Nuki
      *      const unsigned char *sk  The private key of nymea for this Nuki
      */
-
-    unsigned char decrypted[data.length() - crypto_box_MACBYTES];
+    unsigned char *decrypted = NULL;
+    std::vector<unsigned char> realBuffer(data.length() - crypto_box_MACBYTES);
+    decrypted = &realBuffer[0];
     int result = crypto_box_open_easy(decrypted,
                                       reinterpret_cast<const unsigned char *>(data.data()),
                                       static_cast<unsigned long long>(data.length()),
@@ -190,9 +193,11 @@ QByteArray NukiAuthenticator::decryptData(const QByteArray &data, const QByteArr
     return decryptedData;
 }
 
-QByteArray NukiAuthenticator::generateNonce(const int &length) const
+QByteArray NukiAuthenticator::generateNonce(int length) const
 {
-    unsigned char nounce[length];
+    unsigned char *nounce = NULL;
+    std::vector<unsigned char> realBuffer(length);
+    nounce = &realBuffer[0];
     randombytes_buf(nounce, length);
     return QByteArray(reinterpret_cast<const char *>(nounce), length);
 }
@@ -295,7 +300,11 @@ void NukiAuthenticator::requestPublicKey()
     qCDebug(dcNuki()) << "Authenticator: Request public key fom Nuki";
 
     QByteArray payload;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&payload, QDataStream::WriteOnly);
+#else
     QDataStream stream(&payload, QIODevice::WriteOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream << static_cast<quint16>(NukiUtils::CommandPublicKey);
     QByteArray data = NukiUtils::createRequestMessageForUnencrypted(NukiUtils::CommandRequestData, payload);
@@ -351,7 +360,11 @@ void NukiAuthenticator::sendAuthenticateData()
     m_nonce = generateNonce();
 
     QByteArray content;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&content, QDataStream::WriteOnly);
+#else
     QDataStream stream(&content, QIODevice::WriteOnly);
+#endif
     // Note: 0x00 = App, 0x01 = Bridge, 0x02 = Fob
     stream << static_cast<quint8>(0x01);
     // Note: app id (42)
@@ -359,7 +372,7 @@ void NukiAuthenticator::sendAuthenticateData()
 
     // Note: the name of the bridge in 32 bytes [ 0 0 0 ... n y m e a ]
     QByteArray name = QByteArray(27, '\0').append(QByteArray("nymea"));
-    Q_ASSERT_X(name.count() == 32, "data length", "Name has not the correct length.");
+    Q_ASSERT_X(name.length() == 32, "data length", "Name has not the correct length.");
 
     QByteArray valueR = content;
     valueR.append(name);
@@ -454,7 +467,11 @@ void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &val
 
     // Process pairing characteristic data
     QByteArray data = QByteArray(value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&data, QDataStream::ReadOnly);
+#else
     QDataStream stream(&data, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     quint16 command;
     stream >> command;
@@ -517,21 +534,25 @@ void NukiAuthenticator::onPairingDataCharacteristicChanged(const QByteArray &val
         }
 
         // Parse data
-        QByteArray message = m_currentReceivingData.mid(2, m_currentReceivingData.count() - 4);
+        QByteArray message = m_currentReceivingData.mid(2, m_currentReceivingData.length() - 4);
         QByteArray authenticator = message.left(32);
-        Q_ASSERT_X(authenticator.count() == 32, "data length", "Nuki nonce has not the correct length.");
+        Q_ASSERT_X(authenticator.length() == 32, "data length", "Nuki nonce has not the correct length.");
 
         // Read authorization ID
         m_authorizationIdRawData = message.mid(32, 4);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QDataStream stream(&m_authorizationIdRawData, QDataStream::ReadOnly);
+#else
         QDataStream stream(&m_authorizationIdRawData, QIODevice::ReadOnly);
+#endif
         stream.setByteOrder(QDataStream::LittleEndian);
         stream >> m_authorizationId;
 
         m_uuid = message.mid(36, 16);
-        Q_ASSERT_X(m_uuid.count() == 16, "data length", "UUID has not the correct length.");
+        Q_ASSERT_X(m_uuid.length() == 16, "data length", "UUID has not the correct length.");
 
         m_nonceNuki = message.mid(52, 32);
-        Q_ASSERT_X(m_nonceNuki.count() == 32, "data length", "Nuki nonce has not the correct length.");
+        Q_ASSERT_X(m_nonceNuki.length() == 32, "data length", "Nuki nonce has not the correct length.");
 
         if (m_debug) qCDebug(dcNuki()) << "    Full message    :" <<   NukiUtils::convertByteArrayToHexStringCompact(message);
         if (m_debug) qCDebug(dcNuki()) << "    Authenticator   :" <<   NukiUtils::convertByteArrayToHexStringCompact(authenticator);

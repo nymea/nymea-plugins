@@ -52,7 +52,6 @@ class IntegrationPluginShelly: public IntegrationPlugin
     Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginshelly.json")
     Q_INTERFACES(IntegrationPlugin)
 
-
 public:
     explicit IntegrationPluginShelly();
     ~IntegrationPluginShelly() override;

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -36,11 +36,11 @@
 #include <QDateTime>
 #include <QHostAddress>
 
-#include "maxdevice.h"
+#include <integrations/integrationplugin.h>
+
 #include "room.h"
 #include "wallthermostat.h"
 #include "radiatorthermostat.h"
-#include "integrations/integrationplugin.h"
 
 class MaxCube : public QTcpSocket
 {
@@ -79,8 +79,8 @@ public:
 
     bool portalEnabeld() const;
 
-    QList<WallThermostat*> wallThermostatList();
-    QList<RadiatorThermostat*> radiatorThermostatList();
+    QList<WallThermostat *> wallThermostatList();
+    QList<RadiatorThermostat *> radiatorThermostatList();
 
     QList<Room*> roomList();
 
@@ -120,8 +120,8 @@ signals:
     void commandActionFinished(bool succeeded, int commandId);
 
 private slots:
-    void connectionStateChanged(const QAbstractSocket::SocketState &socketState);
-    void error(QAbstractSocket::SocketError error);
+    void connectionStateChanged(SocketState socketState);
+    void onTcpError(QAbstractSocket::SocketError error);
     void onReadyRead();
     void processCubeData(const QByteArray &data);
 

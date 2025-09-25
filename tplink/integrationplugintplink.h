@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -31,7 +31,7 @@
 #ifndef INTEGRATIONPLUGINTPLINK_H
 #define INTEGRATIONPLUGINTPLINK_H
 
-#include "integrations/integrationplugin.h"
+#include <integrations/integrationplugin.h>
 
 #include <QUdpSocket>
 
@@ -49,7 +49,7 @@ class IntegrationPluginTPLink: public IntegrationPlugin
 
 public:
     explicit IntegrationPluginTPLink();
-    ~IntegrationPluginTPLink();
+    ~IntegrationPluginTPLink() override;
 
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
@@ -73,18 +73,19 @@ private:
         int id = 0;
         QByteArray data;
         ThingActionInfo *actionInfo = nullptr;
-        bool operator==(const Job &other) { return id == other.id; }
+        bool operator==(const Job &other) const { return id == other.id; }
     };
-    QHash<Thing*, Job> m_pendingJobs;
-    QHash<Thing*, QList<Job>> m_jobQueue;
-    QHash<Thing*, QTimer*> m_jobTimers;
+
+    QHash<Thing *, Job> m_pendingJobs;
+    QHash<Thing *, QList<Job>> m_jobQueue;
+    QHash<Thing *, QTimer *> m_jobTimers;
     int m_jobIdx = 0;
 
     QUdpSocket *m_broadcastSocket = nullptr;
-    QHash<Thing*, QTcpSocket*> m_sockets;
-    QHash<ThingSetupInfo*, int> m_setupRetries;
+    QHash<Thing *, QTcpSocket *> m_sockets;
+    QHash<ThingSetupInfo *, int> m_setupRetries;
 
-    QHash<Thing*, QByteArray> m_inputBuffers;
+    QHash<Thing *, QByteArray> m_inputBuffers;
 
     PluginTimer *m_timer = nullptr;
 };

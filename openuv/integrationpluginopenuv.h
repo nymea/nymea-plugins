@@ -31,9 +31,8 @@
 #ifndef INTEGRATIONPLUGINOPENUV_H
 #define INTEGRATIONPLUGINOPENUV_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "network/networkaccessmanager.h"
+#include <integrations/integrationplugin.h>
+#include <plugintimer.h>
 
 #include <QTimer>
 #include <QHostAddress>

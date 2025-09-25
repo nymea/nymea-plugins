@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -28,9 +28,9 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "plugininfo.h"
-#include "kebaproductinfo.h"
 #include "integrationpluginkeba.h"
+#include "kebaproductinfo.h"
+#include "plugininfo.h"
 
 #include <QJsonDocument>
 #include <QUdpSocket>

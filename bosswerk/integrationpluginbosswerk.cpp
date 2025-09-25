@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2024, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -27,7 +27,6 @@
 * https://nymea.io/license/faq
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 
 #include "integrationpluginbosswerk.h"
 #include "plugininfo.h"
@@ -71,8 +70,7 @@ void IntegrationPluginBosswerk::discoverThings(ThingDiscoveryInfo *info)
 
         QUrl url("http://" + address.toString() + "/status.html");
         QNetworkRequest request(url);
-
-        QNetworkReply *probeReply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        QNetworkReply *probeReply = hardwareManager()->networkManager()->get(request);
         connect(probeReply, &QNetworkReply::finished, probeReply, &QNetworkReply::deleteLater);
         connect(probeReply, &QNetworkReply::finished, info, [probeReply, address, this](){
             QByteArray data = probeReply->readAll();

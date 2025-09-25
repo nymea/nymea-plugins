@@ -1,6 +1,6 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -29,11 +29,12 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginsonos.h"
-#include "integrations/thing.h"
-#include "network/networkaccessmanager.h"
 #include "plugininfo.h"
-#include "types/mediabrowseritem.h"
 
+#include <integrations/thing.h>
+#include <types/mediabrowseritem.h>
+#include <network/networkaccessmanager.h>
+#include <plugintimer.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -59,7 +60,7 @@ void IntegrationPluginSonos::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == sonosConnectionThingClassId) {
-        Sonos *sonos;
+        Sonos *sonos = nullptr;
         if (m_setupSonosConnections.keys().contains(thing->id())) {
             //Fresh thing setup, has already a fresh access token
             qCDebug(dcSonos()) << "Sonos OAuth setup complete";
@@ -143,13 +144,13 @@ void IntegrationPluginSonos::confirmPairing(ThingPairingInfo *info, const QStrin
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
-        QByteArray state = query.queryItemValue("state").toLocal8Bit();
+        //QByteArray state = query.queryItemValue("state").toLocal8Bit();
         //TODO evaluate state if it equals the given state
 
         Sonos *sonos = m_setupSonosConnections.value(info->thingId());
 
         if (!sonos) {
-            qWarning(dcSonos()) << "No sonos connection found for thing:" << info->thingName();
+            qCWarning(dcSonos()) << "No sonos connection found for thing:" << info->thingName();
             m_setupSonosConnections.remove(info->thingId());
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
@@ -157,7 +158,7 @@ void IntegrationPluginSonos::confirmPairing(ThingPairingInfo *info, const QStrin
         sonos->getAccessTokenFromAuthorizationCode(authorizationCode);
         connect(sonos, &Sonos::authenticationStatusChanged, info, [this, info, sonos](bool authenticated){
             if(!authenticated) {
-                qWarning(dcSonos()) << "Authentication process failed"  << info->thingName();
+                qCWarning(dcSonos()) << "Authentication process failed"  << info->thingName();
                 m_setupSonosConnections.remove(info->thingId());
                 sonos->deleteLater();
                 info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Authentication failed. Please try again."));
@@ -188,7 +189,7 @@ void IntegrationPluginSonos::postSetupThing(Thing *thing)
             foreach (Thing *connectionDevice, myThings().filterByThingClassId(sonosConnectionThingClassId)) {
                 Sonos *sonos = m_sonosConnections.value(connectionDevice);
                 if (!sonos) {
-                    qWarning(dcSonos()) << "No sonos connection found to" << connectionDevice->name();
+                    qCWarning(dcSonos()) << "No sonos connection found to" << connectionDevice->name();
                     continue;
                 }
                 foreach (Thing *groupDevice, myThings().filterByParentId(connectionDevice->id())) {
@@ -210,7 +211,7 @@ void IntegrationPluginSonos::postSetupThing(Thing *thing)
             foreach (Thing *thing, myThings().filterByThingClassId(sonosConnectionThingClassId)) {
                 Sonos *sonos = m_sonosConnections.value(thing);
                 if (!sonos) {
-                    qWarning(dcSonos()) << "No sonos connection found to" << thing->name();
+                    qCWarning(dcSonos()) << "No sonos connection found to" << thing->name();
                     continue;
                 }
                 //get groups for each household in order to add or remove groups
@@ -269,7 +270,7 @@ void IntegrationPluginSonos::executeAction(ThingActionInfo *info)
         QString groupId = thing->paramValue(sonosGroupThingGroupIdParamTypeId).toString();
 
         if (!sonos) {
-            qWarning(dcSonos()) << "Action cannot be executed: Sonos connection not available";
+            qCWarning(dcSonos()) << "Action cannot be executed: Sonos connection not available";
             return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Sonos thing is not available."));
         }
 
@@ -368,7 +369,7 @@ void IntegrationPluginSonos::browseThing(BrowseResult *result)
         return;
     }
 
-    qDebug(dcSonos()) << "Browse Device" << result->itemId();
+    qCDebug(dcSonos()) << "Browse Device" << result->itemId();
     QString householdId = result->thing()->paramValue(sonosGroupThingHouseholdIdParamTypeId).toString();
     if (result->itemId().isEmpty()){
         BrowserItem item;
@@ -382,7 +383,7 @@ void IntegrationPluginSonos::browseThing(BrowseResult *result)
     } else if (result->itemId() == m_browseFavoritesPrefix) {
         QUuid requestId = sonosConnection->getFavorites(householdId);
         m_pendingBrowseResult.insert(requestId, result);
-        connect(result, &BrowseResult::aborted,[requestId, this](){m_pendingBrowseResult.remove(requestId);});
+        connect(result, &BrowseResult::aborted, this, [requestId, this](){ m_pendingBrowseResult.remove(requestId); });
     } else {
         //TODO add media browsing
         result->finish(Thing::ThingErrorItemNotFound);
@@ -403,7 +404,7 @@ void IntegrationPluginSonos::browserItem(BrowserItemResult *result)
     if (result->itemId().startsWith(m_browseFavoritesPrefix)) {
         QUuid requestId = sonosConnection->getFavorites(householdId);
         m_pendingBrowserItemResult.insert(requestId, result);
-        connect(result, &BrowserItemResult::aborted, [requestId, this](){m_pendingBrowserItemResult.remove(requestId);});
+        connect(result, &BrowserItemResult::aborted, this, [requestId, this](){ m_pendingBrowserItemResult.remove(requestId); });
     } else {
          //TODO add media browsing
          result->finish(Thing::ThingErrorItemNotFound);
@@ -423,7 +424,7 @@ void IntegrationPluginSonos::executeBrowserItem(BrowserActionInfo *info)
         favoriteId.remove('/');
         QUuid requestId = sonosConnection->loadFavorite(groupId, favoriteId);
         m_pendingBrowserExecution.insert(requestId, info);
-        connect(info, &BrowserActionInfo::aborted,[requestId, this](){m_pendingBrowserExecution.remove(requestId);});
+        connect(info, &BrowserActionInfo::aborted, this, [requestId, this](){ m_pendingBrowserExecution.remove(requestId); });
     } else {
         //TODO add media browsing
         info->finish(Thing::ThingErrorItemNotFound);
@@ -436,6 +437,7 @@ void IntegrationPluginSonos::onConnectionChanged(bool connected)
     Thing *thing = m_sonosConnections.key(sonos);
     if (!thing)
         return;
+
     thing->setStateValue(sonosConnectionConnectedStateTypeId, connected);
 
     foreach (Thing *groupDevice, myThings().filterByParentId(thing->id())) {
@@ -491,7 +493,7 @@ void IntegrationPluginSonos::onFavoritesReceived(QUuid requestId, const QString 
             item.setDisplayName(favorite.name);
             item.setDescription(favorite.description);
             result->addItem(item);
-            qDebug(dcSonos()) << "Favorite: " << favorite.name << favorite.description;
+            qCDebug(dcSonos()) << "Favorite: " << favorite.name << favorite.description;
         }
         result->finish(Thing::ThingErrorNoError);
 
@@ -527,7 +529,7 @@ void IntegrationPluginSonos::onPlaylistsReceived(const QString &householdId, QLi
     Sonos *sonos = static_cast<Sonos *>(sender());
 
     foreach(Sonos::PlaylistObject playlist, playlists)  {
-        qDebug(dcSonos()) << "Playlist: " << playlist.name << playlist.type << playlist.trackCount;
+        qCDebug(dcSonos()) << "Playlist: " << playlist.name << playlist.type << playlist.trackCount;
         sonos->getPlaylist(householdId, playlist.id); //Get the playlist details
     }
 }
@@ -535,9 +537,9 @@ void IntegrationPluginSonos::onPlaylistsReceived(const QString &householdId, QLi
 void IntegrationPluginSonos::onPlaylistSummaryReceived(const QString &householdId, Sonos::PlaylistSummaryObject playlistSummary)
 {
     Q_UNUSED(householdId);
-    qDebug(dcSonos()) << "Playlist summary received: " << playlistSummary.name;
+    qCDebug(dcSonos()) << "Playlist summary received: " << playlistSummary.name;
     foreach(Sonos::PlaylistTrackObject track, playlistSummary.tracks)  {
-        qDebug(dcSonos()) << "---- Track: " << track.name << track.album << track.artist;
+        qCDebug(dcSonos()) << "---- Track: " << track.name << track.album << track.artist;
     }
 }
 
@@ -553,7 +555,7 @@ void IntegrationPluginSonos::onGroupsReceived(const QString &householdId, QList<
         Thing *groupDevice = myThings().findByParams(ParamList() << Param(sonosGroupThingGroupIdParamTypeId, groupObject.groupId));
         if (groupDevice) {
             if (groupDevice->name() != groupObject.displayName) {
-                qDebug(dcSonos()) << "Updating group name" << groupDevice->name() << "to" << groupObject.displayName;
+                qCDebug(dcSonos()) << "Updating group name" << groupDevice->name() << "to" << groupObject.displayName;
                 groupDevice->setName(groupObject.displayName);
             }
         } else {

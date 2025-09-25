@@ -1,11 +1,9 @@
 include(../plugins.pri)
 
-QT += network
-
-TARGET = $$qtLibraryTarget(nymea_integrationplugincoinmarketcap)
+QT *= network
 
 SOURCES += \
-    integrationplugincoinmarketcap.cpp \
+    integrationplugincoinmarketcap.cpp
 
 HEADERS += \
-    integrationplugincoinmarketcap.h \
+    integrationplugincoinmarketcap.h

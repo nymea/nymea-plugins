@@ -1,8 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginnuki)
-
-QT += bluetooth dbus
+QT *= bluetooth dbus
 
 # apt install libsodium-dev
 LIBS += -lsodium

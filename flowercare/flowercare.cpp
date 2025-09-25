@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
-* Copyright 2013 - 2020, nymea GmbH
+* Copyright 2013 - 2025, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
@@ -89,7 +89,11 @@ void FlowerCare::onSensorServiceStateChanged(const QLowEnergyService::ServiceSta
     }
 
     QByteArray value = batteryFirmwareCharacteristic.value();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&value, QDataStream::ReadOnly);
+#else
     QDataStream stream(&value, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> m_batteryLevel;
 
@@ -110,7 +114,11 @@ void FlowerCare::onSensorServiceStateChanged(const QLowEnergyService::ServiceSta
     }
 
     // Enable notifications
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QLowEnergyDescriptor notificationDescriptor = m_sensorDataCharacteristic.descriptor(QBluetoothUuid::DescriptorType::ClientCharacteristicConfiguration);
+#else
     QLowEnergyDescriptor notificationDescriptor = m_sensorDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+#endif
     m_sensorService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Read the data manually
@@ -122,7 +130,11 @@ void FlowerCare::onSensorServiceStateChanged(const QLowEnergyService::ServiceSta
 
 void FlowerCare::onSensorServiceCharacteristicRead(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    qCDebug(dcFlowerCare()) << "Characteristic read" << characteristic.uuid().toString() << value.toHex();
+#else
     qCDebug(dcFlowerCare()) << "Characteristic read" << QString::number(characteristic.handle(), 16) << value.toHex();
+#endif
     if (characteristic != m_sensorDataCharacteristic) {
         return;
     }
@@ -131,7 +143,11 @@ void FlowerCare::onSensorServiceCharacteristicRead(const QLowEnergyCharacteristi
 
 void FlowerCare::onSensorServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    qCDebug(dcFlowerCare()) <<  "Notification received" << characteristic.uuid().toString() << value.toHex();
+#else
     qCDebug(dcFlowerCare()) << "Notification received" << QString::number(characteristic.handle(), 16) << value.toHex();
+#endif
     if (characteristic != m_sensorDataCharacteristic) {
         return;
     }
@@ -142,9 +158,17 @@ void FlowerCare::onSensorServiceCharacteristicChanged(const QLowEnergyCharacteri
 void FlowerCare::printServiceDetails(QLowEnergyService *service) const
 {
     foreach (const QLowEnergyCharacteristic &characteristic, service->characteristics()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        qCDebug(dcFlowerCare()).nospace() << "C:    --> " << characteristic.uuid().toString() << " ("  << " Name: " << characteristic.name() << "): " << characteristic.value() << ", " << characteristic.value().toHex();
+#else
         qCDebug(dcFlowerCare()).nospace() << "C:    --> " << characteristic.uuid().toString() << " (" << characteristic.handle() << " Name: " << characteristic.name() << "): " << characteristic.value() << ", " << characteristic.value().toHex();
+#endif
         foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            qCDebug(dcFlowerCare()).nospace() << "D:        --> " << descriptor.uuid().toString() << " (" << " Name: " << descriptor.name() << "): " << descriptor.value() << ", " << descriptor.value().toHex();
+#else
             qCDebug(dcFlowerCare()).nospace() << "D:        --> " << descriptor.uuid().toString() << " (" << descriptor.handle() << " Name: " << descriptor.name() << "): " << descriptor.value() << ", " << descriptor.value().toHex();
+#endif
         }
     }
 }
@@ -152,7 +176,11 @@ void FlowerCare::printServiceDetails(QLowEnergyService *service) const
 void FlowerCare::processSensorData(const QByteArray &data)
 {
     QByteArray copy = data;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDataStream stream(&copy, QDataStream::ReadOnly);
+#else
     QDataStream stream(&copy, QIODevice::ReadOnly);
+#endif
     stream.setByteOrder(QDataStream::LittleEndian);
     qint16 temp;
     stream >> temp;
