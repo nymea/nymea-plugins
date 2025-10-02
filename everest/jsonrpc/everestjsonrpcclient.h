@@ -272,7 +272,7 @@ private:
     EverestJsonRpcInterface *m_interface = nullptr;
     QHash<int, EverestJsonRpcReply *> m_replies;
 
-    EverestJsonRpcReply *createReply(QString method, QVariantMap params = QVariantMap());
+    EverestJsonRpcReply *createReply(QString method, QVariantMap params = QVariantMap(), bool retry = false);
 
     // Init infos
     QString m_apiVersion;
@@ -280,6 +280,8 @@ private:
     ChargerInfo m_chargerInfo;
     bool m_authenticationRequired = false;
     QList<EVSEInfo> m_evseInfos;
+
+    int getNextCommandId();
 
     // API calls
     EverestJsonRpcReply *apiHello();

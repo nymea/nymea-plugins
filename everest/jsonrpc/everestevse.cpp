@@ -104,131 +104,110 @@ EverestJsonRpcReply *EverestEvse::setACChargingPhaseCount(int phaseCount)
 
 void EverestEvse::initialize()
 {
-    qCDebug(dcEverest()) << "Evse: Initializing data for" << m_thing->name();
+    qCDebug(dcEverest()) << "Evse: Starting to initialize the data for" << m_thing->name();
 
     // Fetch all initial data for this device, once done we get notifications on data changes
 
-    EverestJsonRpcReply *reply = nullptr;
 
-    reply = m_client->evseGetInfo(m_index);
-    m_pendingInitReplies.append(reply);
+    EverestJsonRpcReply *reply = m_client->evseGetInfo(m_index);
     connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
     connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
         qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
         if (reply->error()) {
             qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
-            // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-        } else {
-            QVariantMap result = reply->response().value("result").toMap();
-            EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
-            if (error) {
-                qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
-                // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-            } else {
-                m_evseInfo = EverestJsonRpcClient::parseEvseInfo(result.value("info").toMap());
-            }
+            m_client->disconnectFromServer();
+            return;
+        }
+        QVariantMap result = reply->response().value("result").toMap();
+        EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+        if (error) {
+            qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
+            m_client->disconnectFromServer();
+            return;
         }
 
-        // Check if we are done with the init process of this EVSE
-        evaluateInitFinished(reply);
-    });
+        // Store data, thy will be processed once all replies arrived
+        m_evseInfo = EverestJsonRpcClient::parseEvseInfo(result.value("info").toMap());
 
-    reply = m_client->evseGetHardwareCapabilities(m_index);
-    m_pendingInitReplies.append(reply);
-    connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
-    connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
-        qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
-        if (reply->error()) {
-            qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
-            // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-        } else {
-            QVariantMap result = reply->response().value("result").toMap();
-            EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
-            if (error) {
-                qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
-                // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-            } else {
-                // Store data, thy will be processed once all replies arrived
-                m_hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(result.value("hardware_capabilities").toMap());
+
+        EverestJsonRpcReply *reply = m_client->evseGetHardwareCapabilities(m_index);
+        connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+        connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
+            qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
+            if (reply->error()) {
+                qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
+                m_client->disconnectFromServer();
+                return;
             }
-        }
-
-        // Check if we are done with the init process of this EVSE
-        evaluateInitFinished(reply);
-    });
-
-    reply = m_client->evseGetStatus(m_index);
-    m_pendingInitReplies.append(reply);
-    connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
-    connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
-        qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
-        if (reply->error()) {
-            qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
-            // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-        } else {
             QVariantMap result = reply->response().value("result").toMap();
             EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
             if (error) {
                 qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
-                // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-            } else {
+                m_client->disconnectFromServer();
+                return;
+            }
+
+            // Store data, thy will be processed once all replies arrived
+            m_hardwareCapabilities = EverestJsonRpcClient::parseHardwareCapabilities(result.value("hardware_capabilities").toMap());
+
+
+            EverestJsonRpcReply *reply = m_client->evseGetStatus(m_index);
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
+                qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
+                    m_client->disconnectFromServer();
+                    return;
+                }
+
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
+                    m_client->disconnectFromServer();
+                    return;
+                }
+
                 // Store data, thy will be processed once all replies arrived
                 m_evseStatus = EverestJsonRpcClient::parseEvseStatus(result.value("status").toMap());
-            }
-        }
 
-        // Check if we are done with the init process of this EVSE
-        evaluateInitFinished(reply);
+                EverestJsonRpcReply *reply = m_client->evseGetMeterData(m_index);
+                connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+                connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
+                    qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
+                    if (reply->error()) {
+                        qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
+                        // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
+                    }
+                    QVariantMap result = reply->response().value("result").toMap();
+                    EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                    if (error) {
+                        if (error == EverestJsonRpcClient::ResponseErrorErrorNoDataAvailable) {
+                            qCDebug(dcEverest()) << "Evse: There are no meter data available. Either there is no meter or the meter data are not available yet on EVSE side.";
+                        } else {
+                            // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
+                            qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
+                        }
+                    }
+                    // Store data, thy will be processed once all replies arrived
+                    m_meterData = EverestJsonRpcClient::parseMeterData(result.value("meter_data").toMap());
+
+                    qCDebug(dcEverest()) << "Evse: The initialization of" << m_thing->name() << "has finished, the charger is now connected.";
+                    m_initialized = true;
+
+                    // Set all initial states
+                    m_thing->setStateValue("connected", true);
+
+                    // Process all data after beeing connected
+                    processEvseStatus();
+                    processHardwareCapabilities();
+                    processMeterData();
+
+                });
+            });
+        });
     });
-
-    reply = m_client->evseGetMeterData(m_index);
-    m_pendingInitReplies.append(reply);
-    connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
-    connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
-        qCDebug(dcEverest()) << "Evse: Reply finished" << m_client->serverUrl().toString() << reply->method();
-        if (reply->error()) {
-            qCWarning(dcEverest()) << "Evse: JsonRpc reply finished with error" << reply->method() << reply->method() << reply->error();
-            // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-        } else {
-            QVariantMap result = reply->response().value("result").toMap();
-            EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
-            if (error) {
-                if (error == EverestJsonRpcClient::ResponseErrorErrorNoDataAvailable) {
-                    qCDebug(dcEverest()) << "Evse: There are no meter data available. Either there is no meter or the meter data are not available yet on EVSE side.";
-                } else {
-                    // FIXME: check what we do if an init call failes. Do we stay disconnected and show an error or do we ignore it...
-                    qCWarning(dcEverest()) << "Evse: Reply finished with an error" << reply->method() << error;
-                }
-            } else {
-                // Store data, thy will be processed once all replies arrived
-                m_meterData = EverestJsonRpcClient::parseMeterData(result.value("meter_data").toMap());
-            }
-        }
-
-        // Check if we are done with the init process of this EVSE
-        evaluateInitFinished(reply);
-    });
-}
-
-void EverestEvse::evaluateInitFinished(EverestJsonRpcReply *reply)
-{
-    if (m_initialized)
-        return;
-
-    m_pendingInitReplies.removeAll(reply);
-
-    if (m_pendingInitReplies.isEmpty()) {
-        qCDebug(dcEverest()) << "Evse: The initialization of" << m_thing->name() << "has finished, the charger is now connected.";
-        m_initialized = true;
-
-        // Set all initial states
-        m_thing->setStateValue("connected", true);
-
-        // Process all data after beeing conected
-        processEvseStatus();
-        processHardwareCapabilities();
-        processMeterData();
-    }
 }
 
 void EverestEvse::processEvseStatus()
@@ -243,7 +222,9 @@ void EverestEvse::processEvseStatus()
         m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
         m_thing->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
 
-        m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
+        if (m_evseStatus.acChargeParameters.maxCurrent > 0)
+            m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
+
     }
 }
 

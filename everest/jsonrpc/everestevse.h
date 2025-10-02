@@ -59,10 +59,7 @@ private:
     EverestJsonRpcClient::HardwareCapabilities m_hardwareCapabilities;
     EverestJsonRpcClient::MeterData m_meterData;
 
-    QVector<EverestJsonRpcReply *> m_pendingInitReplies;
-
     void initialize();
-    void evaluateInitFinished(EverestJsonRpcReply *reply);
 
     void processEvseStatus();
     void processHardwareCapabilities();

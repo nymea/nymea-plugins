@@ -58,6 +58,12 @@ public:
     QVariantMap params() const;
     QVariantMap requestMap();
 
+    // Retry logic, as of now only for init requests and if
+    // they return ResponseErrorErrorNoDataAvailable
+    bool retry() const;
+    int retryCount() const;
+    int retryLimit() const;
+
     // Response
     QVariantMap response() const;
 
@@ -74,6 +80,10 @@ private:
 
     QTimer m_timer;
     Error m_error = ErrorNoError;
+
+    bool m_retry = false;
+    int m_retryCount = 0;
+    int m_retryLimit = 5;
 
     void setResponse(const QVariantMap &response);
     void startWaiting();

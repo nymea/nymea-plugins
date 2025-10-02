@@ -128,9 +128,10 @@ EverestJsonRpcClient::EverestJsonRpcClient(QObject *parent)
                 m_available = false;
                 emit availableChanged(m_available);
             }
+
+            emit connectionErrorOccurred();
         }
     });
-
 }
 
 QUrl EverestJsonRpcClient::serverUrl()
@@ -168,7 +169,7 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetInfo(int evseIndex)
     QVariantMap params;
     params.insert("evse_index", evseIndex);
 
-    EverestJsonRpcReply *reply = createReply("EVSE.GetInfo", params);
+    EverestJsonRpcReply *reply = createReply("EVSE.GetInfo", params, true);
     qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
@@ -179,7 +180,7 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetStatus(int evseIndex)
     QVariantMap params;
     params.insert("evse_index", evseIndex);
 
-    EverestJsonRpcReply *reply = createReply("EVSE.GetStatus", params);
+    EverestJsonRpcReply *reply = createReply("EVSE.GetStatus", params, true);
     qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
@@ -190,7 +191,7 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetHardwareCapabilities(int evseI
     QVariantMap params;
     params.insert("evse_index", evseIndex);
 
-    EverestJsonRpcReply *reply = createReply("EVSE.GetHardwareCapabilities", params);
+    EverestJsonRpcReply *reply = createReply("EVSE.GetHardwareCapabilities", params, true);
     qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
@@ -201,7 +202,8 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetMeterData(int evseIndex)
     QVariantMap params;
     params.insert("evse_index", evseIndex);
 
-    EverestJsonRpcReply *reply = createReply("EVSE.GetMeterData", params);
+    // FIXME: do not retry...
+    EverestJsonRpcReply *reply = createReply("EVSE.GetMeterData", params, true);
     qCDebug(dcEverest()) << "Calling" << reply->method() << params;
     sendRequest(reply);
     return reply;
@@ -461,6 +463,24 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
         if (reply) {
             reply->setResponse(dataMap);
 
+            if (reply->retry()) {
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error == EverestJsonRpcClient::ResponseErrorErrorNoDataAvailable) {
+                    reply->m_retryCount++;
+
+                    if (reply->retryCount() <= reply->retryLimit()) {
+                        qCDebug(dcEverest()) << "Reply for" << reply->method() << "has no data available yet. Retry" << reply->retryCount() << "/" << reply->retryLimit();
+                        reply->m_commandId = getNextCommandId();
+                        QTimer::singleShot(2000, this, [this, reply](){ sendRequest(reply); });
+                        // Retry scheduled, we are done with this packet
+                        return;
+                    } else {
+                        qCWarning(dcEverest()) << "Reply for" << reply->method() << "has still no data available. Retry limit of" << reply->retryLimit() << "reached. Finish reply with error.";
+                    }
+                }
+            }
+
             // Verify if we received a json rpc error
             if (dataMap.contains("error")) {
                 reply->finishReply(EverestJsonRpcReply::ErrorJsonRpcError);
@@ -499,12 +519,16 @@ void EverestJsonRpcClient::processDataPacket(const QByteArray &data)
     }
 }
 
-EverestJsonRpcReply *EverestJsonRpcClient::createReply(QString method, QVariantMap params)
+EverestJsonRpcReply *EverestJsonRpcClient::createReply(QString method, QVariantMap params, bool retry)
 {
-    int commandId = m_commandId;
-    m_commandId += 1;
+    EverestJsonRpcReply *reply = new EverestJsonRpcReply(getNextCommandId(), method, params, this);
+    reply->m_retry = retry;
+    return reply;
+}
 
-    return new EverestJsonRpcReply(commandId, method, params, this);
+int EverestJsonRpcClient::getNextCommandId()
+{
+    return m_commandId++;
 }
 
 EverestJsonRpcReply *EverestJsonRpcClient::apiHello()

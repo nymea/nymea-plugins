@@ -59,6 +59,8 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    int m_autodetectCounter = 0;
+    int m_autodetectCounterLimit = 4;
     bool m_useMqtt = false;
     QList<EverestMqttClient *> m_everstMqttClients;
     QHash<Thing *, EverestMqttClient *> m_thingClients;

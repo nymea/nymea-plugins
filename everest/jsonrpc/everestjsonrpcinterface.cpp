@@ -39,8 +39,13 @@ EverestJsonRpcInterface::EverestJsonRpcInterface(QObject *parent)
     connect(m_webSocket, &QWebSocket::disconnected, this, &EverestJsonRpcInterface::onDisconnected);
     connect(m_webSocket, &QWebSocket::textMessageReceived, this, &EverestJsonRpcInterface::onTextMessageReceived);
     connect(m_webSocket, &QWebSocket::binaryMessageReceived, this, &EverestJsonRpcInterface::onBinaryMessageReceived);
+    connect(m_webSocket, &QWebSocket::stateChanged, this, &EverestJsonRpcInterface::onStateChanged);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(m_webSocket, &QWebSocket::errorOccurred, this, &EverestJsonRpcInterface::onError);
+#else
     connect(m_webSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
-    connect(m_webSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onStateChanged(QAbstractSocket::SocketState)));
+#endif
+
 }
 
 EverestJsonRpcInterface::~EverestJsonRpcInterface()
@@ -91,6 +96,9 @@ void EverestJsonRpcInterface::onDisconnected()
 void EverestJsonRpcInterface::onError(QAbstractSocket::SocketError error)
 {
     qCDebug(dcEverest()) << "Socket error occurred" << error << m_webSocket->errorString();
+    if (error == QAbstractSocket::ConnectionRefusedError)
+        emit connectedChanged(false);
+
 }
 
 void EverestJsonRpcInterface::onStateChanged(QAbstractSocket::SocketState state)

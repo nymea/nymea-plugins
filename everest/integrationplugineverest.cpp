@@ -92,13 +92,25 @@ void IntegrationPluginEverest::startMonitoringAutoThings()
 
                 client->disconnectFromServer();
                 client->deleteLater();
+
+                // Disable any auto setup retry logic...
+                m_autodetectCounter = m_autodetectCounterLimit;
             }
         });
 
-        connect(client, &EverestJsonRpcClient::connectionErrorOccurred, this, [client](){
-            qCDebug(dcEverest()) << "AutoSetup: The connection to" << client->serverUrl().toString() << "failed";
-            client->disconnectFromServer();
-            client->deleteLater();
+        connect(client, &EverestJsonRpcClient::connectionErrorOccurred, this, [this, client, url](){
+            m_autodetectCounter++;
+
+            if (m_autodetectCounter <= m_autodetectCounterLimit) {
+                qCDebug(dcEverest()) << "AutoSetup: The connection to" << client->serverUrl().toString() << "failed. Retry" << m_autodetectCounter << "/" << m_autodetectCounterLimit << "in 15 seconds...";
+                QTimer::singleShot(15000, client, [client, url](){
+                    client->connectToServer(url);
+                });
+            } else {
+                qCDebug(dcEverest()) << "AutoSetup: The connection to" << client->serverUrl().toString() << "failed after" << m_autodetectCounterLimit << "retries. Stopping AutoSetup.";
+                client->disconnectFromServer();
+                client->deleteLater();
+            }
         });
 
         client->connectToServer(url);
@@ -333,6 +345,8 @@ void IntegrationPluginEverest::discoverThings(ThingDiscoveryInfo *info)
         jsonRpcDiscovery->start();
         return;
     }
+
+    info->finish(Thing::ThingErrorUnsupportedFeature);
 }
 
 void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
@@ -373,10 +387,6 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorNoError);
         return;
     } else if (thing->thingClassId() == everestConnectionThingClassId) {
-
-        QHostAddress address(thing->paramValue(everestConnectionThingAddressParamTypeId).toString());
-        MacAddress macAddress(thing->paramValue(everestConnectionThingMacAddressParamTypeId).toString());
-        QString hostName(thing->paramValue(everestConnectionThingHostNameParamTypeId).toString());
 
         quint16 port = thing->paramValue(everestConnectionThingPortParamTypeId).toUInt();
 

@@ -76,6 +76,21 @@ QVariantMap EverestJsonRpcReply::requestMap()
     return request;
 }
 
+bool EverestJsonRpcReply::retry() const
+{
+    return m_retry;
+}
+
+int EverestJsonRpcReply::retryCount() const
+{
+    return m_retryCount;
+}
+
+int EverestJsonRpcReply::retryLimit() const
+{
+    return m_retryLimit;
+}
+
 QVariantMap EverestJsonRpcReply::response() const
 {
     return m_response;
