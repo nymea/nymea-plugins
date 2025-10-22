@@ -41,6 +41,15 @@
                             "displayNameEvent": "Connection status changed"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "902a880c-9167-4ef7-9c80-f18e666a14ea",
+                            "name": "appendNewline",
+                            "displayName": "Append newline to sent data",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "actionTypes": [
                         {
                             "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
