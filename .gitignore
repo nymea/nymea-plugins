@@ -1,5 +1,6 @@
 *.pro.user
 builddir
+build/
 doc/html
 .DS_Store
 */modules/
