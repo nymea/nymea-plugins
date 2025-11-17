@@ -15,9 +15,6 @@ nymea (/[n'aiːmea:]/ - is an open source IoT edge server. The plug-in based arc
 
 ## Getting help
 
-If you want to present your project or want to share your newest developments you can share it in
-[Our Forum](https://forum.nymea.io)
-
 If you are facing any troubles, don't hesitate to reach out for us or the community members, we will be pleased to help you:
 Chat with us on [Telegram](http://t.me/nymeacommunity)
 
@@ -40,4 +37,4 @@ If you don't have any developer skills at all, still feel free to bring the topi
 
 ## License
 --------------------------------------------
-> nymea is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3 of the License.
+nymea-plugins is licensed under the GNU General Public License version 3 or (at your option) any later version (GPL-3.0-or-later). See the source files or the accompanying license text for details.
