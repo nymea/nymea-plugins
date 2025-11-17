@@ -1,7 +1,7 @@
 Source: nymea-plugins
 Section: utils
 Priority: optional
-Maintainer: nymea GmbH <contact@nymea.io>
+Maintainer: chargebyte austria GmbH <contact@nymea.io>
 Standards-Version: 4.7.2
 Homepage: https://nymea.io
 Vcs-Git: https://github.com/nymea/nymea-plugins.git

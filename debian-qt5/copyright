@@ -1,14 +1,29 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: nymea-plugins
-Upstream-Contact: nymea GmbH <developer@nymea.io>
+Upstream-Contact: chargebyte austria GmbH <contact@nymea.io>
 Copyright: 2013-2024, nymea GmbH
+           2024-2025, chargebyte austria GmbH
 Download: https://github.com/nymea/nymea-plugins
 Source: https://github.com/nymea/nymea-plugins.git
 
-License: LGPL-3
- On Debian systems, the complete text of the GNU Lesser General
- Public License can be found in `/usr/share/common-licenses/LGPL-3'.
+License: GPL-3+
+ nymea-plugins is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ nymea-plugins is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with nymea-plugins. If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ can be found in `/usr/share/common-licenses/GPL-3'.
 
 Files: *
-License: LGPL-3
+License: GPL-3+
 Copyright: 2013-2024, nymea GmbH <contact@nymea.io>
+           2024-2025, chargebyte austria GmbH <contact@nymea.io>
