@@ -1,0 +1,289 @@
+{
+    "name": "OpenCCU",
+    "displayName": "OpenCCU",
+    "id": "1debe558-38dc-4f4f-803f-e8fdd478803c",
+    "vendors": [
+        {
+            "name": "openCCU",
+            "displayName": "OpenUCC",
+            "id": "aebdd54c-0a97-4828-b2a1-806d6c8aef75",
+            "thingClasses": [
+                {
+                    "id": "9fb7b7f0-0a92-40ad-a08e-dde9d88af09f",
+                    "name": "openCCU",
+                    "displayName": "OpenCCU Gateway",
+                    "interfaces": ["gateway", "networkdevice"],
+                    "createMethods": ["discovery", "user"],
+                    "paramTypes": [
+                        {
+                            "id": "fc016355-4da1-4b24-830e-8ee7eb4406db",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "71f51cae-bbc1-41fd-b992-87731e21c887",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "109b9ae2-105f-4ba6-9cb0-f89409cb7aaf",
+                            "name":"macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "inputType": "MacAddress",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "87c02788-0c78-4c9d-a3b8-a0646c9a0d66",
+                            "name":"token",
+                            "displayName": "Token",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "3fbebc9b-01ed-4431-94d7-e741b6362de6",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dbcd9d61-5348-4762-b84f-adc48e0ba2ee",
+                    "name": "thermostat",
+                    "displayName": "Thermostat",
+                    "interfaces": ["thermostat", "heating", "temperaturesensor", "humiditysensor", "battery", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "2b628a08-96e0-47d3-a094-1f5b018c8091",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "596108b0-2f77-4bb4-b902-b3f2029ca68f",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "6876ce23-86e7-4518-bc52-0d04b7be0b40",
+                            "name": "iseId",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "46f52c89-7797-43db-99db-0a985e1d4c21",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e848e60e-975a-435f-8aa2-c7c250d441fc",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "97fdbb35-9517-4245-803c-b08a556161f5",
+                            "name": "reachable",
+                            "displayName": "Reachable",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "c2c89939-3b40-466e-8d67-e10f1ffc23b6",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "dba3188d-2231-4269-81bd-561681aba8dd",
+                            "name": "mode",
+                            "displayName": "Mode",
+                            "displayNameAction": "Set mode",
+                            "type": "QString",
+                            "defaultValue": "Auto",
+                            "writable": true,
+                            "possibleValues": [
+                                "Auto",
+                                "Manual"
+                            ]
+                        },
+                        {
+                            "id": "2b22147b-beb6-4e42-8343-94fbfa52e09a",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ae425a76-674b-4a20-99aa-dbdb5c7f495e",
+                            "name": "windowOpenDetected",
+                            "displayName": "Window open detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "18c0de57-df78-4d24-9d30-8756df8615c1",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7be037b7-ba71-4983-b927-0bfbbaa03225",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameAction": "Set target temperature",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 5,
+                            "maxValue": 25,
+                            "writable": true
+                        },
+                        {
+                            "id": "31d9bb84-1031-45d9-8b76-308210a8b248",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "unit": "Percentage",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ]
+                },
+                {
+                    "id": "e7c30062-9c74-41de-b4ab-e0ac5863650b",
+                    "name": "floorHeatingController",
+                    "displayName": "Floorheating controller",
+                    "interfaces": ["wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "1487caff-66d6-425d-9c60-4de022836673",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "535c500a-65f7-406c-a05c-6c51f5822bd0",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "b81f1849-0acf-4721-b4b7-66c46142fd5c",
+                            "name": "iseId",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "162c3ba2-4884-4974-a473-89494862317d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "be5a113d-80b1-4ec2-8394-ad5fa089d81f",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "198681be-8514-4590-a06a-1ef97876cf2a",
+                            "name": "reachable",
+                            "displayName": "Reachable",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "5d80574b-0ce0-4fbe-9985-631c854208e4",
+                    "name": "floorHeatingValve",
+                    "displayName": "Floor heating valve",
+                    "interfaces": ["valve", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "b3fd0a41-f4d3-47de-9db7-eb8915e0f6a5",
+                            "name": "iseId",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "669940b5-0582-4f0f-a250-8eb826c46ac1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "834401ba-865a-48c3-882d-2cf1317c0708",
+                            "name": "percentage",
+                            "displayName": "Valve position",
+                            "displayNameAction": "Set valve position",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "writable": true,
+                            "cached": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

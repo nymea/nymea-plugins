@@ -47,7 +47,8 @@ PLUGIN_DIRS = \
     notifyevents        \
     nuki                \
     onewire             \
-    openuv              \ 
+    openccu             \
+    openuv              \
     openweathermap      \
     osdomotics          \
     philipshue          \

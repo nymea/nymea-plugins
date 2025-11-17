@@ -1,0 +1,13 @@
+{
+    "title": "OpenCCU",
+    "tagline": "Connect to your OpenCCU gateway (RaspberryPiMatic) and controll your HomematicIP devices.",
+    "icon": "openccu.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "heating"
+    ]
+}
