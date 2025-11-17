@@ -415,7 +415,7 @@
                     "name": "kebaSimple",
                     "displayName": "KeConnect German Edition",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["evcharger", "connectable"],
+                    "interfaces": ["evcharger", "connectable", "networkdevice"],
                     "paramTypes":[
                         {
                             "id": "e438179a-5202-4106-a622-d9e10a74fed9",
