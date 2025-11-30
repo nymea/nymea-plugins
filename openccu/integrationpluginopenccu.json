@@ -248,7 +248,7 @@
                     "id": "5d80574b-0ce0-4fbe-9985-631c854208e4",
                     "name": "floorHeatingValve",
                     "displayName": "Floor heating valve",
-                    "interfaces": ["wirelessconnectable"],
+                    "interfaces": ["valve", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -270,14 +270,16 @@
                         },
                         {
                             "id": "834401ba-865a-48c3-882d-2cf1317c0708",
-                            "name": "valvePosition",
+                            "name": "percentage",
                             "displayName": "Valve position",
-                            "type": "uint",
+                            "displayNameAction": "Set valve position",
+                            "type": "int",
                             "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 0,
-                            "cached": false
+                            "writable": true,
+                            "cached": true
                         }
                     ]
                 }

@@ -206,7 +206,7 @@ void IntegrationPluginOpenCCU::getDevices(Thing *thing)
 
                 deviceName = xml.attributes().value("name").toString();
                 QString deviceType = xml.attributes().value("device_type").toString();
-
+                int iseId = xml.attributes().value("ise_id").toInt();
                 // Thermostats
                 if (deviceType.startsWith("HmIP-STH")) {
                     QString serialNumber = xml.attributes().value("address").toString();
@@ -217,7 +217,7 @@ void IntegrationPluginOpenCCU::getDevices(Thing *thing)
                         ParamList params;
                         params.append(Param(thermostatThingSerialNumberParamTypeId, serialNumber));
                         params.append(Param(thermostatThingTypeParamTypeId, deviceType));
-                        params.append(Param(thermostatThingIseIdParamTypeId, xml.attributes().value("ise_id").toInt()));
+                        params.append(Param(thermostatThingIseIdParamTypeId, iseId));
                         descriptor.setParams(params);
                         descriptors.append(descriptor);
                     } else {
@@ -235,7 +235,7 @@ void IntegrationPluginOpenCCU::getDevices(Thing *thing)
                         ParamList params;
                         params.append(Param(floorHeatingControllerThingSerialNumberParamTypeId, serialNumber));
                         params.append(Param(floorHeatingControllerThingTypeParamTypeId, deviceType));
-                        params.append(Param(floorHeatingControllerThingIseIdParamTypeId, xml.attributes().value("ise_id").toInt()));
+                        params.append(Param(floorHeatingControllerThingIseIdParamTypeId, iseId));
                         descriptor.setParams(params);
                         descriptors.append(descriptor);
                     } else {
@@ -371,20 +371,21 @@ void IntegrationPluginOpenCCU::getChannels(Thing *floorHeatinController)
         }
 
         QByteArray data = reply->readAll();
-        //qCDebug(dcOpenCCU()) << "-->" << data;
+        //qCDebug(dcOpenCCU()) << "-->" << qUtf8Printable(data);
         floorHeatinController->setStateValue(floorHeatingControllerConnectedStateTypeId, true);
+        int floorHeatingControllerIseId = floorHeatinController->paramValue(floorHeatingControllerThingIseIdParamTypeId).toInt();
 
         QXmlStreamReader xml(data);
         while(!xml.atEnd() && !xml.hasError()) {
             xml.readNext();
             if (xml.name() == QString("device") && xml.isStartElement())  {
                 qCDebug(dcOpenCCU()) << "-->" << xml.name() << xml.attributes().value("name").toString();
-                // foreach (const QXmlStreamAttribute &attribute, xml.attributes()) {
-                //     qCDebug(dcOpenCCU()) << "    " << attribute.name() << attribute.value();
-                // }
+                foreach (const QXmlStreamAttribute &attribute, xml.attributes()) {
+                    qCDebug(dcOpenCCU()) << "    " << attribute.name() << attribute.value();
+                }
 
                 int iseId = xml.attributes().value("ise_id").toInt();
-                if (iseId == floorHeatinController->paramValue(floorHeatingValveThingIseIdParamTypeId).toInt()) {
+                if (iseId == floorHeatingControllerIseId) {
 
                     int currentChannelIndex = 0;
                     ThingDescriptors desciptors;
@@ -404,10 +405,10 @@ void IntegrationPluginOpenCCU::getChannels(Thing *floorHeatinController)
                         }
 
                         if (xml.name() == QString("datapoint")  && xml.isStartElement()) {
-                            // qCDebug(dcOpenCCU()) << "  -->" << xml->name() << xml->attributes().value("name").toString();
-                            // foreach (const QXmlStreamAttribute &attribute, xml->attributes()) {
-                            //     qCDebug(dcOpenCCU()) << "    " << attribute.name() << attribute.value();
-                            // }
+                            qCDebug(dcOpenCCU()) << "  -->" << xml.name() << xml.attributes().value("name").toString();
+                            foreach (const QXmlStreamAttribute &attribute, xml.attributes()) {
+                                qCDebug(dcOpenCCU()) << "    " << attribute.name() << attribute.value();
+                            }
 
 
                             QString type = xml.attributes().value("type").toString();
@@ -415,7 +416,9 @@ void IntegrationPluginOpenCCU::getChannels(Thing *floorHeatinController)
 
                             if (currentChannelIndex == 0) {
                                 if (type == "RSSI_DEVICE") {
-                                    floorHeatinController->setStateValue(floorHeatingControllerSignalStrengthStateTypeId, getSignalStrenthFromRssi(xml.attributes().value("value").toInt()));
+                                    int signalStrength = getSignalStrenthFromRssi(xml.attributes().value("value").toInt());
+                                    floorHeatinController->setStateValue(floorHeatingControllerSignalStrengthStateTypeId, signalStrength);
+                                    qCDebug(dcOpenCCU()) << "Floor heating controller" << floorHeatinController->name() << iseId << "signal strength:" << signalStrength << "%";
                                 } else if (type == "UNREACH") {
                                     floorHeatinController->setStateValue(floorHeatingControllerReachableStateTypeId, xml.attributes().value("value").toString() == "false");
                                     floorHeatinController->setStateValue(floorHeatingControllerConnectedStateTypeId, floorHeatinController->stateValue(floorHeatingControllerReachableStateTypeId));
@@ -522,10 +525,21 @@ void IntegrationPluginOpenCCU::processThingStateList(QXmlStreamReader *xml, Thin
                     // iseId of the SET_POINT_MODE
                     m_thermostats[thing].channels[currentChannelIndex].controlModeId = iseId;
                 }
+            } else if (thing->thingClassId() == floorHeatingControllerThingClassId) {
+                if (type == "RSSI_DEVICE") {
+                    int signalStrength = getSignalStrenthFromRssi(xml->attributes().value("value").toInt());
+                    thing->setStateValue(floorHeatingControllerSignalStrengthStateTypeId, signalStrength);
+                } else if (type == "UNRACH") {
+                    bool isConnected = xml->attributes().value("value").toString() == "false";
+                    thing->setStateValue(floorHeatingControllerConnectedStateTypeId, isConnected);
+                    foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                        childThing->setStateValue(floorHeatingValveConnectedStateTypeId, isConnected);
+                    }
+                }
             } else if (thing->thingClassId() == floorHeatingValveThingClassId) {
                 if (type == "LEVEL") {
-                    thing->setStateValue(floorHeatingValveValvePositionStateTypeId, xml->attributes().value("value").toDouble());
-                    qCDebug(dcOpenCCU()) << "Valve position" << thing->name() << thing->stateValue(floorHeatingValveValvePositionStateTypeId).toDouble() << "%";
+                    thing->setStateValue(floorHeatingValvePercentageStateTypeId, xml->attributes().value("value").toDouble());
+                    qCDebug(dcOpenCCU()) << "Valve position" << thing->name() << thing->stateValue(floorHeatingValvePercentageStateTypeId).toDouble() << "%";
                 }
             }
         }
