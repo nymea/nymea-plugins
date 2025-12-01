@@ -535,13 +535,47 @@ void IntegrationPluginOpenCCU::processThingStateList(QXmlStreamReader *xml, Thin
                     foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
                         childThing->setStateValue(floorHeatingValveConnectedStateTypeId, isConnected);
                     }
+                } else if (type == "LEVEL") {
+                    Thing *valveThing = nullptr;
+                    foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                        if (childThing->thingClassId() == floorHeatingValveThingClassId
+                            && childThing->paramValue(floorHeatingValveThingIseIdParamTypeId).toInt() == iseId) {
+                            valveThing = childThing;
+                            break;
+                        }
+                    }
+
+                    if (valveThing) {
+                        valveThing->setStateValue(floorHeatingValveConnectedStateTypeId, thing->stateValue(floorHeatingControllerConnectedStateTypeId).toBool());
+                        valveThing->setStateValue(floorHeatingValvePercentageStateTypeId, xml->attributes().value("value").toDouble());
+                        qCDebug(dcOpenCCU()) << "Valve position" << valveThing->name() << valveThing->stateValue(floorHeatingValvePercentageStateTypeId).toDouble() << "%";
+                    }
                 }
-            } else if (thing->thingClassId() == floorHeatingValveThingClassId) {
+            } /*else if (thing->thingClassId() == floorHeatingValveThingClassId) {
                 if (type == "LEVEL") {
                     thing->setStateValue(floorHeatingValvePercentageStateTypeId, xml->attributes().value("value").toDouble());
                     qCDebug(dcOpenCCU()) << "Valve position" << thing->name() << thing->stateValue(floorHeatingValvePercentageStateTypeId).toDouble() << "%";
                 }
-            }
+
+                else if (type == "LEVEL") {
+                    Thing *valveThing = nullptr;
+                    foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                        if (childThing->thingClassId() == floorHeatingValveThingClassId
+                            && childThing->paramValue(floorHeatingValveThingIseIdParamTypeId).toInt() == iseId) {
+                            valveThing = childThing;
+                            break;
+                        }
+                    }
+
+                    if (valveThing) {
+                        valveThing->setStateValue(floorHeatingValveConnectedStateTypeId, thing->stateValue(floorHeatingControllerConnectedStateTypeId).toBool());
+                        if (!value.isEmpty()) {
+                            valveThing->setStateValue(floorHeatingValvePercentageStateTypeId, value.toDouble());
+                            qCDebug(dcOpenCCU()) << "Valve position" << valveThing->name() << valveThing->stateValue(floorHeatingValvePercentageStateTypeId).toDouble() << "%";
+                        }
+                    }
+                }
+            }*/
         }
     }
 }
