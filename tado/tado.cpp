@@ -25,14 +25,14 @@
 #include "tado.h"
 #include "extern-plugininfo.h"
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QUrlQuery>
 
-Tado::Tado(NetworkAccessManager *networkManager, QObject *parent) :
-    QObject(parent),
-    m_networkManager(networkManager)
+Tado::Tado(NetworkAccessManager *networkManager, QObject *parent)
+    : QObject(parent)
+    , m_networkManager(networkManager)
 {
     m_baseControlUrl = "https://my.tado.com/api/v2";
     m_baseAuthorizationUrl = "https://login.tado.com/oauth2";
@@ -40,14 +40,14 @@ Tado::Tado(NetworkAccessManager *networkManager, QObject *parent) :
     m_clientId = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
 
     m_refreshTimer.setSingleShot(true);
-    connect(&m_refreshTimer, &QTimer::timeout, this, [this](){
+    connect(&m_refreshTimer, &QTimer::timeout, this, [this]() {
         qCDebug(dcTado()) << "Refresh token...";
         getAccessToken();
     });
 
     m_pollAuthenticationTimer.setSingleShot(true);
     m_pollAuthenticationTimer.setInterval(2000);
-    connect(&m_pollAuthenticationTimer, &QTimer::timeout, this, [this](){
+    connect(&m_pollAuthenticationTimer, &QTimer::timeout, this, [this]() {
         qCDebug(dcTado()) << "Checking authentication status...";
         requestAuthenticationToken();
     });
@@ -67,7 +67,6 @@ bool Tado::connected()
 {
     return m_connectionStatus;
 }
-
 
 QString Tado::loginUrl() const
 {
@@ -112,7 +111,6 @@ void Tado::getLoginUrl()
     QNetworkReply *reply = m_networkManager->post(request, payload);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
@@ -157,7 +155,6 @@ void Tado::getLoginUrl()
     });
 }
 
-
 void Tado::getAccessToken()
 {
     QNetworkRequest request = QNetworkRequest(QUrl(m_baseAuthorizationUrl + "/token"));
@@ -175,12 +172,10 @@ void Tado::getAccessToken()
     QNetworkReply *reply = m_networkManager->post(request, payload);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-
         QByteArray data = reply->readAll();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-
             emit connectionError(reply->error());
 
             if (reply->error() == QNetworkReply::HostNotFoundError)
@@ -216,7 +211,6 @@ void Tado::getAccessToken()
             emit refreshTokenReceived(m_refreshToken);
         }
 
-
         setAuthenticationStatus(true);
 
         // Refresh 10 sekonds before expiration
@@ -232,7 +226,7 @@ void Tado::getHomes()
         return;
     }
 
-    if(m_accessToken.isEmpty()) {
+    if (m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return;
     }
@@ -244,7 +238,6 @@ void Tado::getHomes()
     //qCDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -299,7 +292,7 @@ void Tado::getZones(const QString &homeId)
         return;
     }
 
-    if(m_accessToken.isEmpty()) {
+    if (m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return;
     }
@@ -312,7 +305,6 @@ void Tado::getZones(const QString &homeId)
     //qCDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -356,7 +348,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         return;
     }
 
-    if(m_accessToken.isEmpty()) {
+    if (m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return;
     }
@@ -369,7 +361,6 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     //qCDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, zoneId, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -385,7 +376,6 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-
 
         setConnectionStatus(true);
         setAuthenticationStatus(true);
@@ -416,7 +406,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         state.temperature = dataMap["insideTemperature"].toMap().value("celsius").toDouble();
         state.humidity = dataMap["humidity"].toMap().value("percentage").toDouble();
 
-        if (!map["overlay"].toMap().isEmpty()){
+        if (!map["overlay"].toMap().isEmpty()) {
             state.overlayIsSet = true;
             QVariantMap overlayMap = map["overlay"].toMap();
             state.overlayType = map["overlayType"].toString();
@@ -436,7 +426,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
         return QUuid();
     }
 
-    if(m_accessToken.isEmpty()) {
+    if (m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return QUuid();
     }
@@ -454,13 +444,13 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
     else
         powerString = "OFF";
 
-    body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\"" + powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
+    body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\"" + powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray()
+                + "}},\"termination\":{\"type\":\"MANUAL\"}}");
 
     //qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
@@ -513,7 +503,7 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
         return QUuid();
     }
 
-    if(m_accessToken.isEmpty()) {
+    if (m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return QUuid();
     }
@@ -525,11 +515,9 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
     QNetworkReply *reply = m_networkManager->deleteResource(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
-
-            emit requestExecuted(requestId ,false);
+            emit requestExecuted(requestId, false);
             emit connectionError(reply->error());
 
             if (reply->error() == QNetworkReply::HostNotFoundError) {
@@ -590,7 +578,6 @@ void Tado::requestAuthenticationToken()
     QNetworkReply *reply = m_networkManager->post(request, payload);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCDebug(dcTado()) << "Request error:" << status << "Retrying:" << m_pollAuthenticationCount << "/" << m_pollAuthenticationLimit;
@@ -643,7 +630,6 @@ void Tado::setAuthenticationStatus(bool status)
 
     if (!status)
         m_refreshTimer.stop();
-
 }
 
 void Tado::setConnectionStatus(bool status)

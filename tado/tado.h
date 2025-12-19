@@ -25,8 +25,8 @@
 #ifndef TADO_H
 #define TADO_H
 
-#include <network/networkaccessmanager.h>
 #include <integrations/thing.h>
+#include <network/networkaccessmanager.h>
 
 #include <QObject>
 #include <QTimer>
@@ -36,21 +36,24 @@ class Tado : public QObject
 {
     Q_OBJECT
 public:
-    struct Zone {
+    struct Zone
+    {
         QString id;
         QString name;
         QString type;
     };
 
-    struct Overlay {
-      bool power;
-      double temperature;
-      QString zoneType;
-      QString terminationType;
-      QString tadoMode;
+    struct Overlay
+    {
+        bool power;
+        double temperature;
+        QString zoneType;
+        QString terminationType;
+        QString tadoMode;
     };
 
-    struct ZoneState {
+    struct ZoneState
+    {
         bool connected = false;
         bool power = false;
         QString tadoMode;
@@ -68,7 +71,8 @@ public:
         QString overlayType;
     };
 
-    struct Home {
+    struct Home
+    {
         QString id;
         QString name;
     };
@@ -138,10 +142,9 @@ signals:
 
     void homesReceived(QList<Tado::Home> homes);
     void zonesReceived(const QString &homeId, QList<Tado::Zone> zones);
-    void zoneStateReceived(const QString &homeId,const QString &zoneId, Tado::ZoneState sate);
+    void zoneStateReceived(const QString &homeId, const QString &zoneId, Tado::ZoneState sate);
     void overlayReceived(const QString &homeId, const QString &zoneId, const Tado::Overlay &overlay);
     void connectionError(QNetworkReply::NetworkError error);
-
 };
 
 #endif // TADO_H

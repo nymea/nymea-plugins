@@ -26,8 +26,8 @@
 #define INTEGRATIONPLUGINTADO_H
 
 #include <integrations/integrationplugin.h>
-#include <plugintimer.h>
 #include <network/oauth2.h>
+#include <plugintimer.h>
 
 #include <QHash>
 #include <QList>
@@ -56,13 +56,15 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    struct OverlayState {
+    struct OverlayState
+    {
         bool deleteOverlay = false;
         bool power = false;
         double temperature = 0.0;
     };
 
-    struct PendingOverlayChange {
+    struct PendingOverlayChange
+    {
         ThingId accountThingId;
         QString homeId;
         QString zoneId;
@@ -74,7 +76,8 @@ private:
         QList<ThingActionInfo *> pendingActions;
     };
 
-    struct PendingRequest {
+    struct PendingRequest
+    {
         QString zoneKey;
         QList<ThingActionInfo *> actions;
         OverlayState sentState;
@@ -103,7 +106,7 @@ private slots:
     void onRequestExecuted(QUuid requestId, bool success);
     void onHomesReceived(QList<Tado::Home> homes);
     void onZonesReceived(const QString &homeId, QList<Tado::Zone> zones);
-    void onZoneStateReceived(const QString &homeId,const QString &zoneId, Tado::ZoneState sate);
+    void onZoneStateReceived(const QString &homeId, const QString &zoneId, Tado::ZoneState sate);
     void onOverlayReceived(const QString &homeId, const QString &zoneId, const Tado::Overlay &overlay);
 };
 

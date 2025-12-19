@@ -29,9 +29,9 @@
 #include <network/networkaccessmanager.h>
 
 #include <QDebug>
-#include <QUrlQuery>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QUrlQuery>
 #include <QtMath>
 
 namespace {
@@ -43,7 +43,7 @@ void finishPendingActions(const QList<ThingActionInfo *> &actions, Thing::ThingE
         }
     }
 }
-}
+} // namespace
 
 IntegrationPluginTado::IntegrationPluginTado()
 {
@@ -91,9 +91,7 @@ void IntegrationPluginTado::queueOverlayChange(ThingActionInfo *info, const QStr
     pending.dirty = true;
     pending.pendingActions.append(info);
 
-    connect(info, &ThingActionInfo::aborted, this, [this, info]() {
-        removePendingAction(info);
-    });
+    connect(info, &ThingActionInfo::aborted, this, [this, info]() { removePendingAction(info); });
 
     if (!m_stateSyncTimer.isActive()) {
         m_stateSyncTimer.start();
@@ -110,10 +108,7 @@ void IntegrationPluginTado::removePendingAction(ThingActionInfo *info)
     }
 }
 
-void IntegrationPluginTado::init()
-{
-
-}
+void IntegrationPluginTado::init() {}
 
 void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 {
@@ -128,7 +123,7 @@ void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
         tado->deleteLater();
     });
 
-    connect(tado, &Tado::getLoginUrlFinished, info, [info, tado, this] (bool success) {
+    connect(tado, &Tado::getLoginUrlFinished, info, [info, tado, this](bool success) {
         if (!success) {
             info->finish(Thing::ThingErrorAuthenticationFailure);
             return;
@@ -138,8 +133,6 @@ void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
             qCWarning(dcTado()) << "ThingPairingInfo aborted, cleaning up pending setup connection.";
             m_unfinishedTadoAccounts.take(info->thingId())->deleteLater();
         });
-
-
 
         qCDebug(dcTado()) << "Tado server is reachable. Starting the OAuth pairing process using" << tado->loginUrl();
         info->setOAuthUrl(QUrl(tado->loginUrl()));
@@ -156,8 +149,8 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
     qCDebug(dcTado()) << "Confirm pairing" << password;
     Tado *tado = m_unfinishedTadoAccounts.value(info->thingId());
 
-    connect(tado, &Tado::connectionError, info, [info] (QNetworkReply::NetworkError error){
-        if (error != QNetworkReply::NetworkError::NoError){
+    connect(tado, &Tado::connectionError, info, [info](QNetworkReply::NetworkError error) {
+        if (error != QNetworkReply::NetworkError::NoError) {
             qCWarning(dcTado()) << "Confirm pairing failed" << error;
             info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("A connection error occurred."));
         }
@@ -185,7 +178,6 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == tadoAccountThingClassId) {
-
         qCDebug(dcTado) << "Setting up Tado account" << thing->name() << thing->params();
 
         Tado *tado = nullptr;
@@ -205,7 +197,6 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             pluginStorage()->setValue("refreshToken", tado->refreshToken());
             pluginStorage()->endGroup();
         } else {
-
             // Load refresh token
             pluginStorage()->beginGroup(thing->id().toString());
             QString refreshToken = pluginStorage()->value("refreshToken").toString();
@@ -235,7 +226,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             }
         });
 
-        connect(tado, &Tado::refreshTokenReceived, this, [thing, this](const QString &refreshToken){
+        connect(tado, &Tado::refreshTokenReceived, this, [thing, this](const QString &refreshToken) {
             pluginStorage()->beginGroup(thing->id().toString());
             pluginStorage()->setValue("refreshToken", refreshToken);
             pluginStorage()->endGroup();
@@ -246,8 +237,8 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorNoError);
         });
 
-        connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error) {
-            if (error != QNetworkReply::NetworkError::NoError){
+        connect(tado, &Tado::connectionError, info, [this, info](QNetworkReply::NetworkError error) {
+            if (error != QNetworkReply::NetworkError::NoError) {
                 if (m_tadoAccounts.contains(info->thing()->id())) {
                     Tado *tado = m_tadoAccounts.take(info->thing()->id());
                     tado->deleteLater();
@@ -274,10 +265,10 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
     } else if (thing->thingClassId() == zoneThingClassId) {
         qCDebug(dcTado) << "Setup Tado zone" << thing->params();
         Thing *parentThing = myThings().findById(thing->parentId());
-        if(parentThing->setupComplete()) {
+        if (parentThing->setupComplete()) {
             return info->finish(Thing::ThingErrorNoError);
         } else {
-            connect(parentThing, &Thing::setupStatusChanged, info, [parentThing, info]{
+            connect(parentThing, &Thing::setupStatusChanged, info, [parentThing, info] {
                 if (parentThing->setupComplete()) {
                     info->finish(Thing::ThingErrorNoError);
                 }
@@ -298,7 +289,7 @@ void IntegrationPluginTado::thingRemoved(Thing *thing)
             tado->deleteLater();
         }
 
-        for (auto it = m_pendingOverlayChanges.begin(); it != m_pendingOverlayChanges.end(); ) {
+        for (auto it = m_pendingOverlayChanges.begin(); it != m_pendingOverlayChanges.end();) {
             if (it->accountThingId == thing->id()) {
                 finishPendingActions(it->pendingActions, Thing::ThingErrorThingNotFound);
                 it = m_pendingOverlayChanges.erase(it);
@@ -308,7 +299,7 @@ void IntegrationPluginTado::thingRemoved(Thing *thing)
         }
 
         QString accountPrefix = thing->id().toString() + ":";
-        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end(); ) {
+        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end();) {
             if (it->zoneKey.startsWith(accountPrefix)) {
                 finishPendingActions(it->actions, Thing::ThingErrorThingNotFound);
                 it = m_pendingRequests.erase(it);
@@ -324,7 +315,7 @@ void IntegrationPluginTado::thingRemoved(Thing *thing)
             PendingOverlayChange pending = m_pendingOverlayChanges.take(zoneKey);
             finishPendingActions(pending.pendingActions, Thing::ThingErrorThingNotFound);
         }
-        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end(); ) {
+        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end();) {
             if (it->zoneKey == zoneKey) {
                 finishPendingActions(it->actions, Thing::ThingErrorThingNotFound);
                 it = m_pendingRequests.erase(it);
@@ -400,7 +391,6 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
             }
             queueOverlayChange(info, homeId, zoneId, desired);
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
-
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
             OverlayState desired;
             if (temperature <= 0) {
@@ -491,7 +481,7 @@ void IntegrationPluginTado::syncPendingOverlays()
 
 void IntegrationPluginTado::onPluginTimer()
 {
-    Q_FOREACH(Tado *tado, m_tadoAccounts){
+    Q_FOREACH (Tado *tado, m_tadoAccounts) {
         ThingId accountThingId = m_tadoAccounts.key(tado);
         if (!tado->authenticated()) {
             tado->getAccessToken();
@@ -509,9 +499,9 @@ void IntegrationPluginTado::onPluginTimer()
 
 void IntegrationPluginTado::onConnectionChanged(bool connected)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
 
-    if (m_tadoAccounts.values().contains(tado)){
+    if (m_tadoAccounts.values().contains(tado)) {
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
         if (!thing)
             return;
@@ -529,11 +519,11 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
 
 void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
 
-    if (m_tadoAccounts.values().contains(tado)){
+    if (m_tadoAccounts.values().contains(tado)) {
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
-        if (!thing){
+        if (!thing) {
             qCWarning(dcTado()) << "OnAuthenticationChanged no thing found by ID" << m_tadoAccounts.key(tado);
             return;
         }
@@ -550,9 +540,9 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
 
 void IntegrationPluginTado::onUsernameChanged(const QString &username)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
 
-    if (m_tadoAccounts.values().contains(tado)){
+    if (m_tadoAccounts.values().contains(tado)) {
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
         thing->setStateValue(tadoAccountUserDisplayNameStateTypeId, username);
     }
@@ -565,8 +555,7 @@ void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
     }
 
     PendingRequest request = m_pendingRequests.take(requestId);
-    finishPendingActions(request.actions,
-                         success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareNotAvailable);
+    finishPendingActions(request.actions, success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareNotAvailable);
 
     if (!m_pendingOverlayChanges.contains(request.zoneKey)) {
         return;
@@ -593,7 +582,7 @@ void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
 void IntegrationPluginTado::onHomesReceived(QList<Tado::Home> homes)
 {
     qCDebug(dcTado()) << "Homes received";
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
     foreach (Tado::Home home, homes) {
         tado->getZones(home.id);
     }
@@ -601,16 +590,14 @@ void IntegrationPluginTado::onHomesReceived(QList<Tado::Home> homes)
 
 void IntegrationPluginTado::onZonesReceived(const QString &homeId, QList<Tado::Zone> zones)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
 
     if (m_tadoAccounts.values().contains(tado)) {
-
         Thing *parentDevice = myThings().findById(m_tadoAccounts.key(tado));
         qCDebug(dcTado()) << "Zones received:" << zones.count() << parentDevice->name();
 
         ThingDescriptors descriptors;
         foreach (Tado::Zone zone, zones) {
-
             ThingDescriptor descriptor(zoneThingClassId, zone.name, "Type:" + zone.type, parentDevice->id());
             ParamList params;
             params.append(Param(zoneThingHomeIdParamTypeId, homeId));
@@ -630,7 +617,7 @@ void IntegrationPluginTado::onZonesReceived(const QString &homeId, QList<Tado::Z
 
 void IntegrationPluginTado::onZoneStateReceived(const QString &homeId, const QString &zoneId, Tado::ZoneState state)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
     ThingId parentId = m_tadoAccounts.key(tado);
     ParamList params;
     params.append(Param(zoneThingHomeIdParamTypeId, homeId));
@@ -639,7 +626,7 @@ void IntegrationPluginTado::onZoneStateReceived(const QString &homeId, const QSt
     if (!thing)
         return;
 
-    if (state.overlayIsSet)  {
+    if (state.overlayIsSet) {
         if (state.overlaySettingPower) {
             thing->setStateValue(zoneModeStateTypeId, "Manual");
         } else {
@@ -660,7 +647,7 @@ void IntegrationPluginTado::onZoneStateReceived(const QString &homeId, const QSt
 
 void IntegrationPluginTado::onOverlayReceived(const QString &homeId, const QString &zoneId, const Tado::Overlay &overlay)
 {
-    Tado *tado = static_cast<Tado*>(sender());
+    Tado *tado = static_cast<Tado *>(sender());
     ThingId parentId = m_tadoAccounts.key(tado);
     ParamList params;
     params.append(Param(zoneThingHomeIdParamTypeId, homeId));
@@ -670,7 +657,7 @@ void IntegrationPluginTado::onOverlayReceived(const QString &homeId, const QStri
         return;
     thing->setStateValue(zoneTargetTemperatureStateTypeId, overlay.temperature);
 
-    if (overlay.tadoMode == "MANUAL")  {
+    if (overlay.tadoMode == "MANUAL") {
         if (overlay.power) {
             thing->setStateValue(zoneModeStateTypeId, "Manual");
         } else {
