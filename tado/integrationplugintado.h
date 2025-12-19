@@ -30,6 +30,7 @@
 #include <network/oauth2.h>
 
 #include <QHash>
+#include <QList>
 #include <QTimer>
 
 #include "extern-plugininfo.h"
@@ -55,14 +56,46 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    struct OverlayState {
+        bool deleteOverlay = false;
+        bool power = false;
+        double temperature = 0.0;
+    };
+
+    struct PendingOverlayChange {
+        ThingId accountThingId;
+        QString homeId;
+        QString zoneId;
+        OverlayState desired;
+        OverlayState lastSynced;
+        bool dirty = false;
+        bool lastSyncedValid = false;
+        bool inFlightValid = false;
+        QList<ThingActionInfo *> pendingActions;
+    };
+
+    struct PendingRequest {
+        QString zoneKey;
+        QList<ThingActionInfo *> actions;
+        OverlayState sentState;
+    };
+
     PluginTimer *m_pluginTimer = nullptr;
     QHash<ThingId, Tado *> m_unfinishedTadoAccounts;
 
     QHash<ThingId, Tado *> m_tadoAccounts;
-    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    QTimer m_stateSyncTimer;
+    QHash<QString, PendingOverlayChange> m_pendingOverlayChanges;
+    QHash<QUuid, PendingRequest> m_pendingRequests;
+
+    static QString buildZoneKey(const ThingId &accountThingId, const QString &homeId, const QString &zoneId);
+    static bool overlayStatesEqual(const OverlayState &first, const OverlayState &second);
+    void queueOverlayChange(ThingActionInfo *info, const QString &homeId, const QString &zoneId, const OverlayState &desired);
+    void removePendingAction(ThingActionInfo *info);
 
 private slots:
     void onPluginTimer();
+    void syncPendingOverlays();
 
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);

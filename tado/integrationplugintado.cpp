@@ -32,10 +32,82 @@
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QtMath>
+
+namespace {
+void finishPendingActions(const QList<ThingActionInfo *> &actions, Thing::ThingError error)
+{
+    for (ThingActionInfo *info : actions) {
+        if (info) {
+            info->finish(error);
+        }
+    }
+}
+}
 
 IntegrationPluginTado::IntegrationPluginTado()
 {
+    m_stateSyncTimer.setInterval(5000);
+    connect(&m_stateSyncTimer, &QTimer::timeout, this, &IntegrationPluginTado::syncPendingOverlays);
+}
 
+QString IntegrationPluginTado::buildZoneKey(const ThingId &accountThingId, const QString &homeId, const QString &zoneId)
+{
+    return accountThingId.toString() + ":" + homeId + ":" + zoneId;
+}
+
+bool IntegrationPluginTado::overlayStatesEqual(const OverlayState &first, const OverlayState &second)
+{
+    if (first.deleteOverlay != second.deleteOverlay) {
+        return false;
+    }
+    if (first.deleteOverlay) {
+        return true;
+    }
+    if (first.power != second.power) {
+        return false;
+    }
+    return qAbs(first.temperature - second.temperature) < 0.01;
+}
+
+void IntegrationPluginTado::queueOverlayChange(ThingActionInfo *info, const QString &homeId, const QString &zoneId, const OverlayState &desired)
+{
+    if (!info) {
+        return;
+    }
+
+    Thing *thing = info->thing();
+    if (!thing) {
+        return;
+    }
+
+    ThingId accountThingId = thing->parentId();
+    QString zoneKey = buildZoneKey(accountThingId, homeId, zoneId);
+    PendingOverlayChange &pending = m_pendingOverlayChanges[zoneKey];
+    pending.accountThingId = accountThingId;
+    pending.homeId = homeId;
+    pending.zoneId = zoneId;
+    pending.desired = desired;
+    pending.dirty = true;
+    pending.pendingActions.append(info);
+
+    connect(info, &ThingActionInfo::aborted, this, [this, info]() {
+        removePendingAction(info);
+    });
+
+    if (!m_stateSyncTimer.isActive()) {
+        m_stateSyncTimer.start();
+    }
+}
+
+void IntegrationPluginTado::removePendingAction(ThingActionInfo *info)
+{
+    for (auto it = m_pendingOverlayChanges.begin(); it != m_pendingOverlayChanges.end(); ++it) {
+        it->pendingActions.removeAll(info);
+    }
+    for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end(); ++it) {
+        it->actions.removeAll(info);
+    }
 }
 
 void IntegrationPluginTado::init()
@@ -222,15 +294,57 @@ void IntegrationPluginTado::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == tadoAccountThingClassId) {
         Tado *tado = m_tadoAccounts.take(thing->id());
-        tado->deleteLater();
+        if (tado) {
+            tado->deleteLater();
+        }
+
+        for (auto it = m_pendingOverlayChanges.begin(); it != m_pendingOverlayChanges.end(); ) {
+            if (it->accountThingId == thing->id()) {
+                finishPendingActions(it->pendingActions, Thing::ThingErrorThingNotFound);
+                it = m_pendingOverlayChanges.erase(it);
+                continue;
+            }
+            ++it;
+        }
+
+        QString accountPrefix = thing->id().toString() + ":";
+        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end(); ) {
+            if (it->zoneKey.startsWith(accountPrefix)) {
+                finishPendingActions(it->actions, Thing::ThingErrorThingNotFound);
+                it = m_pendingRequests.erase(it);
+                continue;
+            }
+            ++it;
+        }
+    } else if (thing->thingClassId() == zoneThingClassId) {
+        QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
+        QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
+        QString zoneKey = buildZoneKey(thing->parentId(), homeId, zoneId);
+        if (m_pendingOverlayChanges.contains(zoneKey)) {
+            PendingOverlayChange pending = m_pendingOverlayChanges.take(zoneKey);
+            finishPendingActions(pending.pendingActions, Thing::ThingErrorThingNotFound);
+        }
+        for (auto it = m_pendingRequests.begin(); it != m_pendingRequests.end(); ) {
+            if (it->zoneKey == zoneKey) {
+                finishPendingActions(it->actions, Thing::ThingErrorThingNotFound);
+                it = m_pendingRequests.erase(it);
+                continue;
+            }
+            ++it;
+        }
     }
 
     // Clean up storage
     pluginStorage()->remove(thing->id().toString());
 
-    if (myThings().isEmpty() && m_pluginTimer) {
-        m_pluginTimer->deleteLater();
-        m_pluginTimer = nullptr;
+    if (myThings().isEmpty()) {
+        if (m_pluginTimer) {
+            m_pluginTimer->deleteLater();
+            m_pluginTimer = nullptr;
+        }
+        if (m_stateSyncTimer.isActive()) {
+            m_stateSyncTimer.stop();
+        }
     }
 }
 
@@ -239,6 +353,9 @@ void IntegrationPluginTado::postSetupThing(Thing *thing)
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginTado::onPluginTimer);
+    }
+    if (!m_stateSyncTimer.isActive()) {
+        m_stateSyncTimer.start();
     }
 
     if (thing->thingClassId() == tadoAccountThingClassId) {
@@ -262,51 +379,46 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
     Action action = info->action();
 
     if (thing->thingClassId() == zoneThingClassId) {
-        Tado *tado = m_tadoAccounts.value(thing->parentId());
-        if (!tado) {
+        if (!m_tadoAccounts.contains(thing->parentId())) {
             info->finish(Thing::ThingErrorThingNotFound);
             return;
         }
         QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
         QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
         if (action.actionTypeId() == zoneModeActionTypeId) {
-            QUuid requestId;
-            if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Tado") {
-                requestId = tado->deleteOverlay(homeId, zoneId);
-            } else if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Off") {
-                requestId = tado->setOverlay(homeId, zoneId, false, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
+            OverlayState desired;
+            QString mode = action.param(zoneModeActionModeParamTypeId).value().toString();
+            if (mode == "Tado") {
+                desired.deleteOverlay = true;
+            } else if (mode == "Off") {
+                desired.power = false;
+                desired.temperature = thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble();
             } else {
-                if(thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble() <= 5.0) {
-                    requestId =  tado->setOverlay(homeId, zoneId, true, 5);
-                } else {
-                    requestId = tado->setOverlay(homeId, zoneId, true, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
-                }
+                desired.power = true;
+                double targetTemperature = thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble();
+                desired.temperature = targetTemperature <= 5.0 ? 5.0 : targetTemperature;
             }
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
+            queueOverlayChange(info, homeId, zoneId, desired);
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
 
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
-            QUuid requestId;
+            OverlayState desired;
             if (temperature <= 0) {
-                requestId = tado->setOverlay(homeId, zoneId, false, 0);
+                desired.power = false;
+                desired.temperature = 0;
             } else {
-                requestId = tado->setOverlay(homeId, zoneId, true, temperature);
+                desired.power = true;
+                desired.temperature = temperature;
             }
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
+            queueOverlayChange(info, homeId, zoneId, desired);
         } else if (action.actionTypeId() == zonePowerActionTypeId) {
             bool power = action.param(zonePowerActionPowerParamTypeId).value().toBool();
             thing->setStateValue(zonePowerStateTypeId, power); // the actual power set response might be slow
-            QUuid requestId;
+            OverlayState desired;
             double temperature = thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble();
-            if (!power) {
-                requestId = tado->setOverlay(homeId, zoneId, false, 0);
-            } else {
-                requestId = tado->setOverlay(homeId, zoneId, true, temperature);
-            }
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, thing, [requestId, this] {m_asyncActions.remove(requestId);});
+            desired.power = power;
+            desired.temperature = power ? temperature : 0;
+            queueOverlayChange(info, homeId, zoneId, desired);
         } else {
             qCWarning(dcTado()) << "Execute action, unhandled actionTypeId" << action.actionTypeId();
             info->finish(Thing::ThingErrorActionTypeNotFound);
@@ -314,6 +426,66 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
     } else {
         qCWarning(dcTado()) << "Execute action, unhandled thingClassId" << thing->thingClassId();
         info->finish(Thing::ThingErrorThingClassNotFound);
+    }
+}
+
+void IntegrationPluginTado::syncPendingOverlays()
+{
+    if (m_pendingOverlayChanges.isEmpty()) {
+        return;
+    }
+
+    for (auto it = m_pendingOverlayChanges.begin(); it != m_pendingOverlayChanges.end(); ++it) {
+        PendingOverlayChange &pending = it.value();
+        if (!pending.dirty) {
+            if (!pending.pendingActions.isEmpty()) {
+                finishPendingActions(pending.pendingActions, Thing::ThingErrorNoError);
+                pending.pendingActions.clear();
+            }
+            continue;
+        }
+
+        if (pending.inFlightValid) {
+            continue;
+        }
+
+        if (pending.lastSyncedValid && overlayStatesEqual(pending.desired, pending.lastSynced)) {
+            pending.dirty = false;
+            if (!pending.pendingActions.isEmpty()) {
+                finishPendingActions(pending.pendingActions, Thing::ThingErrorNoError);
+                pending.pendingActions.clear();
+            }
+            continue;
+        }
+
+        Tado *tado = m_tadoAccounts.value(pending.accountThingId);
+        if (!tado) {
+            if (!pending.pendingActions.isEmpty()) {
+                finishPendingActions(pending.pendingActions, Thing::ThingErrorThingNotFound);
+                pending.pendingActions.clear();
+            }
+            pending.dirty = false;
+            continue;
+        }
+
+        QUuid requestId;
+        if (pending.desired.deleteOverlay) {
+            requestId = tado->deleteOverlay(pending.homeId, pending.zoneId);
+        } else {
+            requestId = tado->setOverlay(pending.homeId, pending.zoneId, pending.desired.power, pending.desired.temperature);
+        }
+
+        if (requestId.isNull()) {
+            continue;
+        }
+
+        PendingRequest request;
+        request.zoneKey = it.key();
+        request.actions = pending.pendingActions;
+        request.sentState = pending.desired;
+        pending.pendingActions.clear();
+        pending.inFlightValid = true;
+        m_pendingRequests.insert(requestId, request);
     }
 }
 
@@ -388,13 +560,33 @@ void IntegrationPluginTado::onUsernameChanged(const QString &username)
 
 void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
 {
-    if (m_asyncActions.contains(requestId)) {
-        ThingActionInfo *info = m_asyncActions.take(requestId);
-        if (success) {
-            info->finish(Thing::ThingErrorNoError);
-        } else {
-            info->finish(Thing::ThingErrorHardwareNotAvailable);
+    if (!m_pendingRequests.contains(requestId)) {
+        return;
+    }
+
+    PendingRequest request = m_pendingRequests.take(requestId);
+    finishPendingActions(request.actions,
+                         success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareNotAvailable);
+
+    if (!m_pendingOverlayChanges.contains(request.zoneKey)) {
+        return;
+    }
+
+    PendingOverlayChange &pending = m_pendingOverlayChanges[request.zoneKey];
+    pending.inFlightValid = false;
+    if (success) {
+        pending.lastSynced = request.sentState;
+        pending.lastSyncedValid = true;
+    }
+
+    if (pending.lastSyncedValid && overlayStatesEqual(pending.desired, pending.lastSynced)) {
+        pending.dirty = false;
+        if (!pending.pendingActions.isEmpty()) {
+            finishPendingActions(pending.pendingActions, Thing::ThingErrorNoError);
+            pending.pendingActions.clear();
         }
+    } else {
+        pending.dirty = true;
     }
 }
 
