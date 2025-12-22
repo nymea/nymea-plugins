@@ -281,7 +281,7 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
     QUuid requestId;
     if (thing->thingClassId() == kebaThingClassId) {
         if (action.actionTypeId() == kebaMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.paramValue(kebaMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
+            int milliAmpere = qRound(action.paramValue(kebaMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble() * 1000);
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
         } else if (action.actionTypeId() == kebaPowerActionTypeId) {
             requestId = keba->enableOutput(action.param(kebaPowerActionTypeId).value().toBool());
@@ -302,7 +302,7 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
 
     } else if (thing->thingClassId() == kebaSimpleThingClassId) {
         if (action.actionTypeId() == kebaSimpleMaxChargingCurrentActionTypeId) {
-            int milliAmpere = action.paramValue(kebaSimpleMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt() * 1000;
+            int milliAmpere = qRound(action.paramValue(kebaSimpleMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble() * 1000);
             requestId = keba->setMaxAmpereGeneral(milliAmpere);
         } else if (action.actionTypeId() == kebaSimplePowerActionTypeId) {
             requestId = keba->enableOutput(action.param(kebaSimplePowerActionTypeId).value().toBool());
@@ -481,7 +481,7 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
             if (thing->thingClassId() == kebaThingClassId) {
                 // Set the value to the state so we don't have to wait for the report 2 response
                 if (info->action().actionTypeId() == kebaMaxChargingCurrentActionTypeId) {
-                    uint value = info->action().paramValue(kebaMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+                    double value = info->action().paramValue(kebaMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
                     info->thing()->setStateValue("maxChargingCurrent", value);
                 } else if (info->action().actionTypeId() == kebaPowerActionTypeId) {
                     info->thing()->setStateValue("power", info->action().paramValue(kebaPowerActionTypeId).toBool());
@@ -489,7 +489,7 @@ void IntegrationPluginKeba::onCommandExecuted(QUuid requestId, bool success)
             } else if (thing->thingClassId() == kebaSimpleThingClassId) {
                 // Set the value to the state so we don't have to wait for the report 2 response
                 if (info->action().actionTypeId() == kebaSimpleMaxChargingCurrentActionTypeId) {
-                    uint value = info->action().paramValue(kebaSimpleMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toUInt();
+                    double value = info->action().paramValue(kebaSimpleMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
                     info->thing()->setStateValue("maxChargingCurrent", value);
                 } else if (info->action().actionTypeId() == kebaPowerActionTypeId) {
                     info->thing()->setStateValue("power", info->action().paramValue(kebaSimplePowerActionTypeId).toBool());
@@ -598,7 +598,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     qCDebug(dcKeba()) << "     - Output:" << reportTwo.output;
     qCDebug(dcKeba()) << "     - Input:" << reportTwo.input;
     qCDebug(dcKeba()) << "     - Serial number:" << reportTwo.serialNumber;
-    qCDebug(dcKeba()) << "     - Uptime:" << reportTwo.seconds/60 << "[min]";
+    qCDebug(dcKeba()) << "     - Uptime:" << reportTwo.seconds / 60 << "[min]";
 
     if (reportTwo.serialNumber == thing->paramValue(m_serialNumberParamTypeIds.value(thing->thingClassId())).toString()) {
         setDeviceState(thing, reportTwo.state);
@@ -609,7 +609,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue("error2", reportTwo.error2);
         thing->setStateValue("systemEnabled", reportTwo.enableSys);
 
-        thing->setStateValue("maxChargingCurrent", qRound(reportTwo.currentUser));
+        thing->setStateValue("maxChargingCurrent", reportTwo.currentUser);
         thing->setStateValue("maxChargingCurrentPercent", reportTwo.maxCurrentPercentage);
         thing->setStateValue("maxChargingCurrentHardware", reportTwo.currentHardwareLimitation);
 
