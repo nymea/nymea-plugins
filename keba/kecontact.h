@@ -130,7 +130,7 @@ public:
         double maxCurrent;              //Current preset value via Control pilot in ampere.
         double maxCurrentPercentage;    //Current preset value via Control pilot in 0,1% of the PWM value
         double currentHardwareLimitation;  //Highest possible charging current of the charging connection. Contains device maximum, DIP-switch setting, cable coding and temperature reduction.
-        double currentUser;                //Current preset value of the user via UDP; Default = 63000mA.
+        double currentUser;                //Current preset value of the user via UDP; A.
         double currentFailsafe;            //Current preset value for the Failsafe function.
         int timeoutFailsafe;            //Communication timeout before triggering the Failsafe function.
         int currTimer;                  //Shows  the  current  preset  value  of  currtime.

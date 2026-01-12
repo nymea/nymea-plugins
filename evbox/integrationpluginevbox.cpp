@@ -259,7 +259,7 @@ void IntegrationPluginEVBox::executeAction(ThingActionInfo *info)
         quint16 maxChargingCurrent = thing->stateValue("maxChargingCurrent").toUInt();
         port->sendCommand(EVBoxPort::Command68, 60, power ? maxChargingCurrent : 0, serial);
     } else if (actionType.name() == "maxChargingCurrent") {
-        int maxChargingCurrent = info->action().paramValue(actionType.id()).toInt();
+        int maxChargingCurrent = qRound(info->action().paramValue(actionType.id()).toDouble());
         port->sendCommand(EVBoxPort::Command68, 60, maxChargingCurrent, serial);
     }
 
@@ -279,7 +279,7 @@ void IntegrationPluginEVBox::finishPendingAction(Thing *thing)
         if (actionType.name() == "power") {
             thing->setStateValue("power", info->action().paramValue(actionType.id()));
         } else if (actionType.name() == "maxChargingCurrent") {
-            thing->setStateValue("maxChargingCurrent", info->action().paramValue(actionType.id()));
+            thing->setStateValue("maxChargingCurrent", qRound(info->action().paramValue(actionType.id()).toDouble()));
         }
         info->finish(Thing::ThingErrorNoError);
     }
