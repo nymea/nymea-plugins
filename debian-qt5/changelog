@@ -1,3 +1,10 @@
+nymea-plugins (1.16.0) noble; urgency=medium
+
+  [ Simon Stürz ]
+  * New plugin: Add OpenCCU based floor heating controller
+
+ -- jenkins <developer@nymea.io>  Wed, 21 Jan 2026 08:50:34 +0100
+
 nymea-plugins (1.14.0) noble; urgency=medium
 
   [ Simon Stürz ]
