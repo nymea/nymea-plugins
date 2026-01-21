@@ -440,6 +440,17 @@ Description: nymea integration plugin for one wire devices
  This package contains the nymea integration plugin for one wire devices.
 
 
+Package: nymea-plugin-openccu
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},  
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for OpenCCU  
+ This package contains the nymea integration plugin for OpenCCU 
+ based floor heating systems. The integration connects to the 
+ xmlapi integration of OpenCCU.
+
+
 Package: nymea-plugin-openuv
 Architecture: any
 Depends: ${shlibs:Depends},
