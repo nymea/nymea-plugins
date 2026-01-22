@@ -451,12 +451,12 @@ void IntegrationPluginKeba::setupKeba(ThingSetupInfo *info, const QHostAddress &
         thing->setStateValue("uptime", report.seconds / 60);
 
         if (thing->thingClassId() == kebaSimpleThingClassId) {
-            thing->setStateValue(kebaSimplePhaseCountStateTypeId, thing->setting(kebaSimpleThingClassId));
+            thing->setStateValue(kebaSimplePhaseCountStateTypeId, thing->setting(kebaSimpleThingClassId).toUInt());
         }
 
         connect(thing, &Thing::settingChanged, thing, [thing](const ParamTypeId &settingsTypeId, const QVariant &value){
             if (settingsTypeId == kebaSimpleSettingsPhaseCountParamTypeId) {
-                thing->setStateValue(kebaSimplePhaseCountStateTypeId, value);
+                thing->setStateValue(kebaSimplePhaseCountStateTypeId, value.toUInt());
             }
         });
     });
