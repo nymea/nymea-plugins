@@ -55,7 +55,7 @@ void IntegrationPluginOpenUv::discoverThings(ThingDiscoveryInfo *info)
     QNetworkRequest request(QUrl("http://ip-api.com/json"));
     QNetworkReply* reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info]() {
+    connect(reply, &QNetworkReply::finished, info, [reply, info]() {
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcOpenUv()) << "Error fetching geolocation from ip-api:" << reply->error() << reply->errorString();
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to fetch data from the internet."));

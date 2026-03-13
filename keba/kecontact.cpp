@@ -25,6 +25,7 @@
 #include "kecontact.h"
 #include "extern-plugininfo.h"
 
+#include <QVariant>
 #include <QJsonDocument>
 
 KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer, QObject *parent) :

@@ -91,7 +91,6 @@ const quint8 modeBoost1 =       0x0C; // at the end it returns to automatic mode
 const quint8 modeBoost2 =       0x0D; // at the end it returns to manual mode
 const quint8 modeBoost3 =       0x0E; // at the end it returns to holiday mode
 
-const quint8 lockOff =           0x00;
 const quint8 windowLockOn =      0x10;
 const quint8 keyLockOn =         0x20;
 const quint8 batteryCriticalOn = 0x80;

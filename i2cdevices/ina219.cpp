@@ -28,6 +28,7 @@
 #include <QtDebug>
 #include <QThread>
 #include <QDebug>
+#include <QVariantMap>
 #include <QJsonDocument>
 
 #include "extern-plugininfo.h"
