@@ -323,7 +323,7 @@ EverestJsonRpcClient::ACChargeStatus EverestJsonRpcClient::parseACChargeStatus(c
 EverestJsonRpcClient::ACChargeParameters EverestJsonRpcClient::parseACChargeParameters(const QVariantMap &acChargeParametersMap)
 {
     EverestJsonRpcClient::ACChargeParameters params;
-    params.maxCurrent = acChargeParametersMap.value("evse_max_current").toInt();
+    params.maxCurrent = acChargeParametersMap.value("evse_max_current").toDouble();
     params.maxPhaseCount = acChargeParametersMap.value("evse_max_phase_count").toInt();
     return params;
 }
