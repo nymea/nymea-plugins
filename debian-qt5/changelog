@@ -1,3 +1,11 @@
+nymea-plugins (1.15.0) noble; urgency=medium
+
+  [ Simon Stürz ]
+  * Fix Qt 6 Clang build issues
+  * EVerest: Fix max charging current AC charge param parsing
+
+ -- jenkins <developer@nymea.io>  Tue, 14 Apr 2026 14:24:07 +0200
+
 nymea-plugins (1.14.2) noble; urgency=medium
 
 
