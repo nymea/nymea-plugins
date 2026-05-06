@@ -15,7 +15,7 @@
                     "createMethods": ["user"],
                     "setupMethod": "userandpassword",
                     "interfaces": [ "account" ],
-                    "providedInterfaces": ["evcharger"],
+                    "providedInterfaces": ["evchargerac"],
                     "stateTypes": [
                         {
                             "id": "568d5896-813e-4f66-b430-ed8c8b1ad8c4",
@@ -39,7 +39,7 @@
                     "name": "charger",
                     "displayName": "Easee charger",
                     "createMethods": ["auto"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "wirelessconnectable"],
+                    "interfaces": ["evchargerac", "smartmeterconsumer", "wirelessconnectable"],
                     "paramTypes": [
                         {
                             "id": "b9f0573e-bf41-45f0-a53e-b2457d51ecb5",

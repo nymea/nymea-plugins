@@ -14,7 +14,7 @@
                     "id": "965cbe0d-088c-42a2-965d-ceafbb8b01e9",
                     "setupMethod": "JustAdd",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": [ "evcharger", "smartmeterconsumer", "networkdevice", "connectable" ],
+                    "interfaces": [ "evchargerac", "smartmeterconsumer", "networkdevice", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "f1f3e9a7-3a35-4089-8869-b9bfd64659e5",
@@ -181,7 +181,7 @@
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Discovery", "User" ],
                     "interfaces": [ "gateway", "networkdevice" ],
-                    "providedInterfaces": [ "evcharger" ],
+                    "providedInterfaces": [ "evchargerac" ],
                     "discoveryParamTypes": [
                         {
                             "id": "cd1cfca6-22f7-4d31-a95f-f642e0e1470f",
@@ -253,7 +253,7 @@
                     "id": "ec47ac6b-e6ec-4a6c-a584-ac6802f79d12",
                     "setupMethod": "JustAdd",
                     "createMethods": ["auto"],
-                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
+                    "interfaces": [ "evchargerac", "smartmeterconsumer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "b9773de0-a4a8-457e-b221-448d299b9e38",
@@ -485,6 +485,5 @@
         }
     ]
 }
-
 
 
