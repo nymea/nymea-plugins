@@ -40,6 +40,7 @@ public:
     EverestJsonRpcReply *setChargingAllowed(bool allowed);
     EverestJsonRpcReply *setACChargingCurrent(double current);
     EverestJsonRpcReply *setACChargingPhaseCount(int phaseCount);
+    EverestJsonRpcReply *setDCChargingPower(double chargingPower);
 
 private:
     EverestJsonRpcClient *m_client = nullptr;

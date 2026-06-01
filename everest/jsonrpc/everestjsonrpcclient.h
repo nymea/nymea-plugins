@@ -102,6 +102,26 @@ public:
     };
     Q_ENUM(EvseState)
 
+    enum EnergyTransferMode {
+        EnergyTransferModeUnknown,
+        EnergyTransferModeAC_single_phase_core,
+        EnergyTransferModeAC_two_phase,
+        EnergyTransferModeAC_three_phase_core,
+        EnergyTransferModeDC_core,
+        EnergyTransferModeDC_extended,
+        EnergyTransferModeDC_combo_core,
+        EnergyTransferModeDC_unique,
+        EnergyTransferModeDC,
+        EnergyTransferModeAC_BPT,
+        EnergyTransferModeAC_BPT_DER,
+        EnergyTransferModeAC_DER,
+        EnergyTransferModeDC_BPT,
+        EnergyTransferModeDC_ACDP,
+        EnergyTransferModeDC_ACDP_BPT,
+        EnergyTransferModeWPT
+    };
+    Q_ENUM(EnergyTransferMode)
+
     // API Objects
 
     typedef struct ChargerInfo {
@@ -123,6 +143,7 @@ public:
         QString description; // optional
         bool bidirectionalCharging = false;
         QList<ConnectorInfo> availableConnectors;
+        QList<EnergyTransferMode> supportedEnergyTransferModes;
     } EVSEInfo;
 
     typedef struct ACChargeStatus {
@@ -139,6 +160,20 @@ public:
         // double nominalFrequency = 0; // Hz
     } ACChargeParameters;
 
+    typedef struct DisplayParameters {
+        int startSoc = -1;
+        int presentSoc = -1;
+        int minimumSoc = -1;
+        int targetSoc = -1;
+        int maximumSoc = -1;
+        int remainingTimeToMinimumSoc = -1;
+        int remainingTimeToTargetSoc = -1;
+        int remainingTimeToMaximumSoc = -1;
+        bool chargingComplete = false;
+        double batteryEnergyCapacity = -1;
+        bool inletHot = false;
+    } DisplayParameters;
+
     typedef struct EVSEStatus {
         double chargedEnergyWh = 0;
         double dischargedEnergyWh = 0;
@@ -153,10 +188,10 @@ public:
 
         ACChargeStatus acChargeStatus; // optional
         ACChargeParameters acChargeParameters; // optional
+        DisplayParameters displayParameters; // optional
         // TODO:
         // o: "dc_charge_param": "$DCChargeParametersObj",
         // o: "dc_charge_status": "$DCChargeLoopObj",
-        // o: display_parameters: "$DisplayParametersObj",
 
     } EVSEStatus;
 
@@ -223,6 +258,7 @@ public:
     EverestJsonRpcReply *evseSetChargingAllowed(int evseIndex, bool allowed);
     EverestJsonRpcReply *evseSetACChargingCurrent(int evseIndex, double current);
     EverestJsonRpcReply *evseSetACChargingPhaseCount(int evseIndex, int phaseCount);
+    EverestJsonRpcReply *evseSetDCChargingPower(int evseIndex, double chargingPower);
 
     // API parser methods
 
@@ -231,6 +267,7 @@ public:
     static ConnectorType parseConnectorType(const QString &connectorTypeString);
     static ChargeProtocol parseChargeProtocol(const QString &chargeProtocolString);
     static EvseState parseEvseState(const QString &evseStateString);
+    static EnergyTransferMode parseEnergyTransferMode(const QString &energyTransferModeString);
 
     // Objects
     static EVSEInfo parseEvseInfo(const QVariantMap &evseInfoMap);
@@ -240,6 +277,7 @@ public:
     static ACChargeParameters parseACChargeParameters(const QVariantMap &acChargeParametersMap);
     static HardwareCapabilities parseHardwareCapabilities(const QVariantMap &hardwareCapabilitiesMap);
     static MeterData parseMeterData(const QVariantMap &meterDataMap);
+    static DisplayParameters parseDisplayParameters(const QVariantMap &displayParametersMap);
 
 public slots:
     void connectToServer(const QUrl &serverUrl);
