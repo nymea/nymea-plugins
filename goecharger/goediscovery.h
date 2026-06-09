@@ -50,9 +50,9 @@ public:
         QString friendlyName;
         QString serialNumber;
         QString firmwareVersion;
-        DiscoveryMethod discoveryMethod;
+        DiscoveryMethod discoveryMethod = DiscoveryMethodNetwork;
         NetworkDeviceInfo networkDeviceInfo; // Network discovery
-        QHostAddress address; // ZeroConf
+        QHostAddress address;
         bool apiAvailableV1 = false;
         bool apiAvailableV2 = false;
     } Result;
