@@ -1,3 +1,11 @@
+nymea-plugins (1.15.1) noble; urgency=medium
+
+  [ Simon Stürz ]
+  * New plugin: Add OpenCCU based floor heating controller
+  * goe: Improve parallel discovery and IP assignment
+
+ -- jenkins <developer@nymea.io>  Wed, 10 Jun 2026 11:15:12 +0200
+
 nymea-plugins (1.15.0) noble; urgency=medium
 
   [ Simon Stürz ]
