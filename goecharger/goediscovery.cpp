@@ -167,7 +167,7 @@ void GoeDiscovery::checkHostAddressApiV1(const QHostAddress &address)
                 GoeDiscovery::Result result;
                 result.serialNumber = responseMap.value("sse").toString();
                 result.firmwareVersion = responseMap.value("fwv").toString();
-                //result.networkDeviceInfo = networkDeviceInfo;
+                result.address = address;
                 result.apiAvailableV1 = true;
                 m_discoveryResults[address] = result;
             }
@@ -214,7 +214,7 @@ void GoeDiscovery::checkHostAddressApiV2(const QHostAddress &address)
             result.manufacturer = responseMap.value("oem").toString();
             result.product = responseMap.value("typ").toString();
             result.friendlyName = responseMap.value("fna").toString();
-            //result.networkDeviceInfo = networkDeviceInfo;
+            result.address = address;
             result.discoveryMethod = DiscoveryMethodNetwork;
             result.apiAvailableV2 = true;
 

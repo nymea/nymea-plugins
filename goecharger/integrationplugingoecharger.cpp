@@ -82,12 +82,13 @@ void IntegrationPluginGoECharger::discoverThings(ThingDiscoveryInfo *info)
             ParamList params;
 
             QString description = "Serial: " + result.serialNumber + ", V: " + result.firmwareVersion;
-            if (result.discoveryMethod == GoeDiscovery::DiscoveryMethodNetwork) {
+            if (result.networkDeviceInfo.isValid()) {
                 params << Param(goeHomeThingMacAddressParamTypeId, result.networkDeviceInfo.thingParamValueMacAddress());
                 params << Param(goeHomeThingHostNameParamTypeId, result.networkDeviceInfo.thingParamValueHostName());
                 params << Param(goeHomeThingAddressParamTypeId, result.networkDeviceInfo.thingParamValueAddress());
                 description.append(" - " + result.networkDeviceInfo.address().toString());
-            } else {
+            } else if (!result.address.isNull()) {
+                params << Param(goeHomeThingAddressParamTypeId, result.address.toString());
                 description.append(" - " + result.address.toString());
             }
 
@@ -575,8 +576,15 @@ QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing, bo
 
 QHostAddress IntegrationPluginGoECharger::getHostAddress(Thing *thing)
 {
-    if (m_monitors.contains(thing))
-        return m_monitors.value(thing)->networkDeviceInfo().address();
+    if (m_monitors.contains(thing)) {
+        QHostAddress address = m_monitors.value(thing)->networkDeviceInfo().address();
+        if (!address.isNull())
+            return address;
+    }
+
+    QHostAddress address(thing->paramValue(goeHomeThingAddressParamTypeId).toString());
+    if (!address.isNull())
+        return address;
 
     foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
         if (GoeDiscovery::isGoeCharger(serviceEntry) && serviceEntry.protocol() == QAbstractSocket::IPv4Protocol) {
@@ -1714,4 +1722,3 @@ void IntegrationPluginGoECharger::markAsDisconnected(Thing *thing)
     thing->setStateValue("currentPowerPhaseC", 0);
     thing->setStateValue("frequency", 0);
 }
-
