@@ -157,6 +157,17 @@
                             "type": "uint"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "ad505c57-6029-40a8-a610-f909e1f61f06",
+                            "name": "stepSize",
+                            "displayName": "Step size",
+                            "type": "uint",
+                            "defaultValue": 1,
+                            "minValue": 1,
+                            "maxValue": 127
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "ade34009-bb6c-41fc-86dc-fc59c9cbca2f",

@@ -205,8 +205,10 @@ void IntegrationPluginEspSomfyRts::executeAction(ThingActionInfo *info)
         }
 
         QNetworkRequest request(somfy->shadeCommandUrl());
+        const QByteArray requestData = QJsonDocument::fromVariant(requestMap).toJson();
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        QNetworkReply *reply = hardwareManager()->networkManager()->put(request, QJsonDocument::fromVariant(requestMap).toJson());
+        qCDebug(dcESPSomfyRTS()) << "Executing command on" << info->thing() << qUtf8Printable(requestData);
+        QNetworkReply *reply = hardwareManager()->networkManager()->put(request, requestData);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [reply, info](){
 
@@ -260,6 +262,12 @@ void IntegrationPluginEspSomfyRts::executeAction(ThingActionInfo *info)
             int percentage = calculatePercentageFromAngle(minValue, maxValue, angle);
             qCDebug(dcESPSomfyRTS()) << "######" << percentage;
             requestMap.insert("target", percentage);
+        } else if (action.actionTypeId() == venetianBlindStepUpActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandStepUp));
+            requestMap.insert("stepSize", thing->setting(venetianBlindSettingsStepSizeParamTypeId).toUInt());
+        } else if (action.actionTypeId() == venetianBlindStepDownActionTypeId) {
+            requestMap.insert("command", EspSomfyRts::getShadeCommandString(EspSomfyRts::ShadeCommandStepDown));
+            requestMap.insert("stepSize", thing->setting(venetianBlindSettingsStepSizeParamTypeId).toUInt());
         }
 
         QNetworkRequest request(url);
