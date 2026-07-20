@@ -28,7 +28,7 @@ FroniusNetworkReply::~FroniusNetworkReply()
 {
     if (m_networkReply) {
         // We don't need the finished signal any more, object gets deleted
-        disconnect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::finished);
+        disconnect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::handleFinished);
 
         if (m_networkReply->isRunning()) {
             // Abort the reply, we are not interested in it any more
@@ -54,6 +54,26 @@ QNetworkReply *FroniusNetworkReply::networkReply() const
     return m_networkReply;
 }
 
+QByteArray FroniusNetworkReply::readAll()
+{
+    return m_networkReply ? m_networkReply->readAll() : QByteArray();
+}
+
+QNetworkReply::NetworkError FroniusNetworkReply::error() const
+{
+    return m_networkReply ? m_networkReply->error() : m_error;
+}
+
+QString FroniusNetworkReply::errorString() const
+{
+    return m_networkReply ? m_networkReply->errorString() : m_errorString;
+}
+
+QUrl FroniusNetworkReply::url() const
+{
+    return m_networkReply ? m_networkReply->url() : m_request.url();
+}
+
 FroniusNetworkReply::FroniusNetworkReply(const QNetworkRequest &request, QObject *parent) :
     QObject(parent),
     m_request(request)
@@ -66,6 +86,39 @@ void FroniusNetworkReply::setNetworkReply(QNetworkReply *networkReply)
     m_networkReply = networkReply;
 
     // The QNetworkReply will be deleted in the destructor if set
-    connect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::finished);
+    connect(m_networkReply, &QNetworkReply::finished, this, &FroniusNetworkReply::handleFinished);
 }
 
+void FroniusNetworkReply::cancel()
+{
+    if (m_finished)
+        return;
+
+    m_canceled = true;
+
+    if (m_networkReply) {
+        m_networkReply->abort();
+        if (!m_finished)
+            handleFinished();
+        return;
+    }
+
+    m_error = QNetworkReply::OperationCanceledError;
+    m_errorString = tr("Request canceled because the device address changed.");
+    m_finished = true;
+    emit finished();
+}
+
+bool FroniusNetworkReply::wasCanceled() const
+{
+    return m_canceled;
+}
+
+void FroniusNetworkReply::handleFinished()
+{
+    if (m_finished)
+        return;
+
+    m_finished = true;
+    emit finished();
+}

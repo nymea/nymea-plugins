@@ -74,12 +74,12 @@ void FroniusDiscovery::checkHostAddress(const QHostAddress &address)
 
     FroniusNetworkReply *reply = connection->getVersion();
     connect(reply, &FroniusNetworkReply::finished, this, [=] {
-        QByteArray data = reply->networkReply()->readAll();
-        if (reply->networkReply()->error() != QNetworkReply::NoError) {
-            if (reply->networkReply()->error() == QNetworkReply::ContentNotFoundError) {
+        QByteArray data = reply->readAll();
+        if (reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::ContentNotFoundError) {
                 qCInfo(dcFronius()) << "Discovery: The device on" << address.toString() << "does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device.";
             } else {
-                qCDebug(dcFronius()) << "Discovery: Reply finished with error on" << address.toString() << reply->networkReply()->errorString();
+                qCDebug(dcFronius()) << "Discovery: Reply finished with error on" << address.toString() << reply->errorString();
             }
             cleanupConnection(connection);
             return;

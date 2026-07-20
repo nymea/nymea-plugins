@@ -33,7 +33,8 @@ FroniusSolarConnection::FroniusSolarConnection(NetworkAccessManager *networkMana
     m_networkManager(networkManager),
     m_address(address)
 {
-
+    m_requestDispatchTimer.setSingleShot(true);
+    connect(&m_requestDispatchTimer, &QTimer::timeout, this, &FroniusSolarConnection::sendNextRequest);
 }
 
 QHostAddress FroniusSolarConnection::address() const
@@ -49,17 +50,14 @@ void FroniusSolarConnection::setAddress(const QHostAddress &address)
     m_address = address;
 
     // The address has changed, let's clean up any queue and refresh
+    m_requestDispatchTimer.stop();
+    cancelPendingRequests();
+    resetCustomNetworkManager();
+    m_errorCount = 0;
+    m_errorOperationCanceledCount = 0;
+    m_availabilityErrorCount = 0;
 
-    // Note: the destructor will take care about the cleanup of any pending replies
-    qDeleteAll(m_requestQueue);
-    m_requestQueue.clear();
-
-    if (m_currentReply) {
-        m_currentReply->deleteLater();
-        m_currentReply = nullptr;
-    }
-
-    if (m_address.isNull()) {
+    if (m_address.isNull() && m_available) {
         m_available = false;
         emit availableChanged(m_available);
     }
@@ -72,7 +70,7 @@ bool FroniusSolarConnection::available() const
 
 bool FroniusSolarConnection::busy() const
 {
-    return m_requestQueue.count() > 1;
+    return m_currentReply || !m_requestQueue.isEmpty();
 }
 
 FroniusNetworkReply *FroniusSolarConnection::getVersion()
@@ -106,25 +104,23 @@ FroniusNetworkReply *FroniusSolarConnection::getActiveDevices()
 
     // Note: we use this request for detecting if the logger is available or not.
     // Some other requests are only available if the device actually is loaded
-    connect(reply, &FroniusNetworkReply::finished, this, [=](){
-        if (reply->networkReply()->error() == QNetworkReply::NoError) {
+    connect(reply, &FroniusNetworkReply::finished, this, [this, reply](){
+        if (reply->wasCanceled())
+            return;
+
+        if (reply->error() == QNetworkReply::NoError) {
+            m_availabilityErrorCount = 0;
+
             // Reply was successfully, we can communicate
             if (!m_available) {
                 qCDebug(dcFronius()) << "Connection: the connection is now available";
                 m_available = true;
                 emit availableChanged(m_available);
-
-                // Destroy any pending requests
-                qDeleteAll(m_requestQueue);
-                m_requestQueue.clear();
             }
-        } else {
-            // There have been multiple errors in a row, seems like we not available any more
-            if (m_available && m_errorCount >= m_errorCountLimit) {
-                qCDebug(dcFronius()) << "Connection: the connection is not available any more:" << reply->networkReply()->errorString();
-                m_available = false;
-                emit availableChanged(m_available);
-            }
+        } else if (++m_availabilityErrorCount >= m_errorCountLimit && m_available) {
+            qCWarning(dcFronius()) << "Connection: active-device probe failed" << m_availabilityErrorCount << "times. Marking the connection unavailable:" << reply->errorString();
+            m_available = false;
+            emit availableChanged(m_available);
         }
     });
 
@@ -210,6 +206,8 @@ QNetworkRequest FroniusSolarConnection::buildRequest(const QUrl &url)
     request.setUrl(url);
     // Note: some inverter stop accepting requests, this might help
     request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, false);
+    request.setTransferTimeout(requestTimeout);
+    request.setRawHeader("Connection", "close");
     return request;
 }
 
@@ -218,10 +216,14 @@ void FroniusSolarConnection::sendNextRequest()
     if (m_currentReply)
         return;
 
+    if (m_requestDispatchTimer.isActive())
+        return;
+
     if (m_requestQueue.isEmpty())
         return;
 
     m_currentReply = m_requestQueue.dequeue();
+    FroniusNetworkReply *reply = m_currentReply;
 
     if (m_useCustomNetworkManager) {
         qCDebug(dcFronius()) << "Connection: --> Sending request using custom network manager (queue: " << m_requestQueue.size() << "): " << m_currentReply->request().url().toString();
@@ -236,15 +238,21 @@ void FroniusSolarConnection::sendNextRequest()
     }
 
 
-    connect(m_currentReply, &FroniusNetworkReply::finished, this, [=](){
+    connect(reply, &FroniusNetworkReply::finished, this, [this, reply](){
+
+        // The address may have changed while this request was running.
+        if (reply != m_currentReply) {
+            reply->deleteLater();
+            return;
+        }
 
         // Note: the network reply will be deleted in the destructor
-        m_currentReply->deleteLater();
+        reply->deleteLater();
 
-        if (m_currentReply->networkReply()->error() != QNetworkReply::NoError) {
+        if (reply->error() != QNetworkReply::NoError) {
             m_errorCount++;
-            qCWarning(dcFronius()).nospace() << "Connection: <--  Request finished with error (count: " << m_errorCount << ") " << m_currentReply->networkReply()->error() << " for url " << m_currentReply->request().url().toString();
-            if (m_currentReply->networkReply()->error() == QNetworkReply::OperationCanceledError) {
+            qCWarning(dcFronius()).nospace() << "Connection: <-- Request finished with error (count: " << m_errorCount << ") " << reply->error() << " (" << reply->errorString() << ") for url " << reply->request().url().toString();
+            if (reply->error() == QNetworkReply::OperationCanceledError) {
                 m_errorOperationCanceledCount++;
                 if (!m_useCustomNetworkManager && m_errorOperationCanceledCount >= m_errorOperationCanceledCountLimit) {
                     qCWarning(dcFronius()) << "Received" << m_errorOperationCanceledCountLimit << "in a row, skipping to internal network access manager. This is a workaround in order to free all requests after each reply.";
@@ -252,7 +260,7 @@ void FroniusSolarConnection::sendNextRequest()
                 }
             }
         } else {
-            qCDebug(dcFronius()) << "Connection: <-- Request finished successfully for" << m_currentReply->request().url().toString();
+            qCDebug(dcFronius()) << "Connection: <-- Request finished successfully for" << reply->request().url().toString();
             m_errorCount = 0;
             m_errorOperationCanceledCount = 0;
         }
@@ -260,12 +268,36 @@ void FroniusSolarConnection::sendNextRequest()
         m_currentReply = nullptr;
 
         // Note: this is a workaround for some fronius devices, we recreate the networkaccessmanager after each request
-        if (m_useCustomNetworkManager && m_customNetworkManager) {
-            m_customNetworkManager->deleteLater();
-            m_customNetworkManager = nullptr;
-        }
+        resetCustomNetworkManager();
 
-        // Wait some time until we send the next request
-        QTimer::singleShot(500, this, &FroniusSolarConnection::sendNextRequest);
+        // Back off after repeated failures to give the Fronius webserver time to recover.
+        const int nextRequestDelay = m_errorCount >= m_errorCountLimit ? unavailableRetryInterval : requestInterval;
+        qCDebug(dcFronius()) << "Connection: next request in" << nextRequestDelay << "ms (queue:" << m_requestQueue.size() << ")";
+        m_requestDispatchTimer.start(nextRequestDelay);
     });
+}
+
+void FroniusSolarConnection::cancelPendingRequests()
+{
+    if (m_currentReply) {
+        FroniusNetworkReply *reply = m_currentReply;
+        m_currentReply = nullptr;
+        reply->cancel();
+        reply->deleteLater();
+    }
+
+    while (!m_requestQueue.isEmpty()) {
+        FroniusNetworkReply *reply = m_requestQueue.dequeue();
+        reply->cancel();
+        reply->deleteLater();
+    }
+}
+
+void FroniusSolarConnection::resetCustomNetworkManager()
+{
+    if (!m_customNetworkManager)
+        return;
+
+    m_customNetworkManager->deleteLater();
+    m_customNetworkManager = nullptr;
 }

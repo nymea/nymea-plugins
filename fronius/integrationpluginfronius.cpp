@@ -157,10 +157,10 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
             // Verify the version
             FroniusNetworkReply *reply = connection->getVersion();
             connect(reply, &FroniusNetworkReply::finished, info, [=] {
-                QByteArray data = reply->networkReply()->readAll();
-                if (reply->networkReply()->error() != QNetworkReply::NoError) {
-                    qCWarning(dcFronius()) << "Network request error:" << reply->networkReply()->error() << reply->networkReply()->errorString() << reply->networkReply()->url();
-                    if (reply->networkReply()->error() == QNetworkReply::ContentNotFoundError) {
+                QByteArray data = reply->readAll();
+                if (reply->error() != QNetworkReply::NoError) {
+                    qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->url();
+                    if (reply->error() == QNetworkReply::ContentNotFoundError) {
                         info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device does not reply to our requests. Please verify that the Fronius Solar API is enabled on the device."));
                     } else {
                         info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The device is not reachable."));
@@ -292,7 +292,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
     // Note: this call will be used to monitor the available state of the connection internally
     FroniusNetworkReply *reply = connection->getActiveDevices();
     connect(reply, &FroniusNetworkReply::finished, this, [=]() {
-        if (reply->networkReply()->error() != QNetworkReply::NoError) {
+        if (reply->error() != QNetworkReply::NoError) {
             // Note: the connection warns about any errors if available changed
             return;
         }
@@ -301,7 +301,7 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
         if (!connectionThing)
             return;
 
-        QByteArray data = reply->networkReply()->readAll();
+        QByteArray data = reply->readAll();
 
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -342,10 +342,10 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId.toInt());
                 connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError)
+                    if (realtimeDataReply->error() != QNetworkReply::NoError)
                         return;
 
-                    QByteArray data = realtimeDataReply->networkReply()->readAll();
+                    QByteArray data = realtimeDataReply->readAll();
 
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -397,10 +397,10 @@ void IntegrationPluginFronius::refreshConnection(FroniusSolarConnection *connect
                 // Get the meter realtime data for details
                 FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId.toInt());
                 connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-                    if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError)
+                    if (realtimeDataReply->error() != QNetworkReply::NoError)
                         return;
 
-                    QByteArray data = realtimeDataReply->networkReply()->readAll();
+                    QByteArray data = realtimeDataReply->readAll();
 
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -470,10 +470,10 @@ void IntegrationPluginFronius::updatePowerFlow(FroniusSolarConnection *connectio
     // to make sure the sum is correct. Battery seems to be feeded DC to DC before the AC power convertion
     FroniusNetworkReply *powerFlowReply = connection->getPowerFlowRealtimeData();
     connect(powerFlowReply, &FroniusNetworkReply::finished, this, [=]() {
-        if (powerFlowReply->networkReply()->error() != QNetworkReply::NoError)
+        if (powerFlowReply->error() != QNetworkReply::NoError)
             return;
 
-        QByteArray data = powerFlowReply->networkReply()->readAll();
+        QByteArray data = powerFlowReply->readAll();
 
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -541,7 +541,7 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
         // Get the inverter realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getInverterRealtimeData(inverterId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+            if (realtimeDataReply->error() != QNetworkReply::NoError) {
                 m_thingRequestErrorCounter[inverterThing] = m_thingRequestErrorCounter.value(inverterThing, 0) + 1;
                 if (m_thingRequestErrorCounter.value(inverterThing) >= m_thingRequestErrorCountLimit) {
                     if (inverterThing->stateValue("connected").toBool()) {
@@ -556,7 +556,7 @@ void IntegrationPluginFronius::updateInverters(FroniusSolarConnection *connectio
             // Reset the error counter on a successfull refresh
             m_thingRequestErrorCounter[inverterThing] = 0;
 
-            QByteArray data = realtimeDataReply->networkReply()->readAll();
+            QByteArray data = realtimeDataReply->readAll();
 
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -614,7 +614,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
         // Get the inverter realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getMeterRealtimeData(meterId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+            if (realtimeDataReply->error() != QNetworkReply::NoError) {
                 m_thingRequestErrorCounter[meterThing] = m_thingRequestErrorCounter.value(meterThing, 0) + 1;
                 if (m_thingRequestErrorCounter.value(meterThing) >= m_thingRequestErrorCountLimit) {
                     if (meterThing->stateValue("connected").toBool()) {
@@ -629,7 +629,7 @@ void IntegrationPluginFronius::updateMeters(FroniusSolarConnection *connection)
             // Reset the error counter on a successfull refresh
             m_thingRequestErrorCounter[meterThing] = 0;
 
-            QByteArray data = realtimeDataReply->networkReply()->readAll();
+            QByteArray data = realtimeDataReply->readAll();
 
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -731,7 +731,7 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
         // Get the storage realtime data
         FroniusNetworkReply *realtimeDataReply = connection->getStorageRealtimeData(storageId);
         connect(realtimeDataReply, &FroniusNetworkReply::finished, this, [=]() {
-            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+            if (realtimeDataReply->error() != QNetworkReply::NoError) {
                 m_thingRequestErrorCounter[storageThing] = m_thingRequestErrorCounter.value(storageThing, 0) + 1;
                 if (m_thingRequestErrorCounter.value(storageThing) >= m_thingRequestErrorCountLimit) {
                     if (storageThing->stateValue("connected").toBool()) {
@@ -746,13 +746,13 @@ void IntegrationPluginFronius::updateStorages(FroniusSolarConnection *connection
             // Reset the error counter on a successfull refresh
             m_thingRequestErrorCounter[storageThing] = 0;
 
-            if (realtimeDataReply->networkReply()->error() != QNetworkReply::NoError) {
+            if (realtimeDataReply->error() != QNetworkReply::NoError) {
                 // Thing does not seem to be reachable
                 markStorageAsDisconnected(storageThing);
                 return;
             }
 
-            QByteArray data = realtimeDataReply->networkReply()->readAll();
+            QByteArray data = realtimeDataReply->readAll();
 
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -821,4 +821,3 @@ void IntegrationPluginFronius::markStorageAsDisconnected(Thing *thing)
     thing->setStateValue("chargingState", "idle");
     // Note: do not reset the energy counters since they are always counting up until reset on the device
 }
-

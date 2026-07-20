@@ -29,6 +29,7 @@
 #include <QQueue>
 #include <QHostAddress>
 #include <QNetworkAccessManager>
+#include <QTimer>
 
 #include <network/networkaccessmanager.h>
 
@@ -64,6 +65,10 @@ private:
 
     bool m_available = false;
 
+    static constexpr int requestInterval = 4000;
+    static constexpr int requestTimeout = 15000;
+    static constexpr int unavailableRetryInterval = 60000;
+
     // Fallback solution for dead nam requests, this happens on some platforms
     // Note: we enable for now the custom network access manager
     // Some fronius inverters keep the connection alive and get stuck somehow.
@@ -78,13 +83,17 @@ private:
     uint m_errorOperationCanceledCountLimit = 3;
     uint m_errorCount = 0;
     uint m_errorCountLimit = 5;
+    uint m_availabilityErrorCount = 0;
 
     // Request queue to prevent overloading the device with requests
     FroniusNetworkReply *m_currentReply = nullptr;
     QQueue<FroniusNetworkReply *> m_requestQueue;
+    QTimer m_requestDispatchTimer;
 
     QNetworkRequest buildRequest(const QUrl &url);
 
+    void cancelPendingRequests();
+    void resetCustomNetworkManager();
     void sendNextRequest();
 
 };
