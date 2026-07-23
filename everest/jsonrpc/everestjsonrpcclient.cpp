@@ -239,6 +239,24 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseSetACChargingPhaseCount(int evseI
     return reply;
 }
 
+EverestJsonRpcReply *EverestJsonRpcClient::evseSetDCChargingPower(int evseIndex, double chargingPower)
+{
+    QVariantMap params;
+    params.insert("evse_index", evseIndex);
+    params.insert("max_power", chargingPower);
+
+    EverestJsonRpcReply *reply = createReply("EVSE.SetDCChargingPower", params);
+    qCDebug(dcEverest()) << "Calling" << reply->method() << params;
+    sendRequest(reply);
+    return reply;
+}
+
+EverestJsonRpcClient::EnergyTransferMode EverestJsonRpcClient::parseEnergyTransferMode(const QString &energyTransferModeString)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<EnergyTransferMode>();
+    return static_cast<EnergyTransferMode>(metaEnum.keyToValue(QString("EnergyTransferMode").append(energyTransferModeString).toUtf8()));
+}
+
 EverestJsonRpcClient::ResponseError EverestJsonRpcClient::parseResponseError(const QString &responseErrorString)
 {
     QMetaEnum metaEnum = QMetaEnum::fromType<ResponseError>();
@@ -271,6 +289,9 @@ EverestJsonRpcClient::EVSEInfo EverestJsonRpcClient::parseEvseInfo(const QVarian
     evseInfo.bidirectionalCharging = evseInfoMap.value("bidi_charging").toBool();
     foreach (const QVariant &connectorInfoVariant, evseInfoMap.value("available_connectors").toList()) {
         evseInfo.availableConnectors.append(parseConnectorInfo(connectorInfoVariant.toMap()));
+    }
+    foreach (const QVariant &energyTransferModeVariant, evseInfoMap.value("supported_energy_transfer_modes").toList()) {
+        evseInfo.supportedEnergyTransferModes.append(parseEnergyTransferMode(energyTransferModeVariant.toString()));
     }
     return evseInfo;
 }
@@ -309,6 +330,10 @@ EverestJsonRpcClient::EVSEStatus EverestJsonRpcClient::parseEvseStatus(const QVa
     // optional
     if (evseStatusMap.contains("ac_charge_param"))
         evseStatus.acChargeParameters = EverestJsonRpcClient::parseACChargeParameters(evseStatusMap.value("ac_charge_param").toMap());
+
+    // optional
+    if (evseStatusMap.contains("display_parameters"))
+        evseStatus.displayParameters = EverestJsonRpcClient::parseDisplayParameters(evseStatusMap.value("display_parameters").toMap());
 
     return evseStatus;
 }
@@ -401,6 +426,39 @@ EverestJsonRpcClient::MeterData EverestJsonRpcClient::parseMeterData(const QVari
     }
 
     return meterData;
+}
+
+EverestJsonRpcClient::DisplayParameters EverestJsonRpcClient::parseDisplayParameters(const QVariantMap &displayParametersMap)
+{
+    // As of now (EVerest 2026.02.0) the display paraters are not completely defined yet and marked as incomplete.
+    // Treat all properties as optional until the object is specified upstream.
+
+    DisplayParameters displayParameters;
+    if (displayParametersMap.contains("start_soc")) {
+        displayParameters.startSoc = displayParametersMap.value("start_soc").toInt() ;
+    } else if (displayParametersMap.contains("present_soc")) {
+        displayParameters.presentSoc = displayParametersMap.value("present_soc").toInt();
+    } else if (displayParametersMap.contains("minimum_soc")) {
+        displayParameters.minimumSoc = displayParametersMap.value("minimum_soc").toInt();
+    } else if (displayParametersMap.contains("target_soc")) {
+        displayParameters.targetSoc = displayParametersMap.value("target_soc").toInt();
+    } else if (displayParametersMap.contains("maximum_soc")) {
+        displayParameters.maximumSoc = displayParametersMap.value("maximum_soc").toInt();
+    } else if (displayParametersMap.contains("remaining_time_to_minimum_soc")) {
+        displayParameters.remainingTimeToMinimumSoc = displayParametersMap.value("remaining_time_to_minimum_soc").toInt();
+    } else if (displayParametersMap.contains("remaining_time_to_target_soc")) {
+        displayParameters.remainingTimeToTargetSoc = displayParametersMap.value("remaining_time_to_target_soc").toInt();
+    } else if (displayParametersMap.contains("remaining_time_to_maximum_soc")) {
+        displayParameters.remainingTimeToMaximumSoc = displayParametersMap.value("remaining_time_to_maximum_soc").toInt();
+    } else if (displayParametersMap.contains("charging_complete")) {
+        displayParameters.chargingComplete = displayParametersMap.value("charging_complete").toBool();
+    } else if (displayParametersMap.contains("battery_energy_capacity")) {
+        displayParameters.batteryEnergyCapacity = displayParametersMap.value("battery_energy_capacity").toDouble();
+    } else if (displayParametersMap.contains("inlet_hot")) {
+        displayParameters.inletHot = displayParametersMap.value("inlet_hot").toBool();
+    }
+
+    return displayParameters;
 }
 
 void EverestJsonRpcClient::connectToServer(const QUrl &serverUrl)

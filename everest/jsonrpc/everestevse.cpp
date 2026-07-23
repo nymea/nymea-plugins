@@ -96,12 +96,16 @@ EverestJsonRpcReply *EverestEvse::setACChargingPhaseCount(int phaseCount)
     return m_client->evseSetACChargingPhaseCount(m_index, phaseCount);
 }
 
+EverestJsonRpcReply *EverestEvse::setDCChargingPower(double chargingPower)
+{
+    return m_client->evseSetDCChargingPower(m_index, chargingPower);
+}
+
 void EverestEvse::initialize()
 {
     qCDebug(dcEverest()) << "Evse: Starting to initialize the data for" << m_thing->name();
 
     // Fetch all initial data for this device, once done we get notifications on data changes
-
 
     EverestJsonRpcReply *reply = m_client->evseGetInfo(m_index);
     connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
@@ -166,6 +170,7 @@ void EverestEvse::initialize()
                 // Store data, thy will be processed once all replies arrived
                 m_evseStatus = EverestJsonRpcClient::parseEvseStatus(result.value("status").toMap());
 
+
                 EverestJsonRpcReply *reply = m_client->evseGetMeterData(m_index);
                 connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
                 connect(reply, &EverestJsonRpcReply::finished, this, [this, reply](){
@@ -219,6 +224,25 @@ void EverestEvse::processEvseStatus()
         if (m_evseStatus.acChargeParameters.maxCurrent > 0)
             m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
 
+    } else if (m_thing->thingClassId() == everestChargerDcThingClassId) {
+
+        m_thing->setStateValue(everestChargerDcPowerStateTypeId, m_evseStatus.chargingAllowed);
+        m_thing->setStateValue(everestChargerDcSessionEnergyStateTypeId, m_evseStatus.chargedEnergyWh / 1000.0);
+        m_thing->setStateValue(everestChargerDcStateStateTypeId, m_evseStatus.evseStateString);
+        m_thing->setStateValue(everestChargerDcChargingStateTypeId, m_evseStatus.evseState == EverestJsonRpcClient::EvseStateCharging);
+        m_thing->setStateValue(everestChargerDcPluggedInStateTypeId, m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged);
+
+
+        if (m_evseStatus.evseState == EverestJsonRpcClient::EvseStateCharging) {
+            if (m_thing->stateValue(everestChargerDcCurrentPowerStateTypeId).toDouble() > 0) {
+                m_thing->setStateValue(everestChargerDcChargingStateStateTypeId, "charging");
+            } else {
+                m_thing->setStateValue(everestChargerDcChargingStateStateTypeId, "discharging");
+            }
+        } else {
+            m_thing->setStateValue(everestChargerDcChargingStateStateTypeId, "idle");
+        }
+
     }
 }
 
@@ -258,5 +282,23 @@ void EverestEvse::processMeterData()
         m_thing->setStateValue(everestChargerAcVoltagePhaseCStateTypeId, m_meterData.voltageL3);
 
         m_thing->setStateValue(everestChargerAcTotalEnergyConsumedStateTypeId, m_meterData.energyImportedTotal / 1000.0);
+    } else if (m_thing->thingClassId() == everestChargerDcThingClassId) {
+
+        m_thing->setStateValue(everestChargerDcCurrentPowerStateTypeId, m_meterData.powerTotal);
+
+        m_thing->setStateValue(everestChargerDcCurrentPowerPhaseAStateTypeId, m_meterData.powerL1);
+        m_thing->setStateValue(everestChargerDcCurrentPowerPhaseBStateTypeId, m_meterData.powerL2);
+        m_thing->setStateValue(everestChargerDcCurrentPowerPhaseCStateTypeId, m_meterData.powerL3);
+
+        m_thing->setStateValue(everestChargerDcCurrentPhaseAStateTypeId, m_meterData.currentL1);
+        m_thing->setStateValue(everestChargerDcCurrentPhaseBStateTypeId, m_meterData.currentL2);
+        m_thing->setStateValue(everestChargerDcCurrentPhaseCStateTypeId, m_meterData.currentL3);
+
+        m_thing->setStateValue(everestChargerDcVoltagePhaseAStateTypeId, m_meterData.voltageL1);
+        m_thing->setStateValue(everestChargerDcVoltagePhaseBStateTypeId, m_meterData.voltageL2);
+        m_thing->setStateValue(everestChargerDcVoltagePhaseCStateTypeId, m_meterData.voltageL3);
+
+        m_thing->setStateValue(everestChargerDcTotalEnergyConsumedStateTypeId, m_meterData.energyImportedTotal / 1000.0);
+        m_thing->setStateValue(everestChargerDcTotalEnergyProducedStateTypeId, m_meterData.energyExportedTotal/ 1000.0);
     }
 }

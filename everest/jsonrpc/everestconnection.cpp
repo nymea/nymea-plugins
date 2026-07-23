@@ -106,6 +106,9 @@ void EverestConnection::setMonitor(NetworkDeviceMonitor *monitor)
     if (m_monitor) {
         connect(m_monitor, &NetworkDeviceMonitor::reachableChanged, this, &EverestConnection::onMonitorReachableChanged);
     }
+
+    if (m_monitor->reachable())
+        onMonitorReachableChanged(true);
 }
 
 void EverestConnection::start()

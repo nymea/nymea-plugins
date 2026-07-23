@@ -408,13 +408,17 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
             if (available) {
                 thing->setStateValue(everestConnectionApiVersionStateTypeId, connection->client()->apiVersion());
 
-                // Sync things with availabe EvseInfos
+                // Sync things with availabe EvseInfos from this connection
 
+                QList<int> indexList;
                 ThingDescriptors descriptors;
                 qCDebug(dcEverest()) << "The client is now available, synching things...";
+
+                // First check if we have a thing for each index, if not, create the thing for it
                 foreach (const EverestJsonRpcClient::EVSEInfo &evseInfo, connection->client()->evseInfos()) {
 
-                    // FIXME: somehow we need to now if this evse is AC or DC in order to spawn the right child thingclass.
+                    // Collect all EVSE index in onder to check later if we have a thing for a dissapeard index.
+                    indexList.append(evseInfo.index);
 
                     // Check if we already have a child device for this index
                     bool alreadyAdded = false;
@@ -427,19 +431,42 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                     }
 
                     if (!alreadyAdded) {
-                        qCDebug(dcEverest()) << "-> Adding new discovered AC charger on" << connection->client()->serverUrl();
-                        ThingDescriptor descriptor(everestChargerAcThingClassId, evseInfo.id, evseInfo.description, thing->id());
-                        descriptor.setParams(ParamList() << Param(everestChargerAcThingIndexParamTypeId, evseInfo.index));
-                        descriptors.append(descriptor);
+                        if (evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_ACDP)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_ACDP_BPT)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_BPT)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_combo_core)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_core)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_extended)
+                            || evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_unique)) {
+
+                            qCDebug(dcEverest()) << "-> Adding new discovered DC charger on" << connection->client()->serverUrl();
+                            ThingDescriptor descriptor(everestChargerDcThingClassId, evseInfo.id, evseInfo.description, thing->id());
+                            descriptor.setParams(ParamList() << Param(everestChargerDcThingIndexParamTypeId, evseInfo.index));
+                            descriptors.append(descriptor);
+                        } else {
+                            // If not a DC charger, default to AC
+                            qCDebug(dcEverest()) << "-> Adding new discovered AC charger on" << connection->client()->serverUrl();
+                            ThingDescriptor descriptor(everestChargerAcThingClassId, evseInfo.id, evseInfo.description, thing->id());
+                            descriptor.setParams(ParamList() << Param(everestChargerAcThingIndexParamTypeId, evseInfo.index));
+                            descriptors.append(descriptor);
+                        }
                     }
                 }
 
-                // TODO: evaluate if any thing dissapeared
+                // Check if we have things for an index which does not exist for this connection any more
+                QList<ThingId> thingIdsToRemove;
+                foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+                    int thingIndex = childThing->paramValue("index").toInt();
+                    if (!indexList.contains(thingIndex)) {
+                        qCDebug(dcEverest()) << "Removing thing" << childThing->name() << "because the index" << thingIndex << "does not exist any more on this connection.";
+                        emit autoThingDisappeared(childThing->id());
+                    }
+                }
 
                 if (!descriptors.isEmpty()) {
                     emit autoThingsAppeared(descriptors);
                 }
-
             }
         });
 
@@ -447,7 +474,7 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
         connection->start();
         return;
-    } else if (thing->thingClassId() == everestChargerAcThingClassId) {
+    } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
 
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
@@ -601,8 +628,78 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
                     info->finish(Thing::ThingErrorHardwareFailure);
                     return;
                 }
-
                 info->thing()->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, phaseCount);
+                info->finish(Thing::ThingErrorNoError);
+            });
+        }
+
+        return;
+    }  else if (info->thing()->thingClassId() == everestChargerDcThingClassId) {
+        Thing *thing = info->thing();
+        Thing *parentThing = myThings().findById(thing->parentId());
+        EverestConnection *connection = m_everstConnections.value(parentThing);
+        if (!connection) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        if (!thing->stateValue(everestChargerDcConnectedStateTypeId).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        EverestEvse *evse = connection->getEvse(thing);
+        if (!evse) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+
+        if (info->action().actionTypeId() == everestChargerDcPowerActionTypeId) {
+            bool power = info->action().paramValue(everestChargerDcPowerActionPowerParamTypeId).toBool();
+            qCDebug(dcEverest()) << "Execute power action" << power;
+            EverestJsonRpcReply *reply = evse->setChargingAllowed(power) ;
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [info, reply, power](){
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with an error" << reply->method() << error;
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                qCDebug(dcEverest()) << "Execute power action finished successfully" << reply->method() << error;
+                info->thing()->setStateValue(everestChargerDcPowerStateTypeId, power);
+                info->finish(Thing::ThingErrorNoError);
+            });
+        } else if (info->action().actionTypeId() == everestChargerDcChargingPowerActionTypeId) {
+            double chargingPower = info->action().paramValue(everestChargerDcChargingPowerActionChargingPowerParamTypeId).toDouble();
+            qCDebug(dcEverest()) << "Execute action set max charging power" << chargingPower << "[W]";
+            EverestJsonRpcReply *reply = evse->setDCChargingPower(chargingPower) ;
+            connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
+            connect(reply, &EverestJsonRpcReply::finished, this, [info, reply, chargingPower](){
+                if (reply->error()) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with error" << reply->error();
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                QVariantMap result = reply->response().value("result").toMap();
+                EverestJsonRpcClient::ResponseError error = EverestJsonRpcClient::parseResponseError(result.value("error").toString());
+                if (error) {
+                    qCWarning(dcEverest()) << "Execute action reply finished with an error" << reply->method() << error;
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                    return;
+                }
+
+                qCDebug(dcEverest()) << "Execute power set chargingn power finished successfully" << reply->method() << error;
+                info->thing()->setStateValue(everestChargerDcChargingPowerStateTypeId, chargingPower);
                 info->finish(Thing::ThingErrorNoError);
             });
         }
@@ -634,7 +731,7 @@ void IntegrationPluginEverest::thingRemoved(Thing *thing)
         }
     } else if (thing->thingClassId() == everestConnectionThingClassId) {
         m_everstConnections.take(thing)->deleteLater();
-    } else if (thing->thingClassId() == everestChargerAcThingClassId) {
+    } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
         if (!connection)
@@ -643,5 +740,3 @@ void IntegrationPluginEverest::thingRemoved(Thing *thing)
         connection->removeThing(thing);
     }
 }
-
-
