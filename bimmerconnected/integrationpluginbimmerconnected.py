@@ -172,10 +172,6 @@ def pollService():
                 vehicle.status.charging_level_hv,
             )
             thing.setStateValue(
-                vehiclePluggedInStateTypeId,
-                vehicle.status.connection_status == "CONNECTED",
-            )
-            thing.setStateValue(
                 vehicleChargingStateStateTypeId,
                 "charging"
                 if vehicle.status.charging_status == ChargingState.CHARGING
@@ -184,14 +180,7 @@ def pollService():
 
 
 def executeAction(info):
-    if info.actionTypeId == vehicleCapacityActionTypeId:
-        info.thing.setStateValue(
-            vehicleCapacityStateTypeId,
-            info.paramValue(vehicleCapacityActionCapacityParamTypeId),
-        )
-        info.finish(nymea.ThingErrorNoError)
-    else:
-        logger.error(f"Unhandled action: {info.action.id}")
+    logger.error(f"Unhandled action: {info.action.id}")
 
 
 def thingRemoved(thing):

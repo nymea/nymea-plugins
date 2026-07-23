@@ -15,7 +15,7 @@
                     "createMethods": ["discovery"],
                     "discoveryType": "weak",
                     "setupMethod": "justadd",
-                    "interfaces": [ "evcharger", "smartmeterconsumer", "connectable" ],
+                    "interfaces": [ "evchargerac", "smartmeterconsumer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "bce7c412-c19a-4e60-a11f-fe8308408abf",
@@ -106,7 +106,7 @@
                     "createMethods": ["discovery"],
                     "discoveryType": "weak",
                     "setupMethod": "justadd",
-                    "interfaces": [ "evcharger", "connectable" ],
+                    "interfaces": [ "evchargerac", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "159fec55-e73d-4a9d-bbde-b2b44fe7f363",

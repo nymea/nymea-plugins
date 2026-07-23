@@ -13,7 +13,7 @@
                     "name": "keba",
                     "displayName": "Keba KeContact",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable", "networkdevice"],
+                    "interfaces": ["evchargerac", "smartmeterconsumer", "connectable", "networkdevice"],
                     "paramTypes":[
                         {
                             "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
@@ -416,7 +416,7 @@
                     "name": "kebaSimple",
                     "displayName": "KeConnect German Edition",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["evcharger", "connectable", "networkdevice"],
+                    "interfaces": ["evchargerac", "connectable", "networkdevice"],
                     "paramTypes":[
                         {
                             "id": "e438179a-5202-4106-a622-d9e10a74fed9",
@@ -675,4 +675,3 @@
         }
     ]
 }
-

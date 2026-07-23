@@ -75,11 +75,9 @@
                             "name": "capacity",
                             "displayName": "Capacity",
                             "displayNameEvent": "Capacity changed",
-                            "displayNameAction": "Set capacity",
                             "type": "double",
                             "unit": "KiloWattHour",
-                            "defaultValue": 50,
-                            "writable": true
+                            "defaultValue": 50
                         },
                         {
                             "id": "b70b2a73-4304-46ba-85ce-4ecdc68f241f",
@@ -97,14 +95,6 @@
                             "name": "batteryCritical",
                             "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "8a4f89f3-fdb1-4b7b-8d17-1ff813e3800c",
-                            "name": "pluggedIn",
-                            "displayName": "Plugged in",
-                            "displayNameEvent": "Plugged/unplugged",
                             "type": "bool",
                             "defaultValue": false
                         },
