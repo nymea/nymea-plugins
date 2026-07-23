@@ -1,3 +1,14 @@
+nymea-plugins (1.16.0) resolute; urgency=medium
+
+  [ Simon Stürz ]
+  * Add optional newline setting for TCP client
+  * Update EV charger interfaces
+  * Add EVerest DC charger and extend the RpcApi regarding DC charging
+  * ESPSomfyRTS: Fix step up/down for blinds
+  * Fronius: Improve reply handling on connection timout
+
+ -- jenkins <developer@nymea.io>  Thu, 23 Jul 2026 22:05:51 +0200
+
 nymea-plugins (1.15.2) resolute; urgency=medium
 
 
