@@ -116,7 +116,11 @@ void IntegrationPluginTcpCommander::executeAction(ThingActionInfo *info)
 
     if (action.actionTypeId() == tcpClientTriggerActionTypeId) {
         QTcpSocket *tcpSocket = m_tcpSockets.value(thing);
-        QByteArray data = action.param(tcpClientTriggerActionDataParamTypeId).value().toByteArray();
+        QString dataString = action.param(tcpClientTriggerActionDataParamTypeId).value().toString();
+        if (thing->setting(tcpClientSettingsAppendNewlineParamTypeId).toBool() && !dataString.endsWith('\n')) {
+            dataString.append('\n');
+        }
+        QByteArray data = dataString.toUtf8();
         qint64 len = tcpSocket->write(data);
         if (len == data.length()) {
             info->finish(Thing::ThingErrorNoError);
