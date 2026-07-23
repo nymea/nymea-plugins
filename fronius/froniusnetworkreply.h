@@ -41,6 +41,10 @@ public:
 
     QNetworkRequest request() const;
     QNetworkReply *networkReply() const;
+    QByteArray readAll();
+    QNetworkReply::NetworkError error() const;
+    QString errorString() const;
+    QUrl url() const;
 
 signals:
     void finished();
@@ -50,8 +54,15 @@ private:
 
     QNetworkRequest m_request;
     QNetworkReply *m_networkReply = nullptr;
+    QNetworkReply::NetworkError m_error = QNetworkReply::NoError;
+    QString m_errorString;
+    bool m_finished = false;
+    bool m_canceled = false;
 
     void setNetworkReply(QNetworkReply *networkReply);
+    void cancel();
+    bool wasCanceled() const;
+    void handleFinished();
 };
 
 #endif // FRONIUSNETWORKREPLY_H
