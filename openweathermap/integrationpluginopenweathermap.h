@@ -56,7 +56,8 @@ private:
     QString m_apiKey;
     PluginTimer *m_pluginTimer = nullptr;
 
-    void update(Thing *thing);
+    void weather(Thing *thing);
+    void forecast(Thing *thing);
     void searchAutodetect(ThingDiscoveryInfo *info);
     void search(QString searchString, ThingDiscoveryInfo *info);
     void searchGeoLocation(double lat, double lon, const QString &country, ThingDiscoveryInfo *info);
