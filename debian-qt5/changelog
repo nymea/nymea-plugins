@@ -1,3 +1,10 @@
+nymea-plugins (1.17.0) resolute; urgency=medium
+
+  [ Simon Stürz ]
+  * Add EVerest DC charger and extend the RpcApi regarding DC charging
+
+ -- jenkins <developer@nymea.io>  Mon, 31 Aug 2026 11:05:57 +0200
+
 nymea-plugins (1.16.0) resolute; urgency=medium
 
   [ Simon Stürz ]
