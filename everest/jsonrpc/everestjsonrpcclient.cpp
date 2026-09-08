@@ -434,29 +434,38 @@ EverestJsonRpcClient::DisplayParameters EverestJsonRpcClient::parseDisplayParame
     // Treat all properties as optional until the object is specified upstream.
 
     DisplayParameters displayParameters;
-    if (displayParametersMap.contains("start_soc")) {
+    if (displayParametersMap.contains("start_soc"))
         displayParameters.startSoc = displayParametersMap.value("start_soc").toInt() ;
-    } else if (displayParametersMap.contains("present_soc")) {
+
+    if (displayParametersMap.contains("present_soc"))
         displayParameters.presentSoc = displayParametersMap.value("present_soc").toInt();
-    } else if (displayParametersMap.contains("minimum_soc")) {
+
+    if (displayParametersMap.contains("minimum_soc"))
         displayParameters.minimumSoc = displayParametersMap.value("minimum_soc").toInt();
-    } else if (displayParametersMap.contains("target_soc")) {
+
+    if (displayParametersMap.contains("target_soc"))
         displayParameters.targetSoc = displayParametersMap.value("target_soc").toInt();
-    } else if (displayParametersMap.contains("maximum_soc")) {
+
+    if (displayParametersMap.contains("maximum_soc"))
         displayParameters.maximumSoc = displayParametersMap.value("maximum_soc").toInt();
-    } else if (displayParametersMap.contains("remaining_time_to_minimum_soc")) {
+
+    if (displayParametersMap.contains("remaining_time_to_minimum_soc"))
         displayParameters.remainingTimeToMinimumSoc = displayParametersMap.value("remaining_time_to_minimum_soc").toInt();
-    } else if (displayParametersMap.contains("remaining_time_to_target_soc")) {
+
+    if (displayParametersMap.contains("remaining_time_to_target_soc"))
         displayParameters.remainingTimeToTargetSoc = displayParametersMap.value("remaining_time_to_target_soc").toInt();
-    } else if (displayParametersMap.contains("remaining_time_to_maximum_soc")) {
+
+    if (displayParametersMap.contains("remaining_time_to_maximum_soc"))
         displayParameters.remainingTimeToMaximumSoc = displayParametersMap.value("remaining_time_to_maximum_soc").toInt();
-    } else if (displayParametersMap.contains("charging_complete")) {
+
+    if (displayParametersMap.contains("charging_complete"))
         displayParameters.chargingComplete = displayParametersMap.value("charging_complete").toBool();
-    } else if (displayParametersMap.contains("battery_energy_capacity")) {
+
+    if (displayParametersMap.contains("battery_energy_capacity"))
         displayParameters.batteryEnergyCapacity = displayParametersMap.value("battery_energy_capacity").toDouble();
-    } else if (displayParametersMap.contains("inlet_hot")) {
+
+    if (displayParametersMap.contains("inlet_hot"))
         displayParameters.inletHot = displayParametersMap.value("inlet_hot").toBool();
-    }
 
     return displayParameters;
 }
