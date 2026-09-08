@@ -30,6 +30,7 @@
 
 #include "mqtt/everestmqttclient.h"
 #include "jsonrpc/everestconnection.h"
+#include "jsonrpc/everestjsonrpcclient.h"
 
 #include <mqttclient.h>
 
@@ -53,6 +54,13 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+    Thing *findHlcVehicleForCharger(Thing *charger) const;
+    void createHlcVehicleForCharger(Thing *charger);
+    void assignHlcVehicleToCharger(Thing *charger, Thing *vehicle);
+    void unassignHlcVehicleFromCharger(Thing *charger);
+    void updateHlcVehicleFromEvseStatus(Thing *charger, const EverestJsonRpcClient::EVSEStatus &status);
+    void updateHlcVehiclePowerFlow(Thing *charger, double power);
+
     int m_autodetectCounter = 0;
     int m_autodetectCounterLimit = 4;
     bool m_useMqtt = false;
