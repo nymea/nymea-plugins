@@ -1933,7 +1933,7 @@ void IntegrationPluginShelly::setupGen2Plus(ThingSetupInfo *info)
                     thing->setStateValue(shellyPro3EMCurrentPhaseAStateTypeId, em0.value("a_current").toDouble());
                     thing->setStateValue(shellyPro3EMCurrentPowerPhaseBStateTypeId, em0.value("b_act_power").toDouble());
                     thing->setStateValue(shellyPro3EMVoltagePhaseBStateTypeId, em0.value("b_voltage").toDouble());
-                    thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shellyPro3EMCurrentPhaseBStateTypeId, em0.value("b_current").toDouble());
                     thing->setStateValue(shellyPro3EMCurrentPowerPhaseCStateTypeId, em0.value("c_act_power").toDouble());
                     thing->setStateValue(shellyPro3EMVoltagePhaseCStateTypeId, em0.value("c_voltage").toDouble());
                     thing->setStateValue(shellyPro3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
@@ -1944,7 +1944,7 @@ void IntegrationPluginShelly::setupGen2Plus(ThingSetupInfo *info)
                     thing->setStateValue(shelly3EMCurrentPhaseAStateTypeId, em0.value("a_current").toDouble());
                     thing->setStateValue(shelly3EMCurrentPowerPhaseBStateTypeId, em0.value("b_act_power").toDouble());
                     thing->setStateValue(shelly3EMVoltagePhaseBStateTypeId, em0.value("b_voltage").toDouble());
-                    thing->setStateValue(shelly3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
+                    thing->setStateValue(shelly3EMCurrentPhaseBStateTypeId, em0.value("b_current").toDouble());
                     thing->setStateValue(shelly3EMCurrentPowerPhaseCStateTypeId, em0.value("c_act_power").toDouble());
                     thing->setStateValue(shelly3EMVoltagePhaseCStateTypeId, em0.value("c_voltage").toDouble());
                     thing->setStateValue(shelly3EMCurrentPhaseCStateTypeId, em0.value("c_current").toDouble());
