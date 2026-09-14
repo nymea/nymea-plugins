@@ -1,3 +1,10 @@
+nymea-plugins (1.16.1) resolute; urgency=medium
+
+  [ Simon Stürz ]
+  * shelly: Fix energy meter current reading for phase B
+
+ -- jenkins <developer@nymea.io>  Mon, 14 Sep 2026 10:48:10 +0200
+
 nymea-plugins (1.16.0) resolute; urgency=medium
 
   [ Simon Stürz ]
