@@ -1,3 +1,10 @@
+nymea-plugins (1.17.0) resolute; urgency=medium
+
+  [ Simon Stürz ]
+  * EVerest: Add HLC DC charger and BiDi charging support
+
+ -- jenkins <developer@nymea.io>  Mon, 05 Oct 2026 15:45:00 +0200
+
 nymea-plugins (1.16.1) resolute; urgency=medium
 
   [ Simon Stürz ]
