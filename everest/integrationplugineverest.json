@@ -486,7 +486,7 @@
                     "displayName": "EVerest charger DC",
                     "id": "b31e14dd-43e0-4278-b517-d50afd6806ec",
                     "createMethods": ["auto"],
-                    "interfaces": [ "evchargerdc", "connectable"],
+                    "interfaces": [ "evchargerdc", "hlccharger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "4a3e03ed-44ea-4a32-9f7f-b4e6b1647921",
@@ -719,6 +719,27 @@
                             "defaultValue": 0
                         },
                         {
+                            "id": "8fc87cd3-2989-421d-9d6c-d1364bf4ca39",
+                            "name": "hlcSessionActive",
+                            "displayName": "HLC session active",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d9713e6b-563c-466e-9689-bf25bfcf490c",
+                            "name": "vehicleIdentified",
+                            "displayName": "Vehicle identified",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "2a4fb1ce-4112-452b-b217-d70a78410aa3",
+                            "name": "connectedVehicleThingId",
+                            "displayName": "Connected vehicle thing ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
                             "id": "d526c751-51e0-4c69-a88e-ae33db38b182",
                             "name": "temperature",
                             "displayName": "Temperature",
@@ -738,11 +759,101 @@
                         }
                     ],
                     "actionTypes": [ ]
+                },
+                {
+                    "name": "everestHlcVehicle",
+                    "displayName": "EVerest HLC vehicle",
+                    "id": "d9423da9-e18a-41f3-8775-f376b727ffe3",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "electricvehiclehlc" ],
+                    "paramTypes": [
+                        {
+                            "id": "29adfdc5-d5ee-42c8-a813-ebf184ab9357",
+                            "name": "chargerIndex",
+                            "displayName": "Charger index",
+                            "type": "uint",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "settingsTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "c88bba3c-843f-4c46-a698-b9f46047214b",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "dd1c1a0d-4c84-4b44-a6a8-8c1ba1811486",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4cbbb4f8-7f17-49bc-b848-5f8e75e52630",
+                            "name": "capacity",
+                            "displayName": "Battery capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "39ce5deb-d253-43c2-8ade-cfd04b605d60",
+                            "name": "dcMaxChargingPower",
+                            "displayName": "Maximum charging power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a8a68754-4092-4997-bebf-00e3a350b685",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "70fe1623-5db7-4cdf-b0fc-0ddf8f319f73",
+                            "name": "chargingInterfaces",
+                            "displayName": "Charging interfaces",
+                            "type": "QString",
+                            "possibleValues": ["ac", "dc", "acdc"],
+                            "defaultValue": "dc"
+                        },
+                        {
+                            "id": "0b830a50-059a-45f6-b65a-3acc22977509",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8bd9eeb0-7f50-457f-a541-0fe211e4b1f1",
+                            "name": "connectedChargerThingId",
+                            "displayName": "Connected charger thing ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "98245a35-6ff6-4cde-9ace-724056873d66",
+                            "name": "hlcSessionActive",
+                            "displayName": "HLC session active",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [ ]
                 }
 
             ]
         }
     ]
 }
-
 

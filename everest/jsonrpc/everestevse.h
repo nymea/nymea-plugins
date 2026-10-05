@@ -42,6 +42,10 @@ public:
     EverestJsonRpcReply *setACChargingPhaseCount(int phaseCount);
     EverestJsonRpcReply *setDCChargingPower(double chargingPower);
 
+signals:
+    void dcHlcStatusChanged(Thing *charger, const EverestJsonRpcClient::EVSEStatus &status);
+    void dcPowerFlowChanged(Thing *charger, double power);
+
 private:
     EverestJsonRpcClient *m_client = nullptr;
     Thing *m_thing = nullptr;

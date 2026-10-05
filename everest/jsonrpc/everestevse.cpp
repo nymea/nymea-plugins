@@ -243,6 +243,20 @@ void EverestEvse::processEvseStatus()
             m_thing->setStateValue(everestChargerDcChargingStateStateTypeId, "idle");
         }
 
+        m_thing->setStateValue(everestChargerDcHlcSessionActiveStateTypeId, m_evseStatus.chargeProtocol == EverestJsonRpcClient::ChargeProtocolDIN70121
+                               || m_evseStatus.chargeProtocol == EverestJsonRpcClient::ChargeProtocolISO15118
+                               || m_evseStatus.chargeProtocol == EverestJsonRpcClient::ChargeProtocolISO15118_20);
+        m_thing->setStateValue(everestChargerDcVehicleIdentifiedStateTypeId, m_evseStatus.displayParameters.presentSoc >= 0
+                               || m_evseStatus.displayParameters.startSoc >= 0
+                               || m_evseStatus.displayParameters.minimumSoc >= 0
+                               || m_evseStatus.displayParameters.targetSoc >= 0
+                               || m_evseStatus.displayParameters.maximumSoc >= 0
+                               || m_evseStatus.displayParameters.batteryEnergyCapacity >= 0);
+        m_thing->setStateValue(everestChargerDcChargingCapabilitiesStateTypeId,
+                               m_evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_BPT)
+                               || m_evseInfo.supportedEnergyTransferModes.contains(EverestJsonRpcClient::EnergyTransferModeDC_ACDP_BPT)
+                               ? "bidirectional" : "charging");
+        emit dcHlcStatusChanged(m_thing, m_evseStatus);
     }
 }
 
@@ -300,5 +314,6 @@ void EverestEvse::processMeterData()
 
         m_thing->setStateValue(everestChargerDcTotalEnergyConsumedStateTypeId, m_meterData.energyImportedTotal / 1000.0);
         m_thing->setStateValue(everestChargerDcTotalEnergyProducedStateTypeId, m_meterData.energyExportedTotal/ 1000.0);
+        emit dcPowerFlowChanged(m_thing, m_meterData.powerTotal);
     }
 }
