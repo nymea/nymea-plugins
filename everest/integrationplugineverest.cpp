@@ -30,13 +30,207 @@
 #include "jsonrpc/everestjsonrpcdiscovery.h"
 
 #include <QFileInfo>
+#include <QtMath>
 
 #include <nymeasettings.h>
 #include <network/networkdevicediscovery.h>
 
+namespace {
+
+static const char *connectedVehiclePropertyName = "connectedVehicleThingId";
+static const char *pendingHlcVehicleCreationPropertyName = "pendingHlcVehicleCreation";
+static const char *latestHlcBatteryLevelPropertyName = "latestHlcBatteryLevel";
+static const char *latestHlcCapacityPropertyName = "latestHlcCapacity";
+static const char *latestHlcPowerPropertyName = "latestHlcPower";
+
+bool isHlcChargeProtocol(EverestJsonRpcClient::ChargeProtocol protocol)
+{
+    return protocol == EverestJsonRpcClient::ChargeProtocolDIN70121
+            || protocol == EverestJsonRpcClient::ChargeProtocolISO15118
+            || protocol == EverestJsonRpcClient::ChargeProtocolISO15118_20;
+}
+
+bool hasVehicleDisplayData(const EverestJsonRpcClient::DisplayParameters &displayParameters)
+{
+    return displayParameters.presentSoc >= 0
+            || displayParameters.startSoc >= 0
+            || displayParameters.minimumSoc >= 0
+            || displayParameters.targetSoc >= 0
+            || displayParameters.maximumSoc >= 0
+            || displayParameters.batteryEnergyCapacity >= 0;
+}
+
+int displaySoc(const EverestJsonRpcClient::DisplayParameters &displayParameters)
+{
+    if (displayParameters.presentSoc >= 0)
+        return displayParameters.presentSoc;
+    if (displayParameters.startSoc >= 0)
+        return displayParameters.startSoc;
+    if (displayParameters.targetSoc >= 0)
+        return displayParameters.targetSoc;
+    if (displayParameters.maximumSoc >= 0)
+        return displayParameters.maximumSoc;
+    if (displayParameters.minimumSoc >= 0)
+        return displayParameters.minimumSoc;
+
+    return -1;
+}
+
+double displayCapacityKWh(double batteryEnergyCapacity)
+{
+    if (batteryEnergyCapacity <= 0)
+        return -1;
+
+    return batteryEnergyCapacity > 1000 ? batteryEnergyCapacity / 1000.0 : batteryEnergyCapacity;
+}
+
+QString chargingStateFromPower(double power)
+{
+    if (power > 0.01)
+        return "charging";
+    if (power < -0.01)
+        return "discharging";
+
+    return "idle";
+}
+
+}
+
 IntegrationPluginEverest::IntegrationPluginEverest()
 {
 
+}
+
+Thing *IntegrationPluginEverest::findHlcVehicleForCharger(Thing *charger) const
+{
+    if (!charger)
+        return nullptr;
+
+    foreach (Thing *childThing, myThings().filterByParentId(charger->id())) {
+        if (childThing->thingClassId() == everestHlcVehicleThingClassId)
+            return childThing;
+    }
+
+    return nullptr;
+}
+
+void IntegrationPluginEverest::createHlcVehicleForCharger(Thing *charger)
+{
+    if (!charger || findHlcVehicleForCharger(charger) || charger->property(pendingHlcVehicleCreationPropertyName).toBool())
+        return;
+
+    ThingDescriptor descriptor(everestHlcVehicleThingClassId, QString("EVerest HLC vehicle %1").arg(charger->name()), QString(), charger->id());
+    descriptor.setParams(ParamList() << Param(everestHlcVehicleThingChargerIndexParamTypeId, charger->paramValue("index").toUInt()));
+
+    charger->setProperty(pendingHlcVehicleCreationPropertyName, true);
+    emit autoThingsAppeared({descriptor});
+}
+
+void IntegrationPluginEverest::assignHlcVehicleToCharger(Thing *charger, Thing *vehicle)
+{
+    if (!charger || !vehicle)
+        return;
+
+    charger->setProperty(connectedVehiclePropertyName, vehicle->id().toString());
+    charger->setProperty(pendingHlcVehicleCreationPropertyName, false);
+    charger->setStateValue("connectedVehicleThingId", vehicle->id().toString());
+    charger->setStateValue("vehicleIdentified", true);
+
+    vehicle->setStateValue("pluggedIn", true);
+    vehicle->setStateValue("connectedChargerThingId", charger->id().toString());
+    vehicle->setStateValue("hlcSessionActive", charger->stateValue("hlcSessionActive").toBool());
+    vehicle->setStateValue("chargingInterfaces", "dc");
+    vehicle->setStateValue("dcMaxChargingPower", charger->stateValue("maxChargingPower"));
+
+    if (charger->property(latestHlcBatteryLevelPropertyName).isValid()) {
+        const int batteryLevel = qBound(0, charger->property(latestHlcBatteryLevelPropertyName).toInt(), 100);
+        vehicle->setStateValue("batteryLevel", batteryLevel);
+        vehicle->setStateValue("batteryCritical", batteryLevel < 10);
+    }
+    if (charger->property(latestHlcCapacityPropertyName).isValid())
+        vehicle->setStateValue("capacity", charger->property(latestHlcCapacityPropertyName));
+    if (charger->property(latestHlcPowerPropertyName).isValid())
+        vehicle->setStateValue("chargingState", chargingStateFromPower(charger->property(latestHlcPowerPropertyName).toDouble()));
+}
+
+void IntegrationPluginEverest::unassignHlcVehicleFromCharger(Thing *charger)
+{
+    if (!charger)
+        return;
+
+    Thing *vehicle = findHlcVehicleForCharger(charger);
+
+    charger->setProperty(connectedVehiclePropertyName, QString());
+    charger->setProperty(pendingHlcVehicleCreationPropertyName, false);
+    charger->setStateValue("connectedVehicleThingId", QString());
+    charger->setStateValue("vehicleIdentified", false);
+    charger->setStateValue("hlcSessionActive", false);
+
+    if (!vehicle)
+        return;
+
+    vehicle->setStateValue("pluggedIn", false);
+    vehicle->setStateValue("connectedChargerThingId", QString());
+    vehicle->setStateValue("hlcSessionActive", false);
+    vehicle->setStateValue("chargingState", "idle");
+}
+
+void IntegrationPluginEverest::updateHlcVehicleFromEvseStatus(Thing *charger, const EverestJsonRpcClient::EVSEStatus &status)
+{
+    if (!charger || charger->thingClassId() != everestChargerDcThingClassId)
+        return;
+
+    const bool pluggedIn = status.evseState != EverestJsonRpcClient::EvseStateUnplugged;
+    const bool hlcSessionActive = pluggedIn && isHlcChargeProtocol(status.chargeProtocol);
+    const bool vehicleIdentified = hlcSessionActive || hasVehicleDisplayData(status.displayParameters);
+
+    charger->setStateValue("hlcSessionActive", hlcSessionActive);
+    charger->setStateValue("vehicleIdentified", vehicleIdentified);
+
+    const int soc = displaySoc(status.displayParameters);
+    if (soc >= 0)
+        charger->setProperty(latestHlcBatteryLevelPropertyName, qBound(0, soc, 100));
+
+    const double capacity = displayCapacityKWh(status.displayParameters.batteryEnergyCapacity);
+    if (capacity > 0)
+        charger->setProperty(latestHlcCapacityPropertyName, capacity);
+
+    if (!pluggedIn) {
+        unassignHlcVehicleFromCharger(charger);
+        return;
+    }
+
+    Thing *vehicle = findHlcVehicleForCharger(charger);
+    if (!vehicle) {
+        createHlcVehicleForCharger(charger);
+        return;
+    }
+
+    assignHlcVehicleToCharger(charger, vehicle);
+
+    if (soc >= 0) {
+        const int batteryLevel = charger->property(latestHlcBatteryLevelPropertyName).toInt();
+        vehicle->setStateValue("batteryLevel", batteryLevel);
+        vehicle->setStateValue("batteryCritical", batteryLevel < 10);
+    }
+
+    if (capacity > 0)
+        vehicle->setStateValue("capacity", capacity);
+}
+
+void IntegrationPluginEverest::updateHlcVehiclePowerFlow(Thing *charger, double power)
+{
+    if (!charger || charger->thingClassId() != everestChargerDcThingClassId)
+        return;
+
+    charger->setProperty(latestHlcPowerPropertyName, power);
+
+    Thing *vehicle = findHlcVehicleForCharger(charger);
+    if (!vehicle)
+        return;
+
+    const QString chargingState = chargingStateFromPower(power);
+    vehicle->setStateValue("chargingState", chargingState);
 }
 
 void IntegrationPluginEverest::init()
@@ -474,6 +668,13 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
         connection->start();
         return;
+    } else if (thing->thingClassId() == everestHlcVehicleThingClassId) {
+        Thing *chargerThing = myThings().findById(thing->parentId());
+        if (chargerThing && chargerThing->thingClassId() == everestChargerDcThingClassId && chargerThing->stateValue("pluggedIn").toBool())
+            assignHlcVehicleToCharger(chargerThing, thing);
+
+        info->finish(Thing::ThingErrorNoError);
+        return;
     } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
 
         Thing *parentThing = myThings().findById(thing->parentId());
@@ -486,6 +687,10 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorNoError);
 
         connection->addThing(thing);
+        if (EverestEvse *evse = connection->getEvse(thing)) {
+            connect(evse, &EverestEvse::dcHlcStatusChanged, this, &IntegrationPluginEverest::updateHlcVehicleFromEvseStatus);
+            connect(evse, &EverestEvse::dcPowerFlowChanged, this, &IntegrationPluginEverest::updateHlcVehiclePowerFlow);
+        }
         return;
     }
 }
@@ -731,7 +936,19 @@ void IntegrationPluginEverest::thingRemoved(Thing *thing)
         }
     } else if (thing->thingClassId() == everestConnectionThingClassId) {
         m_everstConnections.take(thing)->deleteLater();
+    } else if (thing->thingClassId() == everestHlcVehicleThingClassId) {
+        Thing *chargerThing = myThings().findById(thing->parentId());
+        if (chargerThing && chargerThing->thingClassId() == everestChargerDcThingClassId) {
+            chargerThing->setProperty(connectedVehiclePropertyName, QString());
+            chargerThing->setProperty(pendingHlcVehicleCreationPropertyName, false);
+            chargerThing->setStateValue("connectedVehicleThingId", QString());
+        }
     } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
+        foreach (Thing *childThing, myThings().filterByParentId(thing->id())) {
+            if (childThing->thingClassId() == everestHlcVehicleThingClassId)
+                emit autoThingDisappeared(childThing->id());
+        }
+
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
         if (!connection)
