@@ -211,7 +211,7 @@ void EverestEvse::initialize()
 
 void EverestEvse::processEvseStatus()
 {
-    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId || m_thing->thingClassId() == everestChargerPceThingClassId)) {
         m_thing->setStateValue(QStringLiteral("power"), m_evseStatus.chargingAllowed);
         m_thing->setStateValue(QStringLiteral("sessionEnergy"), m_evseStatus.chargedEnergyWh / 1000.0);
         m_thing->setStateValue(QStringLiteral("state"), m_evseStatus.evseStateString);
@@ -248,7 +248,7 @@ void EverestEvse::processEvseStatus()
 
 void EverestEvse::processHardwareCapabilities()
 {
-    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId || m_thing->thingClassId() == everestChargerPceThingClassId)) {
         if (!m_hardwareCapabilities.phaseSwitchDuringCharging) {
             // Only option left is set the desired phase count to 3, force that value
             m_thing->setStatePossibleValues(QStringLiteral("desiredPhaseCount"), { 3 });
@@ -265,7 +265,7 @@ void EverestEvse::processHardwareCapabilities()
 
 void EverestEvse::processMeterData()
 {
-    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId || m_thing->thingClassId() == everestChargerPceThingClassId)) {
 
         m_thing->setStateValue(QStringLiteral("currentPower"), m_meterData.powerTotal);
 
