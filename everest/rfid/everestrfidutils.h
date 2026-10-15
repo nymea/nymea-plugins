@@ -31,4 +31,9 @@ inline bool everestRfidEligible(const QUrl &url, const QList<EverestJsonRpcClien
     return ac;
 }
 
+inline bool everestIsPceVendor(const QString &vendor)
+{
+    return vendor.trimmed().compare(QStringLiteral("PCE"), Qt::CaseInsensitive) == 0;
+}
+
 #endif // EVERESTRFIDUTILS_H

@@ -145,6 +145,26 @@ private slots:
         }
         QCOMPARE(everestRfidEligible(QUrl(url), topology), eligible);
     }
+
+    void pceVendor_data()
+    {
+        QTest::addColumn<QString>("vendor");
+        QTest::addColumn<bool>("pce");
+        QTest::newRow("upper") << "PCE" << true;
+        QTest::newRow("lower") << "pce" << true;
+        QTest::newRow("mixed-whitespace") << " Pce " << true;
+        QTest::newRow("prefix") << "PCEX" << false;
+        QTest::newRow("full-name") << "PC Electric Gesellschaft m.b.H." << false;
+        QTest::newRow("other") << "Chargebyte" << false;
+        QTest::newRow("empty") << "" << false;
+    }
+
+    void pceVendor()
+    {
+        QFETCH(QString, vendor);
+        QFETCH(bool, pce);
+        QCOMPARE(everestIsPceVendor(vendor), pce);
+    }
 };
 QTEST_GUILESS_MAIN(TestRfidProviderClient)
 #include "tst_rfidproviderclient.moc"
