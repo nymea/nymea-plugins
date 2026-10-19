@@ -39,7 +39,10 @@
 
 #include "extern-plugininfo.h"
 
+#include "senecconnect.h"
 #include "senecstoragelan.h"
+
+#include <QDateTime>
 
 class IntegrationPluginSenec : public IntegrationPlugin
 {
@@ -54,21 +57,33 @@ public:
 
     void discoverThings(ThingDiscoveryInfo *info) override;
 
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
+    PluginTimer *m_cloudRefreshTimer = nullptr;
 
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
     QHash<Thing *, SenecStorageLan *> m_storages;
+    QHash<Thing *, SenecConnect *> m_connects;
+    QHash<Thing *, QDateTime> m_lastEnergyUpdates;
 
-    Thing *meterThing(Thing *storageThing) const;
+    Thing *childThing(Thing *parentThing, const ThingClassId &thingClassId) const;
     void setConnected(Thing *storageThing, bool connected);
+
+    void refreshCloud(Thing *connectThing);
+    void processCloudData(Thing *connectThing, const QList<SenecConnect::SystemData> &systems);
+    void setCloudConnected(Thing *connectThing, bool connected);
+    void updateEnergy(Thing *thing, double currentPower, const StateTypeId &consumedStateTypeId, const StateTypeId &producedStateTypeId);
 
 private slots:
     void refresh();
+    void refreshClouds();
 
 };
 

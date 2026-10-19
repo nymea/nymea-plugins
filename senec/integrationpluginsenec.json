@@ -9,6 +9,32 @@
             "id": "1be922b9-4439-42cf-9caa-67f2ac7cc425",
             "thingClasses": [
                 {
+                    "id": "d064f111-1332-4096-b5de-529d44f72963",
+                    "name": "senecConnect",
+                    "displayName": "SENEC.Connect",
+                    "interfaces": ["account"],
+                    "createMethods": ["User"],
+                    "setupMethod": "EnterPin",
+                    "providedInterfaces": ["energystorage", "energymeter", "solarinverter"],
+                    "stateTypes": [
+                        {
+                            "id": "ed8ef7d7-bf20-4780-870d-cf7171440952",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "73c4da2a-2167-4b68-8fbf-d03f5b7920a5",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
                     "id": "345df3b1-d411-4db5-bbb2-3b14eb86c1ba",
                     "name": "senecStorageLan",
                     "displayName": "SENEC.Home storage",
@@ -95,6 +121,83 @@
                         },
                         {
                             "id": "d927e6cf-29f0-412f-b74d-7d803fd3e191",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "8de0eeca-a698-4aee-bc67-a586c8f10652",
+                    "name": "senecStorageCloud",
+                    "displayName": "SENEC.Home storage (SENEC.Connect)",
+                    "interfaces": ["energystorage", "connectable"],
+                    "createMethods": ["Auto"],
+                    "paramTypes": [
+                        {
+                            "id": "9172116e-e513-429b-b9a0-c73d7587bfa8",
+                            "name": "systemId",
+                            "displayName": "System ID",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5d1d61dd-a419-4ba5-992a-91e9a3f34d31",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "cd7d8a3c-44b4-4517-8aa0-25288d03f19a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "eccdfa19-b033-445c-b196-ab41bb2e449f",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        },
+                        {
+                            "id": "500b0df2-61d0-4895-91c7-c8f2616dd93d",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "8805be49-b88b-48b6-a0e3-7b6b251d3299",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8db60ec4-06cd-4fc3-a66e-ced915bf5c11",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "f282b051-a68c-4739-88c7-e5819d8424f9",
                             "name": "capacity",
                             "displayName": "Capacity",
                             "type": "double",
@@ -223,6 +326,40 @@
                             "unit": "Ampere",
                             "defaultValue": 0,
                             "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "12a613fb-f33c-48b1-a9a4-caaee1041d25",
+                    "name": "senecInverter",
+                    "displayName": "SENEC PV inverter",
+                    "interfaces": ["solarinverter", "connectable"],
+                    "createMethods": ["Auto"],
+                    "stateTypes": [
+                        {
+                            "id": "67c15e22-2503-41e3-8318-2ccb973760c4",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "11e72bac-a531-4622-bbd0-da5b638e3257",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e5a22d6c-573a-46df-ba92-3d33bd0ad754",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
                         }
                     ]
                 }

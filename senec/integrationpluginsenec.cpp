@@ -102,6 +102,49 @@ void IntegrationPluginSenec::discoverThings(ThingDiscoveryInfo *info)
     }
 }
 
+void IntegrationPluginSenec::startPairing(ThingPairingInfo *info)
+{
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please sign in on developer.senec.com with your SENEC account, subscribe to the SENEC.Connect product and enter the subscription key from your profile."));
+}
+
+void IntegrationPluginSenec::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
+{
+    Q_UNUSED(username)
+
+    QString subscriptionKey = secret.trimmed();
+    if (subscriptionKey.isEmpty()) {
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Please enter a subscription key."));
+        return;
+    }
+
+    qCDebug(dcSenec()) << "Verifying SENEC.Connect subscription key" << subscriptionKey.left(4) + QString(subscriptionKey.length() - 4, '*');
+
+    SenecConnect *senecConnect = new SenecConnect(hardwareManager()->networkManager(), subscriptionKey, info);
+    QNetworkReply *reply = senecConnect->getDeviceData();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info, subscriptionKey] {
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status == 401 || status == 403) {
+            qCWarning(dcSenec()) << "SENEC.Connect rejected the subscription key. Status:" << status;
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("The subscription key is not valid."));
+            return;
+        }
+
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcSenec()) << "SENEC.Connect request finished with error. Status:" << status << "Error:" << reply->errorString();
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Unable to connect to SENEC.Connect. Please try again later."));
+            return;
+        }
+
+        pluginStorage()->beginGroup(info->thingId().toString());
+        pluginStorage()->setValue("subscriptionKey", subscriptionKey);
+        pluginStorage()->endGroup();
+
+        info->finish(Thing::ThingErrorNoError);
+    });
+}
+
 void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
@@ -159,7 +202,7 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
                 thing->setStateValue(senecStorageLanChargingStateStateTypeId, "idle");
             }
 
-            Thing *meter = meterThing(thing);
+            Thing *meter = childThing(thing, senecMeterThingClassId);
             if (meter) {
                 meter->setStateValue(senecMeterCurrentPowerStateTypeId, storage->gridPower());
             }
@@ -170,13 +213,13 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
 
                 if (value.toBool()) {
                     // Check if we have to add the meter
-                    if (!meterThing(thing)) {
+                    if (!childThing(thing, senecMeterThingClassId)) {
                         qCDebug(dcSenec()) << "Add meter for" << thing->name();
                         emit autoThingsAppeared(ThingDescriptors() << ThingDescriptor(senecMeterThingClassId, "SENEC Meter", QString(), thing->id()));
                     }
                 } else {
                     // Check if we have to remove the meter
-                    Thing *meter = meterThing(thing);
+                    Thing *meter = childThing(thing, senecMeterThingClassId);
                     if (meter) {
                         qCDebug(dcSenec()) << "Remove meter thing for" << thing->name();
                         emit autoThingDisappeared(meter->id());
@@ -187,10 +230,41 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
 
         info->finish(Thing::ThingErrorNoError);
 
+    } else if (thing->thingClassId() == senecConnectThingClassId) {
+
+        pluginStorage()->beginGroup(thing->id().toString());
+        QString subscriptionKey = pluginStorage()->value("subscriptionKey").toString();
+        pluginStorage()->endGroup();
+
+        if (subscriptionKey.isEmpty()) {
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("The SENEC.Connect subscription key is missing. Please reconfigure the connection."));
+            return;
+        }
+
+        // Handle reconfigure
+        if (m_connects.contains(thing))
+            m_connects.take(thing)->deleteLater();
+
+        m_connects.insert(thing, new SenecConnect(hardwareManager()->networkManager(), subscriptionKey, this));
+        info->finish(Thing::ThingErrorNoError);
+
+    } else if (thing->thingClassId() == senecStorageCloudThingClassId) {
+        info->finish(Thing::ThingErrorNoError);
+
     } else if (thing->thingClassId() == senecMeterThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
-        if (parentThing) {
+        if (parentThing && parentThing->thingClassId() == senecStorageLanThingClassId) {
             thing->setStateValue(senecMeterConnectedStateTypeId, parentThing->stateValue(senecStorageLanConnectedStateTypeId).toBool());
+        } else if (parentThing && parentThing->thingClassId() == senecStorageCloudThingClassId) {
+            thing->setStateValue(senecMeterConnectedStateTypeId, parentThing->stateValue(senecStorageCloudConnectedStateTypeId).toBool());
+        }
+
+        info->finish(Thing::ThingErrorNoError);
+
+    } else if (thing->thingClassId() == senecInverterThingClassId) {
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (parentThing) {
+            thing->setStateValue(senecInverterConnectedStateTypeId, parentThing->stateValue(senecStorageCloudConnectedStateTypeId).toBool());
         }
 
         info->finish(Thing::ThingErrorNoError);
@@ -201,14 +275,37 @@ void IntegrationPluginSenec::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == senecStorageLanThingClassId) {
         m_storages.value(thing)->initialize();
-    }
 
-    // Create the refresh timer if not already set up
-    if (!m_refreshTimer) {
-        qCDebug(dcSenec()) << "Starting refresh timer ...";
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
-        connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSenec::refresh);
-        m_refreshTimer->start();
+        if (!m_refreshTimer) {
+            qCDebug(dcSenec()) << "Starting LAN refresh timer ...";
+            m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
+            connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSenec::refresh);
+            m_refreshTimer->start();
+        }
+
+    } else if (thing->thingClassId() == senecConnectThingClassId) {
+        refreshCloud(thing);
+
+        // SENEC.Connect allows 45000 requests per month, which is roughly one request per minute
+        if (!m_cloudRefreshTimer) {
+            qCDebug(dcSenec()) << "Starting SENEC.Connect refresh timer ...";
+            m_cloudRefreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+            connect(m_cloudRefreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSenec::refreshClouds);
+            m_cloudRefreshTimer->start();
+        }
+
+    } else if (thing->thingClassId() == senecStorageCloudThingClassId) {
+        ThingDescriptors descriptors;
+        if (!childThing(thing, senecMeterThingClassId))
+            descriptors.append(ThingDescriptor(senecMeterThingClassId, "SENEC Meter", thing->name(), thing->id()));
+
+        if (!childThing(thing, senecInverterThingClassId))
+            descriptors.append(ThingDescriptor(senecInverterThingClassId, "SENEC PV inverter", thing->name(), thing->id()));
+
+        if (!descriptors.isEmpty()) {
+            qCDebug(dcSenec()) << "Adding" << descriptors.count() << "child things for" << thing->name();
+            emit autoThingsAppeared(descriptors);
+        }
     }
 }
 
@@ -219,27 +316,44 @@ void IntegrationPluginSenec::thingRemoved(Thing *thing)
         m_storages.take(thing)->deleteLater();
     }
 
-    if (myThings().isEmpty()) {
-        qCDebug(dcSenec()) << "Stopping refresh timer";
+    if (thing->thingClassId() == senecConnectThingClassId) {
+        if (m_connects.contains(thing))
+            m_connects.take(thing)->deleteLater();
+
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->remove("");
+        pluginStorage()->endGroup();
+    }
+
+    m_lastEnergyUpdates.remove(thing);
+
+    if (m_refreshTimer && m_storages.isEmpty()) {
+        qCDebug(dcSenec()) << "Stopping LAN refresh timer";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
         m_refreshTimer = nullptr;
     }
+
+    if (m_cloudRefreshTimer && m_connects.isEmpty()) {
+        qCDebug(dcSenec()) << "Stopping SENEC.Connect refresh timer";
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_cloudRefreshTimer);
+        m_cloudRefreshTimer = nullptr;
+    }
 }
 
-Thing *IntegrationPluginSenec::meterThing(Thing *storageThing) const
+Thing *IntegrationPluginSenec::childThing(Thing *parentThing, const ThingClassId &thingClassId) const
 {
-    Things meterThings = myThings().filterByThingClassId(senecMeterThingClassId).filterByParentId(storageThing->id());
-    if (meterThings.isEmpty())
+    Things childThings = myThings().filterByThingClassId(thingClassId).filterByParentId(parentThing->id());
+    if (childThings.isEmpty())
         return nullptr;
 
-    return meterThings.first();
+    return childThings.first();
 }
 
 void IntegrationPluginSenec::setConnected(Thing *storageThing, bool connected)
 {
     storageThing->setStateValue(senecStorageLanConnectedStateTypeId, connected);
 
-    Thing *meter = meterThing(storageThing);
+    Thing *meter = childThing(storageThing, senecMeterThingClassId);
     if (meter) {
         meter->setStateValue(senecMeterConnectedStateTypeId, connected);
     }
@@ -255,5 +369,155 @@ void IntegrationPluginSenec::refresh()
         } else {
             storage->initialize();
         }
+    }
+}
+
+void IntegrationPluginSenec::refreshClouds()
+{
+    foreach (Thing *connectThing, myThings().filterByThingClassId(senecConnectThingClassId)) {
+        refreshCloud(connectThing);
+    }
+}
+
+void IntegrationPluginSenec::refreshCloud(Thing *connectThing)
+{
+    SenecConnect *senecConnect = m_connects.value(connectThing);
+    if (!senecConnect)
+        return;
+
+    QNetworkReply *reply = senecConnect->getDeviceData();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, connectThing, [this, reply, connectThing] {
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status == 401 || status == 403) {
+            qCWarning(dcSenec()) << "SENEC.Connect request has been rejected. The subscription key seems to be invalid. Status:" << status;
+            connectThing->setStateValue(senecConnectLoggedInStateTypeId, false);
+            setCloudConnected(connectThing, false);
+            return;
+        }
+
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcSenec()) << "SENEC.Connect request finished with error. Status:" << status << "Error:" << reply->errorString();
+            setCloudConnected(connectThing, false);
+            return;
+        }
+
+        QByteArray responseData = reply->readAll();
+        qCDebug(dcSenec()) << "SENEC.Connect request finished successfully" << qUtf8Printable(responseData);
+
+        bool ok = false;
+        QList<SenecConnect::SystemData> systems = SenecConnect::parseDeviceData(responseData, &ok);
+        if (!ok) {
+            qCWarning(dcSenec()) << "SENEC.Connect request finished successfully, but the response contains invalid data:" << responseData;
+            setCloudConnected(connectThing, false);
+            return;
+        }
+
+        connectThing->setStateValue(senecConnectLoggedInStateTypeId, true);
+        connectThing->setStateValue(senecConnectConnectedStateTypeId, true);
+        processCloudData(connectThing, systems);
+    });
+}
+
+void IntegrationPluginSenec::processCloudData(Thing *connectThing, const QList<SenecConnect::SystemData> &systems)
+{
+    ThingDescriptors descriptors;
+    Things storageThings = myThings().filterByThingClassId(senecStorageCloudThingClassId).filterByParentId(connectThing->id());
+
+    foreach (const SenecConnect::SystemData &system, systems) {
+        Things existingThings = storageThings.filterByParam(senecStorageCloudThingSystemIdParamTypeId, system.systemId);
+        if (existingThings.isEmpty()) {
+            qCDebug(dcSenec()) << "Creating new storage for" << system.systemId << system.model;
+            ThingDescriptor descriptor(senecStorageCloudThingClassId, system.model.isEmpty() ? "SENEC.Home storage" : system.model, system.systemId, connectThing->id());
+            descriptor.setParams(ParamList() << Param(senecStorageCloudThingSystemIdParamTypeId, system.systemId)
+                                             << Param(senecStorageCloudThingSerialNumberParamTypeId, system.serialNumber));
+            descriptors.append(descriptor);
+            continue;
+        }
+
+        Thing *storageThing = existingThings.first();
+        Thing *meter = childThing(storageThing, senecMeterThingClassId);
+        Thing *inverter = childThing(storageThing, senecInverterThingClassId);
+
+        storageThing->setStateValue(senecStorageCloudConnectedStateTypeId, system.active);
+        if (meter)
+            meter->setStateValue(senecMeterConnectedStateTypeId, system.active);
+
+        if (inverter)
+            inverter->setStateValue(senecInverterConnectedStateTypeId, system.active);
+
+        if (!system.active) {
+            qCDebug(dcSenec()) << "System" << system.systemId << "does not provide live data. Marking as disconnected.";
+            continue;
+        }
+
+        int batteryLevel = qRound(system.batteryLevel);
+        storageThing->setStateValue(senecStorageCloudCapacityStateTypeId, system.capacity);
+        storageThing->setStateValue(senecStorageCloudBatteryLevelStateTypeId, batteryLevel);
+        storageThing->setStateValue(senecStorageCloudBatteryCriticalStateTypeId, batteryLevel < 10);
+        storageThing->setStateValue(senecStorageCloudCurrentPowerStateTypeId, system.batteryPower);
+        if (system.batteryPower > 0) {
+            storageThing->setStateValue(senecStorageCloudChargingStateStateTypeId, "charging");
+        } else if (system.batteryPower < 0) {
+            storageThing->setStateValue(senecStorageCloudChargingStateStateTypeId, "discharging");
+        } else {
+            storageThing->setStateValue(senecStorageCloudChargingStateStateTypeId, "idle");
+        }
+
+        if (meter) {
+            updateEnergy(meter, system.gridPower, senecMeterTotalEnergyConsumedStateTypeId, senecMeterTotalEnergyProducedStateTypeId);
+            meter->setStateValue(senecMeterCurrentPowerStateTypeId, system.gridPower);
+        }
+
+        if (inverter) {
+            updateEnergy(inverter, -system.production, StateTypeId(), senecInverterTotalEnergyProducedStateTypeId);
+            inverter->setStateValue(senecInverterCurrentPowerStateTypeId, -system.production);
+        }
+    }
+
+    if (!descriptors.isEmpty()) {
+        qCDebug(dcSenec()) << "Adding" << descriptors.count() << "new SENEC.Home" << (descriptors.count() > 1 ? "storages" : "storage");
+        emit autoThingsAppeared(descriptors);
+    }
+}
+
+void IntegrationPluginSenec::setCloudConnected(Thing *connectThing, bool connected)
+{
+    connectThing->setStateValue(senecConnectConnectedStateTypeId, connected);
+
+    foreach (Thing *storageThing, myThings().filterByThingClassId(senecStorageCloudThingClassId).filterByParentId(connectThing->id())) {
+        storageThing->setStateValue(senecStorageCloudConnectedStateTypeId, connected);
+
+        Thing *meter = childThing(storageThing, senecMeterThingClassId);
+        if (meter)
+            meter->setStateValue(senecMeterConnectedStateTypeId, connected);
+
+        Thing *inverter = childThing(storageThing, senecInverterThingClassId);
+        if (inverter)
+            inverter->setStateValue(senecInverterConnectedStateTypeId, connected);
+    }
+}
+
+void IntegrationPluginSenec::updateEnergy(Thing *thing, double currentPower, const StateTypeId &consumedStateTypeId, const StateTypeId &producedStateTypeId)
+{
+    // The cloud API only provides power values, so the energy totals are integrated between two samples
+    QDateTime now = QDateTime::currentDateTimeUtc();
+    QDateTime lastUpdate = m_lastEnergyUpdates.value(thing);
+    m_lastEnergyUpdates.insert(thing, now);
+
+    // Skip the first sample and gaps (restart, connection loss) instead of extrapolating
+    if (!lastUpdate.isValid() || lastUpdate.secsTo(now) > 300)
+        return;
+
+    // Trapezoidal integration using the previous power value still stored in the state
+    double hoursPassed = lastUpdate.msecsTo(now) / 1000.0 / 3600.0;
+    double averagePower = (thing->stateValue("currentPower").toDouble() + currentPower) / 2.0;
+    double energy = qAbs(averagePower) / 1000.0 * hoursPassed;
+
+    if (averagePower > 0 && !consumedStateTypeId.isNull()) {
+        thing->setStateValue(consumedStateTypeId, thing->stateValue(consumedStateTypeId).toDouble() + energy);
+    } else if (averagePower < 0 && !producedStateTypeId.isNull()) {
+        thing->setStateValue(producedStateTypeId, thing->stateValue(producedStateTypeId).toDouble() + energy);
     }
 }
