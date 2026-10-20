@@ -48,6 +48,18 @@ EverestConnection::EverestConnection(quint16 port, QObject *parent)
         }
     });
 
+    // Connection refused or failed init does not change availability, so availableChanged alone never triggers a retry
+    connect(m_client, &EverestJsonRpcClient::connectionErrorOccurred, this, [this](){
+        if (!m_running || m_reconnectTimer.isActive())
+            return;
+
+        if (m_monitor && !m_monitor->reachable())
+            return;
+
+        qCDebug(dcEverest()) << "Connection error occurred. Starting reconnect timer for JsonRpc client to" << m_client->serverUrl().toString();
+        m_reconnectTimer.start();
+    });
+
     // Reconnect timer in case the network device is reachable but the websocketserver not yet
     m_reconnectTimer.setInterval(5000);
     m_reconnectTimer.setSingleShot(false);
@@ -107,7 +119,7 @@ void EverestConnection::setMonitor(NetworkDeviceMonitor *monitor)
         connect(m_monitor, &NetworkDeviceMonitor::reachableChanged, this, &EverestConnection::onMonitorReachableChanged);
     }
 
-    if (m_monitor->reachable())
+    if (m_monitor && m_monitor->reachable())
         onMonitorReachableChanged(true);
 }
 

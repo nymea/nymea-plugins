@@ -30,6 +30,7 @@
 
 #include "mqtt/everestmqttclient.h"
 #include "jsonrpc/everestconnection.h"
+#include "rfid/rfidproviderclient.h"
 
 #include <mqttclient.h>
 
@@ -60,6 +61,9 @@ private:
     QHash<Thing *, EverestMqttClient *> m_thingClients;
 
     QHash<Thing *, EverestConnection *> m_everstConnections;
+    RfidProviderClient *m_rfidProvider = nullptr;
+    Thing *rfidTarget() const;
+    void updateRfidAvailability();
 };
 
 #endif // INTEGRATIONPLUGINEVEREST_H
