@@ -1,3 +1,12 @@
+nymea-plugins (1.17.0) resolute; urgency=medium
+
+  [ Simon Stürz ]
+  * New plugin: Senec: Add support for SENEC.home energy storages
+  * EVerest: Add RFID thing class and functionality
+  * Everest: Add PCE EV11.4 charger
+
+ -- jenkins <developer@nymea.io>  Tue, 20 Oct 2026 09:42:18 +0200
+
 nymea-plugins (1.16.1) resolute; urgency=medium
 
   [ Simon Stürz ]
