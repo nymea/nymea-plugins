@@ -37,6 +37,16 @@
 #include <nymeasettings.h>
 #include <network/networkdevicediscovery.h>
 
+static bool isRfidThingClass(const ThingClassId &thingClassId)
+{
+    return thingClassId == everestChargerAcRfidThingClassId || thingClassId == everestChargerPceThingClassId;
+}
+
+static bool isAcThingClass(const ThingClassId &thingClassId)
+{
+    return thingClassId == everestChargerAcThingClassId || isRfidThingClass(thingClassId);
+}
+
 IntegrationPluginEverest::IntegrationPluginEverest()
 {
 
@@ -50,8 +60,9 @@ void IntegrationPluginEverest::init()
         Thing *target = rfidTarget();
         if (!target)
             return;
-        emit emitEvent(Event(everestChargerAcRfidTagDetectedEventTypeId, target->id(),
-                            ParamList() << Param(everestChargerAcRfidTagDetectedEventCodeParamTypeId, code)));
+        const EventType eventType = target->thingClass().eventTypes().findByName("tagDetected");
+        emit emitEvent(Event(eventType.id(), target->id(),
+                            ParamList() << Param(eventType.paramTypes().findByName("code").id(), code)));
     });
     m_rfidProvider->probe();
     QFileInfo enableMqttFileInfo(NymeaSettings::settingsPath() + "/everest-mqtt");
@@ -424,6 +435,13 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
             if (available) {
                 thing->setStateValue(everestConnectionApiVersionStateTypeId, connection->client()->apiVersion());
 
+                const EverestJsonRpcClient::ChargerInfo chargerInfo = connection->client()->chargerInfo();
+                foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByThingClassId(everestChargerPceThingClassId)) {
+                    child->setStateValue(everestChargerPceFirmwareVersionStateTypeId, chargerInfo.firmwareVersion);
+                    if (child->paramValue(everestChargerPceThingSerialNumberParamTypeId).toString() != chargerInfo.serialNumber)
+                        child->setParamValue(everestChargerPceThingSerialNumberParamTypeId, chargerInfo.serialNumber);
+                }
+
                 // Finish the bounded provider probe before choosing a new child's class.
                 QPointer<Thing> guardedThing(thing);
                 QPointer<EverestConnection> guardedConnection(connection);
@@ -479,6 +497,15 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                                 ThingDescriptor descriptor(everestChargerDcThingClassId, evseInfo.id, evseInfo.description, thing->id());
                                 descriptor.setParams(ParamList() << Param(everestChargerDcThingIndexParamTypeId, evseInfo.index));
                                 descriptors.append(descriptor);
+                            } else if (withRfid && everestIsPceVendor(connection->client()->chargerInfo().vendor)) {
+                                const EverestJsonRpcClient::ChargerInfo chargerInfo = connection->client()->chargerInfo();
+                                const QString name = chargerInfo.model.isEmpty() ? evseInfo.id : chargerInfo.model;
+                                qCDebug(dcEverest()) << "-> Adding new discovered PCE charger" << name << "on" << connection->client()->serverUrl();
+                                ThingDescriptor descriptor(everestChargerPceThingClassId, name, evseInfo.description, thing->id());
+                                descriptor.setParams(ParamList()
+                                                     << Param(everestChargerPceThingIndexParamTypeId, evseInfo.index)
+                                                     << Param(everestChargerPceThingSerialNumberParamTypeId, chargerInfo.serialNumber));
+                                descriptors.append(descriptor);
                             } else {
                                 // If not a DC charger, default to AC
                                 qCDebug(dcEverest()) << "-> Adding new discovered AC charger on" << connection->client()->serverUrl();
@@ -511,7 +538,7 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
         connection->start();
         return;
-    } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerAcRfidThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
+    } else if (isAcThingClass(thing->thingClassId()) || thing->thingClassId() == everestChargerDcThingClassId) {
 
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
@@ -519,6 +546,9 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
+
+        if (thing->thingClassId() == everestChargerPceThingClassId && connection->available())
+            thing->setStateValue(everestChargerPceFirmwareVersionStateTypeId, connection->client()->chargerInfo().firmwareVersion);
 
         info->finish(Thing::ThingErrorNoError);
 
@@ -530,17 +560,18 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
 {
-    if (info->thing()->thingClassId() == everestChargerAcRfidThingClassId) {
-        const auto actionId = info->action().actionTypeId();
-        if (actionId == everestChargerAcRfidRfidEnrollmentActiveActionTypeId) {
+    if (isRfidThingClass(info->thing()->thingClassId())) {
+        ActionTypes actionTypes = info->thing()->thingClass().actionTypes();
+        const ActionType actionType = actionTypes.findById(info->action().actionTypeId());
+        if (actionType.name() == "rfidEnrollmentActive") {
             info->thing()->setStateValue("rfidEnrollmentActive",
-                info->action().paramValue(everestChargerAcRfidRfidEnrollmentActiveActionRfidEnrollmentActiveParamTypeId));
+                info->action().paramValue(actionType.paramTypes().findByName("rfidEnrollmentActive").id()));
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-        if (actionId == everestChargerAcRfidTagAcceptedActionTypeId || actionId == everestChargerAcRfidTagRejectedActionTypeId) {
+        if (actionType.name() == "tagAccepted" || actionType.name() == "tagRejected") {
             qCInfo(dcEverest()) << "RFID tag"
-                << (actionId == everestChargerAcRfidTagAcceptedActionTypeId ? "accepted" : "rejected")
+                << (actionType.name() == "tagAccepted" ? "accepted" : "rejected")
                 << "for" << info->thing()->name() << "- charger feedback RPC is not yet available.";
             info->thing()->setStateValue("rfidEnrollmentActive", false);
             info->finish(Thing::ThingErrorNoError);
@@ -598,7 +629,7 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
         }
 
         return;
-    } else if (info->thing()->thingClassId() == everestChargerAcThingClassId || info->thing()->thingClassId() == everestChargerAcRfidThingClassId) {
+    } else if (isAcThingClass(info->thing()->thingClassId())) {
         Thing *thing = info->thing();
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
@@ -618,8 +649,13 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
             return;
         }
 
-        if (info->action().actionTypeId() == everestChargerAcPowerActionTypeId || info->action().actionTypeId() == everestChargerAcRfidPowerActionTypeId) {
-            bool power = info->action().paramValue(thing->thingClassId() == everestChargerAcRfidThingClassId ? everestChargerAcRfidPowerActionPowerParamTypeId : everestChargerAcPowerActionPowerParamTypeId).toBool();
+        // Same action names across all AC thing classes, resolve by name
+        ActionTypes actionTypes = thing->thingClass().actionTypes();
+        const ActionType actionType = actionTypes.findById(info->action().actionTypeId());
+        const QVariant actionValue = info->action().paramValue(actionType.paramTypes().findByName(actionType.name()).id());
+
+        if (actionType.name() == "power") {
+            bool power = actionValue.toBool();
             qCDebug(dcEverest()) << "Execute power action" << power;
             EverestJsonRpcReply *reply = evse->setChargingAllowed(power) ;
             connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
@@ -641,8 +677,8 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
                 info->thing()->setStateValue(QStringLiteral("power"), power);
                 info->finish(Thing::ThingErrorNoError);
             });
-        } else if (info->action().actionTypeId() == everestChargerAcMaxChargingCurrentActionTypeId || info->action().actionTypeId() == everestChargerAcRfidMaxChargingCurrentActionTypeId) {
-            double current = info->action().paramValue(thing->thingClassId() == everestChargerAcRfidThingClassId ? everestChargerAcRfidMaxChargingCurrentActionMaxChargingCurrentParamTypeId : everestChargerAcMaxChargingCurrentActionMaxChargingCurrentParamTypeId).toDouble();
+        } else if (actionType.name() == "maxChargingCurrent") {
+            double current = actionValue.toDouble();
             qCDebug(dcEverest()) << "Execute action set max charging current" << current << "[A]";
             EverestJsonRpcReply *reply = evse->setACChargingCurrent(current) ;
             connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
@@ -664,8 +700,8 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
                 info->thing()->setStateValue(QStringLiteral("maxChargingCurrent"), current);
                 info->finish(Thing::ThingErrorNoError);
             });
-        } else if (info->action().actionTypeId() == everestChargerAcDesiredPhaseCountActionTypeId || info->action().actionTypeId() == everestChargerAcRfidDesiredPhaseCountActionTypeId) {
-            int phaseCount = info->action().paramValue(thing->thingClassId() == everestChargerAcRfidThingClassId ? everestChargerAcRfidDesiredPhaseCountActionDesiredPhaseCountParamTypeId : everestChargerAcDesiredPhaseCountActionDesiredPhaseCountParamTypeId).toInt();
+        } else if (actionType.name() == "desiredPhaseCount") {
+            int phaseCount = actionValue.toInt();
             qCDebug(dcEverest()) << "Execute action set phase count" << phaseCount;
             EverestJsonRpcReply *reply = evse->setACChargingPhaseCount(phaseCount);
             connect(reply, &EverestJsonRpcReply::finished, reply, &EverestJsonRpcReply::deleteLater);
@@ -786,7 +822,7 @@ void IntegrationPluginEverest::thingRemoved(Thing *thing)
         }
     } else if (thing->thingClassId() == everestConnectionThingClassId) {
         m_everstConnections.take(thing)->deleteLater();
-    } else if (thing->thingClassId() == everestChargerAcThingClassId || thing->thingClassId() == everestChargerAcRfidThingClassId || thing->thingClassId() == everestChargerDcThingClassId) {
+    } else if (isAcThingClass(thing->thingClassId()) || thing->thingClassId() == everestChargerDcThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
         EverestConnection *connection = m_everstConnections.value(parentThing);
         if (!connection)
@@ -811,7 +847,7 @@ Thing *IntegrationPluginEverest::rfidTarget() const
         if (!everestRfidEligible(connection->client()->serverUrl(), connection->client()->evseInfos()))
             continue;
         for (Thing *child : myThings().filterByParentId(it.key()->id())) {
-            if (child->thingClassId() != everestChargerAcRfidThingClassId
+            if (!isRfidThingClass(child->thingClassId())
                     || child->paramValue("index").toInt() != connection->client()->evseInfos().first().index)
                 continue;
             if (target)
@@ -825,6 +861,8 @@ Thing *IntegrationPluginEverest::rfidTarget() const
 void IntegrationPluginEverest::updateRfidAvailability()
 {
     Thing *target = rfidTarget();
-    for (Thing *thing : myThings().filterByThingClassId(everestChargerAcRfidThingClassId))
-        thing->setStateValue("rfidAvailable", thing == target && m_rfidProvider->ready());
+    for (Thing *thing : myThings()) {
+        if (isRfidThingClass(thing->thingClassId()))
+            thing->setStateValue("rfidAvailable", thing == target && m_rfidProvider->ready());
+    }
 }
