@@ -1,0 +1,369 @@
+{
+    "displayName": "SENEC",
+    "name": "Senec",
+    "id": "3f055ea5-a883-445d-9556-675f5eda6c9a",
+    "vendors": [
+        {
+            "displayName": "SENEC",
+            "name": "senec",
+            "id": "1be922b9-4439-42cf-9caa-67f2ac7cc425",
+            "thingClasses": [
+                {
+                    "id": "d064f111-1332-4096-b5de-529d44f72963",
+                    "name": "senecConnect",
+                    "displayName": "SENEC.Connect",
+                    "interfaces": ["account"],
+                    "createMethods": ["User"],
+                    "setupMethod": "EnterPin",
+                    "providedInterfaces": ["energystorage", "energymeter", "solarinverter"],
+                    "stateTypes": [
+                        {
+                            "id": "ed8ef7d7-bf20-4780-870d-cf7171440952",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "73c4da2a-2167-4b68-8fbf-d03f5b7920a5",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "345df3b1-d411-4db5-bbb2-3b14eb86c1ba",
+                    "name": "senecStorageLan",
+                    "displayName": "SENEC.Home storage",
+                    "interfaces": ["energystorage", "networkdevice"],
+                    "createMethods": ["Discovery", "User"],
+                    "settingsTypes": [
+                        {
+                            "id": "239d388c-f4a2-4055-88c3-decc6dace2b8",
+                            "name": "addMeter",
+                            "displayName": "Add meter",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "a45cabe9-9f76-405e-b47c-0a3d00bdd44b",
+                            "name": "address",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "51a1bbc0-28a5-43ac-9021-896acbf9413f",
+                            "name": "hostName",
+                            "displayName": "Host name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0790e1b1-c8c9-488f-9cda-2a0bbf14b4af",
+                            "name": "macAddress",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "inputType": "MacAddress",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d3bdc64b-67fb-4d84-97ed-c5142e5db55d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "3b00470d-11bc-4352-a885-52ab9443cee5",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        },
+                        {
+                            "id": "66a3a7d2-1210-4891-a8f2-6fe4f9b8c6cc",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a9aa13fb-3f51-40e3-9d29-ab882513a87a",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "339f602f-c9f1-446d-bc96-1c7f9a7db922",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "d927e6cf-29f0-412f-b74d-7d803fd3e191",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "8de0eeca-a698-4aee-bc67-a586c8f10652",
+                    "name": "senecStorageCloud",
+                    "displayName": "SENEC.Home storage (SENEC.Connect)",
+                    "interfaces": ["energystorage", "connectable"],
+                    "createMethods": ["Auto"],
+                    "paramTypes": [
+                        {
+                            "id": "9172116e-e513-429b-b9a0-c73d7587bfa8",
+                            "name": "systemId",
+                            "displayName": "System ID",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5d1d61dd-a419-4ba5-992a-91e9a3f34d31",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "readOnly": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "cd7d8a3c-44b4-4517-8aa0-25288d03f19a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "eccdfa19-b033-445c-b196-ab41bb2e449f",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00,
+                            "cached": true
+                        },
+                        {
+                            "id": "500b0df2-61d0-4895-91c7-c8f2616dd93d",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "8805be49-b88b-48b6-a0e3-7b6b251d3299",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8db60ec4-06cd-4fc3-a66e-ced915bf5c11",
+                            "name": "chargingState",
+                            "displayName": "Charging state",
+                            "type": "QString",
+                            "possibleValues": ["idle", "charging", "discharging"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "f282b051-a68c-4739-88c7-e5819d8424f9",
+                            "name": "capacity",
+                            "displayName": "Capacity",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "senecMeter",
+                    "displayName": "SENEC Meter",
+                    "id": "303f454d-93b7-4f8f-b295-a4c22e09be6d",
+                    "createMethods": [ "auto" ],
+                    "interfaces": ["energymeter", "connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "9aa4dbfb-255b-408b-b148-8fb145ba8c98",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "56e58d03-782d-40bb-8d32-fad396ffefdc",
+                            "name": "currentPower",
+                            "displayName": "Current power usage",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f9920cfa-26a0-4247-ad50-b4fca91596f0",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Energy returned",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "21728bf0-a566-4eb0-a163-5f108f34bb9b",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy consumed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "385df15e-4f1d-4842-a10a-597d087bdac0",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Current power phase A",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "3bab2b05-99d7-4b3a-b903-054d269a3527",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Current power phase B",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "01a63c94-b635-4e98-8037-d5d69fe0dd7c",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Current power phase C",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "db469573-bb11-48d2-84ba-2b8ff4b13413",
+                            "name": "voltagePhaseA",
+                            "displayName": "Voltage phase A",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "176d5a01-220d-44da-b875-9a40aaa9c85a",
+                            "name": "voltagePhaseB",
+                            "displayName": "Voltage phase B",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e7ab02d3-016a-44ca-8da1-5d7ac9acbc6d",
+                            "name": "voltagePhaseC",
+                            "displayName": "Voltage phase C",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1923f7b0-5b54-46d8-a7e9-9364b7c9eeb8",
+                            "name": "currentPhaseA",
+                            "displayName": "Current phase A",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "4908abf8-f655-4e14-a007-3eefeda7088e",
+                            "name": "currentPhaseB",
+                            "displayName": "Current phase B",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e8415152-0fac-4cd9-98ac-b0e7c006d637",
+                            "name": "currentPhaseC",
+                            "displayName": "Current phase C",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "12a613fb-f33c-48b1-a9a4-caaee1041d25",
+                    "name": "senecInverter",
+                    "displayName": "SENEC PV inverter",
+                    "interfaces": ["solarinverter", "connectable"],
+                    "createMethods": ["Auto"],
+                    "stateTypes": [
+                        {
+                            "id": "67c15e22-2503-41e3-8318-2ccb973760c4",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "11e72bac-a531-4622-bbd0-da5b638e3257",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e5a22d6c-573a-46df-ba92-3d33bd0ad754",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy produced",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

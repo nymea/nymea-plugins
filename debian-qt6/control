@@ -678,6 +678,16 @@ Description: nymea integration plugin for HTTP commander
  HTTP requests from and to nymea.
 
 
+Package: nymea-plugin-senec
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Conflicts: nymea-plugins-translations (<< 1.0.1)
+Description: nymea integration plugin for SENEC.home
+ This package contains the nymea integration plugin for the SENEC.home
+ energy storages.
+
+
 Package: nymea-plugin-senic
 Architecture: any
 Depends: ${shlibs:Depends},
