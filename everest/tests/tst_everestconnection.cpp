@@ -54,7 +54,9 @@ public:
                 QVariantMap result;
                 const QString method = request.value("method").toString();
                 if (method == "API.Hello") {
-                    result = {{"api_version", "1.0"}, {"everest_version", "test"}, {"authentication_required", false}, {"charger_info", QVariantMap()}};
+                    result = {{"api_version", "1.0"}, {"everest_version", "test"}, {"authentication_required", false}, {"charger_info", QVariantMap{
+                                  {"vendor", "PCE"}, {"model", "EV11.4 Wallbox R37 11kW"},
+                                  {"serial", "1234567890"}, {"firmware_version", "0.10.9"}}}};
                 } else if (method == "ChargePoint.GetEVSEInfos") {
                     result = {{"error", "NoError"}, {"infos", QVariantList()}};
                 } else {
@@ -102,6 +104,12 @@ private slots:
         QTRY_VERIFY_WITH_TIMEOUT(connection.available(), 8000);
         QCOMPARE(availableSpy.count(), 1);
         QCOMPARE(availableSpy.first().first().toBool(), true);
+
+        const EverestJsonRpcClient::ChargerInfo chargerInfo = connection.client()->chargerInfo();
+        QCOMPARE(chargerInfo.vendor, QString("PCE"));
+        QCOMPARE(chargerInfo.model, QString("EV11.4 Wallbox R37 11kW"));
+        QCOMPARE(chargerInfo.serialNumber, QString("1234567890"));
+        QCOMPARE(chargerInfo.firmwareVersion, QString("0.10.9"));
     }
 
     void noReconnectWhenStopped()
