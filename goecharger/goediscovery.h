@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include "goediscoveryresults.h"
 
 #include <network/networkaccessmanager.h>
 #include <network/networkdevicediscovery.h>
@@ -45,8 +46,8 @@ public:
     Q_ENUM(DiscoveryMethod)
 
     typedef struct Result {
-        QString product = "go-eCharger";
-        QString manufacturer = "go-e";
+        QString product;
+        QString manufacturer;
         QString friendlyName;
         QString serialNumber;
         QString firmwareVersion;
@@ -80,7 +81,7 @@ private:
     NetworkDeviceDiscoveryReply *m_discoveryReply = nullptr;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
-    QHash<QHostAddress, GoeDiscovery::Result> m_discoveryResults;
+    GoeDiscoveryData::Results<Result> m_discoveryResults;
     NetworkDeviceInfos m_discoveredNetworkDeviceInfos;
     QList<QHostAddress> m_verifiedHostAddresses;
 
