@@ -9,5 +9,7 @@ SOURCES += \
     integrationplugingoecharger.cpp \
 
 HEADERS += \
+    goestatus.h \
+    goediscoveryresults.h \
     goediscovery.h \
     integrationplugingoecharger.h \

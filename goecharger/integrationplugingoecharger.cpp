@@ -23,6 +23,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugingoecharger.h"
+#include "goestatus.h"
 #include "plugininfo.h"
 #include "goediscovery.h"
 
@@ -119,6 +120,7 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     qCDebug(dcGoECharger()) << "Setting up" << thing << thing->params();
+    m_pollingFields.remove(thing);
 
 
     MacAddress macAddress(thing->paramValue(goeHomeThingMacAddressParamTypeId).toString());
@@ -173,7 +175,8 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
                 QNetworkReply *reply = hardwareManager()->networkManager()->get(buildStatusRequest(thing, true));
                 connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
                 connect(reply, &QNetworkReply::finished, thing, [=](){
-                    if (reply->error() != QNetworkReply::NoError) {
+                    const ApiVersion apiVersion = getApiVersion(thing);
+                    if (!GoeStatus::acceptableReply(reply, apiVersion == ApiVersion2)) {
                         qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
                         return;
                     }
@@ -181,15 +184,16 @@ void IntegrationPluginGoECharger::setupThing(ThingSetupInfo *info)
                     QByteArray data = reply->readAll();
                     QJsonParseError error;
                     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-                    if (error.error != QJsonParseError::NoError) {
+                    if (error.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
                         qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
                         return;
                     }
 
                     qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
                     QVariantMap statusMap = jsonDoc.toVariant().toMap();
+                    if (apiVersion == ApiVersion2)
+                        m_pollingFields[thing] = GoeStatus::supportedFields(GoeStatus::pollingFields(), statusMap);
 
-                    ApiVersion apiVersion = getApiVersion(thing);
                     switch (apiVersion) {
                     case ApiVersion1:
                         if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
@@ -272,6 +276,7 @@ void IntegrationPluginGoECharger::postSetupThing(Thing *thing)
 
 void IntegrationPluginGoECharger::thingRemoved(Thing *thing)
 {
+    m_pollingFields.remove(thing);
     // Cleanup mqtt channels if set up
     switch (getApiVersion(thing)) {
     case ApiVersion1:
@@ -476,7 +481,7 @@ void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
     connect(info, &ThingSetupInfo::aborted, reply, &QNetworkReply::abort);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [=](){
-        if (reply->error() != QNetworkReply::NoError) {
+        if (!GoeStatus::acceptableReply(reply, getApiVersion(thing) == ApiVersion2)) {
             qCWarning(dcGoECharger()) << "HTTP status reply returned error:" << reply->errorString() << reply->readAll();
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("The wallbox does not seem to be reachable."));
             hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
@@ -486,7 +491,7 @@ void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
         QByteArray data = reply->readAll();
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-        if (error.error != QJsonParseError::NoError) {
+        if (error.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
             qCWarning(dcGoECharger()) << "Failed to parse status data for thing " << thing->name() << qUtf8Printable(data) << error.errorString();
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The wallbox returned invalid data."));
             hardwareManager()->networkDeviceDiscovery()->unregisterMonitor(m_monitors.take(thing));
@@ -531,6 +536,7 @@ void IntegrationPluginGoECharger::setupGoeHome(ThingSetupInfo *info)
 
             qCDebug(dcGoECharger()) << "Initial status map" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Compact));
             QVariantMap statusMap = jsonDoc.toVariant().toMap();
+            m_pollingFields[thing] = GoeStatus::supportedFields(GoeStatus::pollingFields(), statusMap);
             if (thing->paramValue(goeHomeThingUseMqttParamTypeId).toBool()) {
                 // Verify mqtt client and set it up
                 qCDebug(dcGoECharger()) << "Setting up using MQTT connection for" << thing;
@@ -565,7 +571,9 @@ QNetworkRequest IntegrationPluginGoECharger::buildStatusRequest(Thing *thing, bo
         requestUrl.setPath("/api/status");
         if (!fullStatus) {
             QUrlQuery query;
-            query.addQueryItem("filter", "alw,car,ast,tma,eto,wh,upd,fwv,amp,adi,fhz,cbl,ama,var,pnp,nrg,pha");
+            const QStringList fields = m_pollingFields.value(thing, GoeStatus::pollingFields());
+            if (!fields.isEmpty())
+                query.addQueryItem("filter", fields.join(','));
             requestUrl.setQuery(query);
         }
         break;
@@ -1195,16 +1203,16 @@ void IntegrationPluginGoECharger::updateV2(Thing *thing, const QVariantMap &stat
 
     if (statusMap.contains("tma")) {
         QVariantList temperatureSensorList = statusMap.value("tma").toList();
-        if (temperatureSensorList.count() >= 1)
+        if (temperatureSensorList.count() >= 1 && !temperatureSensorList.at(0).isNull())
             thing->setStateValue(goeHomeTemperatureSensor1StateTypeId, temperatureSensorList.at(0).toDouble());
 
-        if (temperatureSensorList.count() >= 2)
+        if (temperatureSensorList.count() >= 2 && !temperatureSensorList.at(1).isNull())
             thing->setStateValue(goeHomeTemperatureSensor2StateTypeId, temperatureSensorList.at(1).toDouble());
 
-        if (temperatureSensorList.count() >= 3)
+        if (temperatureSensorList.count() >= 3 && !temperatureSensorList.at(2).isNull())
             thing->setStateValue(goeHomeTemperatureSensor3StateTypeId, temperatureSensorList.at(2).toDouble());
 
-        if (temperatureSensorList.count() >= 4)
+        if (temperatureSensorList.count() >= 4 && !temperatureSensorList.at(3).isNull())
             thing->setStateValue(goeHomeTemperatureSensor4StateTypeId, temperatureSensorList.at(3).toDouble());
     }
 
@@ -1580,7 +1588,7 @@ void IntegrationPluginGoECharger::refreshHttp()
             // We are done with this thing reply
             m_pendingReplies.remove(thing);
 
-            if (reply->error() != QNetworkReply::NoError) {
+            if (!GoeStatus::acceptableReply(reply, getApiVersion(thing) == ApiVersion2)) {
                 qCWarning(dcGoECharger()) << "HTTP status reply error for thing" << thing->name() << reply->errorString() << "Request was:" << request.url().toString();
                 markAsDisconnected(thing);
                 return;
@@ -1589,7 +1597,7 @@ void IntegrationPluginGoECharger::refreshHttp()
             QByteArray data = reply->readAll();
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-            if (error.error != QJsonParseError::NoError) {
+            if (error.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
                 qCWarning(dcGoECharger()) << "Failed to parse status data for thing" << thing->name() << qUtf8Printable(data) << error.errorString() << "Request was:" << request.url().toString();
                 markAsDisconnected(thing);
                 return;
@@ -1601,6 +1609,8 @@ void IntegrationPluginGoECharger::refreshHttp()
 
             //qCDebug(dcGoECharger()) << "Received" << qUtf8Printable(jsonDoc.toJson());
             QVariantMap statusMap = jsonDoc.toVariant().toMap();
+            if (apiVersion == ApiVersion2 && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 400)
+                m_pollingFields[thing] = GoeStatus::supportedFields(m_pollingFields.value(thing, GoeStatus::pollingFields()), statusMap);
             switch (apiVersion) {
             case ApiVersion1:
                 updateV1(thing, statusMap);
