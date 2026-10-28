@@ -23,6 +23,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "goediscovery.h"
+#include "goestatus.h"
 #include "extern-plugininfo.h"
 
 #include <QJsonDocument>
@@ -54,9 +55,11 @@ void GoeDiscovery::startDiscovery()
     qCInfo(dcGoECharger()) << "Discovery: Start discovering the network...";
 
     // ZeroConf
-    connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
-    foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
-        onServiceEntryAdded(serviceEntry);
+    if (m_serviceBrowser) {
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
+        foreach (const ZeroConfServiceEntry &serviceEntry, m_serviceBrowser->serviceEntries()) {
+            onServiceEntryAdded(serviceEntry);
+        }
     }
 
     // Network discovery
@@ -84,7 +87,14 @@ void GoeDiscovery::startDiscovery()
 
 QList<GoeDiscovery::Result> GoeDiscovery::discoveryResults() const
 {
-    return m_discoveryResults.values();
+    QList<Result> results = m_discoveryResults.results();
+    NetworkDeviceInfos networkDeviceInfos = m_discoveredNetworkDeviceInfos;
+    for (Result &result : results) {
+        const int index = networkDeviceInfos.indexFromHostAddress(result.address);
+        if (index >= 0)
+            result.networkDeviceInfo = m_discoveredNetworkDeviceInfos.at(index);
+    }
+    return results;
 }
 
 QNetworkRequest GoeDiscovery::buildRequestV1(const QHostAddress &address)
@@ -119,10 +129,9 @@ void GoeDiscovery::checkHostAddress(const QHostAddress &address)
         return;
 
     qCDebug(dcGoECharger()) << "Discovery: Start inspecting" << address.toString();
+    m_verifiedHostAddresses.append(address);
     checkHostAddressApiV2(address);
     checkHostAddressApiV1(address);
-
-    m_verifiedHostAddresses.append(address);
 }
 
 void GoeDiscovery::checkHostAddressApiV1(const QHostAddress &address)
@@ -150,27 +159,16 @@ void GoeDiscovery::checkHostAddressApiV1(const QHostAddress &address)
         // Verify if we have the required values in the response map
         // https://github.com/goecharger/go-eCharger-API-v1/blob/master/go-eCharger%20API%20v1%20EN.md
         QVariantMap responseMap = jsonDoc.toVariant().toMap();
-        if (responseMap.contains("fwv") && responseMap.contains("sse") && responseMap.contains("nrg") && responseMap.contains("amp")) {
+        if (!responseMap.value("fwv").toString().isEmpty() && !responseMap.value("sse").toString().isEmpty() && responseMap.contains("nrg") && responseMap.contains("amp")) {
             // Looks like we have found a go-e V1 api endpoint, nice
             qCDebug(dcGoECharger()) << "Discovery: --> Found API V1 on" << address.toString();
 
-            if (m_discoveryResults.contains(address) && m_discoveryResults.value(address).discoveryMethod == DiscoveryMethodZeroConf) {
-                qCDebug(dcGoECharger()) << "Discovery: Network discovery found API V1 go-eCharger on" << address.toString()
-                << "but this host has already been discovered using ZeroConf. Prefering ZeroConf over MAC address due to Repeater missbehaviours.";
-                return;
-            }
-
-            if (m_discoveryResults.contains(address)) {
-                // We use the information from API V2 since there are more information available
-                m_discoveryResults[address].apiAvailableV1 = true;
-            } else {
-                GoeDiscovery::Result result;
-                result.serialNumber = responseMap.value("sse").toString();
-                result.firmwareVersion = responseMap.value("fwv").toString();
-                result.address = address;
-                result.apiAvailableV1 = true;
-                m_discoveryResults[address] = result;
-            }
+            Result result;
+            result.serialNumber = responseMap.value("sse").toString();
+            result.firmwareVersion = responseMap.value("fwv").toString();
+            result.address = address;
+            result.apiAvailableV1 = true;
+            m_discoveryResults.add(result, GoeDiscoveryData::SourceApiV1);
         } else {
             qCDebug(dcGoECharger()) << "Discovery:" << address.toString() << "API V1 verification returned JSON data but not the right one. Continue...";
         }
@@ -188,7 +186,7 @@ void GoeDiscovery::checkHostAddressApiV2(const QHostAddress &address)
         m_pendingReplies.removeAll(reply);
         reply->deleteLater();
 
-        if (reply->error() != QNetworkReply::NoError) {
+        if (!GoeStatus::acceptableReply(reply, true)) {
             qCDebug(dcGoECharger()) << "Discovery:" << address.toString() << "API V2 verification HTTP error" << reply->errorString() << "Continue...";
             return;
         }
@@ -204,7 +202,7 @@ void GoeDiscovery::checkHostAddressApiV2(const QHostAddress &address)
         // Verify if we have the required values in the response map
         // https://github.com/goecharger/go-eCharger-API-v2/blob/main/http-en.md
         QVariantMap responseMap = jsonDoc.toVariant().toMap();
-        if (responseMap.contains("fwv") && responseMap.contains("sse") && responseMap.contains("typ") && responseMap.contains("fna")) {
+        if (!responseMap.value("fwv").toString().isEmpty() && !responseMap.value("sse").toString().isEmpty() && responseMap.contains("nrg") && responseMap.contains("amp")) {
             // Looks like we have found a go-e V2 api endpoint, nice
             qCDebug(dcGoECharger()) << "Discovery: --> Found API V2 on" << address.toString();
 
@@ -218,18 +216,7 @@ void GoeDiscovery::checkHostAddressApiV2(const QHostAddress &address)
             result.discoveryMethod = DiscoveryMethodNetwork;
             result.apiAvailableV2 = true;
 
-            if (m_discoveryResults.contains(address) && m_discoveryResults.value(address).discoveryMethod == DiscoveryMethodZeroConf) {
-                qCDebug(dcGoECharger()) << "Discovery: Network discovery found API V2 go-eCharger on" << address.toString()
-                << "but this host has already been discovered using ZeroConf. Prefering ZeroConf over MAC address due to Repeater missbehaviours.";
-                return;
-            }
-
-            if (m_discoveryResults.contains(address)) {
-                result.apiAvailableV1 = m_discoveryResults.value(address).apiAvailableV1;
-            }
-
-            // Overwrite result from V1 since V2 contains more information
-            m_discoveryResults[address] = result;
+            m_discoveryResults.add(result, GoeDiscoveryData::SourceApiV2);
         } else {
             qCDebug(dcGoECharger()) << "Discovery:" << address.toString() << "API V2 verification returned JSON data but not the right one. Continue...";
         }
@@ -258,9 +245,10 @@ void GoeDiscovery::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
 
         qCDebug(dcGoECharger()) << "Discovery:" << result;
 
-        // Overwrite any already discovered result for this host, we always prefere ZeroConf over Networkdiscovery...
-        m_discoveryResults[result.address] = result;
-        m_verifiedHostAddresses.append(result.address);
+        m_discoveryResults.add(result, GoeDiscoveryData::SourceZeroConf);
+        // A service name alone (for example SSH without TXT records) is only a candidate.
+        // HTTP also verifies the API and fills metadata missing from ZeroConf.
+        checkHostAddress(result.address);
     }
 }
 
@@ -274,17 +262,11 @@ void GoeDiscovery::cleanupPendingReplies()
 
 void GoeDiscovery::finishDiscovery()
 {
-    disconnect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
-
-    foreach (const Result &result, m_discoveryResults) {
-        int index = m_discoveredNetworkDeviceInfos.indexFromHostAddress(result.address);
-        if (index >= 0) {
-            m_discoveryResults[result.address].networkDeviceInfo = m_discoveredNetworkDeviceInfos.at(index);
-        }
-    }
+    if (m_serviceBrowser)
+        disconnect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &GoeDiscovery::onServiceEntryAdded);
 
     qint64 durationMilliSeconds = QDateTime::currentMSecsSinceEpoch() - m_startDateTime.toMSecsSinceEpoch();
-    qCInfo(dcGoECharger()) << "Discovery: Finished the discovery process. Found" << m_discoveryResults.count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
+    qCInfo(dcGoECharger()) << "Discovery: Finished the discovery process. Found" << discoveryResults().count() << "go-eChargers in" << QTime::fromMSecsSinceStartOfDay(durationMilliSeconds).toString("mm:ss.zzz");
     cleanupPendingReplies();
     emit discoveryFinished();
 }
