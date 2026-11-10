@@ -206,6 +206,15 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
             if (meter) {
                 meter->setStateValue(senecMeterCurrentPowerStateTypeId, storage->gridPower());
             }
+
+            Thing *inverter = childThing(thing, senecInverterThingClassId);
+            if (inverter) {
+                // LAN GUI_INVERTER_POWER reports PV production as positive watts.
+                // Use the existing inverter/cloud convention: production is negative.
+                double productionPower = -storage->inverterPower();
+                updateEnergy(inverter, productionPower, StateTypeId(), senecInverterTotalEnergyProducedStateTypeId);
+                inverter->setStateValue(senecInverterCurrentPowerStateTypeId, productionPower);
+            }
         });
 
         connect(thing, &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
@@ -263,7 +272,9 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
 
     } else if (thing->thingClassId() == senecInverterThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
-        if (parentThing) {
+        if (parentThing && parentThing->thingClassId() == senecStorageLanThingClassId) {
+            thing->setStateValue(senecInverterConnectedStateTypeId, parentThing->stateValue(senecStorageLanConnectedStateTypeId).toBool());
+        } else if (parentThing && parentThing->thingClassId() == senecStorageCloudThingClassId) {
             thing->setStateValue(senecInverterConnectedStateTypeId, parentThing->stateValue(senecStorageCloudConnectedStateTypeId).toBool());
         }
 
@@ -274,6 +285,10 @@ void IntegrationPluginSenec::setupThing(ThingSetupInfo *info)
 void IntegrationPluginSenec::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == senecStorageLanThingClassId) {
+        if (!childThing(thing, senecInverterThingClassId)) {
+            emit autoThingsAppeared(ThingDescriptors()
+                                   << ThingDescriptor(senecInverterThingClassId, "SENEC PV inverter", thing->name(), thing->id()));
+        }
         m_storages.value(thing)->initialize();
 
         if (!m_refreshTimer) {
@@ -356,6 +371,11 @@ void IntegrationPluginSenec::setConnected(Thing *storageThing, bool connected)
     Thing *meter = childThing(storageThing, senecMeterThingClassId);
     if (meter) {
         meter->setStateValue(senecMeterConnectedStateTypeId, connected);
+    }
+
+    Thing *inverter = childThing(storageThing, senecInverterThingClassId);
+    if (inverter) {
+        inverter->setStateValue(senecInverterConnectedStateTypeId, connected);
     }
 }
 
