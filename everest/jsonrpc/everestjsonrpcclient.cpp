@@ -203,6 +203,13 @@ EverestJsonRpcReply *EverestJsonRpcClient::evseGetMeterData(int evseIndex)
     return reply;
 }
 
+EverestJsonRpcReply *EverestJsonRpcClient::chargePointSetHmiIndication(const QString &indication)
+{
+    EverestJsonRpcReply *reply = createReply("ChargePoint.SetHmiIndication", {{"indication", indication}});
+    sendRequest(reply);
+    return reply;
+}
+
 EverestJsonRpcReply *EverestJsonRpcClient::evseSetChargingAllowed(int evseIndex, bool allowed)
 {
     QVariantMap params;

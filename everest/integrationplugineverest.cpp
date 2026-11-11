@@ -32,6 +32,7 @@
 
 #include <QFileInfo>
 #include <QPointer>
+#include <QSharedPointer>
 
 #include <hardwaremanager.h>
 #include <nymeasettings.h>
@@ -553,6 +554,13 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorNoError);
 
         connection->addThing(thing);
+        if (isRfidThingClass(thing->thingClassId())) {
+            connect(connection->getEvse(thing), &EverestEvse::pluggedInChanged, thing,
+                    [this, thing](bool pluggedIn) {
+                if (pluggedIn && thing->stateValue("rfidAvailable").toBool())
+                    enqueueHmiIndication(thing, "AuthRequired");
+            });
+        }
         QTimer::singleShot(0, this, &IntegrationPluginEverest::updateRfidAvailability);
         return;
     }
@@ -563,18 +571,15 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
     if (isRfidThingClass(info->thing()->thingClassId())) {
         ActionTypes actionTypes = info->thing()->thingClass().actionTypes();
         const ActionType actionType = actionTypes.findById(info->action().actionTypeId());
+        QString indication;
         if (actionType.name() == "rfidEnrollmentActive") {
-            info->thing()->setStateValue("rfidEnrollmentActive",
-                info->action().paramValue(actionType.paramTypes().findByName("rfidEnrollmentActive").id()));
-            info->finish(Thing::ThingErrorNoError);
-            return;
+            const bool active = info->action().paramValue(actionType.paramTypes().findByName("rfidEnrollmentActive").id()).toBool();
+            indication = active ? "TagEnrollmentActive" : "TagEnrollmentInactive";
+        } else if (actionType.name() == "tagAccepted" || actionType.name() == "tagRejected") {
+            indication = actionType.name() == "tagAccepted" ? "AuthAccepted" : "AuthRejected";
         }
-        if (actionType.name() == "tagAccepted" || actionType.name() == "tagRejected") {
-            qCInfo(dcEverest()) << "RFID tag"
-                << (actionType.name() == "tagAccepted" ? "accepted" : "rejected")
-                << "for" << info->thing()->name() << "- charger feedback RPC is not yet available.";
-            info->thing()->setStateValue("rfidEnrollmentActive", false);
-            info->finish(Thing::ThingErrorNoError);
+        if (!indication.isEmpty()) {
+            enqueueHmiIndication(info->thing(), indication, info);
             return;
         }
     }
@@ -865,4 +870,80 @@ void IntegrationPluginEverest::updateRfidAvailability()
         if (isRfidThingClass(thing->thingClassId()))
             thing->setStateValue("rfidAvailable", thing == target && m_rfidProvider->ready());
     }
+}
+
+void IntegrationPluginEverest::enqueueHmiIndication(Thing *thing, const QString &indication, ThingActionInfo *info)
+{
+    EverestConnection *connection = m_everstConnections.value(myThings().findById(thing->parentId()));
+    m_hmiRequests.enqueue({thing, info, indication, info != nullptr, connection,
+                          connection ? connection->property("rfidDiscoveryGeneration").toULongLong() : 0});
+    processHmiIndications();
+}
+
+void IntegrationPluginEverest::processHmiIndications()
+{
+    if (m_hmiBusy || m_hmiRequests.isEmpty())
+        return;
+    const HmiRequest request = m_hmiRequests.dequeue();
+    auto finish = [this, request](Thing::ThingError error) {
+        if (request.info && !request.info->isFinished())
+            request.info->finish(error);
+        else if (error != Thing::ThingErrorNoError)
+            qCWarning(dcEverest()) << "HMI indication failed:" << request.indication << error;
+        m_hmiBusy = false;
+        QTimer::singleShot(0, this, &IntegrationPluginEverest::processHmiIndications);
+    };
+    m_hmiBusy = true;
+    Thing *thing = request.thing;
+    if (!thing || (request.action && (!request.info || request.info->isFinished())) || thing != rfidTarget()
+            || !thing->stateValue("connected").toBool()) {
+        finish(Thing::ThingErrorHardwareNotAvailable);
+        return;
+    }
+    // A queued plug-in prompt may have become obsolete while another request ran.
+    if (request.indication == "AuthRequired"
+            && (!thing->stateValue("pluggedIn").toBool() || !thing->stateValue("rfidAvailable").toBool())) {
+        finish(Thing::ThingErrorNoError);
+        return;
+    }
+    EverestConnection *connection = m_everstConnections.value(myThings().findById(thing->parentId()));
+    if (!connection || !connection->available() || connection != request.connection
+            || connection->property("rfidDiscoveryGeneration").toULongLong() != request.generation) {
+        finish(Thing::ThingErrorHardwareNotAvailable);
+        return;
+    }
+    EverestJsonRpcReply *reply = connection->client()->chargePointSetHmiIndication(request.indication);
+    // Destruction can happen without finished when the connection thing is removed.
+    auto completed = QSharedPointer<bool>::create(false);
+    connect(reply, &QObject::destroyed, this, [finish, completed]() {
+        if (!*completed)
+            finish(Thing::ThingErrorHardwareNotAvailable);
+    });
+    connect(reply, &EverestJsonRpcReply::finished, this, [this, request, reply, finish, completed]() {
+        *completed = true;
+        reply->deleteLater();
+        if (reply->error() || reply->response().value("result").toMap().value("error").toString() != "NoError") {
+            finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+        Thing *thing = request.thing;
+        if (!thing || thing != rfidTarget() || !request.connection
+                || request.connection->property("rfidDiscoveryGeneration").toULongLong() != request.generation) {
+            finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        if (request.indication != "AuthRequired")
+            thing->setStateValue("rfidEnrollmentActive", request.indication == "TagEnrollmentActive");
+        if (request.indication == "AuthRejected" && thing->stateValue("connected").toBool()
+                && thing->stateValue("pluggedIn").toBool() && thing->stateValue("rfidAvailable").toBool()) {
+            // Keep the follow-up ahead of subsequent actions, preserving HMI event order.
+            HmiRequest followup = request;
+            followup.indication = "AuthRequired";
+            m_hmiRequests.prepend(followup);
+            m_hmiBusy = false;
+            processHmiIndications();
+            return;
+        }
+        finish(Thing::ThingErrorNoError);
+    });
 }

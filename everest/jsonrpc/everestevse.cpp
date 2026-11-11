@@ -39,6 +39,7 @@ EverestEvse::EverestEvse(EverestJsonRpcClient *client, Thing *thing, QObject *pa
         } else {
             qCDebug(dcEverest()) << "Evse: The connection is not available any more.";
             m_initialized = false;
+            m_statusKnown = false;
             m_thing->setStateValue("connected", false);
         }
     });
@@ -211,6 +212,10 @@ void EverestEvse::initialize()
 
 void EverestEvse::processEvseStatus()
 {
+    const bool pluggedIn = m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged;
+    const bool plugChanged = m_statusKnown && pluggedIn != m_pluggedIn;
+    m_statusKnown = true;
+    m_pluggedIn = pluggedIn;
     if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId || m_thing->thingClassId() == everestChargerPceThingClassId)) {
         m_thing->setStateValue(QStringLiteral("power"), m_evseStatus.chargingAllowed);
         m_thing->setStateValue(QStringLiteral("sessionEnergy"), m_evseStatus.chargedEnergyWh / 1000.0);
@@ -244,6 +249,8 @@ void EverestEvse::processEvseStatus()
         }
 
     }
+    if (plugChanged)
+        emit pluggedInChanged(pluggedIn);
 }
 
 void EverestEvse::processHardwareCapabilities()
