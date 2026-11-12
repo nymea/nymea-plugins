@@ -52,11 +52,15 @@ are reported as failures. Indications do not change authorization or charging
 policy, and transient feedback is not automatically retried.
 
 An observed unplugged-to-plugged transition sends `AuthRequired` when the RFID
-reader is available. Initial status after startup/reconnection and reader
-recovery do not prompt an already connected car. After rejection, `AuthRequired`
-is sent again if the car is still connected and RFID is available, restoring
-the prompt after transient rejection feedback. Requests retain their order and
-use the same unambiguous local charger routing as RFID scans.
+reader is available and no authorization was granted for this plug cycle. A tag
+accepted before plug-in therefore does not prompt again. Unplugging clears the
+plugin's authorization marker and discards any queued prompt for the unplugged
+car; the HMI RPC has no `AuthRequired: false` indication. Initial status after
+startup/reconnection and reader recovery do not prompt an already connected car.
+After rejection, `AuthRequired` is sent again if the car is still connected and
+RFID is available, restoring the prompt after transient rejection feedback.
+Requests retain their order and use the same unambiguous local charger routing
+as RFID scans.
 
 ### RFID regression tests
 

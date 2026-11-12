@@ -559,10 +559,25 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
 
         connection->addThing(thing);
         if (isRfidThingClass(thing->thingClassId())) {
+            connect(thing, &Thing::stateValueChanged, thing, [this, thing](const StateTypeId &stateTypeId, const QVariant &value) {
+                if (thing->thingClass().getStateType(stateTypeId).name() != "authorizedUsername")
+                    return;
+                if (!value.toString().isEmpty())
+                    m_hmiAuthorizedThings.insert(thing);
+                else
+                    m_hmiAuthorizedThings.remove(thing);
+            });
             connect(connection->getEvse(thing), &EverestEvse::pluggedInChanged, thing,
                     [this, thing](bool pluggedIn) {
-                if (pluggedIn && thing->stateValue("rfidAvailable").toBool())
+                if (!pluggedIn) {
+                    m_hmiAuthorizedThings.remove(thing);
+                    for (int i = m_hmiRequests.size() - 1; i >= 0; --i) {
+                        if (m_hmiRequests.at(i).thing == thing && m_hmiRequests.at(i).indication == "AuthRequired")
+                            m_hmiRequests.removeAt(i);
+                    }
+                } else if (thing->stateValue("rfidAvailable").toBool() && !m_hmiAuthorizedThings.contains(thing)) {
                     enqueueHmiIndication(thing, "AuthRequired");
+                }
             });
         }
         QTimer::singleShot(0, this, &IntegrationPluginEverest::updateRfidAvailability);
@@ -583,6 +598,9 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
             indication = actionType.name() == "tagAccepted" ? "AuthAccepted" : "AuthRejected";
         }
         if (!indication.isEmpty()) {
+            if (indication == "AuthAccepted" && !info->thing()->stateValue("authorizedUsername").toString().isEmpty()
+                    && !info->thing()->stateValue("rfidEnrollmentActive").toBool())
+                m_hmiAuthorizedThings.insert(info->thing());
             enqueueHmiIndication(info->thing(), indication, info);
             return;
         }
@@ -813,6 +831,7 @@ void IntegrationPluginEverest::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginEverest::thingRemoved(Thing *thing)
 {
+    m_hmiAuthorizedThings.remove(thing);
     qCDebug(dcEverest()) << "Remove thing" << thing;
 
     if (thing->thingClassId() == everestMqttThingClassId) {
@@ -907,7 +926,8 @@ void IntegrationPluginEverest::processHmiIndications()
     }
     // A queued plug-in prompt may have become obsolete while another request ran.
     if (request.indication == "AuthRequired"
-            && (!thing->stateValue("pluggedIn").toBool() || !thing->stateValue("rfidAvailable").toBool())) {
+            && (!thing->stateValue("pluggedIn").toBool() || !thing->stateValue("rfidAvailable").toBool()
+                || m_hmiAuthorizedThings.contains(thing))) {
         finish(Thing::ThingErrorNoError);
         return;
     }

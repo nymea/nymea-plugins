@@ -35,6 +35,7 @@
 #include <mqttclient.h>
 #include <QPointer>
 #include <QQueue>
+#include <QSet>
 
 class IntegrationPluginEverest: public IntegrationPlugin
 {
@@ -76,6 +77,7 @@ private:
     };
     QQueue<HmiRequest> m_hmiRequests;
     bool m_hmiBusy = false;
+    QSet<Thing *> m_hmiAuthorizedThings;
     void enqueueHmiIndication(Thing *thing, const QString &indication, ThingActionInfo *info = nullptr);
     void processHmiIndications();
 };

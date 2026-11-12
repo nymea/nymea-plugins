@@ -188,6 +188,7 @@ private slots:
         reportStatus("Unplugged");
         QCOMPARE(pluggedSpy.count(), 2);
         QCOMPARE(pluggedSpy.last().first().toBool(), false);
+        QVERIFY(!thing.stateValue("pluggedIn").toBool());
 
         client.disconnectFromServer();
         QTRY_VERIFY(!thing.stateValue("connected").toBool());
