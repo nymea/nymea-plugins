@@ -7,11 +7,17 @@
 #include "jsonrpc/everestjsonrpcclient.h"
 #include <QHostAddress>
 
-inline bool everestRfidEligible(const QUrl &url, const QList<EverestJsonRpcClient::EVSEInfo> &evses)
+inline bool everestRfidEligible(const QUrl &url, const QList<EverestJsonRpcClient::EVSEInfo> &evses,
+                               const QString &vendor)
 {
     if (!(QHostAddress(url.host()).isLoopback() || url.host().compare("localhost", Qt::CaseInsensitive) == 0)
             || evses.size() != 1 || evses.first().availableConnectors.size() != 1)
         return false;
+    // Some PCE RpcApi configurations leave the optional energy modes list empty.
+    // The PCE vendor and the existing single local EVSE/connector check identify
+    // this known AC charger, while an explicit DC/unknown mode still fails below.
+    if (evses.first().supportedEnergyTransferModes.isEmpty())
+        return vendor.trimmed().compare(QStringLiteral("PCE"), Qt::CaseInsensitive) == 0;
     bool ac = false;
     for (auto mode : evses.first().supportedEnergyTransferModes) {
         switch (mode) {
@@ -29,6 +35,11 @@ inline bool everestRfidEligible(const QUrl &url, const QList<EverestJsonRpcClien
         }
     }
     return ac;
+}
+
+inline bool everestIsPceVendor(const QString &vendor)
+{
+    return vendor.trimmed().compare(QStringLiteral("PCE"), Qt::CaseInsensitive) == 0;
 }
 
 #endif // EVERESTRFIDUTILS_H

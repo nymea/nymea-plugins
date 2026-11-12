@@ -33,6 +33,9 @@
 #include "rfid/rfidproviderclient.h"
 
 #include <mqttclient.h>
+#include <QPointer>
+#include <QQueue>
+#include <QSet>
 
 class IntegrationPluginEverest: public IntegrationPlugin
 {
@@ -64,6 +67,19 @@ private:
     RfidProviderClient *m_rfidProvider = nullptr;
     Thing *rfidTarget() const;
     void updateRfidAvailability();
+    struct HmiRequest {
+        QPointer<Thing> thing;
+        QPointer<ThingActionInfo> info;
+        QString indication;
+        bool action;
+        QPointer<EverestConnection> connection;
+        quint64 generation;
+    };
+    QQueue<HmiRequest> m_hmiRequests;
+    bool m_hmiBusy = false;
+    QSet<Thing *> m_hmiAuthorizedThings;
+    void enqueueHmiIndication(Thing *thing, const QString &indication, ThingActionInfo *info = nullptr);
+    void processHmiIndications();
 };
 
 #endif // INTEGRATIONPLUGINEVEREST_H

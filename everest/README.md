@@ -16,7 +16,8 @@ EVerest's `libnfc-nci`, built with libgpiod 2.x support for named GPIO lines.
 When creating a missing RPC charger child, the integration selects **EVerest AC
 Charger with RFID** if the provider's compatible system D-Bus interface exists
 and the connection is localhost, has exactly one EVSE with one connector, and
-supports AC without DC. Provider readiness does not select the class: an
+supports AC without DC, or reports the PCE vendor with an empty energy-mode list.
+Explicit DC modes remain ineligible. Provider readiness does not select the class: an
 unavailable reader still belongs to an RFID-capable charger. Remote connections,
 DC, MQTT and ambiguous connector topologies retain their existing behavior.
 
@@ -40,10 +41,26 @@ Identifiers use uppercase UID hexadecimal in reader-library byte order with
 leading zeroes and no separators. Arrival/removal notifications are available
 only on the provider's D-Bus interface in this version.
 
-`tagAccepted` and `tagRejected` currently log readable feedback, clear enrollment
-mode and succeed. They do not call EVerest: the corresponding RPC feedback
-methods are not yet available. This does not replace the RFID experience's
-authorization decision.
+RFID feedback for both PCE and generic local AC RFID chargers uses
+`ChargePoint.SetHmiIndication`. This requires EVerest's HMI bridge RPC
+(API 1.1.0) and HmiLed connected to its `hmi_indication_request` interface.
+Enrollment actions send `TagEnrollmentActive` / `TagEnrollmentInactive`, and
+`tagAccepted` / `tagRejected` send `AuthAccepted` / `AuthRejected`. Enrollment
+results reach HmiLed before local enrollment mode is cleared. Actions succeed
+only after successful RPC responses; unsupported methods and failed requests
+are reported as failures. Indications do not change authorization or charging
+policy, and transient feedback is not automatically retried.
+
+An observed unplugged-to-plugged transition sends `AuthRequired` when the RFID
+reader is available and no authorization was granted for this plug cycle. A tag
+accepted before plug-in therefore does not prompt again. Unplugging clears the
+plugin's authorization marker and discards any queued prompt for the unplugged
+car; the HMI RPC has no `AuthRequired: false` indication. Initial status after
+startup/reconnection and reader recovery do not prompt an already connected car.
+After rejection, `AuthRequired` is sent again if the car is still connected and
+RFID is available, restoring the prompt after transient rejection feedback.
+Requests retain their order and use the same unambiguous local charger routing
+as RFID scans.
 
 ### RFID regression tests
 

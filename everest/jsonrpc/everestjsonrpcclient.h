@@ -250,6 +250,7 @@ public:
     QList<EVSEInfo> evseInfos() const;
 
     // API calls
+    EverestJsonRpcReply *chargePointSetHmiIndication(const QString &indication);
     EverestJsonRpcReply *evseGetInfo(int evseIndex);
     EverestJsonRpcReply *evseGetStatus(int evseIndex);
     EverestJsonRpcReply *evseGetHardwareCapabilities(int evseIndex);
