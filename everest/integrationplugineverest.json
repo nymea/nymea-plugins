@@ -248,6 +248,313 @@
                     ]
                 },
                 {
+                    "name": "everestChargerAcRfid",
+                    "displayName": "EVerest AC Charger with RFID",
+                    "id": "d1b2d417-bf9d-4233-bab4-f1f59c227d24",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [
+                        "auto"
+                    ],
+                    "interfaces": [
+                        "evchargerac",
+                        "smartmeterconsumer",
+                        "connectable",
+                        "rfid"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "d0be2ecd-3cc0-489f-9ad1-93b118563085",
+                            "name": "index",
+                            "displayName": "Index",
+                            "type": "uint",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "settingsTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "ff8c4bda-6e29-400e-ab6e-da991d8a80d0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ea3d96f9-8657-4c34-bf70-91c026314782",
+                            "name": "power",
+                            "displayName": "Charging enabled",
+                            "displayNameAction": "Enable or disable charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "1777220f-27f5-458c-a9ac-90383e27b99c",
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6,
+                            "minValue": 6,
+                            "maxValue": 32,
+                            "stepSize": 0.01,
+                            "writable": true
+                        },
+                        {
+                            "id": "ec1864b9-0dd4-40c2-b23b-750ebdbda75d",
+                            "name": "pluggedIn",
+                            "displayName": "Plugged in",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5e8d075f-4bc4-4531-aa5c-2112755dc213",
+                            "name": "charging",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "15468c25-f7be-42f1-933e-af5c753478a3",
+                            "name": "phaseCount",
+                            "displayName": "Active phases",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "5fb08851-36fd-43f5-b202-eb888304dad2",
+                            "name": "desiredPhaseCount",
+                            "displayName": "Desired phase count",
+                            "displayNameAction": "Set desired phase count",
+                            "type": "uint",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "possibleValues": [
+                                1,
+                                3
+                            ],
+                            "writable": true,
+                            "defaultValue": 3
+                        },
+                        {
+                            "id": "25136724-fd6c-42c8-b88a-7b62ccfde4ba",
+                            "name": "state",
+                            "displayName": "State",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "f20ce7c1-9089-4233-b7d9-ff9d9d26d30b",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0,
+                            "cached": true
+                        },
+                        {
+                            "id": "fa51df44-fb7b-4aaa-857c-cfdd6ca5cbf3",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0,
+                            "suggestLogging": true
+                        },
+                        {
+                            "id": "82f4a7ec-96fd-4c02-bba8-b46102b6d8b8",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "1201f1a2-1486-4425-a022-f1f106503c11",
+                            "name": "currentPowerPhaseA",
+                            "displayName": "Current power phase A",
+                            "displayNameEvent": "Current power phase A changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "8ae52af8-7d62-4552-b2b7-6c0e4cc9ce01",
+                            "name": "currentPowerPhaseB",
+                            "displayName": "Current power phase B",
+                            "displayNameEvent": "Current power phase B changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "41c0cb18-bee3-43f8-92c1-8e9637e5f935",
+                            "name": "currentPowerPhaseC",
+                            "displayName": "Current power phase C",
+                            "displayNameEvent": "Current power phase C changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "0abaf10b-a7f5-4a20-94ad-f3f544e8adf1",
+                            "name": "currentPhaseA",
+                            "displayName": "Phase A current",
+                            "displayNameEvent": "Phase A current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "a374a8a7-ebe9-47a4-9552-dc477efcd61f",
+                            "name": "currentPhaseB",
+                            "displayName": "Phase B current",
+                            "displayNameEvent": "Phase B current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "c84e3184-a98d-40c7-9f46-61ccd92562a8",
+                            "name": "currentPhaseC",
+                            "displayName": "Phase C current",
+                            "displayNameEvent": "Phase C current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "e3bfd7ea-b790-4e2a-8086-9a05ea9eccf5",
+                            "name": "voltagePhaseA",
+                            "displayName": "Phase A voltage",
+                            "displayNameEvent": "Phase A volatage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "5ed8a2db-93ca-4e4b-9b5e-3452b6677285",
+                            "name": "voltagePhaseB",
+                            "displayName": "Phase B voltage",
+                            "displayNameEvent": "Phase B voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "aec3afdc-37d3-4ca8-b7b5-b1454189b082",
+                            "name": "voltagePhaseC",
+                            "displayName": "Phase C voltage",
+                            "displayNameEvent": "Phase C voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "c8bf937f-86bf-4fb1-9a21-14c204942977",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "ecff27d3-451b-4d4b-b018-d7779d132d81",
+                            "name": "fanSpeed",
+                            "displayName": "Fan speed",
+                            "type": "double",
+                            "unit": "Rpm",
+                            "defaultValue": 0,
+                            "cached": false
+                        },
+                        {
+                            "id": "f24fc1ef-5827-4f9e-a280-6db07160120e",
+                            "name": "rfidAvailable",
+                            "displayName": "RFID reader available",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "c9cbaa00-514c-4832-ba24-1870a1fee382",
+                            "name": "authorizedUsername",
+                            "displayName": "Authorized username",
+                            "type": "QString",
+                            "cached": false,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8c930a59-656b-4036-b0de-4c77597d4d75",
+                            "name": "authorizedDisplayName",
+                            "displayName": "Authorized display name",
+                            "type": "QString",
+                            "cached": false,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "3bf9bb07-4270-4665-a15c-78efa9b28ed4",
+                            "name": "authorizedTagHash",
+                            "displayName": "Authorized tag hash",
+                            "type": "QString",
+                            "cached": false,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "fc752205-ca01-45c2-9448-13b6325be6b5",
+                            "name": "rfidEnrollmentActive",
+                            "displayName": "RFID enrollment active",
+                            "displayNameAction": "Set RFID enrollment mode",
+                            "type": "bool",
+                            "writable": true,
+                            "cached": false,
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "dc9cd114-6066-4c11-9282-f2a80963f631",
+                            "name": "tagAccepted",
+                            "displayName": "Accept RFID tag"
+                        },
+                        {
+                            "id": "915e9030-9dcd-448d-b8cc-cbbb0b2d7957",
+                            "name": "tagRejected",
+                            "displayName": "Reject RFID tag"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "43c6e179-a513-4ad8-a88a-c0a4dbda5a3d",
+                            "name": "tagDetected",
+                            "displayName": "RFID tag detected",
+                            "paramTypes": [
+                                {
+                                    "id": "90d55a9d-81a2-4791-9e57-3f6f9efbff75",
+                                    "name": "code",
+                                    "displayName": "Tag code",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "name": "everestChargerAc",
                     "displayName": "EVerest AC Charger",
                     "id": "ec47ac6b-e6ec-4a6c-a584-ac6802f79d12",
@@ -744,5 +1051,4 @@
         }
     ]
 }
-
 

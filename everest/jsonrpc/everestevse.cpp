@@ -211,18 +211,18 @@ void EverestEvse::initialize()
 
 void EverestEvse::processEvseStatus()
 {
-    if (m_thing->thingClassId() == everestChargerAcThingClassId) {
-        m_thing->setStateValue(everestChargerAcPowerStateTypeId, m_evseStatus.chargingAllowed);
-        m_thing->setStateValue(everestChargerAcSessionEnergyStateTypeId, m_evseStatus.chargedEnergyWh / 1000.0);
-        m_thing->setStateValue(everestChargerAcStateStateTypeId, m_evseStatus.evseStateString);
-        m_thing->setStateValue(everestChargerAcChargingStateTypeId, m_evseStatus.evseState == EverestJsonRpcClient::EvseStateCharging);
-        m_thing->setStateValue(everestChargerAcPluggedInStateTypeId, m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged);
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
+        m_thing->setStateValue(QStringLiteral("power"), m_evseStatus.chargingAllowed);
+        m_thing->setStateValue(QStringLiteral("sessionEnergy"), m_evseStatus.chargedEnergyWh / 1000.0);
+        m_thing->setStateValue(QStringLiteral("state"), m_evseStatus.evseStateString);
+        m_thing->setStateValue(QStringLiteral("charging"), m_evseStatus.evseState == EverestJsonRpcClient::EvseStateCharging);
+        m_thing->setStateValue(QStringLiteral("pluggedIn"), m_evseStatus.evseState != EverestJsonRpcClient::EvseStateUnplugged);
 
-        m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
-        m_thing->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, m_evseStatus.acChargeStatus.activePhaseCount);
+        m_thing->setStateValue(QStringLiteral("phaseCount"), m_evseStatus.acChargeStatus.activePhaseCount);
+        m_thing->setStateValue(QStringLiteral("desiredPhaseCount"), m_evseStatus.acChargeStatus.activePhaseCount);
 
         if (m_evseStatus.acChargeParameters.maxCurrent > 0)
-            m_thing->setStateValue(everestChargerAcMaxChargingCurrentStateTypeId, m_evseStatus.acChargeParameters.maxCurrent);
+            m_thing->setStateValue(QStringLiteral("maxChargingCurrent"), m_evseStatus.acChargeParameters.maxCurrent);
 
     } else if (m_thing->thingClassId() == everestChargerDcThingClassId) {
 
@@ -248,40 +248,40 @@ void EverestEvse::processEvseStatus()
 
 void EverestEvse::processHardwareCapabilities()
 {
-    if (m_thing->thingClassId() == everestChargerAcThingClassId) {
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
         if (!m_hardwareCapabilities.phaseSwitchDuringCharging) {
             // Only option left is set the desired phase count to 3, force that value
-            m_thing->setStatePossibleValues(everestChargerAcDesiredPhaseCountStateTypeId, { 3 });
-            m_thing->setStateValue(everestChargerAcDesiredPhaseCountStateTypeId, 3);
-            m_thing->setStateValue(everestChargerAcPhaseCountStateTypeId, 3);
+            m_thing->setStatePossibleValues(QStringLiteral("desiredPhaseCount"), { 3 });
+            m_thing->setStateValue(QStringLiteral("desiredPhaseCount"), 3);
+            m_thing->setStateValue(QStringLiteral("phaseCount"), 3);
         } else {
-            m_thing->setStatePossibleValues(everestChargerAcDesiredPhaseCountStateTypeId, { 1, 3 });
+            m_thing->setStatePossibleValues(QStringLiteral("desiredPhaseCount"), { 1, 3 });
         }
 
-        m_thing->setStateMaxValue(everestChargerAcMaxChargingCurrentStateTypeId, m_hardwareCapabilities.maxCurrentImport);
-        m_thing->setStateMinValue(everestChargerAcMaxChargingCurrentStateTypeId, m_hardwareCapabilities.minCurrentImport == 0 ? 6 : m_hardwareCapabilities.minCurrentImport);
+        m_thing->setStateMaxValue(QStringLiteral("maxChargingCurrent"), m_hardwareCapabilities.maxCurrentImport);
+        m_thing->setStateMinValue(QStringLiteral("maxChargingCurrent"), m_hardwareCapabilities.minCurrentImport == 0 ? 6 : m_hardwareCapabilities.minCurrentImport);
     }
 }
 
 void EverestEvse::processMeterData()
 {
-    if (m_thing->thingClassId() == everestChargerAcThingClassId) {
+    if ((m_thing->thingClassId() == everestChargerAcThingClassId || m_thing->thingClassId() == everestChargerAcRfidThingClassId)) {
 
-        m_thing->setStateValue(everestChargerAcCurrentPowerStateTypeId, m_meterData.powerTotal);
+        m_thing->setStateValue(QStringLiteral("currentPower"), m_meterData.powerTotal);
 
-        m_thing->setStateValue(everestChargerAcCurrentPowerPhaseAStateTypeId, m_meterData.powerL1);
-        m_thing->setStateValue(everestChargerAcCurrentPowerPhaseBStateTypeId, m_meterData.powerL2);
-        m_thing->setStateValue(everestChargerAcCurrentPowerPhaseCStateTypeId, m_meterData.powerL3);
+        m_thing->setStateValue(QStringLiteral("currentPowerPhaseA"), m_meterData.powerL1);
+        m_thing->setStateValue(QStringLiteral("currentPowerPhaseB"), m_meterData.powerL2);
+        m_thing->setStateValue(QStringLiteral("currentPowerPhaseC"), m_meterData.powerL3);
 
-        m_thing->setStateValue(everestChargerAcCurrentPhaseAStateTypeId, m_meterData.currentL1);
-        m_thing->setStateValue(everestChargerAcCurrentPhaseBStateTypeId, m_meterData.currentL2);
-        m_thing->setStateValue(everestChargerAcCurrentPhaseCStateTypeId, m_meterData.currentL3);
+        m_thing->setStateValue(QStringLiteral("currentPhaseA"), m_meterData.currentL1);
+        m_thing->setStateValue(QStringLiteral("currentPhaseB"), m_meterData.currentL2);
+        m_thing->setStateValue(QStringLiteral("currentPhaseC"), m_meterData.currentL3);
 
-        m_thing->setStateValue(everestChargerAcVoltagePhaseAStateTypeId, m_meterData.voltageL1);
-        m_thing->setStateValue(everestChargerAcVoltagePhaseBStateTypeId, m_meterData.voltageL2);
-        m_thing->setStateValue(everestChargerAcVoltagePhaseCStateTypeId, m_meterData.voltageL3);
+        m_thing->setStateValue(QStringLiteral("voltagePhaseA"), m_meterData.voltageL1);
+        m_thing->setStateValue(QStringLiteral("voltagePhaseB"), m_meterData.voltageL2);
+        m_thing->setStateValue(QStringLiteral("voltagePhaseC"), m_meterData.voltageL3);
 
-        m_thing->setStateValue(everestChargerAcTotalEnergyConsumedStateTypeId, m_meterData.energyImportedTotal / 1000.0);
+        m_thing->setStateValue(QStringLiteral("totalEnergyConsumed"), m_meterData.energyImportedTotal / 1000.0);
     } else if (m_thing->thingClassId() == everestChargerDcThingClassId) {
 
         m_thing->setStateValue(everestChargerDcCurrentPowerStateTypeId, m_meterData.powerTotal);

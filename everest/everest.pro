@@ -1,9 +1,10 @@
 include(../plugins.pri)
 
-QT += network websockets
+QT += network websockets dbus
 PKGCONFIG += nymea-mqtt
 
 SOURCES += \
+    rfid/rfidproviderclient.cpp \
     jsonrpc/everestconnection.cpp \
     jsonrpc/everestevse.cpp \
     jsonrpc/everestjsonrpcclient.cpp \
@@ -16,6 +17,8 @@ SOURCES += \
     integrationplugineverest.cpp
 
 HEADERS += \
+    rfid/rfidproviderclient.h \
+    rfid/everestrfidutils.h \
     jsonrpc/everestconnection.h \
     jsonrpc/everestevse.h \
     jsonrpc/everestjsonrpcclient.h \
