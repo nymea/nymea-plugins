@@ -108,18 +108,23 @@ private slots:
         QTest::addColumn<bool>("ac");
         QTest::addColumn<bool>("dc");
         QTest::addColumn<bool>("eligible");
-        QTest::newRow("localhost-ac") << "ws://localhost:8849" << 1 << 1 << true << false << true;
-        QTest::newRow("ipv4-ac") << "ws://127.0.0.1:8849" << 1 << 1 << true << false << true;
-        QTest::newRow("ipv6-ac") << "ws://[::1]:8849" << 1 << 1 << true << false << true;
-        QTest::newRow("remote-ac") << "ws://192.168.1.2:8849" << 1 << 1 << true << false << false;
-        QTest::newRow("deceptive-host") << "ws://localhost.example:8849" << 1 << 1 << true << false << false;
-        QTest::newRow("multi-evse") << "ws://localhost:8849" << 2 << 1 << true << false << false;
-        QTest::newRow("multi-connector") << "ws://localhost:8849" << 1 << 2 << true << false << false;
-        QTest::newRow("no-connector") << "ws://localhost:8849" << 1 << 0 << true << false << false;
-        QTest::newRow("no-evse") << "ws://localhost:8849" << 0 << 1 << true << false << false;
-        QTest::newRow("dc") << "ws://localhost:8849" << 1 << 1 << false << true << false;
-        QTest::newRow("mixed-ac-dc") << "ws://localhost:8849" << 1 << 1 << true << true << false;
-        QTest::newRow("unknown") << "ws://localhost:8849" << 1 << 1 << false << false << false;
+        QTest::addColumn<QString>("vendor");
+        QTest::newRow("localhost-ac") << "ws://localhost:8849" << 1 << 1 << true << false << true << "Other";
+        QTest::newRow("ipv4-ac") << "ws://127.0.0.1:8849" << 1 << 1 << true << false << true << "Other";
+        QTest::newRow("ipv6-ac") << "ws://[::1]:8849" << 1 << 1 << true << false << true << "Other";
+        QTest::newRow("remote-ac") << "ws://192.168.1.2:8849" << 1 << 1 << true << false << false << "Other";
+        QTest::newRow("deceptive-host") << "ws://localhost.example:8849" << 1 << 1 << true << false << false << "Other";
+        QTest::newRow("multi-evse") << "ws://localhost:8849" << 2 << 1 << true << false << false << "Other";
+        QTest::newRow("multi-connector") << "ws://localhost:8849" << 1 << 2 << true << false << false << "Other";
+        QTest::newRow("no-connector") << "ws://localhost:8849" << 1 << 0 << true << false << false << "Other";
+        QTest::newRow("no-evse") << "ws://localhost:8849" << 0 << 1 << true << false << false << "Other";
+        QTest::newRow("dc") << "ws://localhost:8849" << 1 << 1 << false << true << false << "Other";
+        QTest::newRow("mixed-ac-dc") << "ws://localhost:8849" << 1 << 1 << true << true << false << "Other";
+        QTest::newRow("unknown") << "ws://localhost:8849" << 1 << 1 << false << false << false << "Other";
+        QTest::newRow("pce-empty-modes") << "ws://localhost:8849" << 1 << 1 << false << false << true << "PCE";
+        QTest::newRow("pce-remote-empty") << "ws://192.168.1.2:8849" << 1 << 1 << false << false << false << "PCE";
+        QTest::newRow("pce-multi-connector-empty") << "ws://localhost:8849" << 1 << 2 << false << false << false << "PCE";
+        QTest::newRow("pce-dc") << "ws://localhost:8849" << 1 << 1 << false << true << false << "PCE";
     }
 
     void eligibility()
@@ -130,6 +135,7 @@ private slots:
         QFETCH(bool, ac);
         QFETCH(bool, dc);
         QFETCH(bool, eligible);
+        QFETCH(QString, vendor);
         QList<EverestJsonRpcClient::EVSEInfo> topology;
         for (int i = 0; i < evses; ++i) {
             EverestJsonRpcClient::EVSEInfo evse;
@@ -143,7 +149,7 @@ private slots:
             if (dc) evse.supportedEnergyTransferModes << EverestJsonRpcClient::EnergyTransferModeDC_core;
             topology << evse;
         }
-        QCOMPARE(everestRfidEligible(QUrl(url), topology), eligible);
+        QCOMPARE(everestRfidEligible(QUrl(url), topology, vendor), eligible);
     }
 
     void pceVendor_data()

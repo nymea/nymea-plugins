@@ -460,7 +460,11 @@ void IntegrationPluginEverest::setupThing(ThingSetupInfo *info)
                             ++localConnections;
                     }
                     const bool withRfid = providerAvailable && localConnections == 1
-                            && everestRfidEligible(connection->client()->serverUrl(), connection->client()->evseInfos());
+                            && everestRfidEligible(connection->client()->serverUrl(), connection->client()->evseInfos(),
+                                    connection->client()->chargerInfo().vendor);
+                    qCDebug(dcEverest()) << "RFID charger discovery:" << "provider" << providerAvailable
+                                        << "local connections" << localConnections << "eligible" << withRfid
+                                        << "vendor" << connection->client()->chargerInfo().vendor;
 
                     // Sync things with availabe EvseInfos from this connection
 
@@ -849,7 +853,8 @@ Thing *IntegrationPluginEverest::rfidTarget() const
             continue;
         if (++localConnections > 1)
             return nullptr;
-        if (!everestRfidEligible(connection->client()->serverUrl(), connection->client()->evseInfos()))
+        if (!everestRfidEligible(connection->client()->serverUrl(), connection->client()->evseInfos(),
+                                    connection->client()->chargerInfo().vendor))
             continue;
         for (Thing *child : myThings().filterByParentId(it.key()->id())) {
             if (!isRfidThingClass(child->thingClassId())

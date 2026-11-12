@@ -16,7 +16,8 @@ EVerest's `libnfc-nci`, built with libgpiod 2.x support for named GPIO lines.
 When creating a missing RPC charger child, the integration selects **EVerest AC
 Charger with RFID** if the provider's compatible system D-Bus interface exists
 and the connection is localhost, has exactly one EVSE with one connector, and
-supports AC without DC. Provider readiness does not select the class: an
+supports AC without DC, or reports the PCE vendor with an empty energy-mode list.
+Explicit DC modes remain ineligible. Provider readiness does not select the class: an
 unavailable reader still belongs to an RFID-capable charger. Remote connections,
 DC, MQTT and ambiguous connector topologies retain their existing behavior.
 
