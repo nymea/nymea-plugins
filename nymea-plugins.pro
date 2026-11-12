@@ -138,3 +138,9 @@ for(plugin, PLUGINS) {
         error("Invalid plugin \"$${plugin}\".")
     }
 }
+
+# Optional regression tests for selected plugins: qmake CONFIG+=tests; make check
+contains(CONFIG, tests):contains(PLUGINS, goecharger) {
+    goe_compatibility_tests.subdir = goecharger/tests
+    SUBDIRS += goe_compatibility_tests
+}

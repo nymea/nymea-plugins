@@ -107,6 +107,7 @@ private:
 
     QHash<Thing *, QNetworkReply *> m_pendingReplies;
     QHash<Thing *, NetworkDeviceMonitor *> m_monitors;
+    QHash<Thing *, QStringList> m_pollingFields;
 
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 

@@ -31,3 +31,16 @@ The documentation of the API v2 can be found [here](https://github.com/goecharge
 
 https://go-e.co/
 
+
+## Regression tests
+
+With the usual nymea SDK/build environment configured, enable tests in a shadow
+build of the repository with `qmake <source>/nymea-plugins.pro WITH_PLUGINS=goecharger CONFIG+=tests`.
+Run `make` followed by `make check`. Use the qmake executable for the Qt version
+being tested. Other selected plugins can be built alongside go-e as usual.
+
+The tests can also be built independently with
+`qmake <source>/goecharger/tests/tests.pro`, followed by `make check`.
+They test the shared discovery merge and status helpers, link against libnymea
+rather than the plugin module, and require permission to open a loopback HTTP
+listener. No charger or `GOE_BUILD_DIR` setting is required.
