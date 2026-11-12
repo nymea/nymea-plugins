@@ -6,6 +6,8 @@ Integrates SENEC.Home energy storages into the system.
 
 The storage is discovered in the local network and polled directly. Optionally the grid meter of the storage can be added using the "Add meter" setting.
 
+A PV inverter is automatically added as a child device for LAN-connected systems. Its current generation power is read from `ENERGY.GUI_INVERTER_POWER`, and `Total energy produced` is estimated by integrating sampled PV power over time. The calculated energy total starts when monitoring begins; it is not a lifetime yield read from the SENEC storage. The inverter connection state follows the LAN storage connection state.
+
 ## SENEC.Connect (SENEC.Home 4, P4, E4)
 
 V4 systems do not provide a local API and are integrated using the official read-only SENEC.Connect cloud API.
